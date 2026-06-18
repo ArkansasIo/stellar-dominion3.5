@@ -1,21 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import { triggerDataRefresh } from './GameLoop';
-import { Player } from './xenoberage-types';
-import { getPlayers } from './xenoberage-api';
+
+interface Player {
+  id: string;
+  name: string;
+  score: number;
+}
 
 const PlayerList: React.FC = () => {
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch players
   const fetchPlayers = () => {
     setLoading(true);
-    getPlayers()
+    fetch('/api/players')
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to load players');
+        return res.json();
+      })
       .then(setPlayers)
-      .catch((err) => setError(err.message || 'Failed to load players'))
+      .catch((err: Error) => setError(err.message || 'Failed to load players'))
       .finally(() => setLoading(false));
   };
+
   useEffect(() => {
     fetchPlayers();
     const handler = () => fetchPlayers();

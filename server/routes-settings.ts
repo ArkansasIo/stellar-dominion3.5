@@ -51,7 +51,9 @@ function mergePlayerOptions(value: any) {
   const incomingPrivacy = value?.privacy || {};
   const incomingDisplay = value?.display || {};
   const normalizedThemePreset =
-    incomingDisplay?.themePreset === "og-white" || incomingDisplay?.themePreset === "black-style"
+    incomingDisplay?.themePreset === "og-white" ||
+    incomingDisplay?.themePreset === "black-style" ||
+    incomingDisplay?.themePreset === "imperial-gold"
       ? incomingDisplay.themePreset
       : "black-style";
   const normalizedPrivacy = {
@@ -64,7 +66,7 @@ function mergePlayerOptions(value: any) {
     display: {
       ...DEFAULT_PLAYER_OPTIONS.display,
       ...incomingDisplay,
-      darkMode: normalizedThemePreset === "black-style",
+      darkMode: normalizedThemePreset !== "og-white",
       themePreset: normalizedThemePreset,
     },
     sound: { ...DEFAULT_PLAYER_OPTIONS.sound, ...(value?.sound || {}) },

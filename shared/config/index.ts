@@ -940,3 +940,73 @@ export {
 } from './framingBuildingStructuresConfig';
 export * as FramingBuildingStructuresConfig from './framingBuildingStructuresConfig';
 
+// Ship Classification System Exports
+export * as ShipClassificationSystem from './shipClassificationSystem';
+
+// Classic Game Configuration (ported from Xenobe Rage / Blacknova Traders)
+export {
+  CLASSIC_GAME_CONFIG,
+  SCHEDULER_CONFIG,
+  UNIVERSE_CONFIG,
+  GAME_IDENTITY,
+  RESOURCE_ECONOMY,
+  COMBAT_CONFIG as CLASSIC_COMBAT_CONFIG,
+  NEWBIE_CONFIG,
+  TURN_CONFIG,
+  DEVICE_PRICES,
+  DEVICE_LIMITS,
+  PRODUCTION_RATES,
+  COLONIZATION_CONFIG,
+  BASE_COSTS,
+  UPGRADE_SYSTEM,
+  BANK_CONFIG,
+  BOUNTY_CONFIG,
+  FEDERATION_CONFIG,
+  SCANNER_CONFIG,
+  DEGRADATION_CONFIG,
+  XENBE_CONFIG,
+  TRADING_CONFIG,
+  FACILITY_CONFIG,
+  SERVER_CONFIG as CLASSIC_SERVER_CONFIG,
+  type ClassicGameConfig,
+} from './classicGameConfig';
+
+// Title Screen Configuration
+export {
+  DEFAULT_TITLE_SCREEN_CONFIG,
+  getTitleScreenConfigForTheme,
+  getLoadingMessage,
+  getTitleScreenThemeConfig,
+  type TitleScreenConfig,
+  type TitleScreenThemeOverrides,
+} from './titleScreenConfig';
+
+// Master CSS Configuration
+export {
+  DEFAULT_MASTER_CSS_CONFIG,
+  DEFAULT_CSS_VARIABLES,
+  DEFAULT_BUTTON_CONFIG,
+  DEFAULT_PANEL_CONFIG,
+  DEFAULT_SIDEBAR_CONFIG,
+  DEFAULT_BACKGROUND_CONFIG,
+  DEFAULT_NAVIGATION_CONFIG,
+  DEFAULT_FORM_CONFIG,
+  DEFAULT_DATA_DISPLAY_CONFIG,
+  DEFAULT_TITLE_SCREEN_CSS_CONFIG,
+  DEFAULT_BREAKPOINTS,
+  DEFAULT_ANIMATIONS,
+  DEFAULT_ACCESSIBILITY,
+  DEFAULT_FEATURES,
+  getCSSConfigForTheme,
+  generateCSSVariables,
+  getCSSVariable,
+  isModuleEnabled,
+  getModuleConfig,
+  type MasterCSSConfig,
+  type CSSVariables,
+  type CSSModuleConfig,
+  type CSSBreakpointConfig,
+  type CSSAnimationConfig,
+  type CSSAccessibilityConfig,
+} from './cssConfig';
+

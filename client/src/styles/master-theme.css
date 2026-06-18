@@ -81,6 +81,67 @@
   --sd-resource-alloy: #81c784;
 }
 
+:root[data-sd-theme="imperial-gold"] {
+  --sd-theme-surface: dark;
+  --sd-text-primary: #fff5d6;
+  --sd-text-secondary: #cbbd95;
+  --sd-text-highlight: #f5c451;
+  --sd-button-top: #493821;
+  --sd-button-bottom: #21170d;
+  --sd-button-top-hover: #654d29;
+  --sd-button-bottom-hover: #2f1f0f;
+  --sd-button-top-active: #b7791f;
+  --sd-button-bottom-active: #6b3f0c;
+  --sd-button-frame: #8f6a2f;
+  --sd-button-frame-active: #ffd978;
+  --sd-panel-top: rgba(39, 29, 18, 0.96);
+  --sd-panel-bottom: rgba(13, 10, 7, 0.97);
+  --sd-panel-border: #806232;
+  --sd-panel-glow: rgba(245, 196, 81, 0.16);
+  --sd-star-glow: #ffd978;
+  --sd-orbit-lines: #d19a42;
+  --sd-hyperlanes: #f5c451;
+  --sd-nebula-a: rgba(130, 32, 28, 0.2);
+  --sd-nebula-b: rgba(245, 196, 81, 0.12);
+  --sd-shell-bg: #080604;
+  --sd-shell-nebula-a: rgba(130, 32, 28, 0.2);
+  --sd-shell-nebula-b: rgba(245, 196, 81, 0.1);
+  --sd-scene-accent-a: rgba(255, 217, 120, 0.1);
+  --sd-scene-accent-b: rgba(140, 38, 34, 0.1);
+  --sd-sidebar-top: rgba(47, 34, 20, 0.96);
+  --sd-sidebar-bottom: rgba(16, 11, 7, 0.97);
+  --sd-sidebar-radial: rgba(245, 196, 81, 0.1);
+  --sd-sidebar-status-top: rgba(69, 49, 27, 0.94);
+  --sd-sidebar-status-bottom: rgba(28, 19, 11, 0.94);
+  --sd-command-bar-top: rgba(62, 44, 25, 0.97);
+  --sd-command-bar-bottom: rgba(21, 14, 8, 0.97);
+  --sd-top-link-top: rgba(64, 46, 27, 0.78);
+  --sd-top-link-bottom: rgba(25, 17, 10, 0.78);
+  --sd-realm-shell-top: rgba(66, 47, 27, 0.93);
+  --sd-realm-shell-bottom: rgba(23, 15, 9, 0.94);
+  --sd-realm-status-top: rgba(183, 121, 31, 0.26);
+  --sd-realm-status-bottom: rgba(107, 63, 12, 0.36);
+  --sd-table-top: rgba(38, 27, 17, 0.96);
+  --sd-table-bottom: rgba(14, 10, 7, 0.96);
+  --sd-table-head-top: rgba(75, 55, 31, 0.9);
+  --sd-table-head-bottom: rgba(32, 22, 13, 0.9);
+  --sd-table-footer-top: rgba(61, 43, 25, 0.82);
+  --sd-table-footer-bottom: rgba(24, 16, 10, 0.82);
+  --sd-input-top: rgba(57, 41, 25, 0.97);
+  --sd-input-bottom: rgba(22, 15, 9, 0.97);
+  --sd-select-content-top: rgba(45, 32, 20, 0.99);
+  --sd-select-content-bottom: rgba(14, 10, 7, 0.99);
+  --sd-tabs-top: rgba(52, 37, 22, 0.94);
+  --sd-tabs-bottom: rgba(19, 13, 8, 0.94);
+  --sd-badge-top: rgba(70, 50, 28, 0.96);
+  --sd-badge-bottom: rgba(27, 18, 10, 0.96);
+  --sd-resource-metal: #e4d4ab;
+  --sd-resource-energy: #ffd978;
+  --sd-resource-crystal: #e66a63;
+  --sd-resource-science: #d6b66a;
+  --sd-resource-alloy: #b8c58b;
+}
+
 :root,
 :root[data-sd-theme="og-white"] {
   --sd-theme-surface: light;

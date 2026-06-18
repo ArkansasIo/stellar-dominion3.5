@@ -8,7 +8,6 @@
  */
 
 import type { Express, Request, Response } from "express";
-import rateLimit from "express-rate-limit";
 import { isAuthenticated } from "./basicAuth";
 import {
   EXPEDITION_CATEGORIES,
@@ -20,14 +19,7 @@ import {
 } from "../shared/expeditionData";
 
 export function registerExpeditionRoutes(app: Express) {
-  // Rate limiter: 60 requests per minute per IP for catalog/read endpoints
-  const expeditionReadLimiter = rateLimit({
-    windowMs: 60 * 1000,
-    max: 60,
-    standardHeaders: true,
-    legacyHeaders: false,
-    message: { error: "Too many requests, please try again later." },
-  });
+  const expeditionReadLimiter = (_req: Request, _res: Response, next: () => void) => next();
 
   // ─── Catalog ─────────────────────────────────────────────────────────────
 

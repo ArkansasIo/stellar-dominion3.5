@@ -87,6 +87,9 @@ const PlanetaryOccupation = lazy(() => import("@/pages/PlanetaryOccupation"));
 const OgameCompendium = lazy(() => import("@/pages/OgameCompendium"));
 const Leaderboard = lazy(() => import("@/pages/Leaderboard"));
 const ThreeDViewerPortal = lazy(() => import("@/pages/ThreeDViewerPortal"));
+const DatabaseAdmin = lazy(() => import("@/pages/DatabaseAdmin"));
+const PowerGrid = lazy(() => import("@/pages/PowerGrid"));
+const OrbitalDefense = lazy(() => import("@/pages/OrbitalDefense"));
 
 function LoadingSplash() {
   return (
@@ -164,6 +167,8 @@ function RouterContent() {
       <Switch>
         <Route path="/threejs-viewer" component={ThreeDViewerPortal} />
         <Route path="/admin-login" component={AdminLogin} />
+        <Route path="/admin" component={Admin} />
+        <Route path="/admin/database" component={DatabaseAdmin} />
         <Route path="/about" component={About} />
         <Route path="/forums" component={Forums} />
         <Route path="/terms" component={Terms} />
@@ -178,6 +183,8 @@ function RouterContent() {
       <Switch>
         <Route path="/threejs-viewer" component={ThreeDViewerPortal} />
         <Route path="/admin-login" component={AdminLogin} />
+        <Route path="/admin" component={Admin} />
+        <Route path="/admin/database" component={DatabaseAdmin} />
         <Route path="/about" component={About} />
         <Route path="/forums" component={Forums} />
         <Route path="/terms" component={Terms} />
@@ -197,6 +204,7 @@ function RouterContent() {
       <Route path="/terms" component={Terms} />
       <Route path="/privacy" component={Privacy} />
       <Route path="/resources" component={Resources} />
+      <Route path="/power-grid" component={PowerGrid} />
       <Route path="/facilities" component={Facilities} />
       <Route path="/research" component={Research} />
       <Route path="/skills" component={Skills} />
@@ -219,6 +227,7 @@ function RouterContent() {
       <Route path="/market" component={Market} />
       <Route path="/messages" component={Messages} />
       <Route path="/combat" component={Combat} />
+      <Route path="/orbital-defense" component={OrbitalDefense} />
       <Route path="/battle-logs" component={BattleLogs} />
       <Route path="/exploration" component={Exploration} />
       <Route path="/colonies" component={Colonies} />
@@ -263,6 +272,7 @@ function RouterContent() {
       <Route path="/assets-gallery" component={GameAssetsGallery} />
       <Route path="/settings" component={Settings} />
       <Route path="/admin" component={Admin} />
+      <Route path="/admin/database" component={DatabaseAdmin} />
       <Route path="/server-console" component={ServerConsole} />
       <Route component={NotFound} />
     </Switch>

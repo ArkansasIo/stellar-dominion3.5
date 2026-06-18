@@ -48,7 +48,7 @@ type PlayerOptions = {
    };
    display: {
       darkMode: boolean;
-      themePreset: "black-style" | "og-white";
+   themePreset: "black-style" | "og-white" | "imperial-gold";
       compactView: boolean;
       showAnimations: boolean;
       showResourceRates: boolean;
@@ -119,7 +119,7 @@ type AdminAccountsResponse = {
    accounts: AdminAccountRecord[];
 };
 
-type ThemePreset = "black-style" | "og-white";
+type ThemePreset = "black-style" | "og-white" | "imperial-gold";
 
 const ADMIN_ROLE_OPTIONS = [
    { value: "administrator", label: "Admin", description: "Server controls, moderation, and admin account provisioning." },
@@ -164,6 +164,14 @@ const THEME_PRESET_OPTIONS: Array<{
       helper: "Light panels, pale chrome, and the earlier OG white presentation.",
       icon: Sun,
       previewClassName: "border-slate-200 bg-[radial-gradient(circle_at_top_right,rgba(96,165,250,0.14),transparent_38%),linear-gradient(180deg,#f8fbff,#e8eef7)]",
+   },
+   {
+      value: "imperial-gold",
+      label: "Imperial Gold Theme",
+      description: "A ceremonial command deck for high-tier empires.",
+      helper: "Obsidian panels, warm gold frames, and royal crimson accents.",
+      icon: Zap,
+      previewClassName: "border-amber-400/60 bg-[radial-gradient(circle_at_top_right,rgba(251,191,36,0.2),transparent_38%),linear-gradient(180deg,#251b12,#090705)]",
    },
 ];
 
@@ -332,7 +340,7 @@ export default function Settings() {
 
       setNotifications(playerOptions.notifications);
       setDisplaySettings({
-         darkMode: playerOptions.display.themePreset === "black-style",
+         darkMode: playerOptions.display.themePreset !== "og-white",
          themePreset: playerOptions.display.themePreset || "og-white",
          compactView: playerOptions.display.compactView,
          showAnimations: playerOptions.display.showAnimations,
@@ -938,7 +946,7 @@ export default function Settings() {
                                       setDisplaySettings({
                                          ...displaySettings,
                                          themePreset: themeOption.value,
-                                         darkMode: themeOption.value === "black-style",
+                                         darkMode: themeOption.value !== "og-white",
                                       })
                                    }
                                 >

@@ -1,6 +1,11 @@
 import { build as esbuild } from "esbuild";
 import { build as viteBuild } from "vite";
 import { rm, readFile } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const distDir = path.join(projectRoot, "dist");
 
 // server deps to bundle to reduce openat(2) syscalls
 // which helps cold start times
@@ -33,13 +38,16 @@ const allowlist = [
 ];
 
 async function buildAll() {
-  await rm("dist", { recursive: true, force: true });
+  await rm(distDir, { recursive: true, force: true });
 
   console.log("building client...");
-  await viteBuild();
+  await viteBuild({
+    configFile: path.join(projectRoot, "vite.config.ts"),
+    configLoader: "runner",
+  });
 
   console.log("building server...");
-  const pkg = JSON.parse(await readFile("package.json", "utf-8"));
+  const pkg = JSON.parse(await readFile(path.join(projectRoot, "package.json"), "utf-8"));
   const allDeps = [
     ...Object.keys(pkg.dependencies || {}),
     ...Object.keys(pkg.devDependencies || {}),
@@ -49,11 +57,12 @@ async function buildAll() {
     .concat(["./vite"]);
 
   await esbuild({
+    absWorkingDir: projectRoot,
     entryPoints: ["server/index.ts"],
     platform: "node",
     bundle: true,
     format: "cjs",
-    outfile: "dist/index.cjs",
+    outfile: path.join(distDir, "index.cjs"),
     define: {
       "process.env.NODE_ENV": '"production"',
     },

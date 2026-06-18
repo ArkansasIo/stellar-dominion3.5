@@ -11,6 +11,14 @@ import { GOVERNMENTS, GovernmentId } from "@/lib/governmentData";
 import { MENU_ASSETS } from "@shared/config";
 
 const TEMP_THEME_IMAGE = "/theme-temp.png";
+const DEFAULT_RACE: RaceId = "terran";
+const DEFAULT_GOVERNMENT: GovernmentId = "democracy";
+
+const isRaceId = (value: unknown): value is RaceId =>
+  typeof value === "string" && Object.prototype.hasOwnProperty.call(RACES, value);
+
+const isGovernmentId = (value: unknown): value is GovernmentId =>
+  typeof value === "string" && Object.prototype.hasOwnProperty.call(GOVERNMENTS, value);
 
 // Mock: In a real app, this would come from the backend per user/realm
 const getEmpireSlotsForRealm = (realmId: string) => {
@@ -35,8 +43,8 @@ export default function AccountSetup() {
     switchRealm,
   } = useGame();
   const [, setLocation] = useLocation();
-  const [selectedRace, setSelectedRace] = useState<RaceId>("terran");
-  const [selectedGovernment, setSelectedGovernment] = useState<GovernmentId>("democracy");
+  const [selectedRace, setSelectedRace] = useState<RaceId>(DEFAULT_RACE);
+  const [selectedGovernment, setSelectedGovernment] = useState<GovernmentId>(DEFAULT_GOVERNMENT);
   const [selectedRealm, setSelectedRealm] = useState("");
   const [empireName, setEmpireName] = useState("Stellar Dominion");
   const [homeWorldName, setHomeWorldName] = useState("New Colony");
@@ -53,8 +61,8 @@ export default function AccountSetup() {
 
   useEffect(() => {
     if (isDataLoaded && !hasUserInteracted) {
-      setSelectedRace(commander.race);
-      setSelectedGovernment(government.type);
+      setSelectedRace(isRaceId(commander.race) ? commander.race : DEFAULT_RACE);
+      setSelectedGovernment(isGovernmentId(government.type) ? government.type : DEFAULT_GOVERNMENT);
       setEmpireName(commander.empireName || commander.name || "Stellar Dominion");
       setHomeWorldName(planetName || "New Colony");
     }
@@ -96,18 +104,21 @@ export default function AccountSetup() {
     setIsSubmitting(true);
     setError(null);
 
+    const safeRace = isRaceId(selectedRace) ? selectedRace : DEFAULT_RACE;
+    const safeGovernment = isGovernmentId(selectedGovernment) ? selectedGovernment : DEFAULT_GOVERNMENT;
+
     const updatedCommander = {
       ...commander,
-      race: selectedRace,
+      race: safeRace,
       empireName: empireName.trim().slice(0, 64) || "Stellar Dominion",
       empireSlot: selectedEmpireSlot, // Save slot info
     };
 
-    const govBase = GOVERNMENTS[selectedGovernment].baseStats;
+    const govBase = GOVERNMENTS[safeGovernment].baseStats;
 
     const updatedGovernment = {
       ...government,
-      type: selectedGovernment,
+      type: safeGovernment,
       stats: {
         stability: govBase.stability,
         publicSupport: 50,
@@ -122,19 +133,18 @@ export default function AccountSetup() {
         await switchRealm(selectedRealm);
       }
 
-      // TODO: Pass empireSlot to backend as part of setup
       await completeSetup(updatedCommander, updatedGovernment, {
         homeWorldName: homeWorldName.trim().slice(0, 64) || "New Colony",
       });
       setLocation("/");
-    } catch (err) {
+    } catch {
       setError("Failed to save your selections. Please try again.");
       setIsSubmitting(false);
     }
   };
 
-  const selectedRaceData = RACES[selectedRace];
-  const selectedGovernmentData = GOVERNMENTS[selectedGovernment];
+  const selectedRaceData = RACES[selectedRace] ?? RACES[DEFAULT_RACE];
+  const selectedGovernmentData = GOVERNMENTS[selectedGovernment] ?? GOVERNMENTS[DEFAULT_GOVERNMENT];
   const selectedRealmData = realmServers.find((realm) => realm.id === (selectedRealm || selectedRealmId)) || null;
 
   return (
@@ -293,17 +303,19 @@ export default function AccountSetup() {
               </SelectContent>
             </Select>
 
-            <div className="bg-slate-50 border border-slate-300 rounded-lg p-3">
-              <p className="text-sm text-slate-700 mb-2">{selectedRaceData.description}</p>
-              <div className="space-y-1">
-                {selectedRaceData.bonuses.map((bonus, i) => (
-                  <div key={i} className="text-xs text-emerald-700 flex items-center gap-1">
-                    <div className="w-1.5 h-1.5 bg-emerald-600 rounded-full" />
-                    {bonus}
-                  </div>
-                ))}
+            {selectedRaceData && (
+              <div className="bg-slate-50 border border-slate-300 rounded-lg p-3">
+                <p className="text-sm text-slate-700 mb-2">{selectedRaceData.description}</p>
+                <div className="space-y-1">
+                  {selectedRaceData.bonuses.map((bonus, i) => (
+                    <div key={i} className="text-xs text-emerald-700 flex items-center gap-1">
+                      <div className="w-1.5 h-1.5 bg-emerald-600 rounded-full" />
+                      {bonus}
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           <div className="space-y-3">

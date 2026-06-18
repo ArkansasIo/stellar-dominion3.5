@@ -85,6 +85,7 @@ export function registerRealmRoutes(app: Express) {
 
       return res.json({
         success: true,
+        realms: REALM_SERVERS,
         selectedRealmId: realm.id,
         selectedRealm: realm,
       });

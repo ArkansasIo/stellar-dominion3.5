@@ -9,6 +9,7 @@ import { SceneLayer, resolveShellScenePreset } from "@/components/views3d";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { 
   type LucideIcon,
   LayoutDashboard, 
@@ -64,6 +65,11 @@ import {
   Menu,
   MonitorSmartphone,
   Hammer,
+  Terminal,
+  Newspaper,
+  Download,
+  ClipboardList,
+  CheckCircle2,
   X,
 } from "lucide-react";
 
@@ -120,10 +126,18 @@ interface DetailCard {
   toneClass: string;
 }
 
+interface InfrastructureDetail {
+  label: string;
+  value: string;
+  helper: string;
+  icon: LucideIcon;
+  toneClass: string;
+}
+
 interface LayoutPlayerOptions {
   display?: {
     darkMode?: boolean;
-    themePreset?: "black-style" | "og-white";
+    themePreset?: "black-style" | "og-white" | "imperial-gold";
     compactView?: boolean;
     showAnimations?: boolean;
     showResourceRates?: boolean;
@@ -134,6 +148,19 @@ interface LayoutPlayerOptions {
     browserWidth?: string;
     stickyMobileBars?: boolean;
   };
+}
+
+interface UpdateManifestSummary {
+  version: string;
+  releaseDate?: string;
+  changelog?: string[];
+  critical?: boolean;
+}
+
+interface UpdateCheckSummary {
+  available: boolean;
+  version?: string;
+  manifest?: UpdateManifestSummary;
 }
 
 const isNavItemActive = (item: NavItem, location: string) => {
@@ -306,6 +333,7 @@ const menuSections: MenuSection[] = [
         description: "Expand production chains and build out planetary capacity.",
         items: [
           { href: "/resources", icon: Pickaxe, label: "Resources", description: "Track and improve metal, crystal, energy, and strategic reserves." },
+          { href: "/power-grid", icon: Network, label: "Stellar Power Grid", description: "Generate, transmit, store, and autonomously route power across worlds and resource fields." },
           { href: "/facilities", icon: Factory, label: "Facilities", description: "Construct and upgrade industrial, research, and support facilities." },
           { href: "/colonies", icon: Home, label: "Colonies", description: "Manage colonization targets, colony slots, and expansion plans." },
           { href: "/stations", icon: Satellite, label: "Stations", description: "Control orbital stations, outposts, and support platforms." },
@@ -371,6 +399,7 @@ const menuSections: MenuSection[] = [
           { href: "/shipyard", icon: Rocket, label: "Shipyard", description: "Construct ships and prepare new fleets for deployment." },
           { href: "/fitting", icon: Settings, label: "Ship Fitting", description: "Customize ship modules, weapons, and equipment." },
           { href: "/fleet", icon: Send, label: "Fleet Command", description: "Dispatch fleets, track missions, and manage formations." },
+          { href: "/orbital-defense", icon: Satellite, label: "Orbital Defense", description: "Build and command offensive satellites, shield platforms, carriers, and orbital fortresses." },
           { href: "/army", icon: Users, label: "Army", description: "Review land units, formations, and force composition." },
           { href: "/army-management", icon: Swords, label: "Army Management", description: "Train, equip, and reorganize planetary armies." },
           { href: "/training-center", icon: GraduationCap, label: "Training Center", description: "Unlock training tracks, staff academies, and manage force capacity." },
@@ -499,7 +528,8 @@ const systemItems: NavItem[] = [
 
 const adminItems: NavItem[] = [
   { href: "/admin", icon: ShieldAlert, label: "Control Panel", description: "Use administrative controls for game and player management." },
-  { href: "/server-console", icon: Database, label: "Server Console", description: "Review live server console tools and operational controls." },
+  { href: "/admin/database", icon: Database, label: "Database Admin", description: "Browse tables, execute SQL, and manage the PostgreSQL database.", activePrefixes: ["/admin/database"] },
+  { href: "/server-console", icon: Terminal, label: "Server Console", description: "Review live server console tools and operational controls." },
 ];
 
 const getCommandTiles = (context: ActivePageContext | null): CommandTile[] => {
@@ -603,6 +633,67 @@ const getActivePageContext = (location: string, isAdmin: boolean): ActivePageCon
   }
 
   return null;
+};
+
+const getPageInfrastructure = (context: ActivePageContext): InfrastructureDetail[] => {
+  const sectionInfrastructure: Record<string, Omit<InfrastructureDetail, "label">[]> = {
+    Empire: [
+      { value: "Production → Storage → Expansion", helper: "Resource flow that supports colonies, facilities, and empire growth.", icon: Factory, toneClass: "text-blue-700" },
+      { value: "Planet • Moon • Station", helper: "Command layers connected to the active base selector.", icon: Globe, toneClass: "text-cyan-700" },
+      { value: "Queues + Resources", helper: "Primary live inputs used by empire management pages.", icon: Database, toneClass: "text-amber-700" },
+      { value: "Stabilize bottlenecks", helper: "Balance capacity before committing to the next expansion cycle.", icon: Zap, toneClass: "text-emerald-700" },
+    ],
+    Research: [
+      { value: "Discovery → Research → Unlock", helper: "Technology progression from prerequisite to usable capability.", icon: FlaskConical, toneClass: "text-cyan-700" },
+      { value: "Labs • Trees • Library", helper: "Research surfaces share prerequisites, analytics, and doctrine data.", icon: Network, toneClass: "text-blue-700" },
+      { value: "Energy + Queue", helper: "Research throughput depends on available power and active work slots.", icon: Zap, toneClass: "text-amber-700" },
+      { value: "Resolve prerequisites", helper: "Open the shortest viable unlock path before spending rare materials.", icon: GraduationCap, toneClass: "text-violet-700" },
+    ],
+    Military: [
+      { value: "Intel → Formation → Engagement", helper: "Operational chain from target assessment through battle resolution.", icon: Swords, toneClass: "text-red-700" },
+      { value: "Fleet • Army • Defense", helper: "Military pages share units, readiness, logistics, and combat reports.", icon: ShieldAlert, toneClass: "text-orange-700" },
+      { value: "Fuel + Readiness", helper: "Mission availability depends on deuterium, units, and active operations.", icon: Send, toneClass: "text-amber-700" },
+      { value: "Confirm return path", helper: "Protect reserves and recovery capacity before launching the next action.", icon: Shield, toneClass: "text-emerald-700" },
+    ],
+    Exploration: [
+      { value: "Scan → Route → Discover", helper: "Exploration loop for revealing systems, objects, and strategic paths.", icon: Compass, toneClass: "text-cyan-700" },
+      { value: "Galaxy • Universe • Warp", helper: "Spatial views connect local coordinates to realm-scale navigation.", icon: Orbit, toneClass: "text-blue-700" },
+      { value: "Coordinates + Missions", helper: "Current location and active survey fleets drive available discoveries.", icon: Map, toneClass: "text-violet-700" },
+      { value: "Secure the corridor", helper: "Evaluate travel risk and support range before extending the frontier.", icon: Network, toneClass: "text-emerald-700" },
+    ],
+    Diplomacy: [
+      { value: "Contact → Negotiate → Coordinate", helper: "Relationship loop for alliances, messages, rankings, and groups.", icon: Users, toneClass: "text-violet-700" },
+      { value: "Alliance • Mail • Social", helper: "Diplomatic pages share membership, communication, and reputation data.", icon: Mail, toneClass: "text-blue-700" },
+      { value: "Standing + Reports", helper: "Unread communications and faction context shape available responses.", icon: ScrollText, toneClass: "text-amber-700" },
+      { value: "Answer priority traffic", helper: "Clear actionable reports before committing political or trade resources.", icon: Shield, toneClass: "text-emerald-700" },
+    ],
+    Economy: [
+      { value: "Produce → Trade → Reinvest", helper: "Economic loop that turns resources into sustained empire capacity.", icon: Coins, toneClass: "text-amber-700" },
+      { value: "Market • Store • Rewards", helper: "Economic surfaces share balances, inventories, offers, and progression.", icon: ShoppingBag, toneClass: "text-blue-700" },
+      { value: "Credits + Inventory", helper: "Purchasing power and available stock determine transaction options.", icon: Box, toneClass: "text-violet-700" },
+      { value: "Preserve reserves", helper: "Keep enough liquidity for queues, upkeep, and emergency replacement.", icon: Database, toneClass: "text-emerald-700" },
+    ],
+    System: [
+      { value: "Observe → Configure → Verify", helper: "System workflow for settings, diagnostics, tools, and support.", icon: Settings, toneClass: "text-slate-700" },
+      { value: "Client • Server • Assets", helper: "Operational pages connect presentation, runtime health, and content.", icon: MonitorSmartphone, toneClass: "text-blue-700" },
+      { value: "Build + Diagnostics", helper: "Version details and health signals provide the current system context.", icon: Terminal, toneClass: "text-violet-700" },
+      { value: "Resolve active warnings", helper: "Address current errors before changing secondary presentation options.", icon: AlertTriangle, toneClass: "text-amber-700" },
+    ],
+    Administration: [
+      { value: "Monitor → Authorize → Audit", helper: "Administrative workflow for controlled game and server operations.", icon: ShieldAlert, toneClass: "text-red-700" },
+      { value: "Users • Data • Runtime", helper: "Admin surfaces connect permissions, persistence, and service health.", icon: Database, toneClass: "text-blue-700" },
+      { value: "Role + Server State", helper: "Privileges and current runtime state govern available actions.", icon: Crown, toneClass: "text-violet-700" },
+      { value: "Review before mutation", helper: "Confirm scope and impact before applying high-authority changes.", icon: ScrollText, toneClass: "text-amber-700" },
+    ],
+  };
+
+  const details = sectionInfrastructure[context.section] ?? sectionInfrastructure.System;
+  const labels = ["Core Workflow", "Connected Systems", "Live Inputs", "Recommended Action"];
+
+  return details.map((detail, index) => ({
+    ...detail,
+    label: labels[index],
+  }));
 };
 
 const ResourceDisplay = ({ icon: Icon, label, value, colorClass }: { icon: any, label: string, value: number, colorClass: string }) => {
@@ -787,6 +878,7 @@ export default function GameLayout({ children }: { children: React.ReactNode }) 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [hasCoarsePointer, setHasCoarsePointer] = useState(false);
   const [showPageCommandDeck, setShowPageCommandDeck] = useState(false);
+  const [showPatchNotes, setShowPatchNotes] = useState(false);
   const appVersion = import.meta.env.VITE_APP_VERSION || "Alpha 1.5.0";
   const buildId = import.meta.env.VITE_BUILD_ID || "dev";
   const buildTime = import.meta.env.VITE_BUILD_TIME || "local";
@@ -819,6 +911,49 @@ export default function GameLayout({ children }: { children: React.ReactNode }) 
     },
     staleTime: 30000,
   });
+
+  const {
+    data: updateInfo,
+    isFetching: isCheckingUpdate,
+    refetch: checkForUpdate,
+  } = useQuery<UpdateCheckSummary>({
+    queryKey: ["header-update-check", appVersion],
+    queryFn: async () => {
+      const response = await fetch(`/api/updates/check?version=${encodeURIComponent(appVersion)}&platform=web`, {
+        credentials: "include",
+      });
+      if (!response.ok) return { available: false };
+      return response.json();
+    },
+    staleTime: 5 * 60 * 1000,
+    retry: false,
+  });
+
+  const { data: patchManifest } = useQuery<UpdateManifestSummary | null>({
+    queryKey: ["header-patch-manifest"],
+    queryFn: async () => {
+      const response = await fetch("/api/updates/manifest", { credentials: "include" });
+      if (!response.ok) return null;
+      return response.json();
+    },
+    staleTime: 5 * 60 * 1000,
+    retry: false,
+  });
+
+  const displayedManifest = updateInfo?.manifest ?? patchManifest;
+  const displayedPatchVersion = displayedManifest?.version ?? appVersion;
+  const patchNotes = displayedManifest?.changelog?.length
+    ? displayedManifest.changelog
+    : [
+        "Expanded page infrastructure and operational information design.",
+        "Added shared developer, publisher, version, and build metadata.",
+        "Improved account setup validation and runtime safety.",
+      ];
+  const updateStatusLabel = isCheckingUpdate
+    ? "Checking"
+    : updateInfo?.available
+      ? `Update ${updateInfo.version ?? "available"}`
+      : "Current";
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -866,6 +1001,7 @@ export default function GameLayout({ children }: { children: React.ReactNode }) 
           : "max-w-[1360px]";
   const contentPaddingClass = displayPreferences.compactView ? "p-3 sm:p-4 lg:p-5" : "p-3 sm:p-4 lg:p-6";
   const commandTiles = getCommandTiles(activePageContext);
+  const pageInfrastructure = activePageContext ? getPageInfrastructure(activePageContext) : [];
   const unreadMessages = messages.filter((message) => !message.read).length;
   const sharedActions: PageAction[] =
     activePageContext?.section === "Empire"
@@ -994,7 +1130,7 @@ export default function GameLayout({ children }: { children: React.ReactNode }) 
   return (
     <div className={cn(
       "sd-game-shell relative isolate min-h-screen overflow-hidden flex flex-col",
-      displayPreferences.themePreset === "black-style" ? "bg-slate-950/80 text-slate-100" : "bg-slate-50 text-slate-900",
+      displayPreferences.themePreset === "og-white" ? "bg-slate-50 text-slate-900" : "bg-slate-950/80 text-slate-100",
       touchMode && "touch-manipulation",
       !displayPreferences.showAnimations && "motion-reduce",
     )}>
@@ -1088,6 +1224,47 @@ export default function GameLayout({ children }: { children: React.ReactNode }) 
             ))}
           </div>
 
+          <div className="flex w-full flex-wrap items-center justify-start gap-1.5 lg:justify-end" data-testid="header-update-actions">
+            <div className={cn(
+              "mr-1 flex items-center gap-2 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em]",
+              updateInfo?.available
+                ? "border-amber-300 bg-amber-50 text-amber-700"
+                : "border-emerald-200 bg-emerald-50 text-emerald-700",
+            )}>
+              {isCheckingUpdate ? <RefreshCw className="h-3 w-3 animate-spin" /> : <CheckCircle2 className="h-3 w-3" />}
+              {updateStatusLabel}
+            </div>
+            <Link href="/forums">
+              <Button variant="outline" size="sm" className="h-8 px-2.5 text-[11px]" data-testid="button-header-news">
+                <Newspaper className="mr-1.5 h-3.5 w-3.5" />
+                News
+              </Button>
+            </Link>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 px-2.5 text-[11px]"
+              onClick={() => setShowPatchNotes(true)}
+              data-testid="button-header-patch-notes"
+            >
+              <ClipboardList className="mr-1.5 h-3.5 w-3.5" />
+              Patch Notes
+            </Button>
+            <Button
+              variant={updateInfo?.available ? "default" : "outline"}
+              size="sm"
+              className="h-8 px-2.5 text-[11px]"
+              disabled={isCheckingUpdate}
+              onClick={() => {
+                void checkForUpdate().then(() => setShowPatchNotes(true));
+              }}
+              data-testid="button-header-check-update"
+            >
+              <Download className={cn("mr-1.5 h-3.5 w-3.5", isCheckingUpdate && "animate-pulse")} />
+              Check Update
+            </Button>
+          </div>
+
           <div className={cn(
             "flex items-center gap-2",
             isMobile ? "w-full flex-wrap" : "justify-end"
@@ -1103,7 +1280,9 @@ export default function GameLayout({ children }: { children: React.ReactNode }) 
               <Select
                 value={selectedRealm?.id || ""}
                 onValueChange={(value) => {
-                  void switchRealm(value);
+                  void switchRealm(value).catch(() => {
+                    // The game context already presents the actionable error.
+                  });
                 }}
               >
                 <SelectTrigger className="h-8 border-0 bg-transparent px-0 text-sm shadow-none focus:ring-0">
@@ -1207,6 +1386,33 @@ export default function GameLayout({ children }: { children: React.ReactNode }) 
                         </span>
                       </Button>
                      </div>
+                   </div>
+                 </div>
+
+                 <div className={cn("border-b border-slate-200 bg-gradient-to-r from-white via-slate-50 to-cyan-50/40", isMobile ? "px-4 py-4" : "px-5 py-4")}>
+                   <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
+                     <div>
+                       <div className="sd-eyebrow text-[10px] font-bold uppercase tracking-[0.24em] text-cyan-700">Operational Blueprint</div>
+                       <p className="mt-1 text-xs leading-5 text-slate-600">
+                         Page infrastructure, data relationships, and the intended command flow for {activePageContext.item.label}.
+                       </p>
+                     </div>
+                     <div className="rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-700">
+                       {activePageContext.section} infrastructure
+                     </div>
+                   </div>
+
+                   <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+                     {pageInfrastructure.map((detail) => (
+                       <div key={detail.label} className="group rounded-xl border border-slate-200 bg-white/90 p-3 shadow-sm transition-colors hover:border-cyan-300">
+                         <div className="flex items-center justify-between gap-3">
+                           <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-400">{detail.label}</span>
+                           <detail.icon className={cn("h-4 w-4", detail.toneClass)} />
+                         </div>
+                         <div className={cn("mt-2 text-sm font-bold leading-5", detail.toneClass)}>{detail.value}</div>
+                         <p className="mt-1 text-[11px] leading-4 text-slate-500">{detail.helper}</p>
+                       </div>
+                     ))}
                    </div>
                  </div>
 
@@ -1448,20 +1654,111 @@ export default function GameLayout({ children }: { children: React.ReactNode }) 
       </div>
 
       <footer className="sd-footer-shell relative z-10 border-t border-slate-200 bg-white/88 px-4 py-2 backdrop-blur-md sm:px-6 flex flex-col gap-1 sm:h-8 sm:flex-row sm:items-center sm:justify-between text-[11px] text-slate-500 font-mono" data-testid="footer-build-info">
-        <div>universe-empire-domions</div>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <span className="font-semibold text-slate-700">universe-empire-domions</span>
+          <span>Developer: Stephen</span>
+          <span>
+            Publisher:{" "}
+            <a
+              href="https://github.com/ArkansasIo"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-cyan-700 hover:text-cyan-900 hover:underline"
+              data-testid="link-footer-publisher"
+            >
+              ArkansasIo
+            </a>
+          </span>
+        </div>
         <div className="flex flex-wrap items-center gap-4">
           <span>Version: {appVersion}</span>
+          <button
+            type="button"
+            onClick={() => setShowPatchNotes(true)}
+            className="font-semibold text-cyan-700 hover:text-cyan-900 hover:underline"
+            data-testid="button-footer-patch-info"
+          >
+            Patch: {displayedPatchVersion}
+          </button>
+          <span className={updateInfo?.available ? "font-semibold text-amber-700" : "text-emerald-700"}>
+            Update: {updateStatusLabel}
+          </span>
           <span>Build: {buildId}</span>
           <span>Time: {buildTime}</span>
         </div>
       </footer>
+
+      <Dialog open={showPatchNotes} onOpenChange={setShowPatchNotes}>
+        <DialogContent className="max-h-[85vh] max-w-2xl overflow-y-auto border-slate-300 bg-white">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 font-orbitron text-slate-900">
+              <ClipboardList className="h-5 w-5 text-cyan-700" />
+              Update & Patch Information
+            </DialogTitle>
+            <DialogDescription>
+              Current client version, release status, and recent patch changes.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Installed</div>
+              <div className="mt-1 font-orbitron text-sm font-bold text-slate-900">{appVersion}</div>
+            </div>
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Latest Patch</div>
+              <div className="mt-1 font-orbitron text-sm font-bold text-cyan-700">{displayedPatchVersion}</div>
+            </div>
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Status</div>
+              <div className={cn("mt-1 font-orbitron text-sm font-bold", updateInfo?.available ? "text-amber-700" : "text-emerald-700")}>
+                {updateStatusLabel}
+              </div>
+            </div>
+          </div>
+
+          {displayedManifest?.releaseDate && (
+            <div className="text-xs text-slate-500">
+              Released: {new Date(displayedManifest.releaseDate).toLocaleDateString()}
+              {displayedManifest.critical ? " · Critical update" : ""}
+            </div>
+          )}
+
+          <div className="rounded-2xl border border-slate-200 bg-white p-4">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-700">Patch Notes</div>
+                <div className="text-sm text-slate-600">Recent systems, interface, and stability changes.</div>
+              </div>
+              <Link href="/forums">
+                <Button variant="outline" size="sm" onClick={() => setShowPatchNotes(false)}>
+                  <Newspaper className="mr-2 h-4 w-4" />
+                  News
+                </Button>
+              </Link>
+            </div>
+            <ul className="space-y-2">
+              {patchNotes.map((note, index) => (
+                <li key={`${note}-${index}`} className="flex gap-2 text-sm leading-6 text-slate-700">
+                  <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-emerald-600" />
+                  <span>{note}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="flex flex-wrap justify-end gap-2">
+            <Button variant="outline" onClick={() => setShowPatchNotes(false)}>Close</Button>
+            <Button
+              disabled={isCheckingUpdate}
+              onClick={() => void checkForUpdate()}
+            >
+              <RefreshCw className={cn("mr-2 h-4 w-4", isCheckingUpdate && "animate-spin")} />
+              Check Again
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
-
-
-
-
-
-
-

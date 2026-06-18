@@ -235,6 +235,32 @@ interface CommanderProfileApiResponse {
    profile: CommanderProfilePayload;
 }
 
+type RaidRole = "tank" | "dps" | "healer" | "support";
+interface CommanderRaidProfileResponse {
+   career: {
+      level: number;
+      experience: number;
+      experienceToNextLevel: number;
+      rating: number;
+      rank: string;
+      specialization: RaidRole;
+      participations: number;
+      victories: number;
+      bossKills: number;
+      totalDamage: number;
+      unitsLost: number;
+      unitsSaved: number;
+      commendations: number;
+      streak: number;
+      bestStreak: number;
+      unlockedPerks: string[];
+   };
+   rolePower: Record<RaidRole, number>;
+   recommendedRole: RaidRole;
+   winRate: number;
+   casualtyEfficiency: number;
+}
+
 export default function Commander() {
    const { toast } = useToast();
    const {
@@ -360,6 +386,32 @@ export default function Commander() {
          if (!res.ok) throw new Error("Failed to load commander profile");
          return res.json();
       },
+   });
+   const { data: raidProfileData } = useQuery<CommanderRaidProfileResponse>({
+      queryKey: ["raid-commander-profile"],
+      queryFn: async () => {
+         const response = await fetch("/api/raids/commander-profile", { credentials: "include" });
+         if (!response.ok) throw new Error("Failed to load raid commander profile");
+         return response.json();
+      },
+   });
+   const raidSpecializationMutation = useMutation({
+      mutationFn: async (specialization: RaidRole) => {
+         const response = await fetch("/api/raids/commander-profile/specialization", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ specialization }),
+         });
+         const payload = await response.json().catch(() => ({}));
+         if (!response.ok) throw new Error(payload.error || "Failed to update raid specialization");
+         return payload as CommanderRaidProfileResponse;
+      },
+      onSuccess: (data) => {
+         queryClient.setQueryData(["raid-commander-profile"], data);
+         toast({ title: "Raid specialization updated", description: `${data.career.specialization} doctrine is now active.` });
+      },
+      onError: (error: Error) => toast({ title: "Specialization failed", description: error.message, variant: "destructive" }),
    });
 
    const gachaPullMutation = useMutation({
@@ -587,6 +639,7 @@ export default function Commander() {
             <TabsTrigger value="profile" className="font-orbitron" data-testid="tab-profile"><User className="w-4 h-4 mr-2" /> Profile</TabsTrigger>
             <TabsTrigger value="loadout" className="font-orbitron" data-testid="tab-loadout"><Shield className="w-4 h-4 mr-2" /> Loadout</TabsTrigger>
             <TabsTrigger value="skills" className="font-orbitron" data-testid="tab-skills"><Target className="w-4 h-4 mr-2" /> Skills</TabsTrigger>
+            <TabsTrigger value="raids" className="font-orbitron" data-testid="tab-raids"><Flame className="w-4 h-4 mr-2" /> Raids</TabsTrigger>
                   <TabsTrigger value="talentTree" className="font-orbitron" data-testid="tab-talent-tree"><History className="w-4 h-4 mr-2" /> Talent Tree</TabsTrigger>
             <TabsTrigger value="gacha" className="font-orbitron" data-testid="tab-gacha"><Dice6 className="w-4 h-4 mr-2" /> Gacha</TabsTrigger>
             <TabsTrigger value="achievements" className="font-orbitron" data-testid="tab-achievements"><Trophy className="w-4 h-4 mr-2" /> Achievements</TabsTrigger>
@@ -1031,6 +1084,65 @@ export default function Commander() {
                    </div>
                 </CardContent>
              </Card>
+          </TabsContent>
+
+          <TabsContent value="raids" className="mt-6">
+             <div className="space-y-5">
+                <Card className="border-cyan-200 bg-gradient-to-r from-cyan-50 to-blue-50">
+                   <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-cyan-950"><Flame className="h-5 w-5" /> Commander Raid Career</CardTitle>
+                      <CardDescription>Raid Operations, Raid Finder, and boss assaults all advance this persistent command profile.</CardDescription>
+                   </CardHeader>
+                   <CardContent className="grid gap-4 md:grid-cols-3 xl:grid-cols-6">
+                      <div><div className="text-xs uppercase text-cyan-700">Rank</div><div className="font-orbitron font-bold">{raidProfileData?.career.rank || "Cadet Raider"}</div></div>
+                      <div><div className="text-xs uppercase text-cyan-700">Raid Level</div><div className="font-orbitron font-bold">{raidProfileData?.career.level || 1}</div></div>
+                      <div><div className="text-xs uppercase text-cyan-700">Rating</div><div className="font-orbitron font-bold">{raidProfileData?.career.rating || 1000}</div></div>
+                      <div><div className="text-xs uppercase text-cyan-700">Win Rate</div><div className="font-orbitron font-bold">{raidProfileData?.winRate || 0}%</div></div>
+                      <div><div className="text-xs uppercase text-cyan-700">Boss Kills</div><div className="font-orbitron font-bold">{raidProfileData?.career.bossKills || 0}</div></div>
+                      <div><div className="text-xs uppercase text-cyan-700">Commendations</div><div className="font-orbitron font-bold">{raidProfileData?.career.commendations || 0}</div></div>
+                   </CardContent>
+                </Card>
+
+                <div className="grid gap-4 lg:grid-cols-2">
+                   <Card className="border-slate-200 bg-white">
+                      <CardHeader><CardTitle>Raid Specialization</CardTitle><CardDescription>Matching your operation role grants a 16% raid-power bonus and stronger role rewards.</CardDescription></CardHeader>
+                      <CardContent className="grid grid-cols-2 gap-3">
+                         {(["tank", "dps", "healer", "support"] as RaidRole[]).map((role) => (
+                            <Button
+                               key={role}
+                               variant={raidProfileData?.career.specialization === role ? "default" : "outline"}
+                               className="h-auto flex-col py-3 capitalize"
+                               disabled={raidSpecializationMutation.isPending}
+                               onClick={() => raidSpecializationMutation.mutate(role)}
+                            >
+                               <span>{role}</span>
+                               <span className="text-xs opacity-75">{(raidProfileData?.rolePower[role] || 0).toLocaleString()} power</span>
+                            </Button>
+                         ))}
+                      </CardContent>
+                   </Card>
+                   <Card className="border-slate-200 bg-white">
+                      <CardHeader><CardTitle>Combat Record</CardTitle></CardHeader>
+                      <CardContent className="grid grid-cols-2 gap-3 text-sm">
+                         <div className="rounded border bg-slate-50 p-3">Participations<br /><b>{raidProfileData?.career.participations || 0}</b></div>
+                         <div className="rounded border bg-slate-50 p-3">Victories<br /><b>{raidProfileData?.career.victories || 0}</b></div>
+                         <div className="rounded border bg-slate-50 p-3">Damage dealt<br /><b>{(raidProfileData?.career.totalDamage || 0).toLocaleString()}</b></div>
+                         <div className="rounded border bg-slate-50 p-3">Units saved<br /><b>{(raidProfileData?.career.unitsSaved || 0).toLocaleString()}</b></div>
+                         <div className="rounded border bg-slate-50 p-3">Current streak<br /><b>{raidProfileData?.career.streak || 0}</b></div>
+                         <div className="rounded border bg-slate-50 p-3">Best streak<br /><b>{raidProfileData?.career.bestStreak || 0}</b></div>
+                      </CardContent>
+                   </Card>
+                </div>
+
+                <Card className="border-slate-200 bg-white">
+                   <CardHeader><CardTitle>Unlocked Raid Perks</CardTitle><CardDescription>New perks unlock every eight raid-career levels in your active specialization.</CardDescription></CardHeader>
+                   <CardContent className="flex flex-wrap gap-2">
+                      {(raidProfileData?.career.unlockedPerks || []).length
+                         ? raidProfileData?.career.unlockedPerks.map((perk) => <Badge key={perk} className="bg-indigo-100 text-indigo-800">{perk}</Badge>)
+                         : <span className="text-sm text-slate-500">Reach raid-career level 8 to unlock the first specialization perk.</span>}
+                   </CardContent>
+                </Card>
+             </div>
           </TabsContent>
 
           <TabsContent value="talentTree" className="mt-6">

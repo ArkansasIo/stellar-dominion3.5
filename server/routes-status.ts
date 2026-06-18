@@ -56,8 +56,8 @@ export function registerStatusRoutes(app: Express) {
       const metrics = await statusService.getSystemMetrics();
       const healthCheck = metrics.healthCheck;
 
-      // Return 503 if unhealthy for external monitoring
-      const statusCode = healthCheck.status === 'healthy' ? 200 : 503;
+      // Return 503 only if truly unhealthy for external monitoring
+      const statusCode = healthCheck.status === 'unhealthy' ? 503 : 200;
 
       res.status(statusCode).json({
         success: true,

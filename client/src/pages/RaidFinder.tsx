@@ -29,6 +29,19 @@ type RaidFinderResponse = {
   myEntry: RaidFinderPlayer | null;
 };
 
+type RaidCommanderProfile = {
+  career: {
+    level: number;
+    rating: number;
+    rank: string;
+    specialization: RaidRole;
+  };
+  rolePower: Record<RaidRole, number>;
+  recommendedRole: RaidRole;
+  winRate: number;
+  casualtyEfficiency: number;
+};
+
 const roles: RaidRole[] = ["tank", "dps", "healer", "support"];
 
 const roleBadgeClass: Record<RaidRole, string> = {
@@ -74,6 +87,16 @@ async function leaveQueue() {
   return response.json();
 }
 
+async function requestMatch() {
+  const response = await fetch("/api/raid-finder/match", {
+    method: "POST",
+    credentials: "include",
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(payload.error || "No compatible raid match found");
+  return payload as { raidName: string; role: RaidRole; commanderPower: number };
+}
+
 export default function RaidFinder() {
   const [preferredRole, setPreferredRole] = useState<RaidRole>("dps");
   const queryClient = useQueryClient();
@@ -83,6 +106,14 @@ export default function RaidFinder() {
     queryKey: ["raid-finder-queue"],
     queryFn: fetchFinderState,
     refetchInterval: 5000,
+  });
+  const { data: commanderProfile } = useQuery<RaidCommanderProfile>({
+    queryKey: ["raid-commander-profile"],
+    queryFn: async () => {
+      const response = await fetch("/api/raids/commander-profile", { credentials: "include" });
+      if (!response.ok) throw new Error("Failed to load raid commander profile");
+      return response.json();
+    },
   });
 
   useEffect(() => {
@@ -110,6 +141,19 @@ export default function RaidFinder() {
     },
     onError: (error: Error) => {
       toast({ title: "Leave failed", description: error.message, variant: "destructive" });
+    },
+  });
+  const matchMutation = useMutation({
+    mutationFn: requestMatch,
+    onSuccess: async (match) => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["raid-finder-queue"] }),
+        queryClient.invalidateQueries({ queryKey: ["raids"] }),
+      ]);
+      toast({ title: "Raid match found", description: `${match.raidName} • ${match.role} • Power ${match.commanderPower.toLocaleString()}` });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Match unavailable", description: error.message, variant: "destructive" });
     },
   });
 
@@ -182,6 +226,18 @@ export default function RaidFinder() {
           </Card>
         </div>
 
+        {commanderProfile && (
+          <Card className="border-cyan-200 bg-cyan-50 shadow-sm">
+            <CardContent className="grid gap-4 p-4 md:grid-cols-5">
+              <div><div className="text-xs uppercase text-cyan-700">Raid Rank</div><div className="font-orbitron font-bold text-cyan-950">{commanderProfile.career.rank}</div></div>
+              <div><div className="text-xs uppercase text-cyan-700">Rating</div><div className="font-orbitron font-bold text-cyan-950">{commanderProfile.career.rating}</div></div>
+              <div><div className="text-xs uppercase text-cyan-700">Selected Power</div><div className="font-orbitron font-bold text-cyan-950">{commanderProfile.rolePower[preferredRole].toLocaleString()}</div></div>
+              <div><div className="text-xs uppercase text-cyan-700">Recommended</div><div className="font-orbitron font-bold capitalize text-cyan-950">{commanderProfile.recommendedRole}</div></div>
+              <div><div className="text-xs uppercase text-cyan-700">Win / Saves</div><div className="font-orbitron font-bold text-cyan-950">{commanderProfile.winRate}% / {commanderProfile.casualtyEfficiency}%</div></div>
+            </CardContent>
+          </Card>
+        )}
+
         <Card className="border-indigo-200 bg-indigo-50 shadow-sm">
           <CardHeader className="pb-3">
             <CardTitle className="text-base font-orbitron text-indigo-900">Matchmaking Doctrine</CardTitle>
@@ -238,15 +294,14 @@ export default function RaidFinder() {
               </div>
 
               {isQueued ? (
-                <Button
-                  variant="destructive"
-                  className="w-full"
-                  onClick={() => leaveQueueMutation.mutate()}
-                  disabled={leaveQueueMutation.isPending}
-                  data-testid="button-leave-queue"
-                >
-                  {leaveQueueMutation.isPending ? "Leaving Queue..." : "Leave Queue"}
-                </Button>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  <Button onClick={() => matchMutation.mutate()} disabled={matchMutation.isPending} data-testid="button-find-raid-match">
+                    {matchMutation.isPending ? "Matching..." : "Find Compatible Raid"}
+                  </Button>
+                  <Button variant="destructive" onClick={() => leaveQueueMutation.mutate()} disabled={leaveQueueMutation.isPending} data-testid="button-leave-queue">
+                    {leaveQueueMutation.isPending ? "Leaving Queue..." : "Leave Queue"}
+                  </Button>
+                </div>
               ) : (
                 <Button
                   className="w-full"

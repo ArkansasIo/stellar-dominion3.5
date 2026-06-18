@@ -46,6 +46,29 @@ type RaidRecord = {
   canLaunch: boolean;
 };
 
+type RaidCommanderProfile = {
+  career: {
+    level: number;
+    experience: number;
+    experienceToNextLevel: number;
+    rating: number;
+    rank: string;
+    specialization: RaidRole;
+    participations: number;
+    victories: number;
+    bossKills: number;
+    unitsLost: number;
+    unitsSaved: number;
+    commendations: number;
+    streak: number;
+    unlockedPerks: string[];
+  };
+  rolePower: Record<RaidRole, number>;
+  recommendedRole: RaidRole;
+  winRate: number;
+  casualtyEfficiency: number;
+};
+
 const raidFilters: Array<{ value: "all" | RaidType; label: string }> = [
   { value: "all", label: "All Raids" },
   { value: "guild_war", label: "Guild War" },
@@ -118,6 +141,14 @@ export default function Raids() {
     queryKey: ["raids"],
     queryFn: fetchRaids,
   });
+  const { data: commanderProfile } = useQuery<RaidCommanderProfile>({
+    queryKey: ["raid-commander-profile"],
+    queryFn: async () => {
+      const response = await fetch("/api/raids/commander-profile", { credentials: "include" });
+      if (!response.ok) throw new Error("Failed to load raid commander profile");
+      return response.json();
+    },
+  });
 
   const filteredRaids = useMemo(
     () => (raidType === "all" ? raids : raids.filter((raid) => raid.raidType === raidType)),
@@ -167,7 +198,11 @@ export default function Raids() {
   const resolveRaidMutation = useMutation({
     mutationFn: (raidId: string) => mutateRaid<{ message?: string }>(`/api/raids/${raidId}/resolve`),
     onSuccess: async (result) => {
-      await refreshRaids();
+      await Promise.all([
+        refreshRaids(),
+        queryClient.invalidateQueries({ queryKey: ["raid-commander-profile"] }),
+        queryClient.invalidateQueries({ queryKey: ["/api/game/state"] }),
+      ]);
       toast({ title: "Raid resolved", description: result.message || "Outcome recorded." });
     },
     onError: (error: Error) => {
@@ -226,6 +261,19 @@ export default function Raids() {
             </CardContent>
           </Card>
         </div>
+
+        {commanderProfile && (
+          <Card className="border-cyan-200 bg-gradient-to-r from-cyan-50 to-blue-50 shadow-sm">
+            <CardContent className="grid gap-4 p-5 md:grid-cols-3 xl:grid-cols-6">
+              <div><div className="text-xs uppercase text-cyan-700">Raid Rank</div><div className="font-orbitron font-bold text-cyan-950">{commanderProfile.career.rank}</div></div>
+              <div><div className="text-xs uppercase text-cyan-700">Rating</div><div className="font-orbitron font-bold text-cyan-950">{commanderProfile.career.rating}</div></div>
+              <div><div className="text-xs uppercase text-cyan-700">Specialization</div><div className="font-orbitron font-bold capitalize text-cyan-950">{commanderProfile.career.specialization}</div></div>
+              <div><div className="text-xs uppercase text-cyan-700">Win Rate</div><div className="font-orbitron font-bold text-cyan-950">{commanderProfile.winRate}%</div></div>
+              <div><div className="text-xs uppercase text-cyan-700">Casualty Saves</div><div className="font-orbitron font-bold text-cyan-950">{commanderProfile.career.unitsSaved.toLocaleString()}</div></div>
+              <div><div className="text-xs uppercase text-cyan-700">Commendations</div><div className="font-orbitron font-bold text-cyan-950">{commanderProfile.career.commendations}</div></div>
+            </CardContent>
+          </Card>
+        )}
 
         <Card className="border-indigo-200 bg-indigo-50 shadow-sm">
           <CardHeader className="pb-3">

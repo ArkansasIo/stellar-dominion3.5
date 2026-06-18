@@ -321,7 +321,11 @@ interface GameState {
   setCommanderIdentity: (race: RaceId, cls: ClassId, subClass: SubClassId | null) => void;
   upgradeCommanderSkill: (skill: "warfare" | "logistics" | "science" | "engineering") => boolean;
   setGovernmentType: (type: GovernmentId) => void;
-  completeSetup: (commander: CommanderState, government: GovernmentState, options?: { homeWorldName?: string }) => Promise<void>;
+  completeSetup: (
+    commander: CommanderState & { empireSlot?: number },
+    government: GovernmentState,
+    options?: { homeWorldName?: string },
+  ) => Promise<void>;
   togglePolicy: (policyId: string) => void;
   setTaxRate: (rate: number) => void;
   dispatchFleet: (mission: Omit<Mission, "id" | "status" | "returnTime">) => void;
@@ -531,6 +535,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastAutosaveKeyRef = useRef("");
   const channelRef = useRef<any>(null);
+  const pendingRealmAttemptRef = useRef("");
 
   const { data: authUser, isLoading: authLoading, error: authError, isSuccess: authSuccess } = useQuery({
     queryKey: ['/api/auth/user'],
@@ -575,7 +580,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 
   const { data: realmData } = useQuery<RealmResponse>({
     queryKey: ["/api/universe/realms"],
-    queryFn: () => apiRequest("GET", "/api/universe/realms"),
+    queryFn: () => apiRequest("GET", "/api/universe/realms") as Promise<RealmResponse>,
     enabled: !!authUser,
     staleTime: 30000,
   });
@@ -586,7 +591,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       console.warn('[REALTIME] Blink is not configured; skipping realtime subscription.');
       return;
     }
-    const blinkClient = blink;
+    const blinkClient = blink as any;
 
     let mounted = true;
     let channel: any = null;
@@ -766,9 +771,14 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   });
 
   const switchRealmMutation = useMutation({
-    mutationFn: (realmId: string) => apiRequest("POST", "/api/universe/realms/select", { realmId }),
-    onSuccess: (data: RealmResponse | any) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/universe/realms"] });
+    mutationFn: (realmId: string) => apiRequest("POST", "/api/universe/realms/select", { realmId }) as Promise<RealmResponse>,
+    onSuccess: (data: RealmResponse) => {
+      queryClient.setQueryData<RealmResponse>(["/api/universe/realms"], (current) => ({
+        realms: current?.realms || data.realms || [],
+        selectedRealmId: data.selectedRealmId,
+        selectedRealm: data.selectedRealm,
+      }));
+      localStorage.removeItem("stellar_pending_realm");
       const realmName = data?.selectedRealm?.name;
       if (realmName) {
         setConfig((prev) => ({ ...prev, universeName: realmName }));
@@ -784,6 +794,25 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       });
     },
   });
+
+  useEffect(() => {
+    if (!authUser || !realmData?.realms?.length) return;
+    const pendingRealmId = localStorage.getItem("stellar_pending_realm") || "";
+    if (!pendingRealmId || pendingRealmAttemptRef.current === pendingRealmId) return;
+
+    if (!realmData.realms.some((realm) => realm.id === pendingRealmId)) {
+      localStorage.removeItem("stellar_pending_realm");
+      return;
+    }
+
+    if (pendingRealmId === realmData.selectedRealmId) {
+      localStorage.removeItem("stellar_pending_realm");
+      return;
+    }
+
+    pendingRealmAttemptRef.current = pendingRealmId;
+    switchRealmMutation.mutate(pendingRealmId);
+  }, [authUser, realmData?.realms, realmData?.selectedRealmId]);
 
   const joinAllianceMutation = useMutation({
     mutationFn: (id: string) => apiRequest('POST', `/api/alliances/${id}/join`, {}),
@@ -1733,11 +1762,21 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   };
 
   const switchRealm = async (realmId: string): Promise<void> => {
-    if (!realmId || realmId === realmData?.selectedRealmId) {
+    const normalizedRealmId = String(realmId || "").trim();
+    if (!normalizedRealmId || normalizedRealmId === realmData?.selectedRealmId) {
       return;
     }
 
-    await switchRealmMutation.mutateAsync(realmId);
+    if (!authUser) {
+      localStorage.setItem("stellar_pending_realm", normalizedRealmId);
+      return;
+    }
+
+    if (realmData?.realms?.length && !realmData.realms.some((realm) => realm.id === normalizedRealmId)) {
+      throw new Error("The selected realm is not available on this server.");
+    }
+
+    await switchRealmMutation.mutateAsync(normalizedRealmId);
   };
 
   const joinAlliance = (id: string) => {

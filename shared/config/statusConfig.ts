@@ -111,36 +111,36 @@ export interface SystemMetricsSnapshot {
 // Health Check Thresholds
 export const HEALTH_CHECK_THRESHOLDS = {
   database: {
-    connectionUsageWarning: 75, // percentage
-    connectionUsageCritical: 90,
-    queryTimeWarning: 1000, // ms
+    connectionUsageWarning: 80, // percentage
+    connectionUsageCritical: 95,
+    queryTimeWarning: 2000, // ms
     queryTimeCritical: 5000,
-    slowQueryWarning: 10, // count
+    slowQueryWarning: 20, // count
     slowQueryCritical: 50,
   },
   memory: {
-    usageWarning: 70, // percentage
-    usageCritical: 90,
-    heapUsageWarning: 75,
-    heapUsageCritical: 85,
+    usageWarning: 85, // percentage
+    usageCritical: 95,
+    heapUsageWarning: 80,
+    heapUsageCritical: 90,
   },
   cpu: {
-    usageWarning: 60, // percentage
-    usageCritical: 85,
-    loadAverageWarning: 2.0,
-    loadAverageCritical: 4.0,
-  },
-  disk: {
     usageWarning: 70, // percentage
     usageCritical: 90,
-    inodesWarning: 75,
-    inodesCritical: 90,
+    loadAverageWarning: 3.0,
+    loadAverageCritical: 5.0,
+  },
+  disk: {
+    usageWarning: 85, // percentage
+    usageCritical: 95,
+    inodesWarning: 80,
+    inodesCritical: 95,
   },
   api: {
-    errorRateWarning: 1, // percentage
-    errorRateCritical: 5,
-    responseTimeWarning: 500, // ms
-    responseTimeCritical: 2000,
+    errorRateWarning: 2, // percentage
+    errorRateCritical: 10,
+    responseTimeWarning: 1000, // ms
+    responseTimeCritical: 3000,
   },
 };
 

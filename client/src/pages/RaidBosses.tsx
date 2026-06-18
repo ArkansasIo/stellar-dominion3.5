@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import GameLayout from "@/components/layout/GameLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +30,13 @@ type BossRecord = {
   recommendedPlayers: number;
   minPlayers: number;
 };
+type RaidRole = "tank" | "dps" | "healer" | "support";
+type RaidCommanderProfile = {
+  career: { rank: string; rating: number; specialization: RaidRole; bossKills: number };
+  rolePower: Record<RaidRole, number>;
+  recommendedRole: RaidRole;
+  winRate: number;
+};
 
 const rarityFilters: BossRarity[] = [
   "common",
@@ -58,12 +65,12 @@ async function fetchBosses(): Promise<BossRecord[]> {
   return response.json();
 }
 
-async function challengeBoss(boss: BossRecord) {
+async function challengeBoss({ boss, role }: { boss: BossRecord; role: RaidRole }) {
   const response = await fetch(`/api/bosses/${boss.id}/challenge`, {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ bossName: boss.name, recommendedLevel: boss.recommendedLevel }),
+    body: JSON.stringify({ bossName: boss.name, recommendedLevel: boss.recommendedLevel, role }),
   });
 
   const payload = await response.json().catch(() => ({}));
@@ -77,11 +84,21 @@ async function challengeBoss(boss: BossRecord) {
 export default function RaidBosses() {
   const [selectedRarity, setSelectedRarity] = useState<BossRarity | null>(null);
   const [selectedBossId, setSelectedBossId] = useState<string | null>(null);
+  const [selectedRole, setSelectedRole] = useState<RaidRole>("dps");
+  const queryClient = useQueryClient();
   const { toast } = useToast();
 
   const { data: bosses = [], isLoading } = useQuery<BossRecord[]>({
     queryKey: ["bosses"],
     queryFn: fetchBosses,
+  });
+  const { data: commanderProfile } = useQuery<RaidCommanderProfile>({
+    queryKey: ["raid-commander-profile"],
+    queryFn: async () => {
+      const response = await fetch("/api/raids/commander-profile", { credentials: "include" });
+      if (!response.ok) throw new Error("Failed to load raid commander profile");
+      return response.json();
+    },
   });
 
   const filteredBosses = useMemo(
@@ -107,10 +124,15 @@ export default function RaidBosses() {
 
   const challengeMutation = useMutation({
     mutationFn: challengeBoss,
-    onSuccess: (data, boss) => {
+    onSuccess: async (data, variables) => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["raid-commander-profile"] }),
+        queryClient.invalidateQueries({ queryKey: ["/api/game/state"] }),
+      ]);
       toast({
-        title: "Raid launched",
-        description: `${boss.name} engaged. ${data.message || "Battle in progress."}`,
+        title: data.victory ? "Boss defeated" : "Assault repelled",
+        description: `${variables.boss.name}: ${data.message || "Encounter resolved."}${data.rewards?.experience ? ` +${data.rewards.experience} XP` : ""}`,
+        variant: data.victory ? "default" : "destructive",
       });
     },
     onError: (error: Error) => {
@@ -165,6 +187,28 @@ export default function RaidBosses() {
             </CardContent>
           </Card>
         </div>
+
+        {commanderProfile && (
+          <Card className="border-cyan-200 bg-cyan-50">
+            <CardContent className="grid gap-4 p-4 md:grid-cols-4">
+              <div><div className="text-xs uppercase text-cyan-700">Raid Rank</div><div className="font-orbitron font-bold text-cyan-950">{commanderProfile.career.rank}</div></div>
+              <div><div className="text-xs uppercase text-cyan-700">Boss Kills</div><div className="font-orbitron font-bold text-cyan-950">{commanderProfile.career.bossKills}</div></div>
+              <div><div className="text-xs uppercase text-cyan-700">Selected Role Power</div><div className="font-orbitron font-bold text-cyan-950">{commanderProfile.rolePower[selectedRole].toLocaleString()}</div></div>
+              <div><div className="text-xs uppercase text-cyan-700">Recommended Role</div><div className="font-orbitron font-bold capitalize text-cyan-950">{commanderProfile.recommendedRole}</div></div>
+            </CardContent>
+          </Card>
+        )}
+
+        <Card className="border-slate-200 bg-white">
+          <CardHeader><CardTitle className="text-base font-orbitron">Boss Assault Role</CardTitle></CardHeader>
+          <CardContent className="grid grid-cols-2 gap-2 md:grid-cols-4">
+            {(["tank", "dps", "healer", "support"] as RaidRole[]).map((role) => (
+              <Button key={role} variant={selectedRole === role ? "default" : "outline"} className="capitalize" onClick={() => setSelectedRole(role)}>
+                {role}{commanderProfile ? ` • ${commanderProfile.rolePower[role].toLocaleString()}` : ""}
+              </Button>
+            ))}
+          </CardContent>
+        </Card>
 
         <Card className="border-indigo-200 bg-indigo-50 shadow-sm">
           <CardHeader className="pb-3">
@@ -282,7 +326,7 @@ export default function RaidBosses() {
                         {isSelected ? "Inspecting" : "Inspect Boss"}
                       </Button>
                       <Button
-                        onClick={() => challengeMutation.mutate(boss)}
+                        onClick={() => challengeMutation.mutate({ boss, role: selectedRole })}
                         disabled={challengeMutation.isPending}
                         data-testid={`button-challenge-boss-${boss.id}`}
                       >

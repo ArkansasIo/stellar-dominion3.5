@@ -1,21 +1,27 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, ReactNode } from 'react';
 import { triggerDataRefresh } from './GameLoop';
 
+interface ResourceEntry {
+  player: string;
+  planet: string;
+  amount: ReactNode;
+}
+
 const ResourceManager: React.FC = () => {
-  const [resources, setResources] = useState<any[]>([]);
+  const [resources, setResources] = useState<ResourceEntry[]>([]);
   const fetchResources = () => {
     fetch('/api/players')
       .then(res => res.json())
-      .then(players => {
+      .then((players: any[]) => {
         // Aggregate resources from all players' planets
-        const allResources = [];
+        const allResources: ResourceEntry[] = [];
         players.forEach((player: any) => {
           (player.sectorsOwned || []).forEach((sector: any) => {
             (sector.planets || []).forEach((planet: any) => {
               allResources.push({
                 player: player.name,
                 planet: planet.id,
-                amount: planet.resources
+                amount: String(planet.resources)
               });
             });
           });

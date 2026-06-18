@@ -117,8 +117,22 @@ const TEN_REALMS = [
 
 const REALM_COLUMNS = [TEN_REALMS.slice(0, 5), TEN_REALMS.slice(5)] as const;
 
+const PUBLIC_REALM_SERVER_MAP: Record<(typeof TEN_REALMS)[number]["id"], string> = {
+  "realm-01": "nexus-alpha",
+  "realm-02": "nexus-alpha",
+  "realm-03": "cygnus-eu",
+  "realm-04": "cygnus-eu",
+  "realm-05": "orion-apac",
+  "realm-06": "orion-apac",
+  "realm-07": "nexus-alpha",
+  "realm-08": "cygnus-eu",
+  "realm-09": "orion-apac",
+  "realm-10": "nexus-alpha",
+};
+
+type RealmItem = typeof TEN_REALMS[number] & { universes?: string[] };
 type RealmDetailModalProps = {
-  realm: typeof TEN_REALMS[number] | null & { universes?: string[] };
+  realm: RealmItem | null;
   open: boolean;
   onClose: () => void;
   onSelect?: (realmId: string) => void;
@@ -127,10 +141,10 @@ type RealmDetailModalProps = {
 function RealmDetailModal({ realm, open, onClose, onSelect }: RealmDetailModalProps) {
   if (!realm || !open) return null;
   // Support both 'universe' (string) and 'universes' (array) for compatibility
-  const universeList = Array.isArray(realm.universes)
-    ? realm.universes
-    : realm.universe
-      ? [realm.universe]
+  const universeList: string[] = Array.isArray((realm as any).universes)
+    ? (realm as any).universes
+    : (realm as any).universe
+      ? [(realm as any).universe]
       : [];
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
@@ -142,7 +156,7 @@ function RealmDetailModal({ realm, open, onClose, onSelect }: RealmDetailModalPr
           Universes:
           {universeList.length > 0 ? (
             <ul className="ml-2 list-disc text-xs text-slate-700">
-              {universeList.map((u) => (
+              {universeList.map((u: string) => (
                 <li key={u}>{u}</li>
               ))}
             </ul>
@@ -239,12 +253,17 @@ export default function Auth() {
   // Handler for selecting/entering a realm from the modal
   const handleSelectRealm = async (realmId: string) => {
     setRealmModalOpen(false);
-    if (switchRealm) {
-      try {
-        await switchRealm(realmId);
-      } catch (e) {
-        // Optionally handle error
-      }
+    const serverRealmId = PUBLIC_REALM_SERVER_MAP[realmId as keyof typeof PUBLIC_REALM_SERVER_MAP];
+    if (!serverRealmId) {
+      setError("This realm does not have an available deployment server.");
+      return;
+    }
+
+    try {
+      await switchRealm(serverRealmId);
+      localStorage.setItem("stellar_public_realm", realmId);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Unable to select this realm.");
     }
   };
   const queryClient = useQueryClient();
@@ -371,6 +390,11 @@ export default function Auth() {
             <Button asChild variant="outline" size="sm" className="text-xs text-slate-700 border-slate-300 hover:bg-slate-100">
               <a href="https://github.com/ArkansasIo/universe-empire-domions" target="_blank" rel="noopener noreferrer" data-testid="button-github-top-left">
                 <Github className="w-4 h-4 mr-1" /> GitHub
+              </a>
+            </Button>
+            <Button asChild variant="outline" size="sm" className="text-xs text-cyan-700 border-cyan-300 hover:bg-cyan-50">
+              <a href="https://github.com/ArkansasIo/stellar-dominion3" target="_blank" rel="noopener noreferrer" data-testid="button-stellar-dominion3-github">
+                <Github className="w-4 h-4 mr-1" /> Stellar Dominion 3
               </a>
             </Button>
             <Rocket className="w-5 h-5 text-primary" />
@@ -776,7 +800,24 @@ export default function Auth() {
           <span>&bull;</span>
           <span>Universe {UNIVERSE_ID}</span>
           <span>&bull;</span>
-          <span>Developed by Stephen</span>
+          <a href="https://github.com/ArkansasIo/stellar-dominion3" target="_blank" rel="noopener noreferrer" className="font-semibold text-cyan-700 hover:text-cyan-900 hover:underline">
+            stellar-dominion3
+          </a>
+          <span>&bull;</span>
+          <span>Developer: Stephen</span>
+          <span>&bull;</span>
+          <span>
+            Publisher:{" "}
+            <a
+              href="https://github.com/ArkansasIo"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-cyan-700 hover:text-cyan-900 hover:underline"
+              data-testid="link-auth-footer-publisher"
+            >
+              ArkansasIo
+            </a>
+          </span>
         </div>
       </div>
 

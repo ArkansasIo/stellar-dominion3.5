@@ -24,10 +24,4 @@ export const DESTINATIONS: Destination[] = [
   { id: "cygnus_x1", name: "Cygnus Black Hole", coordinates: "4:200:15", distance: 6000, dangerLevel: "extreme", type: "blackhole", resources: { metal: "low", crystal: "low", deuterium: "high" } },
   { id: "gate_terra", name: "Terra Gate", coordinates: "1:001:1", distance: 500, dangerLevel: "low", type: "gate", resources: { metal: "low", crystal: "low", deuterium: "low" } },
   { id: "gate_luna", name: "Luna Gate", coordinates: "3:200:5", distance: 8000, dangerLevel: "medium", type: "gate", resources: { metal: "low", crystal: "low", deuterium: "low" } },
-  { id: "vega_relay", name: "Vega Relay Station", coordinates: "1:150:21", distance: 25.3, dangerLevel: "medium", type: "station", resources: { metal: "medium", crystal: "medium", deuterium: "high" } },
-  { id: "epsilon_eridani", name: "Epsilon Eridani Colony", coordinates: "1:120:7", distance: 10.5, dangerLevel: "low", type: "colony", resources: { metal: "high", crystal: "medium", deuterium: "medium" } },
-  { id: "nova_gate", name: "Nova Gate", coordinates: "2:250:3", distance: 2300, dangerLevel: "high", type: "gate", resources: { metal: "low", crystal: "low", deuterium: "low" } },
-  { id: "helix_nebula", name: "Helix Nebula", coordinates: "2:095:2", distance: 1650, dangerLevel: "high", type: "nebula", resources: { metal: "low", crystal: "high", deuterium: "high" } },
-  { id: "titanium_belt", name: "Titanium Belt", coordinates: "1:080:13", distance: 320, dangerLevel: "medium", type: "asteroid", resources: { metal: "high", crystal: "medium", deuterium: "low" } },
-  { id: "voids_edge", name: "Void's Edge Black Hole", coordinates: "5:300:18", distance: 7200, dangerLevel: "extreme", type: "blackhole", resources: { metal: "low", crystal: "low", deuterium: "high" } },
 ];

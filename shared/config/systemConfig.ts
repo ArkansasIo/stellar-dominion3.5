@@ -64,7 +64,7 @@ export const SYSTEM_CONFIG = {
   // Email settings (for notifications)
   email: {
     provider: ENV.EMAIL_PROVIDER || 'sendgrid',
-    from: ENV.EMAIL_FROM || 'noreply@universe-empire-domions.game',
+    from: ENV.EMAIL_FROM || 'noreply@Universe_Civilization_Empire-At-War.game',
     apiKey: ENV.EMAIL_API_KEY,
   },
 
@@ -121,7 +121,7 @@ export const SYSTEM_CONFIG = {
   // CDN and static assets
   cdn: {
     enabled: ENV.CDN_ENABLED === 'true',
-    url: ENV.CDN_URL || 'https://cdn.universe-empire-domions.game',
+    url: ENV.CDN_URL || 'https://cdn.Universe_Civilization_Empire-At-War.game',
   },
 
   // Third-party integrations
@@ -148,7 +148,7 @@ export const getEnvConfig = () => {
         ...SYSTEM_CONFIG,
         server: {
           ...SYSTEM_CONFIG.server,
-          corsOrigins: ['https://universe-empire-domions.game'],
+          corsOrigins: ['https://Universe_Civilization_Empire-At-War.game'],
         },
         auth: {
           ...SYSTEM_CONFIG.auth,

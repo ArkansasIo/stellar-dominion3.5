@@ -175,8 +175,12 @@ export default function Universe() {
       const res = await apiRequest("POST", "/api/universe/realms/select", { realmId });
       return res.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/universe/realms"] });
+    onSuccess: (data: RealmResponse) => {
+      queryClient.setQueryData<RealmResponse>(["/api/universe/realms"], (current) => ({
+        realms: current?.realms || data.realms || [],
+        selectedRealmId: data.selectedRealmId,
+        selectedRealm: data.selectedRealm,
+      }));
       toast({ title: "Realm switched", description: "Universe server realm updated." });
     },
     onError: (error: any) => {

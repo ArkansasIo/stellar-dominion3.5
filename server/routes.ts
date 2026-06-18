@@ -20,6 +20,12 @@ import {
   playerItems,
 } from "@shared/schema";
 import { storage } from "./storage";
+import { applyResourceDelta, normalizeResources } from "./services/missingFeatureService";
+import {
+  calculateCommanderRaidPower,
+  resolveCommanderRaidCareer,
+  type RaidRole,
+} from "./services/raidOperationsService";
 
 // Augment express-session types
 declare module "express-session" {
@@ -369,15 +375,63 @@ export function registerRoutes(app: any) {
         ...currentResources,
         deuterium: Number(currentResources.deuterium || 0) - challengeCost,
       };
+      const playerState = player as any;
+      const role = (["tank", "dps", "healer", "support"].includes(req.body?.role)
+        ? req.body.role
+        : playerState.raidCareer?.specialization || "dps") as RaidRole;
+      const commanderPower = calculateCommanderRaidPower(playerState.commander, playerState.raidCareer, role);
+      const bossPower = Number(boss.attackPower || 0) * 8 + Number(boss.defense || 0) * 7 + Number(boss.speed || 0) * 4 + Number(boss.healthPoints || 0) / 12;
+      const recommendedLevel = Number(boss.recommendedLevel || 1);
+      const victory = commanderPower * Math.max(1, Number(boss.minPlayers || 1)) >= bossPower * 0.72;
+      const attackerLosses = Math.max(8, Math.round((bossPower / Math.max(1, commanderPower)) * (victory ? 35 : 80)));
+      const defenderLosses = victory ? Math.round(Number(boss.healthPoints || 0) / 100) : Math.round(Number(boss.healthPoints || 0) / 350);
+      const baseReward = (boss.bossReward as any) || {};
+      const progression = resolveCommanderRaidCareer(playerState.raidCareer, {
+        raidId: `boss-${boss.id}-${Date.now()}`,
+        raidType: "boss_raid",
+        role,
+        victory,
+        participantCount: Math.max(1, Number(boss.minPlayers || 1)),
+        roleDiversity: 1,
+        attackerLosses,
+        defenderLosses,
+        baseRewards: {
+          credits: Number(baseReward.credits || recommendedLevel * 90),
+          metal: Number(baseReward.metal || recommendedLevel * 240),
+          crystal: Number(baseReward.crystal || recommendedLevel * 120),
+        },
+        bossRarity: boss.rarity,
+      });
+      const rewardResources = victory
+        ? applyResourceDelta(normalizeResources(updatedResources), progression.rewards)
+        : normalizeResources(updatedResources);
+      const commander = {
+        ...(playerState.commander || {}),
+        stats: {
+          ...(playerState.commander?.stats || {}),
+          xp: Number(playerState.commander?.stats?.xp || 0) + progression.rewards.experience,
+        },
+      };
 
-      await storage.updatePlayerState(userId, { resources: updatedResources } as any);
+      await storage.updatePlayerState(userId, {
+        resources: rewardResources,
+        commander,
+        raidCareer: progression.career,
+      } as any);
 
       res.json({
         success: true,
         bossId,
         bossName: boss.name,
         challengeCost,
-        message: `Fleet dispatched against ${boss.name}`,
+        victory,
+        role,
+        commanderPower,
+        bossPower: Math.round(bossPower),
+        casualties: attackerLosses,
+        rewards: victory ? progression.rewards : { credits: 0, metal: 0, crystal: 0, experience: progression.rewards.experience },
+        raidCareer: progression.career,
+        message: victory ? `${boss.name} defeated` : `${boss.name} repelled the assault`,
       });
     } catch (error: any) {
       res.status(500).json({ message: error?.message || "Failed to challenge boss" });

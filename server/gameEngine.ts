@@ -102,12 +102,48 @@ function deductResources(resources: ResourceState, cost: ResourceCost): Resource
 }
 
 async function getPlayerStateForUser(userId: string) {
-  const playerState = await db.query.playerStates.findFirst({
+  let playerState = await db.query.playerStates.findFirst({
     where: eq(playerStates.userId, userId),
   });
 
   if (!playerState) {
-    throw new Error('Player state not found');
+    // Auto-create a default player state if one doesn't exist
+    const defaults = {
+      userId,
+      setupComplete: false,
+      planetName: 'New Colony',
+      coordinates: '[1:1:1]',
+      resources: {
+        metal: 500,
+        crystal: 500,
+        deuterium: 0,
+        energy: 0,
+        credits: 1000,
+        food: 500,
+        water: 500,
+      },
+      buildings: {},
+      orbitalBuildings: {},
+      research: {},
+      units: {},
+      commander: {},
+      government: {},
+      artifacts: [],
+      cronJobs: [],
+      empireLevel: 1,
+      kardashevProgress: { metal: 0, crystal: 0, deuterium: 0, research: 0 },
+      totalTurns: 0,
+      currentTurns: 100,
+      lastResourceUpdate: new Date(),
+    };
+
+    [playerState] = await db.insert(playerStates)
+      .values(defaults)
+      .returning();
+
+    if (!playerState) {
+      throw new Error('Failed to create player state');
+    }
   }
 
   return playerState;

@@ -7,14 +7,23 @@ import path from "path";
 import { logger } from "./logger";
 import { ConsoleMenu } from "./consoleMenu";
 import { setupAuth } from "./basicAuth";
+import { displayStartupBanner, displayServerStatus, displayLiveStatus, displayRequestLog, displayAuthLog } from "./terminalUI";
 import { registerAccountRoutes } from "./routes-account";
 import { registerAdminRoutes } from "./routes-admin";
 import { registerAllianceRoutes } from "./routes-alliances";
 import { registerArtifactRoutes } from "./routes-artifacts";
 import { registerGuildRoutes } from "./routes-guilds";
 import { registerEmpireCombatUniverseRoutes } from "./routes-empire-combat-universe";
+import { registerCommanderRoutes } from "./routes-commanders";
+import { registerHighCommandRoutes } from "./routes-high-command";
 import { registerForumRoutes } from "./routes-forums";
+import { registerSmithyRoutes } from "./routes-smithy";
+import { registerOrbitalStationRoutes } from "./routes-orbital-stations";
+import { registerBankVaultRoutes } from "./routes-bank-vault";
+import { registerDatabaseAdminRoutes } from "./routes-database-admin";
+import { registerCoreApiRoutes } from "./routes-api-core";
 import { ServerStatusService } from "./services/serverStatusService";
+import { registerGameAssetLibraryRoutes } from "./routes-game-asset-library";
 
 const runtimeNodeEnv = process.env.NODE_ENV ?? "production";
 
@@ -185,6 +194,12 @@ import worldActionsRoutes from "./routes-worldactions";
 import tradesRoutes from "./routes-trades";
 import messagesRoutes from "./routes-messages";
 import { seedOgameCatalogIfNeeded } from "./services/ogameCatalogService";
+import { registerPhpMyAdminRoutes } from "./routes-phpmyadmin";
+import { registerMoonRoutes } from "./routes-moons";
+import { registerSporeDriveRoutes } from "./routes-spore-drive";
+import { db, pool } from "./db";
+import { adminUsers, users } from "../shared/schema";
+import { eq, ilike, or } from "drizzle-orm";
 
 (async () => {
   await setupAuth(app);
@@ -206,6 +221,7 @@ import { seedOgameCatalogIfNeeded } from "./services/ogameCatalogService";
     );
   }
 
+  registerCoreApiRoutes(app);
   registerRoutes(app);
   registerSettingsRoutes(app);
   registerStatusRoutes(app);
@@ -245,6 +261,16 @@ import { seedOgameCatalogIfNeeded } from "./services/ogameCatalogService";
   registerGuildRoutes(app);
   registerForumRoutes(app);
   registerEmpireCombatUniverseRoutes(app);
+  registerCommanderRoutes(app);
+  registerHighCommandRoutes(app);
+  registerSmithyRoutes(app);
+  registerOrbitalStationRoutes(app);
+  registerBankVaultRoutes(app);
+  registerDatabaseAdminRoutes(app);
+  registerPhpMyAdminRoutes(app, { db, pool, adminUsers, users, eq, ilike, or });
+  registerGameAssetLibraryRoutes(app);
+  registerMoonRoutes(app);
+  registerSporeDriveRoutes(app);
   const viewerRoot = path.resolve(process.cwd(), "threejs_galaxy_viewer_project");
   app.get("/api/viewer/status", (_req, res) => {
     res.json({

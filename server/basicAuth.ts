@@ -270,31 +270,44 @@ async function ensureNamedAdminAccount(options: {
 }
 
 async function ensureBootstrapAdminAccounts() {
-  await ensureBootstrapAdminAccount();
+  try {
+    await ensureBootstrapAdminAccount();
+  } catch (error) {
+    logger.warn("AUTH", `Bootstrap admin setup skipped: ${(error as Error).message}`);
+    return;
+  }
 
   if (process.env.NODE_ENV === "development") {
-    await ensureNamedAdminAccount({
-      username: (process.env.DEV_ADMIN_USERNAME || "devadmin").trim(),
-      email: (process.env.DEV_ADMIN_EMAIL || "devadmin@universee.game").trim(),
-      firstName: (process.env.DEV_ADMIN_FIRST_NAME || "Dev Admin").trim(),
-      password: process.env.DEV_ADMIN_PASSWORD || process.env.DEV_AUTH_PASSWORD || "dev-password",
-      role: process.env.DEV_ADMIN_ROLE || "devadmin",
-      label: "Development admin",
-    });
+    try {
+      await ensureNamedAdminAccount({
+        username: (process.env.DEV_ADMIN_USERNAME || "devadmin").trim(),
+        email: (process.env.DEV_ADMIN_EMAIL || "devadmin@universee.game").trim(),
+        firstName: (process.env.DEV_ADMIN_FIRST_NAME || "Dev Admin").trim(),
+        password: process.env.DEV_ADMIN_PASSWORD || process.env.DEV_AUTH_PASSWORD || "dev-password",
+        role: process.env.DEV_ADMIN_ROLE || "devadmin",
+        label: "Development admin",
+      });
+    } catch (error) {
+      logger.warn("AUTH", `Development admin setup skipped: ${(error as Error).message}`);
+    }
   }
 
   const ownerUsername = String(process.env.OWNER_ADMIN_USERNAME || "").trim();
   const ownerEmail = String(process.env.OWNER_ADMIN_EMAIL || "").trim();
   const ownerPassword = String(process.env.OWNER_ADMIN_PASSWORD || "").trim();
   if (ownerUsername || ownerEmail || ownerPassword) {
-    await ensureNamedAdminAccount({
-      username: ownerUsername || ownerEmail.split("@")[0] || "owneradmin",
-      email: ownerEmail || `${ownerUsername || "owneradmin"}@universee.game`,
-      firstName: (process.env.OWNER_ADMIN_FIRST_NAME || "Owner Admin").trim(),
-      password: ownerPassword || process.env.ADMIN_BOOTSTRAP_PASSWORD || "Owner@12345",
-      role: process.env.OWNER_ADMIN_ROLE || "founder",
-      label: "Owner admin",
-    });
+    try {
+      await ensureNamedAdminAccount({
+        username: ownerUsername || ownerEmail.split("@")[0] || "owneradmin",
+        email: ownerEmail || `${ownerUsername || "owneradmin"}@universee.game`,
+        firstName: (process.env.OWNER_ADMIN_FIRST_NAME || "Owner Admin").trim(),
+        password: ownerPassword || process.env.ADMIN_BOOTSTRAP_PASSWORD || "Owner@12345",
+        role: process.env.OWNER_ADMIN_ROLE || "founder",
+        label: "Owner admin",
+      });
+    } catch (error) {
+      logger.warn("AUTH", `Owner admin setup skipped: ${(error as Error).message}`);
+    }
   }
 }
 
@@ -316,10 +329,14 @@ export async function setupAuth(app: Express) {
   
   app.use(getSession());
 
-  await ensureBootstrapAdminAccounts();
-  if (isDevAuthBypassEnabled()) {
-    await ensureDevBypassUser();
-    logger.warn("AUTH", "DEV_AUTH_BYPASS is enabled; protected routes will auto-authenticate locally");
+  try {
+    await ensureBootstrapAdminAccounts();
+    if (isDevAuthBypassEnabled()) {
+      await ensureDevBypassUser();
+      logger.warn("AUTH", "DEV_AUTH_BYPASS is enabled; protected routes will auto-authenticate locally");
+    }
+  } catch (error) {
+    logger.warn("AUTH", `Auth bootstrap skipped: ${(error as Error).message}`);
   }
 
   app.post("/api/auth/register", async (req, res) => {

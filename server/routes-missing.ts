@@ -20,6 +20,14 @@ import {
   normalizeResources,
   resolveExpeditionRecord,
 } from "./services/missingFeatureService";
+import {
+  buildRaidReadiness,
+  calculateCommanderRaidPower,
+  normalizeRaidCareer,
+  resolveCommanderRaidCareer,
+  setRaidSpecialization,
+  type RaidRole,
+} from "./services/raidOperationsService";
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
@@ -36,8 +44,6 @@ const SAMPLE_RELICS = [
   { id: "relic-4", name: "Titan Rune", description: "Inscribed by the Titan builders in an age before memory.", rarity: "mythic", bonuses: { allStats: 5 }, effects: ["All stats +5%", "Unlocks Titan Codex"], lore: "Its glyphs shift when no one is watching." },
   { id: "relic-5", name: "Ore Compass", description: "Always points to the richest mineral vein nearby.", rarity: "common", bonuses: { miningYield: 5 }, effects: ["Mining yield +5%"], lore: "Standard issue for frontier prospectors." },
 ];
-
-type RaidRole = "tank" | "dps" | "healer" | "support";
 
 type SampleRaidParticipant = {
   playerId: string;
@@ -144,6 +150,32 @@ async function requirePlayerState(userId: string) {
 // ─── Raids ────────────────────────────────────────────────────────────────────
 
 export function registerMissingRoutes(app: Express) {
+  app.get("/api/raids/commander-profile", isAuthenticated, async (req: Request, res: Response) => {
+    const userId = getUserId(req);
+    try {
+      const playerState = await requirePlayerState(userId);
+      res.json(buildRaidReadiness(playerState.commander, playerState.raidCareer));
+    } catch {
+      res.status(500).json({ error: "Failed to load commander raid profile" });
+    }
+  });
+
+  app.post("/api/raids/commander-profile/specialization", isAuthenticated, async (req: Request, res: Response) => {
+    const userId = getUserId(req);
+    const specialization = String(req.body?.specialization || "") as RaidRole;
+    if (!["tank", "dps", "healer", "support"].includes(specialization)) {
+      return res.status(400).json({ error: "Invalid raid specialization" });
+    }
+    try {
+      const playerState = await requirePlayerState(userId);
+      const raidCareer = setRaidSpecialization(playerState.raidCareer, specialization);
+      await storage.updatePlayerState(userId, { raidCareer } as any);
+      res.json(buildRaidReadiness(playerState.commander, raidCareer));
+    } catch {
+      res.status(500).json({ error: "Failed to update raid specialization" });
+    }
+  });
+
   // GET /api/raids  – list of current and recent raids
   app.get("/api/raids", isAuthenticated, (req: Request, res: Response) => {
     const userId = getUserId(req);
@@ -230,12 +262,17 @@ export function registerMissingRoutes(app: Express) {
     res.json({ success: true, raid, message: "Raid launched successfully" });
   });
 
-  app.post("/api/raids/:raidId/resolve", isAuthenticated, (req: Request, res: Response) => {
+  app.post("/api/raids/:raidId/resolve", isAuthenticated, async (req: Request, res: Response) => {
+    const userId = getUserId(req);
     const raid = raidState.find((entry) => entry.id === req.params.raidId);
 
     if (!raid) return res.status(404).json({ error: "Raid not found" });
     if (raid.status !== "active") {
       return res.status(400).json({ error: "Only active raids can be resolved" });
+    }
+    const participant = raid.participants.find((entry) => entry.playerId === userId);
+    if (!participant) {
+      return res.status(403).json({ error: "Only participating commanders can resolve this raid" });
     }
 
     const roleCount = new Set(raid.participants.map((participant) => participant.role)).size;
@@ -252,19 +289,44 @@ export function registerMissingRoutes(app: Express) {
         : Math.max(18, 16 * raid.participants.length),
     };
 
-    if (!attackerVictory) {
-      raid.rewards = {
-        credits: Math.floor(raid.rewards.credits * 0.4),
-        metal: Math.floor(raid.rewards.metal * 0.35),
-        crystal: Math.floor(raid.rewards.crystal * 0.35),
+    try {
+      const playerState = await requirePlayerState(userId);
+      const progression = resolveCommanderRaidCareer(playerState.raidCareer, {
+        raidId: raid.id,
+        raidType: raid.raidType,
+        role: participant.role,
+        victory: attackerVictory,
+        participantCount: raid.participants.length,
+        roleDiversity: roleCount,
+        attackerLosses: raid.attackerLosses.units,
+        defenderLosses: raid.defenderLosses.units,
+        baseRewards: raid.rewards,
+      });
+      const resources = applyResourceDelta(normalizeResources(playerState.resources), progression.rewards);
+      const commander = {
+        ...(playerState.commander || {}),
+        stats: {
+          ...((playerState.commander as any)?.stats || {}),
+          xp: Number((playerState.commander as any)?.stats?.xp || 0) + progression.rewards.experience,
+        },
       };
-    }
+      await storage.updatePlayerState(userId, {
+        resources,
+        commander,
+        raidCareer: progression.career,
+      } as any);
 
-    res.json({
-      success: true,
-      raid,
-      message: attackerVictory ? "Raid resolved in the attackers' favor" : "Defenders held the line",
-    });
+      res.json({
+        success: true,
+        raid,
+        rewards: progression.rewards,
+        raidCareer: progression.career,
+        resources,
+        message: attackerVictory ? "Raid resolved in the attackers' favor" : "Defenders held the line",
+      });
+    } catch {
+      res.status(500).json({ error: "Raid resolved but commander rewards could not be recorded" });
+    }
   });
 
   const raidFinderQueue: any[] = [];
@@ -276,7 +338,7 @@ export function registerMissingRoutes(app: Express) {
     const summary = roles.map(role => ({
       role,
       queued: raidFinderQueue.filter(e => e.preferredRole === role).length,
-      avgWait: Math.floor(Math.random() * 5) + 1,
+      avgWait: Math.max(1, Math.ceil(raidFinderQueue.filter(e => e.preferredRole === role).length / 2)),
     }));
     const myEntry = raidFinderQueue.find((entry) => entry.userId === userId) || null;
     const position = myEntry ? raidFinderQueue.findIndex((entry) => entry.userId === userId) + 1 : null;
@@ -292,6 +354,9 @@ export function registerMissingRoutes(app: Express) {
   app.post("/api/raid-finder/queue", isAuthenticated, (req: Request, res: Response) => {
     const userId = getUserId(req);
     const { preferredRole = "dps" } = req.body as { preferredRole?: string };
+    if (!["tank", "dps", "healer", "support"].includes(preferredRole)) {
+      return res.status(400).json({ error: "Invalid preferred raid role" });
+    }
     const existing = raidFinderQueue.findIndex(e => e.userId === userId);
     if (existing >= 0) {
       raidFinderQueue[existing].preferredRole = preferredRole;
@@ -306,6 +371,46 @@ export function registerMissingRoutes(app: Express) {
     const idx = raidFinderQueue.findIndex(e => e.userId === userId);
     if (idx >= 0) raidFinderQueue.splice(idx, 1);
     res.json({ queued: false });
+  });
+
+  app.post("/api/raid-finder/match", isAuthenticated, async (req: Request, res: Response) => {
+    const userId = getUserId(req);
+    const ownEntry = raidFinderQueue.find((entry) => entry.userId === userId);
+    if (!ownEntry) return res.status(400).json({ error: "Join the queue before requesting a match" });
+
+    const candidateRaid = raidState.find((raid) =>
+      raid.status === "preparing" &&
+      raid.participants.length < raid.maxCommanders &&
+      !raid.participants.some((participant) => participant.playerId === userId),
+    );
+    if (!candidateRaid) return res.status(404).json({ error: "No compatible preparing raid is available" });
+
+    try {
+      const playerState = await requirePlayerState(userId);
+      const power = calculateCommanderRaidPower(playerState.commander, playerState.raidCareer, ownEntry.preferredRole);
+      if (power < candidateRaid.powerRequirement) {
+        return res.status(400).json({
+          error: `Commander raid power ${power.toLocaleString()} is below the ${candidateRaid.powerRequirement.toLocaleString()} requirement`,
+        });
+      }
+
+      candidateRaid.participants.push({
+        playerId: userId,
+        role: ownEntry.preferredRole,
+        joinedAt: new Date().toISOString(),
+      });
+      raidFinderQueue.splice(raidFinderQueue.indexOf(ownEntry), 1);
+      res.json({
+        success: true,
+        matched: true,
+        raidId: candidateRaid.id,
+        raidName: `${candidateRaid.attackingTeamName} vs ${candidateRaid.defendingTeamName}`,
+        role: ownEntry.preferredRole,
+        commanderPower: power,
+      });
+    } catch {
+      res.status(500).json({ error: "Failed to complete raid matchmaking" });
+    }
   });
 
   // ─── Relics ───────────────────────────────────────────────────────────────
