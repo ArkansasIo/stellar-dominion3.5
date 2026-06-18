@@ -440,9 +440,24 @@ export async function setupAuth(app: Express) {
     try {
       const identifier = String(req.body?.identifier || req.body?.username || "").trim();
       const password = String(req.body?.password || "");
+      const securityCode = String(req.body?.securityCode || req.body?.code || "").trim();
 
       if (!identifier || !password) {
         return res.status(400).json({ message: "Username/email and password required" });
+      }
+
+      // ── Security code verification ──────────────────────────────
+      const isDev = process.env.NODE_ENV === "development";
+      const expectedCode = process.env.ADMIN_SECURITY_CODE || (isDev ? "STELLAR-ADMIN" : null);
+
+      if (expectedCode) {
+        if (!securityCode) {
+          return res.status(400).json({ message: "Security access code is required", field: "securityCode" });
+        }
+        if (securityCode.toUpperCase() !== expectedCode.toUpperCase()) {
+          logger.warn("AUTH", `Admin login blocked — wrong security code from: ${identifier}`);
+          return res.status(401).json({ message: "Invalid security access code", field: "securityCode" });
+        }
       }
 
       const user = await resolveUserByIdentifier(identifier);

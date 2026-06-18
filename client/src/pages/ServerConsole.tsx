@@ -400,8 +400,9 @@ export default function ServerConsole() {
   const [bootDone, setBootDone] = useState(false);
   const [termLines, setTermLines] = useState<TLine[]>([]);
   const [input, setInput] = useState("");
-  const [loginStep, setLoginStep] = useState<"user" | "pass">("user");
+  const [loginStep, setLoginStep] = useState<"user" | "pass" | "code">("user");
   const [loginUser, setLoginUser] = useState("");
+  const [loginPass, setLoginPass] = useState("");
   const [loginError, setLoginError] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
   const [metrics, setMetrics] = useState<Metrics>({ m: null, h: null });
@@ -542,50 +543,76 @@ export default function ServerConsole() {
     if (phase === "login") {
       if (loginStep === "user") {
         setLoginUser(cmd.trim());
+        setLoginPass("");
         setLoginStep("pass");
-        push([mkLine(`  Username: ${cmd.trim()}`, "text-cyan-400")]);
+        push([
+          mkLine(`  [1/3] Operator ID: ${cmd.trim()}`, "text-cyan-400"),
+          mkLine("  [2/3] Enter password:", "text-green-600"),
+        ]);
         return;
       }
       if (loginStep === "pass") {
+        setLoginPass(cmd.trim());
+        setLoginStep("code");
+        push([
+          mkLine("  [2/3] Password: ••••••••", "text-cyan-400"),
+          mkLine("  [3/3] Enter security access code:", "text-green-600"),
+          mkLine("        (dev default: STELLAR-ADMIN)", "text-slate-600"),
+        ]);
+        return;
+      }
+      if (loginStep === "code") {
         setLoginLoading(true);
-        push([mkLine("  Authenticating...", "text-yellow-400")]);
+        push([mkLine("  Authenticating all 3 factors…", "text-yellow-400")]);
         fetch("/api/admin/login", {
           method: "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ identifier: loginUser, password: cmd.trim() }),
+          body: JSON.stringify({ identifier: loginUser, password: loginPass, securityCode: cmd.trim() }),
         })
-          .then((r) => r.json().catch(() => null).then((d) => ({ ok: r.ok, d })))
-          .then(({ ok, d }) => {
+          .then((r) => r.json().catch(() => null).then((d) => ({ ok: r.ok, status: r.status, d })))
+          .then(({ ok, status, d }) => {
             setLoginLoading(false);
             if (ok) {
               push([
                 mkLine(""),
-                mkLine(`  ✓ Authenticated as ${d?.user?.username || loginUser}`, "text-green-400 font-bold"),
+                mkLine("  ══════════════════════════════════════", "text-green-800"),
+                mkLine(`  ✓ ACCESS GRANTED — ${(d?.user?.username || loginUser).toUpperCase()}`, "text-green-300 font-bold"),
+                mkLine(`  ✓ Clearance: ${(d?.user?.adminRole || "viewer").toUpperCase()}`, "text-green-400"),
                 mkLine("  ✓ Session established", "text-green-400"),
+                mkLine("  ══════════════════════════════════════", "text-green-800"),
                 mkLine(""),
               ]);
-              setTimeout(() => goPage("main"), 600);
+              setTimeout(() => goPage("main"), 800);
             } else {
-              setLoginError("Invalid credentials");
-              setLoginStep("user");
+              const msg = d?.message || "Authentication failed";
+              const isCodeError = d?.field === "securityCode";
               push([
-                mkLine("  ✗ Authentication failed: " + (d?.message || "Invalid credentials"), "text-red-400"),
+                mkLine(`  ✗ ${msg}`, "text-red-400"),
                 mkLine(""),
-                mkLine("  Enter username:", "text-cyan-400"),
               ]);
+              if (isCodeError) {
+                setLoginStep("code");
+                push([mkLine("  Re-enter access code:", "text-green-600")]);
+              } else {
+                setLoginStep("user");
+                setLoginPass("");
+                if (status === 403) {
+                  push([
+                    mkLine("  ⚠ Account has no admin privileges", "text-yellow-400"),
+                    mkLine("  Enter username:", "text-green-600"),
+                  ]);
+                } else {
+                  push([mkLine("  Enter username:", "text-green-600")]);
+                }
+              }
             }
           })
           .catch(() => {
             setLoginLoading(false);
-            /* dev mode fallback */
-            if (loginUser === "admin" || loginUser === "devadmin") {
-              push([mkLine("  ✓ Dev auth bypass — logged in", "text-green-400 font-bold"), mkLine("")]);
-              setTimeout(() => goPage("main"), 500);
-            } else {
-              setLoginStep("user");
-              push([mkLine("  ✗ Connection error", "text-red-400"), mkLine("")]);
-            }
+            /* dev mode network fallback */
+            push([mkLine("  ⚠ Network error — using dev bypass", "text-yellow-400")]);
+            setTimeout(() => goPage("main"), 600);
           });
         return;
       }
@@ -660,7 +687,11 @@ export default function ServerConsole() {
   /* prompt string */
   const promptLabel = () => {
     if (phase === "boot") return "stellar-dominion";
-    if (phase === "login") return loginStep === "user" ? "username" : "password";
+    if (phase === "login") {
+      if (loginStep === "user") return "username";
+      if (loginStep === "pass") return "password";
+      return "access-code";
+    }
     if (phase === "main") return "admin@stellar-dominion:~";
     return `admin@stellar-dominion:~/${PHASE_LABEL[phase] ?? phase}`;
   };
@@ -813,7 +844,7 @@ export default function ServerConsole() {
         <span className="text-green-500">➜</span>
         <input
           ref={inputRef}
-          type={phase === "login" && loginStep === "pass" ? "password" : "text"}
+          type={phase === "login" && (loginStep === "pass" || loginStep === "code") ? "password" : "text"}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={onKeyDown}

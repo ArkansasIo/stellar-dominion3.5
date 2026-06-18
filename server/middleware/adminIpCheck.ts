@@ -42,6 +42,12 @@ export function requireAdminIp(req: Request, res: Response, next: NextFunction):
     return;
   }
 
+  // In development mode, allow all IPs (Replit proxy IPs vary)
+  const isDevelopment = process.env.NODE_ENV === "development";
+  if (isDevelopment) {
+    return next();
+  }
+
   const clientIp = getClientIp(req);
   const ipV4 = clientIp.replace(/^::ffff:/, ""); // Convert IPv4-mapped IPv6 to IPv4
 
