@@ -80,3 +80,4 @@ args = "Start application"
 
 [agent]
 mockupState = "FULLSTACK"
+expertMode = true

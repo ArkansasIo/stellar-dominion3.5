@@ -1,0 +1,23 @@
+{
+  "version": 2,
+  "name": "stellar-dominion",
+  "builds": [
+    {
+      "src": "dist/index.cjs",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "dist/index.cjs"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "dist/index.cjs"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
+}

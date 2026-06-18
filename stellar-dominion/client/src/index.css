@@ -1,0 +1,111 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  
+  --font-orbitron: 'Orbitron', sans-serif;
+  --font-rajdhani: 'Rajdhani', sans-serif;
+}
+
+:root {
+  /* Light Mode / Steel Theme */
+  --background: 210 20% 98%;
+  --foreground: 220 40% 10%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 220 40% 10%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 220 40% 10%;
+
+  --primary: 210 100% 45%; /* Steel Blue */
+  --primary-foreground: 210 40% 98%;
+
+  --secondary: 210 20% 90%; /* Light Steel */
+  --secondary-foreground: 220 40% 10%;
+
+  --muted: 210 20% 90%;
+  --muted-foreground: 215 20% 40%;
+
+  --accent: 210 100% 45%;
+  --accent-foreground: 210 40% 98%;
+
+  --destructive: 0 85% 60%;
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 215 20% 85%;
+  --input: 215 20% 85%;
+  --ring: 210 100% 45%;
+
+  --radius: 0.25rem;
+}
+
+body {
+  @apply font-rajdhani antialiased bg-background text-foreground;
+  background-color: hsl(var(--background));
+  min-height: 100vh;
+}
+
+/* Custom Scrollbar for that futuristic feel */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary));
+}
+
+.glass-panel {
+  @apply bg-card/80 backdrop-blur-md border border-border shadow-sm;
+}
+
+.tech-border {
+  position: relative;
+  @apply border border-primary/20;
+}
+
+.tech-border::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, hsl(var(--primary)), transparent);
+  opacity: 0.5;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  @apply font-orbitron tracking-wide;
+}

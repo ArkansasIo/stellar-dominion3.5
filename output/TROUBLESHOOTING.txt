@@ -1,0 +1,263 @@
+╔══════════════════════════════════════════════════════════════════╗
+║                                                                  ║
+║     UNIVERSE EMPIRE DOMINION - TROUBLESHOOTING GUIDE            ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+
+🔧 CLIENT LAUNCHER ISSUES
+
+───────────────────────────────────────────────────────────────────
+PROBLEM: Client launcher closes immediately
+───────────────────────────────────────────────────────────────────
+
+SOLUTION 1: Check if server is running
+  ✓ The client needs the server to be running first
+  ✓ Start server before starting client
+  
+  Steps:
+  1. Go to server/ folder
+  2. Double-click UniverseEmpireDominion-windows.exe
+  3. Wait for "Server running on http://localhost:3000"
+  4. Then run the client launcher
+
+SOLUTION 2: Use the full launcher instead
+  ✓ The full launcher starts everything automatically
+  
+  Steps:
+  1. Double-click UniverseEmpireDominion-Launcher.exe
+  2. Everything starts automatically
+  3. No need to start server separately
+
+SOLUTION 3: Check error logs
+  ✓ Client creates a log file when errors occur
+  
+  Location: client/client-launcher.log
+  
+  Open the log file to see detailed error messages
+
+───────────────────────────────────────────────────────────────────
+PROBLEM: "Server is not running" error
+───────────────────────────────────────────────────────────────────
+
+CAUSES:
+  ✗ Server executable not started
+  ✗ Server failed to start
+  ✗ Port 3000 is blocked
+  ✗ PostgreSQL not running
+
+SOLUTIONS:
+
+1. Start the server first:
+   - Go to server/ folder
+   - Run UniverseEmpireDominion-windows.exe
+   - Wait for startup message
+
+2. Check PostgreSQL:
+   - Open Services (services.msc)
+   - Find "postgresql" service
+   - Ensure it's running
+   - Start if stopped
+
+3. Check port 3000:
+   - Open Command Prompt
+   - Run: netstat -ano | findstr :3000
+   - If port is in use, close the application using it
+   - Or change PORT in server/.env.local
+
+4. Check server configuration:
+   - Open server/.env.local
+   - Verify DATABASE_URL is correct
+   - Verify PostgreSQL credentials
+   - Verify database exists
+
+───────────────────────────────────────────────────────────────────
+PROBLEM: Browser doesn't open
+───────────────────────────────────────────────────────────────────
+
+SOLUTION 1: Open manually
+  ✓ Just open your browser and go to:
+    http://localhost:3000
+
+SOLUTION 2: Check default browser
+  ✓ Set a default browser in Windows settings
+  ✓ Try a different browser
+
+SOLUTION 3: Check firewall
+  ✓ Windows Firewall might be blocking
+  ✓ Allow Node.js through firewall
+  ✓ Allow port 3000
+
+───────────────────────────────────────────────────────────────────
+PROBLEM: "Connection lost" warnings
+───────────────────────────────────────────────────────────────────
+
+CAUSES:
+  ✗ Server crashed
+  ✗ Network issue
+  ✗ Server overloaded
+
+SOLUTIONS:
+
+1. Check server window:
+   - Look for error messages
+   - Check if server is still running
+   - Restart if needed
+
+2. Check system resources:
+   - Open Task Manager
+   - Check CPU and memory usage
+   - Close unnecessary applications
+
+3. Restart everything:
+   - Close client launcher
+   - Close server
+   - Start server again
+   - Start client again
+
+───────────────────────────────────────────────────────────────────
+
+🖥️ SERVER ISSUES
+
+───────────────────────────────────────────────────────────────────
+PROBLEM: Server won't start
+───────────────────────────────────────────────────────────────────
+
+SOLUTION 1: Check PostgreSQL
+  ✓ PostgreSQL must be installed and running
+  
+  Install PostgreSQL:
+  1. Download from: https://www.postgresql.org/download/
+  2. Install with default settings
+  3. Remember the password you set
+  4. Ensure service is running
+
+SOLUTION 2: Create database
+  ✓ Database must exist before starting server
+  
+  Create database:
+  1. Open pgAdmin or psql
+  2. Run: CREATE DATABASE universe_empire;
+  3. Verify database exists
+
+SOLUTION 3: Check configuration
+  ✓ server/.env.local must be configured correctly
+  
+  Required settings:
+  DATABASE_URL=postgresql://postgres:password@localhost:5432/universe_empire
+  PORT=3000
+  NODE_ENV=production
+  SESSION_SECRET=your-secret-key
+  
+  Update with your PostgreSQL password!
+
+SOLUTION 4: Check port availability
+  ✓ Port 3000 must be available
+  
+  Check port:
+  1. Open Command Prompt
+  2. Run: netstat -ano | findstr :3000
+  3. If in use, close the application
+  4. Or change PORT in .env.local
+
+───────────────────────────────────────────────────────────────────
+PROBLEM: Database connection errors
+───────────────────────────────────────────────────────────────────
+
+ERROR: "Connection refused"
+  → PostgreSQL service not running
+  → Start PostgreSQL service
+
+ERROR: "Authentication failed"
+  → Wrong password in DATABASE_URL
+  → Update password in server/.env.local
+
+ERROR: "Database does not exist"
+  → Database not created
+  → Run: CREATE DATABASE universe_empire;
+
+ERROR: "Connection timeout"
+  → PostgreSQL not listening on localhost
+  → Check PostgreSQL configuration
+  → Verify pg_hba.conf allows local connections
+
+───────────────────────────────────────────────────────────────────
+
+🚀 LAUNCHER ISSUES
+
+───────────────────────────────────────────────────────────────────
+PROBLEM: Full launcher fails to start server
+───────────────────────────────────────────────────────────────────
+
+SOLUTION 1: Check prerequisites
+  ✓ Launcher checks prerequisites automatically
+  ✓ Read the error messages
+  ✓ Fix reported issues
+
+SOLUTION 2: Check server executable
+  ✓ Verify server/UniverseEmpireDominion-windows.exe exists
+  ✓ Try running server manually first
+  ✓ Check for error messages
+
+SOLUTION 3: Check permissions
+  ✓ Run as Administrator if needed
+  ✓ Check antivirus isn't blocking
+  ✓ Add to Windows Defender exclusions
+
+───────────────────────────────────────────────────────────────────
+
+💡 GENERAL TIPS
+
+1. Always start server before client
+2. Use the full launcher for easiest experience
+3. Check log files for detailed errors
+4. Ensure PostgreSQL is running
+5. Verify database exists and is accessible
+6. Check firewall and antivirus settings
+7. Run as Administrator if permission issues
+8. Keep launcher windows open while playing
+9. Use Ctrl+C for clean shutdown
+10. Restart everything if problems persist
+
+───────────────────────────────────────────────────────────────────
+
+📋 CHECKLIST FOR FIRST RUN
+
+Before starting the game for the first time:
+
+□ PostgreSQL 14+ installed
+□ PostgreSQL service running
+□ Database "universe_empire" created
+□ server/.env.local file exists
+□ DATABASE_URL configured with correct password
+□ Port 3000 available
+□ Firewall allows Node.js
+□ Antivirus not blocking executables
+
+───────────────────────────────────────────────────────────────────
+
+📁 LOG FILES
+
+Client logs: client/client-launcher.log
+Server logs: Check server console window
+Full launcher logs: Check launcher console window
+
+Review these files for detailed error information.
+
+───────────────────────────────────────────────────────────────────
+
+🆘 STILL HAVING ISSUES?
+
+1. Read README.md for complete documentation
+2. Check QUICK-START.txt for setup steps
+3. Review LAUNCHER-GUIDE.txt for launcher details
+4. Verify all prerequisites are met
+5. Try manual launch to isolate the problem
+6. Check Windows Event Viewer for system errors
+7. Ensure all files are in correct locations
+
+───────────────────────────────────────────────────────────────────
+
+Version: 1.0.0
+Last Updated: 2026-06-15
+
+For more help, check the documentation files in this folder.

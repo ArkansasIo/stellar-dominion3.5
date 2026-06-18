@@ -1,0 +1,105 @@
+╔══════════════════════════════════════════════════════════════════╗
+║                                                                  ║
+║        UNIVERSE EMPIRE DOMINION - QUICK START GUIDE             ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+
+🚀 FASTEST WAY TO START:
+
+   1. Double-click: START-GAME.bat
+   2. Wait for browser to open
+   3. Play!
+
+───────────────────────────────────────────────────────────────────
+
+📋 BEFORE FIRST RUN:
+
+   ✓ Install PostgreSQL 14+ (https://www.postgresql.org/download/)
+   ✓ Create database: universe_empire
+   ✓ Create .env.local file in server/ folder (see below)
+
+───────────────────────────────────────────────────────────────────
+
+⚙️ CONFIGURATION (.env.local in server/ folder):
+
+   DATABASE_URL=postgresql://postgres:password@localhost:5432/universe_empire
+   PORT=3000
+   NODE_ENV=production
+   SESSION_SECRET=change-this-secret-key
+
+───────────────────────────────────────────────────────────────────
+
+🎮 MANUAL START:
+
+   Option 1: Use START-GAME.bat (recommended)
+   
+   Option 2: Manual steps
+      1. Run: server/UniverseEmpireDominion-windows.exe
+      2. Run: client/UniverseEmpireDominion-Client-windows.exe
+   
+   Option 3: Browser only
+      1. Run: server/UniverseEmpireDominion-windows.exe
+      2. Open browser: http://localhost:3000
+
+───────────────────────────────────────────────────────────────────
+
+🛑 HOW TO STOP:
+
+   1. Close browser tab
+   2. Close server window (or press Ctrl+C)
+
+───────────────────────────────────────────────────────────────────
+
+🔧 TROUBLESHOOTING:
+
+   Server won't start?
+   → Check if PostgreSQL is running
+   → Verify database exists
+   → Check .env.local configuration
+   
+   Can't connect?
+   → Make sure server is running
+   → Try opening http://localhost:3000 manually
+   → Check Windows Firewall settings
+   
+   Database errors?
+   → Verify PostgreSQL credentials
+   → Check if database "universe_empire" exists
+   → Ensure PostgreSQL service is running
+
+───────────────────────────────────────────────────────────────────
+
+📚 MORE HELP:
+
+   • Read: README.md (detailed instructions)
+   • Server logs: Check server console window
+   • Admin panel: http://localhost:3000/admin
+
+───────────────────────────────────────────────────────────────────
+
+🌟 FEATURES:
+
+   ✓ Full web-based game interface
+   ✓ Real-time multiplayer support
+   ✓ Admin panel (phpMyAdmin-style database UI)
+   ✓ Complete game systems (combat, research, economy)
+   ✓ Alliance and social features
+   ✓ Secure authentication and sessions
+
+───────────────────────────────────────────────────────────────────
+
+📞 NEED MORE HELP?
+
+   Check the full README.md file for:
+   • Detailed setup instructions
+   • Complete troubleshooting guide
+   • Feature documentation
+   • System requirements
+
+───────────────────────────────────────────────────────────────────
+
+Version: 1.0.0
+Platform: Windows x64
+Build: 2026-06-15
+
+Enjoy the game! 🚀🌌
