@@ -183,9 +183,16 @@ export default function Research() {
   return (
     <GameLayout>
       <div className="space-y-6">
-        <div>
-          <h2 className="text-3xl font-bold text-slate-900">Technology Division</h2>
-          <p className="mt-2 text-slate-600">Core research remains in Physics, Society, and Engineering, with an 18-division upgrade matrix now feeding Spaceship Command-inspired hull doctrine, capital command, logistics, and constructor progression.</p>
+        <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
+          <img src="/assets/backgrounds/nebula.png" alt="Research" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-indigo-900/60 to-transparent" />
+          <div className="relative z-10 p-6 flex items-center gap-6">
+            <img src="/assets/research/astrophysics.png" alt="Research" className="w-20 h-20 rounded-xl object-cover ring-2 ring-indigo-400/50 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
+            <div>
+              <h2 className="text-3xl font-bold text-white drop-shadow">Technology Division</h2>
+              <p className="text-indigo-300 mt-1">Core research in Physics, Society, and Engineering — driving your empire's advancement.</p>
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-4">

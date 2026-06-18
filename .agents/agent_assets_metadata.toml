@@ -1,0 +1,242 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "lLbaSvZJBmiQUOfIMJKIL"
+uri = "file://attached_assets/generated_images/planet_terra.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "O8o_7DNqpCVSsAy_z-Slb"
+uri = "file://attached_assets/generated_images/planet_ice.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "V8ERsz6GLCekWTVF5C83D"
+uri = "file://attached_assets/generated_images/planet_volcanic.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "k1D0dnVx9Wrd2tXA9WEeW"
+uri = "file://attached_assets/generated_images/planet_gas_giant.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "Cy52DaEdR6YSVNIkobulu"
+uri = "file://attached_assets/generated_images/planet_dead.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "_x6tsU_E9jDAOwvWoimG6"
+uri = "file://attached_assets/generated_images/planet_star.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "KPG2GSTpeONA0qSD3Pciz"
+uri = "file://attached_assets/generated_images/bg_nebula_wide.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "kPe9lXszAGUMcleZleIbK"
+uri = "file://attached_assets/generated_images/bg_galaxy_map.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "i4TAP9IBNu4TFb1OHoxFi"
+uri = "file://attached_assets/generated_images/asteroid_field.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "6arQzizlPJFr9PgesXnE6"
+uri = "file://attached_assets/generated_images/space_station.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "0KgzWwb0e8kOntdUGvk4Z"
+uri = "file://attached_assets/generated_images/ship_fighter.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "jbZaacdlujvOSMi8QmFff"
+uri = "file://attached_assets/generated_images/ship_battlecruiser.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "Z7_dHpO4yNFXF0jDqo3A_"
+uri = "file://attached_assets/generated_images/ship_colony.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "CwfqW91poAURTvBku5LWu"
+uri = "file://attached_assets/generated_images/ship_cargo.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "-iwOEDY__Nxy6MDBbRZf_"
+uri = "file://attached_assets/generated_images/ship_destroyer.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "gnFmHj9H4pLDMfYOe7pyP"
+uri = "file://attached_assets/generated_images/ship_battleship.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "5X7HRIlehY5MtSAqbg3WX"
+uri = "file://attached_assets/generated_images/ship_scout.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "D76zufPz9gsCz-1_2J_N-"
+uri = "file://attached_assets/generated_images/ship_mothership.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "asI7WL3DfE1fF8UgjkKk2"
+uri = "file://attached_assets/generated_images/fleet_formation.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "zGrFh0KZgAjin59kPOlgu"
+uri = "file://attached_assets/generated_images/ship_recycler.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "-yPm_3JUiYLDLCQhgIWZb"
+uri = "file://attached_assets/generated_images/building_metal_mine.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "M6QMPDUA7ATRC9sHbdsZ1"
+uri = "file://attached_assets/generated_images/building_crystal_mine.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "D_DSP6ZAFfFiD8KhdpEUT"
+uri = "file://attached_assets/generated_images/building_deuterium.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "CjT0_sevAuEewu6hr3-qH"
+uri = "file://attached_assets/generated_images/building_shipyard.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "ZmrAwHyibPGCFC_VGSe2r"
+uri = "file://attached_assets/generated_images/building_research_lab.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "G6wOM5tgA9JmU0e4jNZwb"
+uri = "file://attached_assets/generated_images/building_power_plant.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "iCn7i1LPdBHYO9yIFDUUF"
+uri = "file://attached_assets/generated_images/building_defense_cannon.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "WbOaPQ9VewZpnfeWtFJAW"
+uri = "file://attached_assets/generated_images/building_command_center.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "d38oZXec_g8LTnArw3kHc"
+uri = "file://attached_assets/generated_images/building_missile_battery.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "9T0vCuUfEinyu6MJERGMZ"
+uri = "file://attached_assets/generated_images/building_terraformer.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "ZZbJ1TUrHIfN8GLoWktIt"
+uri = "file://attached_assets/generated_images/research_weapons.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "d8TZtcyz06wnMufsVxvsr"
+uri = "file://attached_assets/generated_images/research_shields.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "zdFsJJYPG6sVZPmVVGzmG"
+uri = "file://attached_assets/generated_images/research_propulsion.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "8LnPcS4PpRnWzhu4NbxBr"
+uri = "file://attached_assets/generated_images/research_astrophysics.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "c3Bgcs_5API9vHerf6gMU"
+uri = "file://attached_assets/generated_images/research_espionage.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "ViK1h6ZSi5w-Z97LyXXdS"
+uri = "file://attached_assets/generated_images/resource_metal.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "hPFpAwWIIAHdAXFjrqz-f"
+uri = "file://attached_assets/generated_images/resource_crystal.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "8lS1bD0a4NBkbKd4s7boe"
+uri = "file://attached_assets/generated_images/resource_deuterium.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "TSBkJI1BQrpBkG4KIsRPs"
+uri = "file://attached_assets/generated_images/resource_credits.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "ZfrLNRkMO4vjwNLSIgKsO"
+uri = "file://attached_assets/generated_images/combat_battle.png"
+type = "image"
+title = "generated_image"

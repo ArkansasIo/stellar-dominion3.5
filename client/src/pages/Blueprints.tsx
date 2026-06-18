@@ -252,13 +252,18 @@ export default function Blueprints() {
       <div className="space-y-6 animate-in fade-in duration-500">
         <Navigation />
 
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <h2 className="font-orbitron text-3xl font-bold text-slate-900">Blueprint Manufacturing</h2>
-            <p className="max-w-4xl text-lg text-muted-foreground">
-              A redesigned imperial blueprint library inspired by industrial original-and-copy workflows, now expanded with Spaceship Command-style starship hull families, facility doctrine, rarity tiers, and manufacturing detail tailored for Stellar Dominion.
-            </p>
+        <div className="relative rounded-xl overflow-hidden shadow-lg" style={{ minHeight: 140 }}>
+          <img src="/assets/backgrounds/space_station.png" alt="Blueprints" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-800/60 to-transparent" />
+          <div className="relative z-10 p-6 flex items-center gap-6">
+            <img src="/assets/buildings/robotics_factory.png" alt="Factory" className="w-20 h-20 rounded-xl object-cover ring-2 ring-slate-300/50 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
+            <div>
+              <h2 className="font-orbitron text-3xl font-bold text-white drop-shadow">Blueprint Manufacturing</h2>
+              <p className="text-slate-300 font-rajdhani text-lg">Imperial blueprint library — hull families, facility doctrine, and rarity tiers.</p>
+            </div>
           </div>
+        </div>
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <Card className="border-slate-200 bg-white"><CardContent className="p-3 text-center"><div className="text-xs text-slate-500">Categories</div><div className="font-orbitron text-2xl text-slate-900">{BLUEPRINT_LIBRARY_STATS.totalCategories}</div></CardContent></Card>
             <Card className="border-slate-200 bg-white"><CardContent className="p-3 text-center"><div className="text-xs text-slate-500">Blueprints</div><div className="font-orbitron text-2xl text-slate-900">{BLUEPRINT_LIBRARY_STATS.totalBlueprints}</div></CardContent></Card>

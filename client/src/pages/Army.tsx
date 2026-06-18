@@ -214,11 +214,16 @@ export default function Army() {
   return (
     <GameLayout>
       <div className="space-y-6" data-testid="army-page">
-        <div>
-          <h2 className="text-3xl font-orbitron font-bold text-slate-900">Unit Systems Command</h2>
-          <p className="text-muted-foreground font-rajdhani text-lg">
-            Train, untrain, field, and supervise troop, civilian, government, and military systems from one command menu.
-          </p>
+        <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
+          <img src="/assets/backgrounds/combat_battle.png" alt="Army" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-orange-950/60 to-transparent" />
+          <div className="relative z-10 p-6 flex items-center gap-6">
+            <img src="/assets/ships/fleet_formation.png" alt="Army" className="w-20 h-20 rounded-xl object-cover ring-2 ring-orange-400/60 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
+            <div>
+              <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow">Unit Systems Command</h2>
+              <p className="text-orange-300 font-rajdhani text-lg">Train, field, and supervise troop, civilian, government, and military systems.</p>
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

@@ -110,11 +110,16 @@ export default function Relics() {
   return (
     <GameLayout>
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div>
-          <h2 className="text-3xl font-orbitron font-bold text-slate-900">Relic Systems</h2>
-          <p className="text-muted-foreground font-rajdhani text-lg">
-            Operate relic upgrades, relic research, and expedition support from one command panel.
-          </p>
+        <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
+          <img src="/assets/backgrounds/asteroid_field.png" alt="Relics" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-violet-950/60 to-transparent" />
+          <div className="relative z-10 p-6 flex items-center gap-6">
+            <img src="/assets/planets/desert.png" alt="Relic World" className="w-20 h-20 rounded-full object-cover ring-2 ring-violet-400/60 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
+            <div>
+              <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow">Relic Systems</h2>
+              <p className="text-violet-300 font-rajdhani text-lg">Operate relic upgrades, relic research, and expedition support from one command panel.</p>
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

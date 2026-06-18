@@ -184,9 +184,16 @@ export default function Exploration() {
       <div className="space-y-6 animate-in fade-in duration-500">
         <Navigation />
         
-        <div>
-          <h2 className="text-3xl font-orbitron font-bold text-slate-900">Deep Space Exploration</h2>
-          <p className="text-muted-foreground font-rajdhani text-lg">Discover anomalies, manage warp networks, and pursue achievements.</p>
+        <div className="relative rounded-xl overflow-hidden shadow-lg" style={{ minHeight: 140 }}>
+          <img src="/assets/backgrounds/deep_space.png" alt="Exploration" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-cyan-950/60 to-transparent" />
+          <div className="relative z-10 p-6 flex items-center gap-6">
+            <img src="/assets/ships/scout.png" alt="Scout" className="w-20 h-20 rounded-xl object-cover ring-2 ring-cyan-400/60 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
+            <div>
+              <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow">Deep Space Exploration</h2>
+              <p className="text-cyan-300 font-rajdhani text-lg">Discover anomalies, manage warp networks, and pursue achievements.</p>
+            </div>
+          </div>
         </div>
 
         <Tabs defaultValue="anomalies" className="w-full">

@@ -124,7 +124,7 @@ export const MENU_ASSETS = {
     ROBOTICS_FACTORY: {
       id: "building-robotics",
       name: "Robotics Factory",
-      path: "/assets/menu/buildings/robotics_factory.png",
+      path: "/assets/buildings/command_center.png",
       size: ASSET_SIZES.ICON_LARGE,
       bgColor: "#FF6B6B",
       description: "Robotic production facility"
@@ -132,7 +132,7 @@ export const MENU_ASSETS = {
     RESEARCH_LAB: {
       id: "building-research",
       name: "Research Lab",
-      path: "/assets/menu/buildings/research_lab.png",
+      path: "/assets/buildings/research_lab.png",
       size: ASSET_SIZES.ICON_LARGE,
       bgColor: "#4ECDC4",
       description: "Scientific research facility"
@@ -140,7 +140,7 @@ export const MENU_ASSETS = {
     SHIPYARD: {
       id: "building-shipyard",
       name: "Shipyard",
-      path: "/assets/menu/buildings/shipyard.png",
+      path: "/assets/buildings/shipyard.png",
       size: ASSET_SIZES.ICON_LARGE,
       bgColor: "#45B7D1",
       description: "Ship construction facility"
@@ -148,7 +148,7 @@ export const MENU_ASSETS = {
     STORAGE: {
       id: "building-storage",
       name: "Storage Vault",
-      path: "/assets/menu/buildings/storage.png",
+      path: "/assets/buildings/metal_mine.png",
       size: ASSET_SIZES.ICON_LARGE,
       bgColor: "#A29BFE",
       description: "Resource storage facility"
@@ -156,7 +156,7 @@ export const MENU_ASSETS = {
     POWER_PLANT: {
       id: "building-power",
       name: "Power Plant",
-      path: "/assets/menu/buildings/power_plant.png",
+      path: "/assets/buildings/power_plant.png",
       size: ASSET_SIZES.ICON_LARGE,
       bgColor: "#FDB750",
       description: "Energy generation facility"
@@ -164,7 +164,7 @@ export const MENU_ASSETS = {
     DEFENSE_TURRET: {
       id: "building-defense",
       name: "Defense Turret",
-      path: "/assets/menu/buildings/defense_turret.png",
+      path: "/assets/buildings/defense_cannon.png",
       size: ASSET_SIZES.ICON_LARGE,
       bgColor: "#EE5A6F",
       description: "Planetary defense system"
@@ -172,7 +172,7 @@ export const MENU_ASSETS = {
     TRADE_STATION: {
       id: "building-trade",
       name: "Trade Station",
-      path: "/assets/menu/buildings/trade_station.png",
+      path: "/assets/buildings/command_center.png",
       size: ASSET_SIZES.ICON_LARGE,
       bgColor: "#1DD1A1",
       description: "Commercial trading hub"
@@ -180,7 +180,7 @@ export const MENU_ASSETS = {
     SPACEPORT: {
       id: "building-spaceport",
       name: "Spaceport",
-      path: "/assets/menu/buildings/spaceport.png",
+      path: "/assets/buildings/terraformer.png",
       size: ASSET_SIZES.ICON_LARGE,
       bgColor: "#5F27CD",
       description: "Interstellar port facility"
@@ -192,7 +192,7 @@ export const MENU_ASSETS = {
     METAL: {
       id: "resource-metal",
       name: "Metal",
-      path: "/assets/menu/resources/metal.png",
+      path: "/assets/resources/metal.png",
       size: ASSET_SIZES.ICON_MEDIUM,
       bgColor: "#C0392B",
       description: "Metallic ore resources"
@@ -200,7 +200,7 @@ export const MENU_ASSETS = {
     CRYSTAL: {
       id: "resource-crystal",
       name: "Crystal",
-      path: "/assets/menu/resources/crystal.png",
+      path: "/assets/resources/crystal.png",
       size: ASSET_SIZES.ICON_MEDIUM,
       bgColor: "#3498DB",
       description: "Crystalline resources"
@@ -208,7 +208,7 @@ export const MENU_ASSETS = {
     DEUTERIUM: {
       id: "resource-deuterium",
       name: "Deuterium",
-      path: "/assets/menu/resources/deuterium.png",
+      path: "/assets/resources/deuterium.png",
       size: ASSET_SIZES.ICON_MEDIUM,
       bgColor: "#8E44AD",
       description: "Deuterium fuel"
@@ -216,7 +216,7 @@ export const MENU_ASSETS = {
     ENERGY: {
       id: "resource-energy",
       name: "Energy",
-      path: "/assets/menu/resources/energy.png",
+      path: "/assets/buildings/power_plant.png",
       size: ASSET_SIZES.ICON_MEDIUM,
       bgColor: "#F39C12",
       description: "Energy points"
@@ -224,7 +224,7 @@ export const MENU_ASSETS = {
     SCIENCE: {
       id: "resource-science",
       name: "Science",
-      path: "/assets/menu/resources/science.png",
+      path: "/assets/research/astrophysics.png",
       size: ASSET_SIZES.ICON_MEDIUM,
       bgColor: "#16A085",
       description: "Science points for research"
@@ -232,7 +232,7 @@ export const MENU_ASSETS = {
     CREDITS: {
       id: "resource-credits",
       name: "Credits",
-      path: "/assets/menu/resources/credits.png",
+      path: "/assets/resources/credits.png",
       size: ASSET_SIZES.ICON_MEDIUM,
       bgColor: "#F1C40F",
       description: "Game currency"
@@ -286,7 +286,7 @@ export const PLANET_ASSETS = {
     EARTH_LIKE: {
       id: "planet-earth-like",
       name: "Earth-like",
-      path: "/assets/planets/terrestrial/earth_like.png",
+      path: "/assets/planets/terra.png",
       size: ASSET_SIZES.PLANET_LARGE,
       color: "#4ECDC4",
       description: "Blue and green habitable world"
@@ -294,7 +294,7 @@ export const PLANET_ASSETS = {
     DESERT: {
       id: "planet-desert",
       name: "Desert",
-      path: "/assets/planets/terrestrial/desert.png",
+      path: "/assets/planets/volcanic.png",
       size: ASSET_SIZES.PLANET_LARGE,
       color: "#E8B84B",
       description: "Arid sandy planet"
@@ -302,7 +302,7 @@ export const PLANET_ASSETS = {
     ICE: {
       id: "planet-ice",
       name: "Ice World",
-      path: "/assets/planets/terrestrial/ice.png",
+      path: "/assets/planets/ice.png",
       size: ASSET_SIZES.PLANET_LARGE,
       color: "#B4D7FF",
       description: "Frozen polar regions"
@@ -310,7 +310,7 @@ export const PLANET_ASSETS = {
     JUNGLE: {
       id: "planet-jungle",
       name: "Jungle",
-      path: "/assets/planets/terrestrial/jungle.png",
+      path: "/assets/planets/terra.png",
       size: ASSET_SIZES.PLANET_LARGE,
       color: "#2ECC71",
       description: "Dense tropical vegetation"
@@ -318,7 +318,7 @@ export const PLANET_ASSETS = {
     OCEAN: {
       id: "planet-ocean",
       name: "Ocean World",
-      path: "/assets/planets/terrestrial/ocean.png",
+      path: "/assets/planets/terra.png",
       size: ASSET_SIZES.PLANET_LARGE,
       color: "#3498DB",
       description: "World covered in water"
@@ -326,7 +326,7 @@ export const PLANET_ASSETS = {
     VOLCANIC: {
       id: "planet-volcanic",
       name: "Volcanic",
-      path: "/assets/planets/terrestrial/volcanic.png",
+      path: "/assets/planets/volcanic.png",
       size: ASSET_SIZES.PLANET_LARGE,
       color: "#E74C3C",
       description: "Active volcanic world"
@@ -338,7 +338,7 @@ export const PLANET_ASSETS = {
     JUPITER_CLASS: {
       id: "planet-jupiter",
       name: "Jupiter Class",
-      path: "/assets/planets/gas_giants/jupiter_class.png",
+      path: "/assets/planets/gas_giant.png",
       size: ASSET_SIZES.PLANET_LARGE,
       color: "#D4A574",
       description: "Massive gas giant"
@@ -346,7 +346,7 @@ export const PLANET_ASSETS = {
     SATURN_CLASS: {
       id: "planet-saturn",
       name: "Saturn Class",
-      path: "/assets/planets/gas_giants/saturn_class.png",
+      path: "/assets/planets/gas_giant.png",
       size: ASSET_SIZES.PLANET_LARGE,
       color: "#E8D5B7",
       description: "Gas giant with rings"
@@ -354,7 +354,7 @@ export const PLANET_ASSETS = {
     NEPTUNE_CLASS: {
       id: "planet-neptune",
       name: "Neptune Class",
-      path: "/assets/planets/gas_giants/neptune_class.png",
+      path: "/assets/planets/dead.png",
       size: ASSET_SIZES.PLANET_LARGE,
       color: "#4A90E2",
       description: "Ice giant with winds"
@@ -366,7 +366,7 @@ export const PLANET_ASSETS = {
     RING_WORLD: {
       id: "planet-ring-world",
       name: "Ring World",
-      path: "/assets/planets/exotic/ring_world.png",
+      path: "/assets/planets/star.png",
       size: ASSET_SIZES.PLANET_LARGE,
       color: "#9B59B6",
       description: "Ancient megastructure"
@@ -374,7 +374,7 @@ export const PLANET_ASSETS = {
     DYSON_SPHERE: {
       id: "planet-dyson-sphere",
       name: "Dyson Sphere",
-      path: "/assets/planets/exotic/dyson_sphere.png",
+      path: "/assets/planets/star.png",
       size: ASSET_SIZES.PLANET_LARGE,
       color: "#F39C12",
       description: "Star-encompassing sphere"
@@ -392,7 +392,7 @@ export const SHIP_ASSETS = {
     SCOUT: {
       id: "ship-scout",
       name: "Scout Fighter",
-      path: "/assets/ships/fighters/scout.png",
+      path: "/assets/ships/scout.png",
       size: ASSET_SIZES.SHIP_MEDIUM,
       color: "#3498DB",
       description: "Fast reconnaissance vessel"
@@ -400,7 +400,7 @@ export const SHIP_ASSETS = {
     INTERCEPTOR: {
       id: "ship-interceptor",
       name: "Interceptor",
-      path: "/assets/ships/fighters/interceptor.png",
+      path: "/assets/ships/fighter.png",
       size: ASSET_SIZES.SHIP_MEDIUM,
       color: "#E74C3C",
       description: "Quick strike fighter"
@@ -408,7 +408,7 @@ export const SHIP_ASSETS = {
     FIGHTER: {
       id: "ship-fighter",
       name: "Fighter",
-      path: "/assets/ships/fighters/fighter.png",
+      path: "/assets/ships/fighter.png",
       size: ASSET_SIZES.SHIP_MEDIUM,
       color: "#F39C12",
       description: "Standard fighter craft"
@@ -420,7 +420,7 @@ export const SHIP_ASSETS = {
     CORVETTE: {
       id: "ship-corvette",
       name: "Corvette",
-      path: "/assets/ships/capitals/corvette.png",
+      path: "/assets/ships/destroyer.png",
       size: ASSET_SIZES.SHIP_LARGE,
       color: "#16A085",
       description: "Light capital ship"
@@ -428,7 +428,7 @@ export const SHIP_ASSETS = {
     DESTROYER: {
       id: "ship-destroyer",
       name: "Destroyer",
-      path: "/assets/ships/capitals/destroyer.png",
+      path: "/assets/ships/destroyer.png",
       size: ASSET_SIZES.SHIP_LARGE,
       color: "#2C3E50",
       description: "Medium capital ship"
@@ -436,7 +436,7 @@ export const SHIP_ASSETS = {
     BATTLECRUISER: {
       id: "ship-battlecruiser",
       name: "Battlecruiser",
-      path: "/assets/ships/capitals/battlecruiser.png",
+      path: "/assets/ships/battlecruiser.png",
       size: ASSET_SIZES.SHIP_LARGE,
       color: "#8E44AD",
       description: "Heavy capital ship"
@@ -444,7 +444,7 @@ export const SHIP_ASSETS = {
     BATTLESHIP: {
       id: "ship-battleship",
       name: "Battleship",
-      path: "/assets/ships/capitals/battleship.png",
+      path: "/assets/ships/battleship.png",
       size: ASSET_SIZES.SHIP_LARGE,
       color: "#C0392B",
       description: "Super capital ship"
@@ -456,7 +456,7 @@ export const SHIP_ASSETS = {
     CARRIER: {
       id: "ship-carrier",
       name: "Carrier",
-      path: "/assets/ships/special/carrier.png",
+      path: "/assets/ships/mothership.png",
       size: ASSET_SIZES.SHIP_LARGE,
       color: "#27AE60",
       description: "Fighter carrier vessel"
@@ -464,7 +464,7 @@ export const SHIP_ASSETS = {
     TRANSPORT: {
       id: "ship-transport",
       name: "Transport",
-      path: "/assets/ships/special/transport.png",
+      path: "/assets/ships/cargo.png",
       size: ASSET_SIZES.SHIP_LARGE,
       color: "#95A5A6",
       description: "Cargo transport ship"
@@ -472,7 +472,7 @@ export const SHIP_ASSETS = {
     COLONIZER: {
       id: "ship-colonizer",
       name: "Colonizer",
-      path: "/assets/ships/special/colonizer.png",
+      path: "/assets/ships/colony.png",
       size: ASSET_SIZES.SHIP_LARGE,
       color: "#1ABC9C",
       description: "Colony establishment vessel"
@@ -488,7 +488,7 @@ export const TECH_BRANCH_ASSETS = {
   ARMOR: {
     id: "tech-armor",
     name: "Armor",
-    path: "/assets/tech_branches/armor.svg",
+    path: "/assets/research/shields.png",
     size: ASSET_SIZES.ICON_LARGE,
     color: "#8B7355",
     description: "Armor and plating technologies"
@@ -496,7 +496,7 @@ export const TECH_BRANCH_ASSETS = {
   SHIELDS: {
     id: "tech-shields",
     name: "Shields",
-    path: "/assets/tech_branches/shields.svg",
+    path: "/assets/research/shields.png",
     size: ASSET_SIZES.ICON_LARGE,
     color: "#4ECDC4",
     description: "Shield and protection systems"
@@ -504,7 +504,7 @@ export const TECH_BRANCH_ASSETS = {
   WEAPONS: {
     id: "tech-weapons",
     name: "Weapons",
-    path: "/assets/tech_branches/weapons.svg",
+    path: "/assets/research/weapons.png",
     size: ASSET_SIZES.ICON_LARGE,
     color: "#E74C3C",
     description: "Weapons and ordnance systems"
@@ -512,7 +512,7 @@ export const TECH_BRANCH_ASSETS = {
   PROPULSION: {
     id: "tech-propulsion",
     name: "Propulsion",
-    path: "/assets/tech_branches/propulsion.svg",
+    path: "/assets/research/propulsion.png",
     size: ASSET_SIZES.ICON_LARGE,
     color: "#3498DB",
     description: "Engine and drive systems"
@@ -520,7 +520,7 @@ export const TECH_BRANCH_ASSETS = {
   SENSORS: {
     id: "tech-sensors",
     name: "Sensors",
-    path: "/assets/tech_branches/sensors.svg",
+    path: "/assets/research/espionage.png",
     size: ASSET_SIZES.ICON_LARGE,
     color: "#F39C12",
     description: "Detection and scanning systems"
@@ -528,7 +528,7 @@ export const TECH_BRANCH_ASSETS = {
   POWER: {
     id: "tech-power",
     name: "Power",
-    path: "/assets/tech_branches/power.svg",
+    path: "/assets/research/propulsion.png",
     size: ASSET_SIZES.ICON_LARGE,
     color: "#F1C40F",
     description: "Power generation systems"
@@ -536,7 +536,7 @@ export const TECH_BRANCH_ASSETS = {
   COMPUTING: {
     id: "tech-computing",
     name: "Computing",
-    path: "/assets/tech_branches/computing.svg",
+    path: "/assets/research/astrophysics.png",
     size: ASSET_SIZES.ICON_LARGE,
     color: "#9B59B6",
     description: "AI and computing systems"
@@ -544,7 +544,7 @@ export const TECH_BRANCH_ASSETS = {
   ENGINEERING: {
     id: "tech-engineering",
     name: "Engineering",
-    path: "/assets/tech_branches/engineering.svg",
+    path: "/assets/research/propulsion.png",
     size: ASSET_SIZES.ICON_LARGE,
     color: "#2ECC71",
     description: "Construction and fabrication"
@@ -552,7 +552,7 @@ export const TECH_BRANCH_ASSETS = {
   RESOURCES: {
     id: "tech-resources",
     name: "Resources",
-    path: "/assets/tech_branches/resources.svg",
+    path: "/assets/research/astrophysics.png",
     size: ASSET_SIZES.ICON_LARGE,
     color: "#E67E22",
     description: "Resource processing systems"
@@ -560,7 +560,7 @@ export const TECH_BRANCH_ASSETS = {
   MEDICAL: {
     id: "tech-medical",
     name: "Medical",
-    path: "/assets/tech_branches/medical.svg",
+    path: "/assets/research/shields.png",
     size: ASSET_SIZES.ICON_LARGE,
     color: "#1ABC9C",
     description: "Medical and life support systems"
@@ -568,7 +568,7 @@ export const TECH_BRANCH_ASSETS = {
   HYPERSPACE: {
     id: "tech-hyperspace",
     name: "Hyperspace",
-    path: "/assets/tech_branches/hyperspace.svg",
+    path: "/assets/research/propulsion.png",
     size: ASSET_SIZES.ICON_LARGE,
     color: "#16A085",
     description: "Advanced physics and teleportation"
@@ -584,30 +584,58 @@ export const BACKGROUND_ASSETS = {
   RESEARCH_LAB: {
     id: "bg-research-lab",
     name: "Research Lab",
-    path: "/assets/backgrounds/research_lab.jpg",
+    path: "/assets/backgrounds/nebula.png",
     size: ASSET_SIZES.BG_FULLSCREEN,
     description: "Futuristic research laboratory"
   },
   SHIPYARD: {
     id: "bg-shipyard",
     name: "Shipyard",
-    path: "/assets/backgrounds/shipyard.jpg",
+    path: "/assets/backgrounds/space_station.png",
     size: ASSET_SIZES.BG_FULLSCREEN,
     description: "Orbital shipyard construction"
   },
   STAR_FIELD: {
     id: "bg-starfield",
     name: "Star Field",
-    path: "/assets/backgrounds/starfield.jpg",
+    path: "/assets/backgrounds/deep_space.png",
     size: ASSET_SIZES.BG_FULLSCREEN,
     description: "Deep space star field"
   },
   NEBULA: {
     id: "bg-nebula",
     name: "Nebula",
-    path: "/assets/backgrounds/nebula.jpg",
+    path: "/assets/backgrounds/nebula.png",
     size: ASSET_SIZES.BG_FULLSCREEN,
     description: "Colorful nebula cloud"
+  },
+  GALAXY_MAP: {
+    id: "bg-galaxy-map",
+    name: "Galaxy Map",
+    path: "/assets/backgrounds/galaxy_map.png",
+    size: ASSET_SIZES.BG_FULLSCREEN,
+    description: "Galaxy overview map"
+  },
+  COMBAT: {
+    id: "bg-combat",
+    name: "Space Combat",
+    path: "/assets/backgrounds/combat_battle.png",
+    size: ASSET_SIZES.BG_FULLSCREEN,
+    description: "Epic space battle scene"
+  },
+  ASTEROID_FIELD: {
+    id: "bg-asteroid",
+    name: "Asteroid Field",
+    path: "/assets/backgrounds/asteroid_field.png",
+    size: ASSET_SIZES.BG_FULLSCREEN,
+    description: "Asteroid mining field"
+  },
+  FLEET: {
+    id: "bg-fleet",
+    name: "Fleet Formation",
+    path: "/assets/backgrounds/fleet_bg.png",
+    size: ASSET_SIZES.BG_FULLSCREEN,
+    description: "Fleet in formation"
   },
 } as const;
 

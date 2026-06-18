@@ -148,9 +148,16 @@ export default function Government() {
   return (
     <GameLayout>
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div>
-          <h2 className="text-3xl font-orbitron font-bold text-slate-900">Planetary Government</h2>
-          <p className="text-lg font-rajdhani text-muted-foreground">Expanded government systems, sub systems, menus, pages, classes, sub classes, sub types, and mechanics.</p>
+        <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
+          <img src="/assets/backgrounds/planet_surface.png" alt="Government" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-900/65 to-transparent" />
+          <div className="relative z-10 p-6 flex items-center gap-6">
+            <img src="/assets/buildings/command_center.png" alt="Government" className="w-20 h-20 rounded-xl object-cover ring-2 ring-slate-300/50 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
+            <div>
+              <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow">Planetary Government</h2>
+              <p className="text-slate-300 font-rajdhani text-lg">Government systems, reform mechanics, cabinet management, and policy doctrine.</p>
+            </div>
+          </div>
         </div>
         <div className="grid grid-cols-1 gap-4 xl:grid-cols-4">
           <Card className="xl:col-span-2 bg-white border-slate-200"><CardHeader><CardTitle className="flex items-center gap-2 text-slate-900"><Landmark className="w-5 h-5 text-primary" />State Overview</CardTitle></CardHeader><CardContent className="space-y-4"><div className="rounded border border-slate-200 bg-slate-50 p-5"><div className="flex flex-wrap items-start justify-between gap-4"><div><div className="text-xs uppercase tracking-[0.22em] text-slate-500 font-bold">Active Regime</div><h3 className="text-2xl font-orbitron text-slate-900">{activeGov.name}</h3><div className="mt-2 flex flex-wrap gap-2"><Badge className="bg-slate-900 text-white">{activeGov.rulerTitle}</Badge><Badge variant="outline">{activeGov.family}</Badge><Badge variant="outline">{activeGov.controlModel}</Badge></div><p className="mt-2 text-sm text-slate-600">{activeGov.description}</p></div><div className="text-right"><div className="text-xs uppercase tracking-[0.22em] text-slate-500 font-bold">Tax Rate</div><div className="text-3xl font-mono font-bold text-primary">{government.taxRate || 0}%</div></div></div></div><div className="grid grid-cols-2 gap-4 lg:grid-cols-4">{[{ label: "Stability", value: government.stats.stability }, { label: "Support", value: government.stats.publicSupport }, { label: "Efficiency", value: government.stats.efficiency }, { label: "Readiness", value: government.stats.militaryReadiness }].map((metric) => <div key={metric.label} className="rounded border border-slate-200 bg-slate-50 p-3"><div className="mb-1 flex justify-between text-sm font-semibold text-slate-700"><span>{metric.label}</span><span>{metric.value}%</span></div><Progress value={metric.value} className="h-2" /></div>)}</div><div><div className="mb-2 flex justify-between text-sm font-semibold text-slate-900"><span>Taxation Level</span><span className="text-xs uppercase tracking-[0.18em] text-slate-500">Pressure driver</span></div><Slider value={[government.taxRate || 0]} max={100} step={1} onValueChange={(value) => setTaxRate(value[0])} /></div></CardContent></Card>

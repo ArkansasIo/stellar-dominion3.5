@@ -111,9 +111,16 @@ export default function TechTree() {
     <GameLayout>
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         {/* Header */}
-        <div>
-          <h2 className="text-3xl font-orbitron font-bold text-slate-900">Technology & Blueprint Encyclopedia</h2>
-          <p className="text-muted-foreground font-rajdhani text-lg">Complete tech database with 120+ facilities, combat systems, and progression tiers</p>
+        <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
+          <img src="/assets/backgrounds/nebula.png" alt="Tech" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-blue-950/60 to-transparent" />
+          <div className="relative z-10 p-6 flex items-center gap-6">
+            <img src="/assets/research/weapons_tech.png" alt="Tech" className="w-20 h-20 rounded-xl object-cover ring-2 ring-blue-400/60 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
+            <div>
+              <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow">Technology & Blueprint Encyclopedia</h2>
+              <p className="text-blue-300 font-rajdhani text-lg">Complete tech database with 120+ facilities, combat systems, and progression tiers.</p>
+            </div>
+          </div>
         </div>
 
         {/* Search Bar */}

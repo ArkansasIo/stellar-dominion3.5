@@ -934,11 +934,17 @@ export default function Market() {
   return (
     <GameLayout>
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div className="flex items-center justify-between">
-           <div>
-             <h2 className="text-3xl font-orbitron font-bold text-slate-900">Galactic Trade Network</h2>
-             <p className="text-muted-foreground font-rajdhani text-lg">Acquire construction materials, rare parts, and exotic commodities.</p>
-           </div>
+        <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
+          <img src="/assets/backgrounds/space_station.png" alt="Market" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-teal-950/60 to-transparent" />
+          <div className="relative z-10 p-6 flex items-center justify-between">
+            <div className="flex items-center gap-6">
+              <img src="/assets/ships/cargo.png" alt="Cargo" className="w-20 h-20 rounded-xl object-cover ring-2 ring-teal-400/60 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
+              <div>
+                <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow">Galactic Trade Network</h2>
+                <p className="text-teal-300 font-rajdhani text-lg">Acquire construction materials, rare parts, and exotic commodities.</p>
+              </div>
+            </div>
            <div className="flex gap-2 bg-white p-1 rounded border border-slate-200">
               <Button 
                 size="sm" 

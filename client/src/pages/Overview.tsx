@@ -264,15 +264,22 @@ export default function Overview() {
         
         <Navigation />
 
-        <div className="flex justify-between items-end border-b border-slate-200 pb-4">
-          <div>
-            <h2 className="text-3xl font-orbitron font-bold text-slate-900">Command Center</h2>
-            <p className="text-muted-foreground font-rajdhani text-lg">{planetName} • {coordinates}</p>
-            <p className="text-sm text-slate-600 mt-1" data-testid="text-commander-name">Commander: {displayUsername}</p>
-          </div>
-          <div className="text-right">
-             <div className="text-sm text-primary font-mono">SERVER TIME</div>
-             <div className="text-xl font-mono text-slate-900">{new Date().toLocaleTimeString()}</div>
+        <div className="relative rounded-xl overflow-hidden shadow-lg" style={{ minHeight: 150 }}>
+          <img src={getPlanetImagePath(planetInfo.class)} alt={planetInfo.type} className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/92 via-slate-900/65 to-transparent" />
+          <div className="relative z-10 p-6 flex items-center justify-between">
+            <div className="flex items-center gap-6">
+              <img src={getPlanetImagePath(planetInfo.class)} alt={planetInfo.type} className="w-24 h-24 rounded-full object-cover ring-4 ring-primary/40 shadow-2xl" onError={(e) => { e.currentTarget.style.display='none'; }} />
+              <div>
+                <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow">Command Center</h2>
+                <p className="text-cyan-300 font-rajdhani text-lg">{planetName} • {coordinates}</p>
+                <p className="text-sm text-slate-300 mt-1" data-testid="text-commander-name">Commander: {displayUsername}</p>
+              </div>
+            </div>
+            <div className="text-right mr-2">
+               <div className="text-sm text-cyan-400 font-mono">SERVER TIME</div>
+               <div className="text-xl font-mono text-white">{new Date().toLocaleTimeString()}</div>
+            </div>
           </div>
         </div>
 

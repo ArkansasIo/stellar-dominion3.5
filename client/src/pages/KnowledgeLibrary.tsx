@@ -389,18 +389,18 @@ export default function KnowledgeLibrary() {
   return (
     <GameLayout>
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-          <div>
-            <h2 className="flex items-center gap-2 text-3xl font-orbitron font-bold text-slate-900">
-              <BookOpen className="h-8 w-8" />
-              Knowledge Library
-            </h2>
-            <p className="mt-2 max-w-4xl text-lg text-slate-600">
-              Browse 240 research programs, 240 technology systems, staffing jobs, specialist units,
-              and the operational logic that turns science into empire-wide power.
-            </p>
+        <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
+          <img src="/assets/backgrounds/nebula.png" alt="Knowledge" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-indigo-950/65 to-transparent" />
+          <div className="relative z-10 p-6 flex items-center gap-6">
+            <img src="/assets/research/computing.png" alt="Knowledge" className="w-20 h-20 rounded-xl object-cover ring-2 ring-indigo-400/60 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
+            <div>
+              <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow">Knowledge Library</h2>
+              <p className="text-indigo-300 font-rajdhani text-lg">240 research programs, 240 technology systems, staffing jobs, and specialist units.</p>
+            </div>
           </div>
-
+        </div>
+        <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
           <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
             <Card className="border-slate-200 bg-white shadow-sm">
               <CardContent className="p-4">

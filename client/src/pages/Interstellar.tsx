@@ -240,9 +240,16 @@ export default function Interstellar() {
   return (
     <GameLayout>
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div>
-          <h2 className="text-3xl font-orbitron font-bold text-slate-900">Interstellar Travel</h2>
-          <p className="text-muted-foreground font-rajdhani text-lg">Navigate the stars using advanced propulsion and gateway networks.</p>
+        <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
+          <img src="/assets/backgrounds/deep_space.png" alt="Interstellar" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-blue-950/60 to-transparent" />
+          <div className="relative z-10 p-6 flex items-center gap-6">
+            <img src="/assets/ships/colony.png" alt="Colony Ship" className="w-20 h-20 rounded-xl object-cover ring-2 ring-blue-300/50 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
+            <div>
+              <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow">Interstellar Travel</h2>
+              <p className="text-blue-300 font-rajdhani text-lg">Navigate the stars using advanced propulsion and gateway networks.</p>
+            </div>
+          </div>
         </div>
 
         <div className="bg-slate-900 text-white p-6 rounded-lg shadow-md border border-slate-700 flex justify-between items-center">

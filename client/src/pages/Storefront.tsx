@@ -147,19 +147,20 @@ export default function Storefront() {
   return (
     <GameLayout>
       <div className="space-y-6">
-        <div>
-          <h2 className="text-3xl font-orbitron font-bold text-slate-900">Storefront</h2>
-          <p className="text-muted-foreground font-rajdhani text-lg">Purchase boosters, cosmetics, resources, and bundles for story and seasonal progression.</p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            <Link href="/story-mode">
-              <Button variant="outline" size="sm">Open Story Mode</Button>
-            </Link>
-            <Link href="/season-pass">
-              <Button variant="outline" size="sm">Open Season Pass</Button>
-            </Link>
-            <Link href="/battle-pass">
-              <Button variant="outline" size="sm">Open Battle Pass</Button>
-            </Link>
+        <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
+          <img src="/assets/backgrounds/space_station.png" alt="Storefront" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-emerald-950/60 to-transparent" />
+          <div className="relative z-10 p-6 flex items-center gap-6">
+            <img src="/assets/buildings/space_port.png" alt="Store" className="w-20 h-20 rounded-xl object-cover ring-2 ring-emerald-400/60 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
+            <div>
+              <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow">Storefront</h2>
+              <p className="text-emerald-300 font-rajdhani text-lg">Purchase boosters, cosmetics, resources, and bundles for story and seasonal progression.</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Link href="/story-mode"><Button variant="outline" size="sm" className="border-white/30 text-white hover:bg-white/10">Story Mode</Button></Link>
+                <Link href="/season-pass"><Button variant="outline" size="sm" className="border-white/30 text-white hover:bg-white/10">Season Pass</Button></Link>
+                <Link href="/battle-pass"><Button variant="outline" size="sm" className="border-white/30 text-white hover:bg-white/10">Battle Pass</Button></Link>
+              </div>
+            </div>
           </div>
         </div>
 

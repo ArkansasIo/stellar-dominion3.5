@@ -73,9 +73,16 @@ export default function TechnologyTree() {
   return (
     <GameLayout>
       <div className="space-y-6">
-        <div>
-          <h2 className="text-3xl font-orbitron font-bold text-slate-900">Research Technology Tree</h2>
-          <p className="text-muted-foreground">Stellaris-style research view with 90 upgrade nodes in each technology category, now tied into Spaceship Command-inspired hull doctrine, capital command, logistics, and covert fleet progression.</p>
+        <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
+          <img src="/assets/backgrounds/deep_space.png" alt="Technology Tree" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-teal-950/60 to-transparent" />
+          <div className="relative z-10 p-6 flex items-center gap-6">
+            <img src="/assets/research/astrophysics.png" alt="Research" className="w-20 h-20 rounded-xl object-cover ring-2 ring-teal-400/60 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
+            <div>
+              <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow">Research Technology Tree</h2>
+              <p className="text-teal-300 font-rajdhani text-lg">90 upgrade nodes per category — hull doctrine, capital command, logistics, and covert fleets.</p>
+            </div>
+          </div>
         </div>
 
         <Card className="overflow-hidden border-slate-200 bg-white shadow-sm">

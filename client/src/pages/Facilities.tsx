@@ -32,14 +32,21 @@ import { useEffect } from "react";
 const TEMP_THEME_IMAGE = "/theme-temp.png";
 
 const FACILITY_IMAGE_MAP: Record<string, string> = {
-  roboticsFactory: MENU_ASSETS.BUILDINGS.ROBOTICS_FACTORY.path,
-  shipyard:         MENU_ASSETS.BUILDINGS.SHIPYARD.path,
-  researchLab:      MENU_ASSETS.BUILDINGS.RESEARCH_LAB.path,
-  naniteFactory:    MENU_ASSETS.BUILDINGS.ROBOTICS_FACTORY.path,
-  terraformer:      MENU_ASSETS.BUILDINGS.SPACEPORT.path,
-  spaceStation:     MENU_ASSETS.BUILDINGS.SPACEPORT.path,
-  allianceDepot:    MENU_ASSETS.BUILDINGS.TRADE_STATION.path,
-  missileSilo:      MENU_ASSETS.BUILDINGS.DEFENSE_TURRET.path,
+  roboticsFactory:       MENU_ASSETS.BUILDINGS.ROBOTICS_FACTORY.path,
+  shipyard:              MENU_ASSETS.BUILDINGS.SHIPYARD.path,
+  researchLab:           MENU_ASSETS.BUILDINGS.RESEARCH_LAB.path,
+  naniteFactory:         MENU_ASSETS.BUILDINGS.ROBOTICS_FACTORY.path,
+  terraformer:           MENU_ASSETS.BUILDINGS.SPACEPORT.path,
+  spaceStation:          MENU_ASSETS.BUILDINGS.SPACEPORT.path,
+  allianceDepot:         MENU_ASSETS.BUILDINGS.TRADE_STATION.path,
+  missileSilo:           MENU_ASSETS.BUILDINGS.DEFENSE_TURRET.path,
+  metalMine:             "/assets/buildings/metal_mine.png",
+  crystalMine:           "/assets/buildings/crystal_mine.png",
+  deuteriumSynthesizer:  "/assets/buildings/deuterium.png",
+  solarPlant:            "/assets/buildings/power_plant.png",
+  commandCenter:         "/assets/buildings/command_center.png",
+  missileBattery:        "/assets/buildings/missile_battery.png",
+  defenseCannon:         "/assets/buildings/defense_cannon.png",
 };
 
 type FacilityBase = "planet" | "moon" | "station";
@@ -670,11 +677,16 @@ export default function Facilities() {
   return (
     <GameLayout>
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div className="flex items-center justify-between">
-           <div>
-             <h2 className="text-3xl font-orbitron font-bold text-slate-900">Infrastructure</h2>
-             <p className="text-muted-foreground font-rajdhani text-lg">Manage surface facilities, lunar bases, and orbital stations.</p>
-           </div>
+        <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
+          <img src="/assets/backgrounds/planet_surface.png" alt="Infrastructure" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-amber-950/60 to-transparent" />
+          <div className="relative z-10 p-6 flex items-center gap-6">
+            <img src="/assets/buildings/command_center.png" alt="Command Center" className="w-20 h-20 rounded-xl object-cover ring-2 ring-amber-400/60 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
+            <div>
+              <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow">Infrastructure</h2>
+              <p className="text-amber-300 font-rajdhani text-lg">Manage surface facilities, lunar bases, and orbital stations.</p>
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

@@ -196,11 +196,11 @@ export const OGAMEX_ASSET_COLLECTIONS: readonly OgamexAssetReference[] = [
 ] as const;
 
 export const OGAMEX_FEATURED_ASSETS = {
-  BACKGROUND: OGAMEX_ASSET_COLLECTIONS[0],
-  RESEARCH: OGAMEX_ASSET_COLLECTIONS[1],
-  SHIPS: OGAMEX_ASSET_COLLECTIONS[2],
-  DEFENSE: OGAMEX_ASSET_COLLECTIONS[12],
-  MOON: OGAMEX_ASSET_COLLECTIONS[18],
+  BACKGROUND: { ...OGAMEX_ASSET_COLLECTIONS[0], path: "/assets/backgrounds/nebula.png" },
+  RESEARCH: { ...OGAMEX_ASSET_COLLECTIONS[1], path: "/assets/research/astrophysics.png" },
+  SHIPS: { ...OGAMEX_ASSET_COLLECTIONS[2], path: "/assets/backgrounds/fleet_bg.png" },
+  DEFENSE: { ...OGAMEX_ASSET_COLLECTIONS[12], path: "/assets/buildings/defense_cannon.png" },
+  MOON: { ...OGAMEX_ASSET_COLLECTIONS[18], path: "/assets/planets/dead.png" },
 } as const;
 
 export function getOgamexAssetsByCategory(category: OgamexAssetCategory): OgamexAssetReference[] {

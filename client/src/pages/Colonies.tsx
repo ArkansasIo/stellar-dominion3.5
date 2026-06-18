@@ -279,14 +279,17 @@ export default function Colonies() {
       <div className="space-y-6 animate-in fade-in duration-500">
         <Navigation />
 
-        <div>
-          <h2 className="text-3xl font-orbitron font-bold text-slate-900">Planetary Empire Command</h2>
-          <p className="text-muted-foreground font-rajdhani text-lg">
-            Planet and moon management with detailed sub-stats, solar system overview, and unified control systems.
-          </p>
-          <p className="text-xs text-slate-500 mt-1">
-            Pagination: {COLONIES_PER_PAGE} per page • {empireOverview.totalColonies.toLocaleString()} total colonies/moons • {empireOverview.totalPages.toLocaleString()} pages.
-          </p>
+        <div className="relative rounded-xl overflow-hidden shadow-lg" style={{ minHeight: 140 }}>
+          <img src="/assets/planets/terra.png" alt="Colony" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-blue-950/65 to-transparent" />
+          <div className="relative z-10 p-6 flex items-center gap-6">
+            <img src="/assets/planets/terra.png" alt="Terra Planet" className="w-20 h-20 rounded-full object-cover ring-2 ring-blue-400/50 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
+            <div>
+              <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow">Planetary Empire Command</h2>
+              <p className="text-blue-300 font-rajdhani text-lg">Planet and moon management with sub-stats, solar system overview, and unified control.</p>
+              <p className="text-xs text-slate-400 mt-1">{COLONIES_PER_PAGE} per page • {empireOverview.totalColonies.toLocaleString()} total colonies/moons</p>
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

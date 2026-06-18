@@ -268,9 +268,16 @@ export default function Galaxy() {
   return (
     <GameLayout>
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div>
-          <h2 className="text-3xl font-orbitron font-bold text-slate-900">Galaxy View</h2>
-          <p className="text-muted-foreground font-rajdhani text-lg">Scan surrounding sectors and systems for resources and anomalies.</p>
+        <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
+          <img src="/assets/backgrounds/galaxy_map.png" alt="Galaxy" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-900/70 to-transparent" />
+          <div className="relative z-10 p-6 flex items-center gap-6">
+            <img src="/assets/planets/gas_giant.png" alt="Planet" className="w-20 h-20 rounded-full object-cover ring-2 ring-cyan-400/50 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
+            <div>
+              <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow">Galaxy View</h2>
+              <p className="text-cyan-300 font-rajdhani text-lg">Scan surrounding sectors and systems for resources and anomalies.</p>
+            </div>
+          </div>
         </div>
 
         {/* Navigation Bar */}

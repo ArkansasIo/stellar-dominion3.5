@@ -44,11 +44,16 @@ export default function Merchants() {
   return (
     <GameLayout>
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div>
-          <h2 className="text-3xl font-orbitron font-bold text-slate-900" data-testid="text-merchants-title">
-            Galactic Merchants
-          </h2>
-          <p className="text-muted-foreground font-rajdhani text-lg">Trade with vendors, accept quests, and discover exclusive goods.</p>
+        <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
+          <img src="/assets/backgrounds/space_station.png" alt="Merchants" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-amber-950/60 to-transparent" />
+          <div className="relative z-10 p-6 flex items-center gap-6">
+            <img src="/assets/ships/cargo.png" alt="Cargo" className="w-20 h-20 rounded-xl object-cover ring-2 ring-amber-400/60 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
+            <div>
+              <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow" data-testid="text-merchants-title">Galactic Merchants</h2>
+              <p className="text-amber-300 font-rajdhani text-lg">Trade with vendors, accept quests, and discover exclusive goods.</p>
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[600px]">
