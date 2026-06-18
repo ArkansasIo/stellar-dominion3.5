@@ -966,6 +966,7 @@ export default function Market() {
               </Button>
            </div>
         </div>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card className="bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200" data-testid="card-stats-metal">
