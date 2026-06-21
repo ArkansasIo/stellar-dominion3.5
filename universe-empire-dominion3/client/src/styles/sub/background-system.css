@@ -1,0 +1,30 @@
+.sd-game-shell {
+  background:
+    radial-gradient(circle at top right, var(--sd-shell-nebula-a), transparent 28%),
+    radial-gradient(circle at left center, var(--sd-shell-nebula-b), transparent 24%),
+    var(--sd-shell-bg);
+}
+
+.sd-topbar,
+.sd-main-stage,
+.sd-footer-shell {
+  backdrop-filter: blur(10px);
+}
+
+.sd-scene-layer {
+  background:
+    radial-gradient(circle at 75% 18%, var(--sd-scene-accent-a), transparent 14%),
+    radial-gradient(circle at 28% 28%, var(--sd-scene-accent-b), transparent 18%);
+}
+
+.sd-scene-grid {
+  mix-blend-mode: screen;
+  opacity: 0.14;
+}
+
+.sd-scene-hero,
+.sd-scene-support,
+.sd-scene-fleet,
+.sd-scene-ring {
+  filter: saturate(1.08) drop-shadow(0 0 22px rgba(79, 212, 255, 0.14));
+}

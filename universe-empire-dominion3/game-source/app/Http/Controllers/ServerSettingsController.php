@@ -1,0 +1,39 @@
+<?php
+
+namespace OGame\Http\Controllers;
+
+use Illuminate\View\View;
+use OGame\Services\SettingsService;
+
+class ServerSettingsController extends OGameController
+{
+    /**
+     * Shows the server settings info popup page
+     *
+     * @return View
+     */
+    public function overlay(SettingsService $settingsService): View
+    {
+        return view('ingame.serversettings.overlay')->with([
+            'universe_name' => $settingsService->universeName(),
+            'fleet_speed_war' => $settingsService->fleetSpeedWar(),
+            'fleet_speed_holding' => $settingsService->fleetSpeedHolding(),
+            'fleet_speed_peaceful' => $settingsService->fleetSpeedPeaceful(),
+            'economy_speed' => $settingsService->economySpeed(),
+            'research_speed' => $settingsService->researchSpeed(),
+            'planet_fields_bonus' => $settingsService->planetFieldsBonus(),
+            'dark_matter_bonus' => $settingsService->darkMatterBonus(),
+            'alliance_combat_system_on' => $settingsService->allianceCombatSystemOn(),
+            'debris_field_from_ships' => $settingsService->debrisFieldFromShips(),
+            'debris_field_from_defense' => $settingsService->debrisFieldFromDefense(),
+            'debris_field_deuterium_on' => $settingsService->debrisFieldDeuteriumOn(),
+            'maximum_moon_chance' => $settingsService->maximumMoonChance(),
+            'ignore_empty_systems_on' => $settingsService->ignoreEmptySystemsOn(),
+            'ignore_inactive_systems_on' => $settingsService->ignoreInactiveSystemsOn(),
+            'number_of_galaxies' => $settingsService->numberOfGalaxies(),
+            'dark_matter_regen_enabled' => (bool)$settingsService->get('dark_matter_regen_enabled', 0),
+            'dark_matter_regen_amount' => (int)$settingsService->get('dark_matter_regen_amount', 150000),
+            'dark_matter_regen_period' => (int)$settingsService->get('dark_matter_regen_period', 604800),
+        ]);
+    }
+}

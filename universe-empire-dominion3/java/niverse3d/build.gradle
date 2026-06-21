@@ -1,0 +1,23 @@
+allprojects {
+    group = "com.stellardominion.niverse3d"
+    version = projectVersion
+
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+subprojects {
+    apply plugin: "java"
+
+    java {
+        sourceCompatibility = JavaVersion.toVersion(targetJavaVersion)
+        targetCompatibility = JavaVersion.toVersion(targetJavaVersion)
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = "UTF-8"
+        options.release = Integer.parseInt(targetJavaVersion)
+    }
+}

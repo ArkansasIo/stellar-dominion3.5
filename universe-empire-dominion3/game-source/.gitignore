@@ -1,0 +1,21 @@
+/node_modules
+/public/hot
+/public/storage
+/storage/*.key
+/vendor
+/.idea
+/.vagrant
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+.env
+.phpunit.result.cache
+.phpunit.cache
+.sql
+.codebuddy
+
+# Rust compilation dirs
+rust/*/target
+# Compiled rust apps (rust modules are recompiled during container start)
+storage/rust-libs/*.so

@@ -1,0 +1,30 @@
+{
+  "asset": {
+    "generator": "Stellar Dominion template",
+    "version": "2.0"
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "mesh": 0,
+      "name": "placeholder_probe"
+    }
+  ],
+  "meshes": [
+    {
+      "primitives": [
+        {
+          "attributes": {}
+        }
+      ],
+      "name": "placeholder_probe_mesh"
+    }
+  ]
+}

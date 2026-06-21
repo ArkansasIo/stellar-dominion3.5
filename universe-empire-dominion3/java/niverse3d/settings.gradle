@@ -1,0 +1,3 @@
+rootProject.name = "niverse3d"
+
+include("core", "lwjgl3")

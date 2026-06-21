@@ -1,0 +1,141 @@
+﻿[dotenv@17.3.1] injecting env (2) from .env -- tip: ≡ƒ¢á∩╕Å  run anywhere with `dotenvx run -- yourcommand`
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: ≡ƒöÉ encrypt with Dotenvx: https://dotenvx.com
+[dotenv@17.3.1] injecting env (0) from .env -- tip: ΓÜÖ∩╕Å  override existing env vars with { override: true }
+≡ƒöî Connecting to database...
+Resource service started!
+Fleet service started!
+Technology service started!
+Game engine started!
+Γ£à Database connection established
+7:09:40 PM ΓÜá∩╕Å [33m[AUTH]    [0m [1mDEV_AUTH_BYPASS is enabled; protected routes will auto-authenticate locally[0m  
+[phpMyAdmin] Portal registered at http://localhost:5001/phpmyadmin
+7:09:41 PM [express] [i] serving on port 5001
+7:09:41 PM Γä╣∩╕Å [34m[SERVER]  [0m [1mserving on port 5001[0m  
+
+[1m[34m================================================[0m
+[1m[34m SERVER STARTUP INITIALIZATION [0m
+[1m[34m================================================[0m
+
+[1m  Initializing Server Components:[0m
+    \ Loading Express.js framework...
+    [ok] [32mDatabase connection pool initialized[0m
+    [ok] [32mSession manager configured[0m
+    [ok] [32mAuthentication middleware loaded[0m
+    [ok] [32mAPI routes registered[0m
+    [ok] [32mError handlers configured[0m
+    \ Starting HTTP server...
+
+[1m[34m================================================[0m
+[1m[34m SERVER STARTUP INITIALIZATION [0m
+[1m[34m================================================[0m
+
+[1m  Initializing Server Components:[0m
+    | Loading Express.js framework...
+    [ok] [32mDatabase connection pool initialized[0m
+    [ok] [32mSession manager configured[0m
+    [ok] [32mAuthentication middleware loaded[0m
+    [ok] [32mAPI routes registered[0m
+    [ok] [32mError handlers configured[0m
+    | Starting HTTP server...
+
+[1m[34m================================================[0m
+[1m[34m SERVER STARTUP INITIALIZATION [0m
+[1m[34m================================================[0m
+
+[1m  Initializing Server Components:[0m
+    / Loading Express.js framework...
+    [ok] [32mDatabase connection pool initialized[0m
+    [ok] [32mSession manager configured[0m
+    [ok] [32mAuthentication middleware loaded[0m
+    [ok] [32mAPI routes registered[0m
+    [ok] [32mError handlers configured[0m
+    / Starting HTTP server...
+
+[1m[34m================================================[0m
+[1m[34m SERVER STARTUP INITIALIZATION [0m
+[1m[34m================================================[0m
+
+[1m  Initializing Server Components:[0m
+    - Loading Express.js framework...
+    [ok] [32mDatabase connection pool initialized[0m
+    [ok] [32mSession manager configured[0m
+    [ok] [32mAuthentication middleware loaded[0m
+    [ok] [32mAPI routes registered[0m
+    [ok] [32mError handlers configured[0m
+    - Starting HTTP server...
+
+[1m[34m================================================[0m
+[1m[34m SERVER STARTUP INITIALIZATION [0m
+[1m[34m================================================[0m
+
+[1m  Initializing Server Components:[0m
+    \ Loading Express.js framework...
+    [ok] [32mDatabase connection pool initialized[0m
+    [ok] [32mSession manager configured[0m
+    [ok] [32mAuthentication middleware loaded[0m
+    [ok] [32mAPI routes registered[0m
+    [ok] [32mError handlers configured[0m
+    \ Starting HTTP server...
+
+[1m[32m================================================[0m
+[1m[32m SERVER INITIALIZED SUCCESSFULLY [0m
+[1m[32m================================================[0m
+
+[1m[34mSetup Complete:[0m
+  [32m*[0m All services initialized
+  [32m*[0m Server ready to accept connections
+  [32m*[0m Database connection verified
+
+[1m[36m================================================[0m
+[1m[36m SERVER STATUS DASHBOARD [0m
+[1m[36m================================================[0m
+
+[1mMain Server Info:[0m
+  [32m*[0m Server Status: [32mRUNNING[0m
+  [32m*[0m Port: [36m5001[0m
+  [32m*[0m Environment: [36mdevelopment[0m
+  [32m*[0m Health Score: [32m93[0m
+  [32m*[0m Uptime: [36m0d 3h 13m[0m
+
+[1mDatabase:[0m
+  [32m*[0m PostgreSQL: [32mCONNECTED[0m
+  [32m*[0m Host: [36mlocalhost[0m
+  [32m*[0m Connections: [36m2/100[0m
+  [32m*[0m Active Queries: [36m2[0m
+  [32m*[0m Cache Hit Rate: [36m100%[0m
+
+[1mPerformance:[0m
+  [32m*[0m Total Requests: [36m0[0m
+  [32m*[0m Request Rate: [36m0.00/sec[0m
+  [32m*[0m Avg Response: [36m0ms[0m
+  [32m*[0m P95 / P99: [36m0ms / 0ms[0m
+
+[1mResources:[0m
+  [32m*[0m CPU Usage: [36m12%[0m
+  [32m*[0m Memory: [36m10470MB / 16364MB[0m
+  [32m*[0m Disk Usage: [36m93%[0m
+
+[1mServices:[0m
+  [32m*[0m Express Server: [32mACTIVE[0m
+  [32m*[0m Session Manager: [32mACTIVE[0m
+  [32m*[0m Authentication: [32mREADY[0m
+
+[1mAccess:[0m
+  [36m->[0m API Endpoint: [1mhttp://localhost:5001/api[0m
+  [36m->[0m Web Interface: [1mhttp://localhost:5001[0m
+  [36m->[0m Health Check: [1mhttp://localhost:5001/api/status/health[0m
+
+[1mHealth Checks:[0m
+  [32m*[0m database: [32mOK[0m (2/75)
+  [32m*[0m memory: [32mOK[0m (64/70)
+  [32m*[0m cpu: [32mOK[0m (12/60)
+  [33m*[0m diskSpace: [33mWARNING[0m (93/70)
+  [32m*[0m api: [32mOK[0m (0/1)
+  [32m*[0m cache: [32mOK[0m (95/80)
+  [32m*[0m websocket: [32mOK[0m (100/50)
+
+[1m[33mStatus Indicators:[0m
+  [32m*[0m Online / Active
+  [31m*[0m Offline / Inactive
+  [33m*[0m Warning / Resetting
+

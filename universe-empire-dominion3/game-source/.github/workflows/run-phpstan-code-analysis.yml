@@ -1,0 +1,57 @@
+name: PHPStan Code Analysis
+
+on:
+  push:
+    branches: [ "main" ]
+    paths-ignore:
+      - 'resources/css/**'
+      - 'resources/js/**'
+      - 'public/css/**'
+      - 'public/js/**'
+      - 'public/mix-manifest.json'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'yarn.lock'
+      - 'webpack.mix.js'
+  pull_request:
+    branches: [ "main" ]
+    paths-ignore:
+      - 'resources/css/**'
+      - 'resources/js/**'
+      - 'public/css/**'
+      - 'public/js/**'
+      - 'public/mix-manifest.json'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'yarn.lock'
+      - 'webpack.mix.js'
+
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  phpstan-code-analysis:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+
+    - uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.5'
+        coverage: none
+
+    - name: Cache Composer packages
+      uses: actions/cache@v5
+      with:
+        path: vendor
+        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-php-
+
+    - name: Install Dev  Dependencies
+      run: composer install --no-ansi --no-interaction --no-progress
+
+    - name: PHPStan
+      run: composer run stan

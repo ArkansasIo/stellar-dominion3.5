@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
+  <asset>
+    <contributor>
+      <authoring_tool>Stellar Dominion template</authoring_tool>
+    </contributor>
+    <unit meter="1" name="meter"/>
+    <up_axis>Y_UP</up_axis>
+  </asset>
+  <library_visual_scenes>
+    <visual_scene id="Scene" name="Scene">
+      <node id="placeholder_station" name="placeholder_station"/>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_visual_scene url="#Scene"/>
+  </scene>
+</COLLADA>
