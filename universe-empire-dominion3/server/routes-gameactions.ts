@@ -18,6 +18,7 @@ import {
   calculateOgameMissionDistance,
   calculateOgameTravelTimeSeconds,
 } from "./services/ogameMissionService";
+import { isAuthenticated } from "./basicAuth";
 
 type FleetUnits = Record<string, number>;
 type MissionResources = {
@@ -55,15 +56,6 @@ const MISSION_UNIT_PROFILES: Record<string, { speed: number; cargo: number; atta
   hoverTank: { speed: 50, cargo: 0, attack: 200, structure: 2000, shield: 100 },
   battleMech: { speed: 20, cargo: 0, attack: 1000, structure: 10000, shield: 500 },
 };
-
-// Middleware to check authentication
-function isAuthenticated(req: Request, res: Response, next: Function) {
-  if (req.session?.userId) {
-    next();
-  } else {
-    res.status(401).json({ error: "Unauthorized" });
-  }
-}
 
 function normalizeMissionResources(raw: any): MissionResources {
   return {

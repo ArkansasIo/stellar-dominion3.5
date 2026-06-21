@@ -2135,7 +2135,7 @@ export const empireProfiles = pgTable("empire_profiles", {
 
   // Empire name and title
   empireName: varchar("empire_name"),
-  empireTitle: varchar("empire_title").default("新兴帝国"),
+  empireTitle: varchar("empire_title").default("Rising Empire"),
 
   // Power rating (computed)
   powerRating: integer("power_rating").notNull().default(0),
@@ -2147,3 +2147,44 @@ export const empireProfiles = pgTable("empire_profiles", {
 export type EmpireProfile = typeof empireProfiles.$inferSelect;
 export const insertEmpireProfileSchema = createInsertSchema(empireProfiles).omit({ id: true, createdAt: true, updatedAt: true });
 export type InsertEmpireProfile = z.infer<typeof insertEmpireProfileSchema>;
+
+// Dimensional Gate Anomalies - player discovery and interaction tracking
+export const dimensionalAnomalies = pgTable("dimensional_anomalies", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  anomalyId: varchar("anomaly_id").notNull(),
+
+  discovered: boolean("discovered").notNull().default(false),
+  explored: boolean("explored").notNull().default(false),
+  explorationCount: integer("exploration_count").notNull().default(0),
+  lastExploredAt: timestamp("last_explored_at"),
+  totalRewardsEarned: jsonb("total_rewards_earned").notNull().default({}),
+  cooldownUntil: timestamp("cooldown_until"),
+
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type DimensionalAnomalyRecord = typeof dimensionalAnomalies.$inferSelect;
+export const insertDimensionalAnomalySchema = createInsertSchema(dimensionalAnomalies).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertDimensionalAnomaly = z.infer<typeof insertDimensionalAnomalySchema>;
+
+// Resource Refineries - player refinery buildings and production tracking
+export const playerRefineries = pgTable("player_refineries", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  refineryType: varchar("refinery_type").notNull(),
+  level: integer("level").notNull().default(1),
+  activeRecipe: varchar("active_recipe"),
+  isActive: boolean("is_active").notNull().default(false),
+  efficiency: real("efficiency").notNull().default(0.5),
+  throughput: integer("throughput").notNull().default(100),
+  totalProcessed: bigint("total_processed", { mode: "number" }).notNull().default(0),
+  lastCollectedAt: timestamp("last_collected_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type PlayerRefineryRecord = typeof playerRefineries.$inferSelect;
+export const insertPlayerRefinerySchema = createInsertSchema(playerRefineries).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertPlayerRefinery = z.infer<typeof insertPlayerRefinerySchema>;

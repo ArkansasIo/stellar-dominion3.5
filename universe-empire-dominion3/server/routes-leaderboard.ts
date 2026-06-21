@@ -2,15 +2,7 @@ import type { Express, Request, Response } from "express";
 import { eq, inArray } from "drizzle-orm";
 import { db } from "./db";
 import { playerStates, users } from "../shared/schema";
-
-// Middleware to check authentication
-function isAuthenticated(req: Request, res: Response, next: Function) {
-  if ((req as any).session?.userId) {
-    next();
-  } else {
-    res.status(401).json({ error: "Unauthorized" });
-  }
-}
+import { isAuthenticated } from "./basicAuth";
 
 export const LEADERBOARD_CONFIG = {
   // Leaderboard types

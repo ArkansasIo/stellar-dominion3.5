@@ -6,12 +6,11 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { useGame } from "@/lib/gameContext";
 import { cn } from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Swords, Coins, FlaskConical, Factory, Handshake, Eye, Compass, Landmark, Lightbulb,
-  Crown, TrendingUp, Zap, Award, Info, ChevronUp, ChevronDown,
+  Crown, TrendingUp, Zap, Award, ChevronUp, ChevronDown,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -51,24 +50,44 @@ interface EmpireProfile {
   powerRating: number;
 }
 
+const DEFAULT_PROFILE: EmpireProfile = {
+  id: "",
+  userId: "",
+  military: 1,
+  economy: 1,
+  research: 1,
+  industry: 1,
+  diplomacy: 1,
+  espionage: 1,
+  exploration: 1,
+  governance: 1,
+  innovation: 1,
+  attributePoints: { military: 0, economy: 0, research: 0, industry: 0, diplomacy: 0, espionage: 0, exploration: 0, governance: 0, innovation: 0 },
+  availablePoints: 0,
+  totalPointsEarned: 0,
+  empireName: null,
+  empireTitle: null,
+  powerRating: 0,
+};
+
 function calculateCost(level: number, baseCost: number, multiplier: number): number {
   return Math.floor(baseCost * Math.pow(multiplier, level));
 }
 
-function getOverallLevel(profile: EmpireProfile): number {
-  const attrs = [profile.military, profile.economy, profile.research, profile.industry,
-    profile.diplomacy, profile.espionage, profile.exploration, profile.governance, profile.innovation];
+function getOverallLevel(p: EmpireProfile): number {
+  const attrs = [p.military, p.economy, p.research, p.industry,
+    p.diplomacy, p.espionage, p.exploration, p.governance, p.innovation];
   return Math.floor(attrs.reduce((a, b) => a + b, 0) / attrs.length);
 }
 
 function getTierName(level: number): string {
-  if (level >= 90) return "宇宙主宰";
-  if (level >= 75) return "星系霸主";
-  if (level >= 60) return "星际领主";
-  if (level >= 45) return "星球统治者";
-  if (level >= 30) return "殖民先驱";
-  if (level >= 15) return "扩张者";
-  return "新兴帝国";
+  if (level >= 90) return "Universal Sovereign";
+  if (level >= 75) return "Galactic Overlord";
+  if (level >= 60) return "Interstellar Lord";
+  if (level >= 45) return "Planetary Ruler";
+  if (level >= 30) return "Colonial Pioneer";
+  if (level >= 15) return "Expander";
+  return "Rising Empire";
 }
 
 function AttributeCard({
@@ -87,7 +106,6 @@ function AttributeCard({
   isAllocating: boolean;
 }) {
   const [allocAmount, setAllocAmount] = useState(1);
-  const cost = calculateCost(level, attr.baseCost, attr.costMultiplier);
   const totalCost = Array.from({ length: allocAmount }, (_, i) =>
     calculateCost(level + i, attr.baseCost, attr.costMultiplier)
   ).reduce((a, b) => a + b, 0);
@@ -167,7 +185,6 @@ function AttributeCard({
 }
 
 export default function EmpireProfilePage() {
-  const { gameState } = useGame();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("attributes");
@@ -213,8 +230,10 @@ export default function EmpireProfilePage() {
     },
   });
 
-  const profile = profileData?.profile;
+  const profile = profileData?.profile ?? DEFAULT_PROFILE;
   const attributes = configData?.attributes || [];
+  const overallLevel = getOverallLevel(profile);
+  const tierName = profile.empireTitle || getTierName(overallLevel);
 
   if (isLoading) {
     return (
@@ -229,7 +248,6 @@ export default function EmpireProfilePage() {
   return (
     <GameLayout title="Empire Profile" subtitle="Manage your empire attributes">
       <div className="space-y-6">
-        {/* Header Stats */}
         <Card>
           <CardContent className="p-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -239,28 +257,26 @@ export default function EmpireProfilePage() {
                 </div>
                 <div>
                   <h2 className="text-xl font-bold">
-                    {profile?.empireName || "未命名帝国"}
+                    {profile.empireName || "Unnamed Empire"}
                   </h2>
-                  <p className="text-sm text-muted-foreground">
-                    {profile?.empireTitle || getTierName(getOverallLevel(profile!))}
-                  </p>
+                  <p className="text-sm text-muted-foreground">{tierName}</p>
                 </div>
               </div>
               <div className="flex flex-wrap gap-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">{getOverallLevel(profile!)}</div>
+                  <div className="text-2xl font-bold text-primary">{overallLevel}</div>
                   <div className="text-xs text-muted-foreground">Overall Level</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-amber-500">{profile?.powerRating.toLocaleString()}</div>
+                  <div className="text-2xl font-bold text-amber-500">{(profile.powerRating || 0).toLocaleString()}</div>
                   <div className="text-xs text-muted-foreground">Power Rating</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-emerald-500">{profile?.availablePoints.toLocaleString()}</div>
+                  <div className="text-2xl font-bold text-emerald-500">{(profile.availablePoints || 0).toLocaleString()}</div>
                   <div className="text-xs text-muted-foreground">Available Points</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-slate-400">{profile?.totalPointsEarned.toLocaleString()}</div>
+                  <div className="text-2xl font-bold text-slate-400">{(profile.totalPointsEarned || 0).toLocaleString()}</div>
                   <div className="text-xs text-muted-foreground">Total Earned</div>
                 </div>
               </div>
@@ -268,7 +284,6 @@ export default function EmpireProfilePage() {
           </CardContent>
         </Card>
 
-        {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList>
             <TabsTrigger value="attributes">Attributes</TabsTrigger>
@@ -281,9 +296,9 @@ export default function EmpireProfilePage() {
                 <AttributeCard
                   key={attr.id}
                   attr={attr}
-                  level={(profile as any)?.[attr.id] || 1}
-                  pointsSpent={(profile?.attributePoints as any)?.[attr.id] || 0}
-                  availablePoints={profile?.availablePoints || 0}
+                  level={(profile as any)[attr.id] || 1}
+                  pointsSpent={(profile.attributePoints as any)[attr.id] || 0}
+                  availablePoints={profile.availablePoints || 0}
                   onAllocate={(attribute, points) =>
                     allocateMutation.mutate({ attribute, points })
                   }
@@ -304,7 +319,7 @@ export default function EmpireProfilePage() {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-3 gap-4">
                   {attributes.map((attr) => {
-                    const level = (profile as any)?.[attr.id] || 1;
+                    const level = (profile as any)[attr.id] || 1;
                     const IconComponent = ICON_MAP[attr.icon] || Swords;
                     return (
                       <div key={attr.id} className="flex items-center gap-3 p-3 rounded-lg bg-slate-50">

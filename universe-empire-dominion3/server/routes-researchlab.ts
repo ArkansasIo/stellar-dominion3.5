@@ -7,13 +7,7 @@
 import { Request, Response } from "express";
 import { ResearchLabService } from "./services/researchLabService";
 import { storage } from "./storage";
-
-const isAuthenticated = (req: Request, res: Response, next: any) => {
-  if (!req.session.userId) {
-    return res.status(401).json({ message: "Not authenticated" });
-  }
-  next();
-};
+import { isAuthenticated } from "./basicAuth";
 
 const getUserId = (req: Request): string => req.session.userId || "";
 

@@ -2,6 +2,7 @@ import type { Express, Request, Response } from "express";
 import { db } from "./db";
 import { playerStates, playerColonies } from "../shared/schema";
 import { eq } from "drizzle-orm";
+import { isAuthenticated } from "./basicAuth";
 
 interface SubPlaneState {
   moonModules: Record<string, number>;
@@ -431,15 +432,6 @@ const PLANET_DATABASE: {[key: string]: any} = {
     },
   },
 };
-
-// Middleware to check authentication
-function isAuthenticated(req: Request, res: Response, next: Function) {
-  if (req.session?.userId) {
-    next();
-  } else {
-    res.status(401).json({ error: "Unauthorized" });
-  }
-}
 
 export function registerPlanetRoutes(app: Express) {
   // Get planet by ID

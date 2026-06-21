@@ -42,19 +42,13 @@ import type {
   StrategicOrderType,
   HighCommandState,
 } from "@shared/config/highCommandSystem";
+import { isAuthenticated } from "./basicAuth";
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
 function getUserId(req: Request): string {
   return req.session?.userId as string;
 }
-
-const isAuthenticated = (req: Request, res: Response, next: any) => {
-  if (!getUserId(req)) {
-    return res.status(401).json({ message: "Not authenticated" });
-  }
-  next();
-};
 
 function getHighCommandState(playerState: any): HighCommandState {
   if (playerState?.highCommandState) return playerState.highCommandState;

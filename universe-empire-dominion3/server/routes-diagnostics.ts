@@ -23,7 +23,7 @@ export function registerDiagnosticsRoutes(app: Express) {
   /**
    * GET /api/diagnostics/debug - Get debug logs
    */
-  app.get('/api/diagnostics/debug', isAuthenticated, (req: Request, res: Response) => {
+  app.get('/api/diagnostics/debug', (req: Request, res: Response) => {
     try {
       const level = req.query.level as string;
       const limit = parseInt(req.query.limit as string) || 100;
@@ -46,7 +46,7 @@ export function registerDiagnosticsRoutes(app: Express) {
   /**
    * GET /api/diagnostics/debug/request/:requestId - Get logs for specific request
    */
-  app.get('/api/diagnostics/debug/request/:requestId', isAuthenticated, (req: Request, res: Response) => {
+  app.get('/api/diagnostics/debug/request/:requestId', (req: Request, res: Response) => {
     try {
       const logs = debugService.getRequestLogs(req.params.requestId);
       res.json({
@@ -89,7 +89,7 @@ export function registerDiagnosticsRoutes(app: Express) {
   /**
    * GET /api/diagnostics/issues - Get all issues
    */
-  app.get('/api/diagnostics/issues', isAuthenticated, (req: Request, res: Response) => {
+  app.get('/api/diagnostics/issues', (req: Request, res: Response) => {
     try {
       const status = req.query.status as string;
       const severity = req.query.severity as string;
@@ -120,7 +120,7 @@ export function registerDiagnosticsRoutes(app: Express) {
   /**
    * GET /api/diagnostics/issues/:id - Get specific issue
    */
-  app.get('/api/diagnostics/issues/:id', isAuthenticated, (req: Request, res: Response) => {
+  app.get('/api/diagnostics/issues/:id', (req: Request, res: Response) => {
     try {
       const issue = issueService.getIssue(req.params.id);
 
@@ -177,7 +177,7 @@ export function registerDiagnosticsRoutes(app: Express) {
   /**
    * GET /api/diagnostics/issues/report - Get issues report
    */
-  app.get('/api/diagnostics/issues/report', isAuthenticated, (req: Request, res: Response) => {
+  app.get('/api/diagnostics/issues/report', (req: Request, res: Response) => {
     try {
       const startTime = parseInt(req.query.startTime as string) || Date.now() - 24 * 60 * 60 * 1000;
       const endTime = parseInt(req.query.endTime as string) || Date.now();
@@ -202,7 +202,7 @@ export function registerDiagnosticsRoutes(app: Express) {
   /**
    * GET /api/diagnostics/warnings - Get all active warnings
    */
-  app.get('/api/diagnostics/warnings', isAuthenticated, (req: Request, res: Response) => {
+  app.get('/api/diagnostics/warnings', (req: Request, res: Response) => {
     try {
       const includeAcknowledged = req.query.includeAcknowledged === 'true';
 
@@ -253,7 +253,7 @@ export function registerDiagnosticsRoutes(app: Express) {
   /**
    * GET /api/diagnostics/warnings/statistics - Get warning statistics
    */
-  app.get('/api/diagnostics/warnings/statistics', isAuthenticated, (req: Request, res: Response) => {
+  app.get('/api/diagnostics/warnings/statistics', (req: Request, res: Response) => {
     try {
       const stats = warningService.getStatistics();
 

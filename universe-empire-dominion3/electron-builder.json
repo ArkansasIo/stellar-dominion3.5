@@ -11,6 +11,7 @@
     "dist/**/*",
     "shared/**/*",
     "package.json",
+    ".env",
     ".env.example",
     "assets/**/*",
     "node_modules/**/*"

@@ -19,6 +19,7 @@ import {
   playerItems,
 } from "@shared/schema";
 import { storage } from "./storage";
+import { isAuthenticated } from "./basicAuth";
 import { applyResourceDelta, normalizeResources } from "./services/missingFeatureService";
 import {
   calculateCommanderRaidPower,
@@ -32,13 +33,6 @@ declare module "express-session" {
     userId?: string;
   }
 }
-
-const isAuthenticated = (req: Request, res: Response, next: any) => {
-  if (!req.session.userId) {
-    return res.status(401).json({ message: "Not authenticated" });
-  }
-  next();
-};
 
 const getUserId = (req: Request): string => req.session.userId || "";
 

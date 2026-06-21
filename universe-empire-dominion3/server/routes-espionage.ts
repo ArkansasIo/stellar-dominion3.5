@@ -2,15 +2,7 @@ import type { Express, Request, Response } from "express";
 import { db } from "./db";
 import { messages, playerStates, users } from "../shared/schema";
 import { eq } from "drizzle-orm";
-
-// Middleware to check authentication
-function isAuthenticated(req: Request, res: Response, next: Function) {
-  if ((req as any).session?.userId) {
-    next();
-  } else {
-    res.status(401).json({ error: "Unauthorized" });
-  }
-}
+import { isAuthenticated } from "./basicAuth";
 
 // Espionage configuration
 export const ESPIONAGE_CONFIG = {

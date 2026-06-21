@@ -25,6 +25,10 @@ import { registerCoreApiRoutes } from "./routes-api-core";
 import { ServerStatusService } from "./services/serverStatusService";
 import { registerGameAssetLibraryRoutes } from "./routes-game-asset-library";
 import { registerEmpireProfileRoutes } from "./routes-empire-profile";
+import { registerDimensionalAnomalyRoutes } from "./routes-dimensional-anomalies";
+import { registerResourceRefineryRoutes } from "./routes-resource-refineries";
+import { registerCronRoutes } from "./routes-cron";
+import { registerBlueprintChargeRoutes } from "./routes-blueprint-charges";
 
 const runtimeNodeEnv = process.env.NODE_ENV ?? "production";
 
@@ -272,6 +276,10 @@ import { eq, ilike, or } from "drizzle-orm";
   registerPhpMyAdminRoutes(app, { db, pool, adminUsers, users, eq, ilike, or });
   registerGameAssetLibraryRoutes(app);
   registerEmpireProfileRoutes(app);
+  registerDimensionalAnomalyRoutes(app);
+  registerResourceRefineryRoutes(app);
+  registerCronRoutes(app);
+  registerBlueprintChargeRoutes(app);
   registerMoonRoutes(app);
   registerSporeDriveRoutes(app);
   registerWeeklyMissionRoutes(app);
@@ -299,6 +307,18 @@ import { eq, ilike, or } from "drizzle-orm";
   app.use('/api/messages', messagesRoutes);
   app.use(tradesRoutes);
   app.use(worldActionsRoutes);
+
+  // Start cron jobs
+  try {
+    const { shutdownAllCronJobs } = await import("./services/cronService");
+    const { registerAllGameJobs } = await import("./services/gameJobs");
+    await registerAllGameJobs();
+    log("Cron job system initialized", "startup", "success");
+    process.on("SIGTERM", () => { shutdownAllCronJobs(); });
+    process.on("SIGINT", () => { shutdownAllCronJobs(); });
+  } catch (error) {
+    log(`Cron job init skipped: ${(error as Error).message}`, "startup", "warn");
+  }
 
   // Error handling middleware
   app.use((err: any, req: any, res: any, _next: any) => {

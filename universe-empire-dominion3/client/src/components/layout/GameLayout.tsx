@@ -73,6 +73,7 @@ import {
   ClipboardList,
   CheckCircle2,
   X,
+  Printer,
 } from "lucide-react";
 
 interface NavItem {
@@ -341,6 +342,7 @@ const menuSections: MenuSection[] = [
           { href: "/colonies", icon: Home, label: "Colonies", description: "Manage colonization targets, colony slots, and expansion plans." },
           { href: "/stations", icon: Satellite, label: "Stations", description: "Control orbital stations, outposts, and support platforms." },
           { href: "/megastructures", icon: CircleDot, label: "Megastructures", description: "Develop late-game empire-scale construction projects." },
+          { href: "/resource-refineries", icon: Factory, label: "Resource Refineries", description: "Convert, refine, and produce resources from raw materials." },
         ],
       },
       {
@@ -383,6 +385,7 @@ const menuSections: MenuSection[] = [
         description: "Catalog rare finds, advanced designs, and recovered relics.",
         items: [
           { href: "/blueprints", icon: FileText, label: "Blueprints", description: "Review unlocked designs and production-ready schematics." },
+          { href: "/blueprint-charges", icon: Printer, label: "Blueprint Printer", description: "Print, use, and repair blueprints with charge system." },
           { href: "/blueprint-lithograph", icon: BookOpen, label: "Lithograph Book", description: "Browse the curated atlas of every fabrication schematic in the Imperial foundry." },
           { href: "/artifacts", icon: Hexagon, label: "Artifacts", description: "Inspect rare artifacts that modify empire capabilities." },
           { href: "/relics", icon: Gem, label: "Relics", description: "Manage relic bonuses and rare discovery effects." },
@@ -461,6 +464,7 @@ const menuSections: MenuSection[] = [
         description: "Respond to live universe activity and dynamic world events.",
         items: [
           { href: "/universe-events", icon: AlertTriangle, label: "Universe Events", description: "Review active world events and their empire-wide impact." },
+          { href: "/dimensional-anomalies", icon: Compass, label: "Dimensional Anomalies", description: "Discover and explore 90 dimensional gate anomalies across the universe." },
         ],
       },
     ],
@@ -523,6 +527,7 @@ const menuSections: MenuSection[] = [
 
 const systemItems: NavItem[] = [
   { href: "/diagnostics", icon: AlertTriangle, label: "Diagnostics", description: "Inspect client, server, and gameplay diagnostic tools." },
+  { href: "/cron-dashboard", icon: Clock, label: "Cron Dashboard", description: "Monitor server-side game ticks, cron jobs, and scheduled tasks." },
   { href: "/assets-gallery", icon: Image, label: "Assets Gallery", description: "Browse game assets, including the new OGameX asset pack." },
   { href: "/settings", icon: Settings, label: "Settings", description: "Update configuration, preferences, and account options." },
   { href: "/forums", icon: ScrollText, label: "Forums", description: "Open community discussions and support channels." },

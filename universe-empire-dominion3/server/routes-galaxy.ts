@@ -3,6 +3,7 @@ import { db } from "./db";
 import { storage } from "./storage";
 import { playerStates, users, alliances } from "../shared/schema";
 import { like, eq } from "drizzle-orm";
+import { isAuthenticated } from "./basicAuth";
 
 type SystemObjectType = "planet" | "asteroid" | "nebula" | "blackhole" | "station" | "empty";
 
@@ -265,14 +266,6 @@ function generateScanReport(
     },
     timestamp: Date.now(),
   };
-}
-
-function isAuthenticated(req: Request, res: Response, next: Function) {
-  if (req.session?.userId) {
-    next();
-  } else {
-    res.status(401).json({ error: "Unauthorized" });
-  }
 }
 
 export function registerGalaxyRoutes(app: Express) {

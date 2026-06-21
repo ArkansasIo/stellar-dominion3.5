@@ -3,18 +3,7 @@ import { z } from "zod";
 import { db } from "./db";
 import { users, playerStates } from "@shared/schema";
 import { eq } from "drizzle-orm";
-
-// Middleware for authentication
-export const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
-  if (!req.session.userId) {
-    return res.status(401).json({ 
-      success: false,
-      message: "Authentication required",
-      code: "UNAUTHORIZED" 
-    });
-  }
-  next();
-};
+import { isAuthenticated } from "./basicAuth";
 
 // Helper to get user ID from session
 export const getUserId = (req: Request): string => req.session.userId || "";

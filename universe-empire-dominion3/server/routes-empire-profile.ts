@@ -11,17 +11,11 @@ import {
   getEmpireOverallLevel,
   getEmpirePowerRating,
 } from "../shared/config/empireProfileConfig";
+import { isAuthenticated } from "./basicAuth";
 
 function getUserId(req: Request): string {
   return req.session?.userId as string;
 }
-
-const isAuthenticated = (req: Request, res: Response, next: any) => {
-  if (!getUserId(req)) {
-    return res.status(401).json({ message: "Not authenticated" });
-  }
-  next();
-};
 
 export function registerEmpireProfileRoutes(app: Express) {
   // GET /api/empire-profile/config - Attribute definitions

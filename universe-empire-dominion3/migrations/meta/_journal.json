@@ -22,6 +22,20 @@
       "when": 1782018882411,
       "tag": "0002_lonely_the_fury",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1782021332984,
+      "tag": "0003_curvy_mojo",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1782021709884,
+      "tag": "0004_overjoyed_firebrand",
+      "breakpoints": true
     }
   ]
 }

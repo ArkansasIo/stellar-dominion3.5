@@ -3,10 +3,7 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from "@shared/schema";
 
 const envUrl = process.env.DATABASE_URL || "";
-// Auto-fallback to local PostgreSQL if Neon URL is broken (contains neon.tech)
-const databaseUrl = envUrl.includes("neon.tech") || !envUrl
-  ? "postgresql://postgres:postgres@localhost:5432/stellar_dominion"
-  : envUrl;
+const databaseUrl = envUrl || "postgresql://postgres:postgres@localhost:5432/stellar_dominion";
 
 console.log('🔌 Connecting to database...');
 

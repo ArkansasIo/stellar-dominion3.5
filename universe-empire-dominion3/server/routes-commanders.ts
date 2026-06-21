@@ -15,18 +15,12 @@ import { storage } from "./storage";
 import { GACHA_COMMANDERS, RARITY_TIERS, GACHA_BANNERS } from "@shared/config/commander/gacha/commanderGachaCommandNexus";
 
 import type { CommanderRarity } from "@shared/config/commander/gacha/commanderGachaCommandNexus";
+import { isAuthenticated } from "./basicAuth";
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
 function getUserId(req: Request): string {
   return req.session?.userId as string;
 }
-
-const isAuthenticated = (req: Request, res: Response, next: any) => {
-  if (!getUserId(req)) {
-    return res.status(401).json({ message: "Not authenticated" });
-  }
-  next();
-};
 
 // ─── in-memory gacha state per player (pity counters, currency) ──────────────
 // In production this would be in the database. For now we persist through

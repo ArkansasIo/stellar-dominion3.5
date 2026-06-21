@@ -27,19 +27,13 @@ import {
   type BiomeRarity,
 } from "@shared/config";
 import { storage } from "./storage";
+import { isAuthenticated } from "./basicAuth";
 
 declare module "express-session" {
   interface Session {
     userId?: string;
   }
 }
-
-const isAuthenticated = (req: Request, res: Response, next: any) => {
-  if (!req.session.userId) {
-    return res.status(401).json({ message: "Not authenticated" });
-  }
-  next();
-};
 
 const getUserId = (req: Request): string => req.session.userId || "";
 

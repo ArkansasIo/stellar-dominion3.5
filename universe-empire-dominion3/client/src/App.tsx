@@ -94,6 +94,10 @@ const DatabaseAdmin = lazy(() => import("@/pages/DatabaseAdmin"));
 const PowerGrid = lazy(() => import("@/pages/PowerGrid"));
 const OrbitalDefense = lazy(() => import("@/pages/OrbitalDefense"));
 const EmpireProfile = lazy(() => import("@/pages/EmpireProfile"));
+const DimensionalAnomalies = lazy(() => import("@/pages/DimensionalAnomalies"));
+const ResourceRefineries = lazy(() => import("@/pages/ResourceRefineries"));
+const CronDashboard = lazy(() => import("@/pages/CronDashboard"));
+const BlueprintCharges = lazy(() => import("@/pages/BlueprintCharges"));
 
 function LoadingSplash() {
   return (
@@ -282,6 +286,10 @@ function RouterContent() {
       <Route path="/empire-view" component={EmpireView} />
       <Route path="/empire-command-center" component={EmpireCommandCenter} />
       <Route path="/empire-profile" component={EmpireProfile} />
+      <Route path="/dimensional-anomalies" component={DimensionalAnomalies} />
+      <Route path="/resource-refineries" component={ResourceRefineries} />
+      <Route path="/cron-dashboard" component={CronDashboard} />
+      <Route path="/blueprint-charges" component={BlueprintCharges} />
       <Route path="/planet/:id" component={PlanetDetail} />
       <Route path="/planet-command" component={PlanetCommand} />
       <Route path="/planet-occupation" component={PlanetaryOccupation} />

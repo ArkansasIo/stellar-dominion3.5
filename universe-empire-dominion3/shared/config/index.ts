@@ -1022,3 +1022,33 @@ export {
   type EmpireAttributeEffect,
 } from './empireProfileConfig';
 
+export {
+  DIMENSIONAL_ANOMALIES,
+  ANOMALY_REGIONS,
+  ANOMALY_RARITY_COLORS,
+  ANOMALY_RARITY_BG,
+  getAnomaliesByRegion,
+  getAnomaliesByRarity,
+  getAnomalyById,
+  getAnomalyStats,
+  type DimensionalAnomaly,
+  type AnomalyRarity,
+  type AnomalyRewardType,
+  type AnomalyReward,
+  type AnomalyEffect,
+} from './dimensionalAnomaliesConfig';
+
+export {
+  REFINERY_TYPES,
+  getRefineryById,
+  getRecipeById,
+  calculateRefineryCost,
+  calculateRefineryEfficiency,
+  calculateRefineryThroughput,
+  calculateRecipeYield,
+  RESOURCE_NAMES,
+  type RefineryType,
+  type RefineryRecipe,
+  type PlayerRefinery,
+} from './resourceRefineryConfig';
+
