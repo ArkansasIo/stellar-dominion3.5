@@ -1,6 +1,7 @@
 import { RESOURCE_CONFIG } from "../../shared/config/xenoberage/resourceConfig";
 import { db } from "../db";
-import { eq, and } from "drizzle-orm";
+import { playerStates } from "../../shared/schema";
+import { eq } from "drizzle-orm";
 
 export const PORT_REGEN_RATE = RESOURCE_CONFIG.portRegenRate;
 
@@ -41,8 +42,31 @@ export async function buyFromPort(
 
   const totalCost = amount * priceConfig.price;
 
-  // TODO: Verify player has enough credits and port has enough stock
-  // This would involve querying the database for player state and port state
+  const playerState = await db.query.playerStates.findFirst({
+    where: eq(playerStates.userId, userId),
+  });
+
+  if (!playerState) {
+    return { success: false, message: "Player not found" };
+  }
+
+  const resources = (playerState.resources as any) || {};
+  const credits = resources.credits || 0;
+
+  if (credits < totalCost) {
+    return { success: false, message: "Insufficient credits" };
+  }
+
+  const resourceKey = resource === "ore" ? "metal" : resource === "organics" ? "crystal" : "deuterium";
+
+  await db.update(playerStates).set({
+    resources: {
+      ...resources,
+      credits: credits - totalCost,
+      [resourceKey]: (resources[resourceKey] || 0) + amount,
+    },
+    updatedAt: new Date(),
+  }).where(eq(playerStates.userId, userId));
 
   return {
     success: true,
@@ -71,7 +95,30 @@ export async function sellToPort(
 
   const totalProfit = amount * priceConfig.price;
 
-  // TODO: Verify player has enough resources and port can accept
+  const playerState = await db.query.playerStates.findFirst({
+    where: eq(playerStates.userId, userId),
+  });
+
+  if (!playerState) {
+    return { success: false, message: "Player not found" };
+  }
+
+  const resources = (playerState.resources as any) || {};
+  const resourceKey = resource === "ore" ? "metal" : resource === "organics" ? "crystal" : "deuterium";
+  const currentAmount = resources[resourceKey] || 0;
+
+  if (currentAmount < amount) {
+    return { success: false, message: "Insufficient resources" };
+  }
+
+  await db.update(playerStates).set({
+    resources: {
+      ...resources,
+      credits: (resources.credits || 0) + totalProfit,
+      [resourceKey]: currentAmount - amount,
+    },
+    updatedAt: new Date(),
+  }).where(eq(playerStates.userId, userId));
 
   return {
     success: true,
@@ -114,16 +161,24 @@ export function regeneratePortResources(
 }
 
 /**
- * Get current port inventory (stub - would query DB in full implementation).
+ * Get current port inventory from the database.
  */
 export async function getPortInventory(portId: string) {
-  // TODO: Query port from database
+  const playerState = await db.query.playerStates.findFirst({
+    where: eq(playerStates.userId, portId),
+  });
+
+  if (!playerState) {
+    return { portId, ore: 0, organics: 0, goods: 0, energy: 0 };
+  }
+
+  const resources = (playerState.resources as any) || {};
   return {
     portId,
-    ore: 0,
-    organics: 0,
-    goods: 0,
-    energy: 0,
+    ore: resources.metal || 0,
+    organics: resources.crystal || 0,
+    goods: resources.deuterium || 0,
+    energy: resources.energy || 0,
   };
 }
 

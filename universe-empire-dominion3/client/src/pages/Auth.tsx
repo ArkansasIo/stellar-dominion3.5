@@ -347,7 +347,6 @@ export default function Auth() {
     }
 
     setSubmitting(true);
-    console.log("[AUTH] Attempting password reset for user:", username.trim());
 
     try {
       const res = await fetch("/api/auth/reset-password", {
@@ -365,7 +364,6 @@ export default function Auth() {
         return;
       }
 
-      console.log("[AUTH] Password reset successful:", data);
       setTempPassword(data.temporaryPassword);
       setSubmitting(false);
     } catch (err) {

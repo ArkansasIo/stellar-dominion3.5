@@ -1,6 +1,6 @@
 import { COLONIZATION_CONFIG, ColonyState, BaseRequirements } from "../../shared/config/xenoberage/colonizationConfig";
 import { db } from "../db";
-import { eq, and } from "drizzle-orm";
+import { playerColonies } from "../../shared/schema";
 
 /**
  * Create a new colony on a planet.
@@ -24,7 +24,16 @@ export async function createColony(
     credits: 0,
   };
 
-  // TODO: Insert colony into database
+  await db.insert(playerColonies).values({
+    id: colony.id,
+    playerId: userId,
+    planetId: parseInt(planetId) || 0,
+    colonyName: `Colony ${sectorId}`,
+    colonyType: "standard",
+    colonyLevel: 0,
+    population: 0,
+  });
+
   return colony;
 }
 

@@ -1,5 +1,6 @@
 import { BANK_CONFIG } from "../../shared/config/xenoberage/bankConfig";
 import { db } from "../db";
+import { bankAccounts, bankTransactions, playerStates } from "../../shared/schema";
 import { eq, and } from "drizzle-orm";
 
 export interface IGBAccount {
@@ -48,12 +49,40 @@ export async function processLoanPayment(
     return { success: false, remainingLoan: 0, message: "Invalid payment amount" };
   }
 
-  // TODO: Query player account, verify sufficient balance, update loan
+  const playerState = await db.query.playerStates.findFirst({
+    where: eq(playerStates.userId, userId),
+  });
+
+  if (!playerState) {
+    return { success: false, remainingLoan: 0, message: "Player not found" };
+  }
+
+  const resources = (playerState.resources as any) || {};
+  const credits = resources.credits || 0;
+
+  if (credits < amount) {
+    return { success: false, remainingLoan: 0, message: "Insufficient credits" };
+  }
+
+  const igbData = (playerState.research as any)?.igbAccount || {};
+  const currentLoan = igbData.loan || 0;
+  const paymentAmount = Math.min(amount, currentLoan);
+  const remainingLoan = currentLoan - paymentAmount;
+
+  const currentResearch = (playerState.research as any) || {};
+  await db.update(playerStates).set({
+    resources: { ...resources, credits: credits - paymentAmount },
+    research: {
+      ...currentResearch,
+      igbAccount: { ...igbData, loan: remainingLoan },
+    },
+    updatedAt: new Date(),
+  }).where(eq(playerStates.userId, userId));
 
   return {
     success: true,
-    remainingLoan: 0,
-    message: `Loan payment of ${amount} processed`,
+    remainingLoan,
+    message: `Loan payment of ${paymentAmount} processed`,
   };
 }
 
@@ -65,7 +94,38 @@ export async function consolidateAccount(
   userId: string,
   turnCost: number = BANK_CONFIG.igbTconsolidate
 ): Promise<{ success: boolean; turnsDeducted: number; message: string }> {
-  // TODO: Deduct turns and transfer credits to IGB
+  const playerState = await db.query.playerStates.findFirst({
+    where: eq(playerStates.userId, userId),
+  });
+
+  if (!playerState) {
+    return { success: false, turnsDeducted: 0, message: "Player not found" };
+  }
+
+  const turnsData = (playerState.turnsData as any) || {};
+  const availableTurns = turnsData.availableTurns || playerState.currentTurns || 0;
+
+  if (availableTurns < turnCost) {
+    return { success: false, turnsDeducted: 0, message: "Insufficient turns" };
+  }
+
+  const resources = (playerState.resources as any) || {};
+  const credits = resources.credits || 0;
+  const currentResearch = (playerState.research as any) || {};
+
+  await db.update(playerStates).set({
+    turnsData: { ...turnsData, availableTurns: availableTurns - turnCost },
+    currentTurns: availableTurns - turnCost,
+    resources: { ...resources, credits: 0 },
+    research: {
+      ...currentResearch,
+      igbAccount: {
+        ...(currentResearch?.igbAccount || {}),
+        balance: (currentResearch?.igbAccount?.balance || 0) + credits,
+      },
+    },
+    updatedAt: new Date(),
+  }).where(eq(playerStates.userId, userId));
 
   return {
     success: true,
@@ -100,8 +160,35 @@ export async function processIGBTick(
 ): Promise<IGBAccount[]> {
   const updatedAccounts = processIGBInterest(accounts);
 
-  // TODO: Update all accounts in database
-  // Apply loan interest to accounts with active loans
+  for (const account of updatedAccounts) {
+    const playerState = await db.query.playerStates.findFirst({
+      where: eq(playerStates.userId, account.userId),
+    });
+
+    if (!playerState) continue;
+
+    const igbData = (playerState.research as any)?.igbAccount || {};
+    const currentLoan = igbData.loan || 0;
+
+    let newLoan = currentLoan;
+    if (currentLoan > 0) {
+      const loanInterest = calculateLoanInterest(currentLoan, BANK_CONFIG.loanInterest, 1);
+      newLoan = currentLoan + loanInterest;
+    }
+
+    const currentResearch = (playerState.research as any) || {};
+    await db.update(playerStates).set({
+      research: {
+        ...currentResearch,
+        igbAccount: {
+          ...igbData,
+          balance: account.balance,
+          loan: newLoan,
+        },
+      },
+      updatedAt: new Date(),
+    }).where(eq(playerStates.userId, account.userId));
+  }
 
   return updatedAccounts;
 }

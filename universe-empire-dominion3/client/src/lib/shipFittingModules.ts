@@ -1887,5 +1887,3 @@ export const META_LEVELS = {
 
 // Total module count
 export const TOTAL_MODULES = Object.keys(SHIP_FITTING_MODULES).length;
-
-console.log(`Ship Fitting Module Catalog loaded: ${TOTAL_MODULES} modules`);

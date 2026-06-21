@@ -29,6 +29,7 @@ import { registerDimensionalAnomalyRoutes } from "./routes-dimensional-anomalies
 import { registerResourceRefineryRoutes } from "./routes-resource-refineries";
 import { registerCronRoutes } from "./routes-cron";
 import { registerBlueprintChargeRoutes } from "./routes-blueprint-charges";
+import { registerMissingApiRoutes } from "./routes-missing-api";
 
 const runtimeNodeEnv = process.env.NODE_ENV ?? "production";
 
@@ -280,6 +281,7 @@ import { eq, ilike, or } from "drizzle-orm";
   registerResourceRefineryRoutes(app);
   registerCronRoutes(app);
   registerBlueprintChargeRoutes(app);
+  registerMissingApiRoutes(app);
   registerMoonRoutes(app);
   registerSporeDriveRoutes(app);
   registerWeeklyMissionRoutes(app);

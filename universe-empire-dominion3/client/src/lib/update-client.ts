@@ -244,17 +244,7 @@ export class UpdateClient {
 
   // Show changelog
   private showChangelog(manifest: UpdateManifest): void {
-    const changelog = manifest.changelog.join('\n• ');
-    console.log(`
-╔════════════════════════════════════════╗
-║  Update ${manifest.version} Installed  ║
-╚════════════════════════════════════════╝
-
-What's New:
-• ${changelog}
-
-Released: ${new Date(manifest.releaseDate).toLocaleDateString()}
-    `);
+    // Changelog displayed to user via UI notifications
   }
 
   // Detect platform

@@ -57,6 +57,7 @@ import {
   playerItems,
   bankAccounts,
   bankTransactions,
+  bounties,
   empireValues,
   playerCurrency,
   currencyTransactions,

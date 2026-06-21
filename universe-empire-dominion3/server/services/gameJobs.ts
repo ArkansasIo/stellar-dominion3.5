@@ -408,12 +408,14 @@ async function maintenanceTickHandler(_job: any, params: any): Promise<CronJobRe
     const logRetentionDays = params.logRetentionDays || 7;
 
     const logResult = await pool.query(
-      `DELETE FROM server_cron_logs WHERE started_at < now() - interval '${logRetentionDays} days'`
+      `DELETE FROM server_cron_logs WHERE started_at < now() - ($1 || ' days')::interval`,
+      [logRetentionDays]
     );
     cleaned += logResult.rowCount || 0;
 
     const tickResult = await pool.query(
-      `DELETE FROM server_game_ticks WHERE started_at < now() - interval '${logRetentionDays} days'`
+      `DELETE FROM server_game_ticks WHERE started_at < now() - ($1 || ' days')::interval`,
+      [logRetentionDays]
     );
     cleaned += tickResult.rowCount || 0;
 

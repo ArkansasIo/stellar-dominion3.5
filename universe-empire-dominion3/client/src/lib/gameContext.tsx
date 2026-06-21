@@ -645,7 +645,6 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
           }
         });
 
-        console.log(`[REALTIME] Subscribed to ${channelName}`);
       } catch (err) {
         console.error("[REALTIME] Subscription error:", err);
       }

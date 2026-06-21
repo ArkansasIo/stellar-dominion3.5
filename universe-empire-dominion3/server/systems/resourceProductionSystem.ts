@@ -1,6 +1,4 @@
 import { RESOURCE_CONFIG, Resources, ResourceLimits } from "../../shared/config/xenoberage/resourceConfig";
-import { db } from "../db";
-import { eq, and } from "drizzle-orm";
 
 /**
  * Calculate ore production for a planet per tick.

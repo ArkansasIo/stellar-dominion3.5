@@ -9,7 +9,6 @@ const GameLoop: React.FC = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       triggerDataRefresh();
-      console.log('Game tick: UI data refresh triggered');
     }, 10000);
     return () => clearInterval(interval);
   }, []);

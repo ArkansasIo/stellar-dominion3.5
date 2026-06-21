@@ -680,3 +680,21 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
   logger.warn("AUTH", `Authentication failed for ${req.path}`);
   res.status(401).json({ message: "Unauthorized" });
 };
+
+export const isAdmin: RequestHandler = async (req, res, next) => {
+  const userId = req.session?.userId || (req.user as any)?.id;
+  if (!userId) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  try {
+    const adminStatus = await resolveAdminStatus(userId);
+    if (adminStatus.isAdmin) {
+      return next();
+    }
+  } catch (error) {
+    logger.error("AUTH", `Admin check failed for ${userId}`, {}, error);
+  }
+
+  res.status(403).json({ message: "Admin access required" });
+};

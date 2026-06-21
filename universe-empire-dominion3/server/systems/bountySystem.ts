@@ -1,5 +1,6 @@
-import { BOUNTY_CONFIG, Bounty } from "../../shared/config/xenoberage/bountyConfig";
+import { BOUNTY_CONFIG, Bounty as BountyType } from "../../shared/config/xenoberage/bountyConfig";
 import { db } from "../db";
+import { bounties, playerStates } from "../../shared/schema";
 import { eq, and } from "drizzle-orm";
 
 /**
@@ -11,7 +12,7 @@ export async function placeBounty(
   targetId: string,
   amount: number,
   placerNetworth: number
-): Promise<{ success: boolean; message: string; bounty?: Bounty }> {
+): Promise<{ success: boolean; message: string; bounty?: BountyType }> {
   const maxAmount = placerNetworth * BOUNTY_CONFIG.maxValue;
   const cappedAmount = Math.min(amount, maxAmount);
 
@@ -19,7 +20,27 @@ export async function placeBounty(
     return { success: false, message: "Invalid bounty amount" };
   }
 
-  const bounty: Bounty = {
+  const placerState = await db.query.playerStates.findFirst({
+    where: eq(playerStates.userId, placerId),
+  });
+
+  if (!placerState) {
+    return { success: false, message: "Placer not found" };
+  }
+
+  const resources = (placerState.resources as any) || {};
+  const credits = resources.credits || 0;
+
+  if (credits < cappedAmount) {
+    return { success: false, message: "Insufficient credits to place bounty" };
+  }
+
+  await db.update(playerStates).set({
+    resources: { ...resources, credits: credits - cappedAmount },
+    updatedAt: new Date(),
+  }).where(eq(playerStates.userId, placerId));
+
+  const bounty: BountyType = {
     id: crypto.randomUUID(),
     placerId,
     targetId,
@@ -28,7 +49,13 @@ export async function placeBounty(
     createdAt: new Date(),
   };
 
-  // TODO: Insert bounty into database
+  await db.insert(bounties).values({
+    id: bounty.id,
+    placerId,
+    targetId,
+    amount: cappedAmount,
+    active: true,
+  });
 
   return { success: true, message: `Bounty of ${cappedAmount} placed`, bounty };
 }
@@ -73,13 +100,47 @@ export async function claimBounty(
   attackerId: string,
   targetId: string
 ): Promise<{ success: boolean; reward: number; message: string }> {
-  // TODO: Find active bounty for target, verify attacker defeated target
-  // Transfer credits from placer to attacker, deactivate bounty
+  const activeBounty = await db.query.bounties.findFirst({
+    where: and(
+      eq(bounties.targetId, targetId),
+      eq(bounties.active, true)
+    ),
+  });
+
+  if (!activeBounty) {
+    return { success: false, reward: 0, message: "No active bounty found for target" };
+  }
+
+  if (activeBounty.placerId === attackerId) {
+    return { success: false, reward: 0, message: "Cannot claim your own bounty" };
+  }
+
+  const attackerState = await db.query.playerStates.findFirst({
+    where: eq(playerStates.userId, attackerId),
+  });
+
+  if (!attackerState) {
+    return { success: false, reward: 0, message: "Attacker not found" };
+  }
+
+  const resources = (attackerState.resources as any) || {};
+  const reward = activeBounty.amount;
+
+  await db.update(playerStates).set({
+    resources: { ...resources, credits: (resources.credits || 0) + reward },
+    updatedAt: new Date(),
+  }).where(eq(playerStates.userId, attackerId));
+
+  await db.update(bounties).set({
+    active: false,
+    claimedBy: attackerId,
+    claimedAt: new Date(),
+  }).where(eq(bounties.id, activeBounty.id));
 
   return {
     success: true,
-    reward: 0,
-    message: "Bounty claimed",
+    reward,
+    message: `Bounty claimed! ${reward} credits transferred.`,
   };
 }
 

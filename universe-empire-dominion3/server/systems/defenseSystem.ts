@@ -1,6 +1,4 @@
 import { COMBAT_CONFIG, SectorDefenses } from "../../shared/config/xenoberage/combatConfig";
-import { db } from "../db";
-import { eq, and } from "drizzle-orm";
 
 /**
  * Calculate defense degradation over time.

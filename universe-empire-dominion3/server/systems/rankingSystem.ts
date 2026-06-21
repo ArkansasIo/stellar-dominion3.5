@@ -1,6 +1,4 @@
 import { UNIVERSE_CONFIG } from "../../shared/config/xenoberage/universeConfig";
-import { db } from "../db";
-import { eq, and, desc } from "drizzle-orm";
 
 export interface PlayerScore {
   userId: string;

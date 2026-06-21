@@ -1,7 +1,5 @@
 import { SCHEDULER_CONFIG } from "../../shared/config/xenoberage/schedulerConfig";
 import { COLONIZATION_CONFIG } from "../../shared/config/xenoberage/colonizationConfig";
-import { db } from "../db";
-import { eq, and } from "drizzle-orm";
 
 export interface ApocalypseEvent {
   type: "space_plague" | "plasma_storm" | "doomsday" | "none";

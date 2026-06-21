@@ -1906,6 +1906,22 @@ export type CurrencyTransaction = typeof currencyTransactions.$inferSelect;
 export const insertCurrencyTransactionSchema = createInsertSchema(currencyTransactions).omit({ id: true, createdAt: true });
 export type InsertCurrencyTransaction = z.infer<typeof insertCurrencyTransactionSchema>;
 
+// Bounties System
+export const bounties = pgTable("bounties", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  placerId: varchar("placer_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  targetId: varchar("target_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  amount: bigint("amount", { mode: "number" }).notNull(),
+  active: boolean("active").notNull().default(true),
+  claimedBy: varchar("claimed_by").references(() => users.id),
+  claimedAt: timestamp("claimed_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type Bounty = typeof bounties.$inferSelect;
+export const insertBountySchema = createInsertSchema(bounties).omit({ id: true, createdAt: true, claimedAt: true });
+export type InsertBounty = z.infer<typeof insertBountySchema>;
+
 // Bank System - Player Banking
 export const bankAccounts = pgTable("bank_accounts", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),

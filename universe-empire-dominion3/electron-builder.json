@@ -11,8 +11,6 @@
     "dist/**/*",
     "shared/**/*",
     "package.json",
-    ".env",
-    ".env.example",
     "assets/**/*",
     "node_modules/**/*"
   ],
@@ -27,6 +25,11 @@
     "createDesktopShortcut": true,
     "createStartMenuShortcut": true,
     "shortcutName": "Universe Empire Dominion"
+  },
+  "mac": {
+    "target": ["dmg", "zip"],
+    "category": "public.app-category.games",
+    "icon": "build-resources/icon.icns"
   },
   "linux": {
     "target": ["AppImage"],

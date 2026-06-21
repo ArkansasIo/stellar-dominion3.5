@@ -106,7 +106,7 @@ export function stopCronJob(jobId: string): void {
   if (timer) {
     clearInterval(timer);
     activeTimers.delete(jobId);
-    log(`Stopped cron job: ${jobId}`, "cron", "warn");
+    cronLog(`Stopped cron job: ${jobId}`, "cron", "warn");
   }
 }
 

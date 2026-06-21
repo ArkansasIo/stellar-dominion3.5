@@ -356,7 +356,10 @@ export async function processCoreGameTick(userId: string) {
 }
 
 class GameEngine {
-  constructor() {
+  private userId: string;
+
+  constructor(userId: string = "default") {
+    this.userId = userId;
     console.log('Game engine started!');
   }
 
@@ -365,15 +368,15 @@ class GameEngine {
   }
 
   public getResources() {
-    return resourceService.getResources();
+    return resourceService.getResources(this.userId);
   }
 
   public getFleet() {
-    return fleetService.getFleet();
+    return fleetService.getFleet(this.userId);
   }
 
   public getTechnologyTree() {
-    return technologyService.getTechnologyTree();
+    return technologyService.getTechnologyTree(this.userId);
   }
 }
 

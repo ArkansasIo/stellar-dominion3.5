@@ -1,6 +1,6 @@
 import type { Express, Request } from "express";
 import { storage } from "./storage";
-import { isAuthenticated } from "./basicAuth";
+import { isAuthenticated, isAdmin } from "./basicAuth";
 
 const PLAYER_OPTIONS_PREFIX = "player_options";
 
@@ -134,20 +134,8 @@ export function registerSettingsRoutes(app: Express) {
   });
 
   // Update setting (admin only)
-  app.post("/api/settings/:key", isAuthenticated, async (req: Request, res: any) => {
+  app.post("/api/settings/:key", isAuthenticated, isAdmin, async (req: Request, res: any) => {
     try {
-      const userId = getUserId(req);
-      const user = await storage.getUser(userId);
-      
-      if (!user) {
-        return res.status(401).json({ message: "User not found" });
-      }
-
-      // Check if user is admin (basic check - you might want to add proper admin role checking)
-      if (user.username !== "admin") {
-        return res.status(403).json({ message: "Admin access required" });
-      }
-
       const { value, description, category } = req.body;
       const setting = await storage.setSetting(req.params.key, value, description, category);
       res.json(setting);
@@ -158,15 +146,8 @@ export function registerSettingsRoutes(app: Express) {
   });
 
   // Seed default settings (admin only, run once on startup)
-  app.post("/api/settings/seed/defaults", isAuthenticated, async (req: Request, res: any) => {
+  app.post("/api/settings/seed/defaults", isAuthenticated, isAdmin, async (req: Request, res: any) => {
     try {
-      const userId = getUserId(req);
-      const user = await storage.getUser(userId);
-      
-      if (!user || user.username !== "admin") {
-        return res.status(403).json({ message: "Admin access required" });
-      }
-
       await storage.seedDefaultSettings();
       res.json({ message: "Default settings seeded successfully" });
     } catch (error: any) {

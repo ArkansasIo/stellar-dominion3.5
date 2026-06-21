@@ -15,6 +15,7 @@ export interface BlueprintInstance {
   materialEfficiency: number;
   timeEfficiency: number;
   totalUses: number;
+  printCost?: { metal: number; crystal: number; deuterium: number; energy: number; credits: number };
   createdAt: string;
   updatedAt: string;
 }

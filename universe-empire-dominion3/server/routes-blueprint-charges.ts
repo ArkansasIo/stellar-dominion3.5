@@ -150,7 +150,7 @@ export function registerBlueprintChargeRoutes(app: Express) {
       if (bp.status === "depleted" || bp.status === "broken") {
         return res.status(400).json({ message: "Blueprint cannot be used" });
       }
-      if (bp.current_charges <= 0) {
+      if (bp.currentCharges <= 0) {
         return res.status(400).json({ message: "No charges remaining" });
       }
 
@@ -190,7 +190,7 @@ export function registerBlueprintChargeRoutes(app: Express) {
 
       const printerUpdate = await pool.query(
         "UPDATE blueprint_printer_levels SET total_repaired = total_repaired + $2, updated_at = now() WHERE user_id = $1 RETURNING *",
-        [userId, updated.currentCharges - bp.current_charges]
+        [userId, updated.currentCharges - bp.currentCharges]
       );
 
       res.json({ success: true, blueprint: updated, printer: printerUpdate.rows[0] });

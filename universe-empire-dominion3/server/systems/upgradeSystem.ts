@@ -2,7 +2,8 @@ import { PROGRESSION_CONFIG, ShipEquipment, DeviceInventory } from "../../shared
 import { DEVICE_CONFIG, DeviceType } from "../../shared/config/xenoberage/deviceConfig";
 import { COLONIZATION_CONFIG } from "../../shared/config/xenoberage/colonizationConfig";
 import { db } from "../db";
-import { eq, and } from "drizzle-orm";
+import { playerStates } from "../../shared/schema";
+import { eq } from "drizzle-orm";
 
 /**
  * Calculate upgrade cost with exponential scaling.
@@ -41,7 +42,25 @@ export async function upgradeShipEquipment(
   const newLevel = currentLevel + 1;
   const cost = calculateUpgradeCost(currentLevel, newLevel);
 
-  // TODO: Deduct resources and update database
+  const playerState = await db.query.playerStates.findFirst({
+    where: eq(playerStates.userId, userId),
+  });
+
+  if (!playerState) {
+    return { success: false, newLevel: currentLevel, cost };
+  }
+
+  const resources = (playerState.resources as any) || {};
+  const credits = resources.credits || 0;
+
+  if (credits < cost) {
+    return { success: false, newLevel: currentLevel, cost };
+  }
+
+  await db.update(playerStates).set({
+    resources: { ...resources, credits: credits - cost },
+    updatedAt: new Date(),
+  }).where(eq(playerStates.userId, userId));
 
   return {
     success: true,
