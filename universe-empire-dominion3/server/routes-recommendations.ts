@@ -17,7 +17,7 @@ const router = express.Router();
  */
 router.get('/api/research/recommendations', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
     const limit = Math.min(parseInt(req.query.limit as string) || 5, 20);
@@ -38,7 +38,7 @@ router.get('/api/research/recommendations', isAuthenticated, async (req, res) =>
  */
 router.post('/api/research/recommendations/path', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
     const { goalTechId } = req.body;
@@ -62,7 +62,7 @@ router.post('/api/research/recommendations/path', isAuthenticated, async (req, r
  */
 router.post('/api/research/recommendations/optimize-queue', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
     const { techIds } = req.body;
@@ -85,7 +85,7 @@ router.post('/api/research/recommendations/optimize-queue', isAuthenticated, asy
  */
 router.get('/api/research/recommendations/strategy', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
     const result = await ResearchRecommendationsService.getStrategyAnalysis(userId);

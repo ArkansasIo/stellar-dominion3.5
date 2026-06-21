@@ -17,7 +17,7 @@ const router = express.Router();
  */
 router.get('/api/research/xp/stats', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
     const stats = await ResearchXPService.getPlayerXPStats(userId);
@@ -39,7 +39,7 @@ router.get('/api/research/xp/stats', isAuthenticated, async (req, res) => {
  */
 router.post('/api/research/xp/add', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
     const { amount, sourceType = 'manual' } = req.body;
@@ -67,7 +67,7 @@ router.post('/api/research/xp/add', isAuthenticated, async (req, res) => {
  */
 router.post('/api/research/xp/complete-research', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
     const { techId, techTier, techClass, baseTurns } = req.body;
@@ -102,7 +102,7 @@ router.post('/api/research/xp/complete-research', isAuthenticated, async (req, r
  */
 router.get('/api/research/discoveries', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
     const limit = Math.min(parseInt(req.query.limit as string) || 20, 100);
@@ -167,7 +167,7 @@ router.get('/api/research/xp/config', (req, res) => {
  */
 router.get('/api/research/xp/next-level-info', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
     const stats = await ResearchXPService.getPlayerXPStats(userId);
@@ -197,7 +197,7 @@ router.get('/api/research/xp/next-level-info', isAuthenticated, async (req, res)
  */
 router.post('/api/research/xp/check-discovery', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
     const { techId } = req.body;

@@ -93,7 +93,7 @@ async function upsertMarketTrend(item: string, change: number) {
 
 router.post("/api/army/deploy", isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId as string;
+    const userId = req.session?.userId as string;
     const troopId = String(req.body?.troopId || "");
     const troopName = String(req.body?.troopName || "Unknown Troop");
     const deploymentType = String(req.body?.deploymentType || "field");
@@ -145,7 +145,7 @@ router.post("/api/army/manage", isAuthenticated, async (req, res) => {
 
 router.post("/api/exploration/scan", isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId as string;
+    const userId = req.session?.userId as string;
     const anomalyId = String(req.body?.anomalyId || "");
     const anomalyName = String(req.body?.anomalyName || "Unknown Anomaly");
     const hazardLevel = Number(req.body?.hazardLevel ?? 0);
@@ -199,7 +199,7 @@ router.post("/api/exploration/scan", isAuthenticated, async (req, res) => {
 
 router.post("/api/exploration/warp-action", isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId as string;
+    const userId = req.session?.userId as string;
     const gateId = String(req.body?.gateId || "");
     const gateName = String(req.body?.gateName || "Unknown Gate");
     const action = String(req.body?.action || "jump");
@@ -248,7 +248,7 @@ router.post("/api/exploration/warp-action", isAuthenticated, async (req, res) =>
 
 router.get("/api/exploration/state", isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId as string;
+    const userId = req.session?.userId as string;
     const [claimedQuestIds, harvestedDebrisIds] = await Promise.all([
       getExplorationQuestClaims(userId),
       getExplorationDebrisHarvests(userId),
@@ -266,7 +266,7 @@ router.get("/api/exploration/state", isAuthenticated, async (req, res) => {
 
 router.post("/api/exploration/quest-claim", isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId as string;
+    const userId = req.session?.userId as string;
     const questId = String(req.body?.questId || "");
     const rewards = req.body?.rewards || {};
 
@@ -336,7 +336,7 @@ router.post("/api/exploration/quest-claim", isAuthenticated, async (req, res) =>
 
 router.post("/api/exploration/debris-harvest", isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId as string;
+    const userId = req.session?.userId as string;
     const debrisId = String(req.body?.debrisId || "");
     const debrisName = String(req.body?.debrisName || "Unknown Debris Field");
     const resources = req.body?.resources || {};
@@ -397,7 +397,7 @@ router.post("/api/exploration/debris-harvest", isAuthenticated, async (req, res)
 
 router.post("/api/market/exchange", isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId as string;
+    const userId = req.session?.userId as string;
     const from = String(req.body?.from || "");
     const to = String(req.body?.to || "");
     const amount = Math.floor(Number(req.body?.amount || 0));
@@ -476,7 +476,7 @@ router.post("/api/market/exchange", isAuthenticated, async (req, res) => {
 
 router.get("/api/market/history", isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId as string;
+    const userId = req.session?.userId as string;
     const history = await getMarketHistory(userId);
     res.json({ history, count: history.length });
   } catch (error) {

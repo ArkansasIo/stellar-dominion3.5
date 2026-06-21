@@ -32,7 +32,7 @@ import {
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
 function getUserId(req: Request): string {
-  return (req.session as any)?.userId as string;
+  return req.session?.userId as string;
 }
 
 // ─── static catalog seed data ────────────────────────────────────────────────

@@ -10,7 +10,7 @@ import { WarningService } from './services/warningService';
 import { isAuthenticated } from './basicAuth';
 
 function getUserId(req: Request) {
-  return (req.session as any)?.userId || '';
+  return req.session?.userId || '';
 }
 
 export function registerDiagnosticsRoutes(app: Express) {

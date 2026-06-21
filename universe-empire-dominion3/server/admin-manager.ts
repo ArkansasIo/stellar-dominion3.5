@@ -42,7 +42,7 @@ export interface ServerStats {
 // Admin authentication middleware
 export function requireAdmin(req: Request, res: Response, next: NextFunction) {
   // Check session-based auth (used by basicAuth.ts)
-  const sessionUserId = (req.session as any)?.userId;
+  const sessionUserId = req.session?.userId || "";
   // Check req.user (used by other auth systems)
   const user = (req as any).user;
   

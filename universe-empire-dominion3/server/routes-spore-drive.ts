@@ -459,7 +459,7 @@ export function registerSporeDriveRoutes(app: Express) {
         return res.status(404).json({ error: "Spore drive not found" });
       }
 
-      const userId = req.session?.userId;
+      const userId = req.session?.userId || "";
       if (!userId) {
         return res.status(401).json({ error: "Unauthorized" });
       }

@@ -31,7 +31,7 @@ import {
 } from "../shared/config/liveOpsContentConfig";
 
 function getUserId(req: Request): string {
-  return (req.session as any)?.userId || "";
+  return req.session?.userId || "";
 }
 
 function toNumber(value: unknown, fallback = 0): number {

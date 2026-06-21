@@ -15,7 +15,7 @@ const router = Router();
  */
 router.post('/create', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     const { name, specialization, theme } = req.body;
 
     if (!name || !specialization || !theme) {
@@ -45,7 +45,7 @@ router.post('/create', isAuthenticated, async (req, res) => {
  */
 router.get('/', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     const labs = await CustomLabService.getLabsWithBonuses(userId);
 
     res.json({
@@ -66,7 +66,7 @@ router.get('/', isAuthenticated, async (req, res) => {
  */
 router.get('/:labId', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     const { labId } = req.params;
 
     const lab = await CustomLabService.getLabById(userId, labId);
@@ -99,7 +99,7 @@ router.get('/:labId', isAuthenticated, async (req, res) => {
  */
 router.post('/:labId/upgrade', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     const { labId } = req.params;
     const { newSize } = req.body;
 
@@ -130,7 +130,7 @@ router.post('/:labId/upgrade', isAuthenticated, async (req, res) => {
  */
 router.post('/:labId/modules', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     const { labId } = req.params;
     const { moduleType } = req.body;
 
@@ -161,7 +161,7 @@ router.post('/:labId/modules', isAuthenticated, async (req, res) => {
  */
 router.post('/:labId/staff', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     const { labId } = req.params;
     const { position, staffName } = req.body;
 
@@ -192,7 +192,7 @@ router.post('/:labId/staff', isAuthenticated, async (req, res) => {
  */
 router.put('/:labId/customization', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     const { labId } = req.params;
     const { color, name, description } = req.body;
 
@@ -220,7 +220,7 @@ router.put('/:labId/customization', isAuthenticated, async (req, res) => {
  */
 router.post('/:labId/research', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     const { labId } = req.params;
     const { techId } = req.body;
 
@@ -251,7 +251,7 @@ router.post('/:labId/research', isAuthenticated, async (req, res) => {
  */
 router.post('/:labId/staff/:staffName/train', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     const { labId, staffName } = req.params;
 
     const success = await CustomLabService.trainStaff(userId, labId, staffName);
@@ -274,7 +274,7 @@ router.post('/:labId/staff/:staffName/train', isAuthenticated, async (req, res) 
  */
 router.delete('/:labId', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     const { labId } = req.params;
 
     const success = await CustomLabService.deleteLab(userId, labId);
@@ -297,7 +297,7 @@ router.delete('/:labId', isAuthenticated, async (req, res) => {
  */
 router.get('/:labId/bonuses', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     const { labId } = req.params;
 
     const bonuses = await CustomLabService.getLabBonuses(userId, labId);
@@ -320,7 +320,7 @@ router.get('/:labId/bonuses', isAuthenticated, async (req, res) => {
  */
 router.get('/:labId/upkeep', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     const { labId } = req.params;
 
     const upkeep = await CustomLabService.getLabUpkeep(userId, labId);

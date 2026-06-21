@@ -3,7 +3,7 @@ import { isAuthenticated } from "./basicAuth";
 import { UniverseSeedService } from "./services/universeSeedService";
 
 function readUserId(req: Request) {
-  const userId = (req as any)?.user?.id || (req.session as any)?.userId;
+  const userId = req.user?.id || req.session?.userId;
   return String(userId || "").trim();
 }
 

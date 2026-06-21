@@ -16,7 +16,7 @@ const router = Router();
  */
 router.post('/session/initialize', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const session = await AutoBuyResourcesService.initializeAutoBuySession(userId);
@@ -32,7 +32,7 @@ router.post('/session/initialize', isAuthenticated, async (req, res) => {
  */
 router.get('/session', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const session = await AutoBuyResourcesService.getAutoBuySession(userId);
@@ -48,7 +48,7 @@ router.get('/session', isAuthenticated, async (req, res) => {
  */
 router.post('/session/pause', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const { reason, duration } = req.body;
@@ -65,7 +65,7 @@ router.post('/session/pause', isAuthenticated, async (req, res) => {
  */
 router.post('/session/resume', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const session = await AutoBuyResourcesService.resumeAutoBuySession(userId);
@@ -81,7 +81,7 @@ router.post('/session/resume', isAuthenticated, async (req, res) => {
  */
 router.post('/rules/create', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const rule = await AutoBuyResourcesService.createAutoBuyRule(userId, req.body);
@@ -97,7 +97,7 @@ router.post('/rules/create', isAuthenticated, async (req, res) => {
  */
 router.get('/rules', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const rules = await AutoBuyResourcesService.getAutoBuyRules(userId);
@@ -113,7 +113,7 @@ router.get('/rules', isAuthenticated, async (req, res) => {
  */
 router.put('/rules/:ruleId', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const rule = await AutoBuyResourcesService.updateAutoBuyRule(userId, req.params.ruleId, req.body);
@@ -129,7 +129,7 @@ router.put('/rules/:ruleId', isAuthenticated, async (req, res) => {
  */
 router.delete('/rules/:ruleId', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const success = await AutoBuyResourcesService.deleteAutoBuyRule(userId, req.params.ruleId);
@@ -145,7 +145,7 @@ router.delete('/rules/:ruleId', isAuthenticated, async (req, res) => {
  */
 router.post('/rules/:ruleId/toggle', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const { enabled } = req.body;
@@ -162,7 +162,7 @@ router.post('/rules/:ruleId/toggle', isAuthenticated, async (req, res) => {
  */
 router.post('/purchase', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const { resource, amount, maxPrice, sellerId } = req.body;
@@ -205,7 +205,7 @@ router.get('/seller/:sellerId', async (req, res) => {
  */
 router.get('/statistics', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const stats = await AutoBuyResourcesService.getAutoBuyStatistics(userId);
@@ -221,7 +221,7 @@ router.get('/statistics', isAuthenticated, async (req, res) => {
  */
 router.get('/history', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const limit = req.query.limit ? parseInt(req.query.limit as string) : 50;
@@ -238,7 +238,7 @@ router.get('/history', isAuthenticated, async (req, res) => {
  */
 router.post('/limits', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const result = await AutoBuyResourcesService.setResourceLimits(userId, req.body);
@@ -254,7 +254,7 @@ router.post('/limits', isAuthenticated, async (req, res) => {
  */
 router.get('/alerts', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const alerts = await AutoBuyResourcesService.getActiveAlerts(userId);
@@ -270,7 +270,7 @@ router.get('/alerts', isAuthenticated, async (req, res) => {
  */
 router.get('/recommendations', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const recommendations = await AutoBuyResourcesService.getRecommendedPurchases(userId);
@@ -286,7 +286,7 @@ router.get('/recommendations', isAuthenticated, async (req, res) => {
  */
 router.get('/simulate', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const days = req.query.days ? parseInt(req.query.days as string) : 7;

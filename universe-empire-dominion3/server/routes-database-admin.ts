@@ -14,11 +14,11 @@ import { eq } from "drizzle-orm";
 // ── Local copies of admin helper functions (mirrored from routes-admin.ts) ──
 
 function getUserId(req: Request): string {
-  return (req.session as any)?.userId || "";
+  return req.session?.userId || "";
 }
 
 function getImpersonatorId(req: Request): string {
-  return (req.session as any)?.impersonatorId || "";
+  return req.session?.impersonatorId || "";
 }
 
 async function isAdminUser(userId: string): Promise<boolean> {

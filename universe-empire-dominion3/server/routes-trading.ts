@@ -15,7 +15,7 @@ const router = Router();
  */
 router.post('/request/create', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const { recipientId, initiatorOffer, recipientOffer } = req.body;
@@ -32,7 +32,7 @@ router.post('/request/create', isAuthenticated, async (req, res) => {
  */
 router.get('/active', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const trades = await ResearchTradingService.getActiveTrades(userId);
@@ -62,7 +62,7 @@ router.get('/:tradeId', isAuthenticated, async (req, res) => {
  */
 router.post('/:tradeId/accept', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const trade = await ResearchTradingService.acceptTrade(req.params.tradeId, userId);
@@ -78,7 +78,7 @@ router.post('/:tradeId/accept', isAuthenticated, async (req, res) => {
  */
 router.post('/:tradeId/reject', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const { reason } = req.body;
@@ -95,7 +95,7 @@ router.post('/:tradeId/reject', isAuthenticated, async (req, res) => {
  */
 router.post('/:tradeId/cancel', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const success = await ResearchTradingService.cancelTrade(req.params.tradeId, userId);
@@ -111,7 +111,7 @@ router.post('/:tradeId/cancel', isAuthenticated, async (req, res) => {
  */
 router.post('/:tradeId/settle', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const trade = await ResearchTradingService.settleTrade(req.params.tradeId);
@@ -127,7 +127,7 @@ router.post('/:tradeId/settle', isAuthenticated, async (req, res) => {
  */
 router.get('/history', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const limit = req.query.limit ? parseInt(req.query.limit as string) : 50;
@@ -157,7 +157,7 @@ router.get('/rating/:playerId', async (req, res) => {
  */
 router.get('/statistics', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const stats = await ResearchTradingService.getTradeStatistics(userId);
@@ -173,7 +173,7 @@ router.get('/statistics', isAuthenticated, async (req, res) => {
  */
 router.put('/:tradeId/offer', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const { newOffer } = req.body;
@@ -240,7 +240,7 @@ router.post('/validate', async (req, res) => {
  */
 router.get('/recommendations', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const recommendations = await ResearchTradingService.getTradeRecommendations(userId);
@@ -256,7 +256,7 @@ router.get('/recommendations', isAuthenticated, async (req, res) => {
  */
 router.post('/simulate', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const { initiatorOffer, recipientOffer } = req.body;
@@ -273,7 +273,7 @@ router.post('/simulate', isAuthenticated, async (req, res) => {
  */
 router.post('/:tradeId/dispute', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const { reason } = req.body;
@@ -290,7 +290,7 @@ router.post('/:tradeId/dispute', isAuthenticated, async (req, res) => {
  */
 router.post('/player/:playerId/rate', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const { rating, review } = req.body;
@@ -307,7 +307,7 @@ router.post('/player/:playerId/rate', isAuthenticated, async (req, res) => {
  */
 router.post('/player/:playerId/block', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const success = await ResearchTradingService.blockPlayer(userId, req.params.playerId);
@@ -323,7 +323,7 @@ router.post('/player/:playerId/block', isAuthenticated, async (req, res) => {
  */
 router.get('/blocked', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const blocked = await ResearchTradingService.getBlockedPlayers(userId);
@@ -339,7 +339,7 @@ router.get('/blocked', isAuthenticated, async (req, res) => {
  */
 router.get('/pending', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const pending = await ResearchTradingService.getPendingTradesRequiringAction(userId);
@@ -355,7 +355,7 @@ router.get('/pending', isAuthenticated, async (req, res) => {
  */
 router.post('/accept-bulk', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const { tradeIds } = req.body;
@@ -372,7 +372,7 @@ router.post('/accept-bulk', isAuthenticated, async (req, res) => {
  */
 router.get('/eligible', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const eligibility = await ResearchTradingService.validatePlayerEligibility(userId);
@@ -388,7 +388,7 @@ router.get('/eligible', isAuthenticated, async (req, res) => {
  */
 router.get('/available-research', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const research = await ResearchTradingService.getAvailableResearch(userId);

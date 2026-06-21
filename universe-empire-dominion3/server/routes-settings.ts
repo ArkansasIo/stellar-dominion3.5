@@ -75,7 +75,7 @@ function mergePlayerOptions(value: any) {
 }
 
 function getUserId(req: Request) {
-  return (req.session as any)?.userId || "";
+  return req.session?.userId || "";
 }
 
 export function registerSettingsRoutes(app: Express) {

@@ -26,7 +26,7 @@ const isValidDomain = (value: unknown): value is UnitDomain =>
   value === 'troop' || value === 'civilian' || value === 'government' || value === 'military';
 
 function getUserId(req: Request): string {
-  return (req.session as any)?.userId || '';
+  return req.session?.userId || '';
 }
 
 function getUnitSystemSettingKey(userId: string) {

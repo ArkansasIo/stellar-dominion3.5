@@ -13,7 +13,7 @@ const router = express.Router();
 
 router.get('/api/turns', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
     const turnInfo = await TurnSystemService.getTurnInfo(userId);
@@ -40,7 +40,7 @@ router.get('/api/turns', isAuthenticated, async (req, res) => {
  */
 router.get('/api/turns/info', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
     const turnInfo = await TurnSystemService.getTurnInfo(userId);
@@ -67,7 +67,7 @@ router.get('/api/turns/info', isAuthenticated, async (req, res) => {
  */
 router.post('/api/turns/generate', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
     const available = await TurnSystemService.generateTurns(userId);
@@ -85,7 +85,7 @@ router.post('/api/turns/generate', isAuthenticated, async (req, res) => {
 
 router.post('/api/turns/spend', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
     const amount = Number(req.body?.amount ?? 0);
@@ -109,7 +109,7 @@ router.post('/api/turns/spend', isAuthenticated, async (req, res) => {
  */
 router.post('/api/turns/apply-to-research', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
     const { turnsToConsume = 1 } = req.body;
@@ -136,7 +136,7 @@ router.post('/api/turns/apply-to-research', isAuthenticated, async (req, res) =>
  */
 router.post('/api/turns/auto-progress', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
     const result = await TurnSystemService.autoProgressResearch(userId);
@@ -155,7 +155,7 @@ router.post('/api/turns/auto-progress', isAuthenticated, async (req, res) => {
  */
 router.post('/api/turns/apply-event', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
     const { eventType } = req.body;
@@ -227,7 +227,7 @@ router.post('/api/turns/calculate-requirements', isAuthenticated, async (req, re
  */
 router.get('/api/turns/bonuses', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
     const turnInfo = await TurnSystemService.getTurnInfo(userId);

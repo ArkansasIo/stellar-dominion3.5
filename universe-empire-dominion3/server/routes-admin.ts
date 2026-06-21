@@ -143,11 +143,11 @@ type GuardedAdminAccess = {
 };
 
 function getUserId(req: Request): string {
-  return (req.session as any)?.userId || "";
+  return req.session?.userId || "";
 }
 
 function getImpersonatorId(req: Request): string {
-  return (req.session as any)?.impersonatorId || "";
+  return req.session?.impersonatorId || "";
 }
 
 async function isAdminUser(userId: string): Promise<boolean> {
@@ -235,7 +235,7 @@ function isFounderAccess(permissions: string[]): boolean {
 }
 
 function getAdminSessionVerifiedAt(req: Request): number {
-  const raw = (req.session as any)?.adminAuthenticatedAt;
+  const raw = req.session?.adminAuthenticatedAt;
   const parsed = Number(raw);
   return Number.isFinite(parsed) ? parsed : 0;
 }
@@ -1752,8 +1752,8 @@ export function registerAdminRoutes(app: Express) {
         return res.status(404).json({ message: "Target user not found" });
       }
 
-      (req.session as any).impersonatorId = actorId;
-      (req.session as any).userId = target.id;
+      req.session.impersonatorId = actorId;
+      req.session.userId = target.id;
 
       req.session.save(async (error) => {
         if (error) {
@@ -1791,8 +1791,8 @@ export function registerAdminRoutes(app: Express) {
         return res.status(400).json({ message: "No active impersonation session" });
       }
 
-      (req.session as any).userId = actorId;
-      delete (req.session as any).impersonatorId;
+      req.session.userId = actorId;
+      delete req.session.impersonatorId;
 
       req.session.save(async (error) => {
         if (error) {

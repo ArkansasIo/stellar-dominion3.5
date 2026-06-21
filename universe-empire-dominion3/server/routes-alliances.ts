@@ -57,7 +57,7 @@ const ALLIANCE_MEMBER_CAP = 150;
 const ALLIANCE_COORDINATES_PATTERN = /^\d+:\d+:\d+$/;
 
 function getUserId(req: Request): string {
-  return (req.session as any)?.userId || "";
+  return req.session?.userId || "";
 }
 
 function getDiplomacyKey(allianceId: string): string {

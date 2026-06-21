@@ -4,7 +4,7 @@ import { storage } from "./storage";
 import { ResearchXPService } from "./services/researchXPService";
 
 function getUserId(req: Request): string {
-  return (req.session as any)?.userId || "";
+  return req.session?.userId || "";
 }
 
 export function registerArtifactRoutes(app: Express) {

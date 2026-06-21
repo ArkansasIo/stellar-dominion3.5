@@ -6,7 +6,7 @@ const router = Router();
 
 router.get("/", isAuthenticated, async (req, res) => {
   try {
-    const userId = String((req.session as any)?.userId || "");
+    const userId = String(req.session?.userId || "");
     const limit = Math.min(200, Math.max(1, Number.parseInt(String(req.query.limit || "50"), 10) || 50));
     const messages = await storage.getMessagesByUser(userId, limit);
     res.json(messages);
@@ -18,7 +18,7 @@ router.get("/", isAuthenticated, async (req, res) => {
 
 router.post("/", isAuthenticated, async (req, res) => {
   try {
-    const userId = String((req.session as any)?.userId || "");
+    const userId = String(req.session?.userId || "");
     const { toUserId, to, subject, body, type } = req.body || {};
 
     if (!subject || !body) {
@@ -65,7 +65,7 @@ router.post("/", isAuthenticated, async (req, res) => {
 
 router.patch("/:id/read", isAuthenticated, async (req, res) => {
   try {
-    const userId = String((req.session as any)?.userId || "");
+    const userId = String(req.session?.userId || "");
     const id = String(req.params.id || "");
     const updated = await storage.markMessageAsReadByUser(userId, id);
 
@@ -82,7 +82,7 @@ router.patch("/:id/read", isAuthenticated, async (req, res) => {
 
 router.delete("/:id", isAuthenticated, async (req, res) => {
   try {
-    const userId = String((req.session as any)?.userId || "");
+    const userId = String(req.session?.userId || "");
     const id = String(req.params.id || "");
     const deleted = await storage.deleteMessageByUser(userId, id);
 

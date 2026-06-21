@@ -35,7 +35,7 @@ function clamp(value: number, min: number, max: number): number {
 }
 
 function getUserId(req: Request): string {
-  return (req.session as any)?.userId || "";
+  return req.session?.userId || "";
 }
 
 function getFrameTier(buildings: Record<string, number>): number {

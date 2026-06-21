@@ -15,7 +15,7 @@ const router = Router();
  */
 router.get('/', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     const achievements = await AchievementService.getPlayerAchievements(userId);
 
     res.json({
@@ -64,7 +64,7 @@ router.get('/details/:achievementId', async (req, res) => {
  */
 router.get('/badges', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     const badges = await AchievementService.getPlayerBadges(userId);
 
     res.json({
@@ -85,7 +85,7 @@ router.get('/badges', isAuthenticated, async (req, res) => {
  */
 router.post('/update-research', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     const { techCount } = req.body;
 
     if (techCount === undefined) {
@@ -115,7 +115,7 @@ router.post('/update-research', isAuthenticated, async (req, res) => {
  */
 router.post('/record-discovery', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     const { discoveryCount } = req.body;
 
     if (discoveryCount === undefined) {
@@ -145,7 +145,7 @@ router.post('/record-discovery', isAuthenticated, async (req, res) => {
  */
 router.post('/update-level', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     const { currentLevel } = req.body;
 
     if (currentLevel === undefined) {
@@ -175,7 +175,7 @@ router.post('/update-level', isAuthenticated, async (req, res) => {
  */
 router.get('/stats', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     const stats = await AchievementService.getAchievementStats(userId);
 
     res.json({
@@ -217,7 +217,7 @@ router.get('/leaderboard', async (req, res) => {
  */
 router.post('/award/:achievementId', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     const { achievementId } = req.params;
 
     const success = await AchievementService.awardSpecificAchievement(userId, achievementId);
@@ -240,7 +240,7 @@ router.post('/award/:achievementId', isAuthenticated, async (req, res) => {
  */
 router.post('/update-specialization', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     const { category, techCount } = req.body;
 
     if (!category || techCount === undefined) {

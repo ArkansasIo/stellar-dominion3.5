@@ -7,7 +7,7 @@ import { storage } from "./storage";
 import { users } from "../shared/schema";
 
 function getUserId(req: Request): string {
-  return (req.session as any)?.userId || "";
+  return req.session?.userId || "";
 }
 
 function hashPassword(password: string): string {

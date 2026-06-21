@@ -14,7 +14,7 @@ const GOVERNMENT_APPOINTMENTS_PREFIX = 'government_appointments';
 const GOVERNMENT_SYSTEMS_PREFIX = 'government_systems';
 
 function getUserId(req: Request): string {
-  return (req.session as any)?.userId || '';
+  return req.session?.userId || '';
 }
 
 function getAppointmentsKey(userId: string) {

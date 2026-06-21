@@ -268,7 +268,7 @@ function generateScanReport(
 }
 
 function isAuthenticated(req: Request, res: Response, next: Function) {
-  if ((req.session as any)?.userId) {
+  if (req.session?.userId) {
     next();
   } else {
     res.status(401).json({ error: "Unauthorized" });
@@ -394,7 +394,7 @@ export function registerGalaxyRoutes(app: Express) {
     isAuthenticated,
     async (req: Request, res: Response) => {
       try {
-        const userId = (req.session as any)?.userId as string;
+        const userId = req.session?.userId as string;
         const { universe } = req.params;
         const galaxy = parseInt(req.params.galaxy, 10);
         const sector = parseInt(req.params.sector, 10);

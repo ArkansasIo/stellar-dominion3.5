@@ -15,7 +15,7 @@ type GuildChatMessage = {
 };
 
 function getUserId(req: Request): string {
-  return (req.session as any)?.userId || "";
+  return req.session?.userId || "";
 }
 
 async function getMembershipForUser(userId: string) {

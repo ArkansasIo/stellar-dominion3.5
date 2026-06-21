@@ -383,7 +383,7 @@ export async function setupAuth(app: Express) {
         firstName: firstName || username,
       });
 
-      (req.session as any).userId = user.id;
+      req.session.userId = user.id;
       req.session.save((err) => {
         if (err) {
           console.error("Session save error:", err);
@@ -427,10 +427,10 @@ export async function setupAuth(app: Express) {
       }
 
       logger.info("AUTH", `Login successful for user: ${username}`, { userId: user.id });
-      (req.session as any).userId = user.id;
+      req.session.userId = user.id;
       const adminStatus = await resolveAdminStatus(user.id);
       if (adminStatus.isAdmin) {
-        (req.session as any).adminAuthenticatedAt = Date.now();
+        req.session.adminAuthenticatedAt = Date.now();
       }
       
       req.session.save((err) => {
@@ -484,9 +484,9 @@ export async function setupAuth(app: Express) {
         return res.status(403).json({ message: "Admin access required for this account" });
       }
 
-      delete (req.session as any).impersonatorId;
-      (req.session as any).userId = user.id;
-      (req.session as any).adminAuthenticatedAt = Date.now();
+      delete req.session.impersonatorId;
+      req.session.userId = user.id;
+      req.session.adminAuthenticatedAt = Date.now();
 
       req.session.save((err) => {
         if (err) {
@@ -552,7 +552,7 @@ export async function setupAuth(app: Express) {
       res.set('Pragma', 'no-cache');
       res.set('Expires', '0');
       
-      let userId = (req.session as any)?.userId;
+      let userId = req.session?.userId;
       
       // Try session auth first
       if (userId) {
@@ -582,10 +582,10 @@ export async function setupAuth(app: Express) {
           if (username && password) {
             const user = await resolveUserByIdentifier(username);
             if (user && user.passwordHash && verifyPassword(password, user.passwordHash)) {
-              (req.session as any).userId = user.id;
+              req.session.userId = user.id;
               const adminStatus = await resolveAdminStatus(user.id);
               if (adminStatus.isAdmin) {
-                (req.session as any).adminAuthenticatedAt = Date.now();
+                req.session.adminAuthenticatedAt = Date.now();
               }
               logger.info("AUTH", `Basic auth successful for user: ${username}`);
               
@@ -632,9 +632,9 @@ export async function setupAuth(app: Express) {
 
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
   // First try session
-  let userId = (req.session as any)?.userId;
+  let userId = req.session?.userId;
   if (userId) {
-    (req as any).user = { id: userId };
+    req.user = { id: userId };
     logger.info("AUTH", `Session auth successful for userId: ${userId}`);
     return next();
   }
@@ -653,8 +653,8 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
         if (user && user.passwordHash) {
           const passwordValid = verifyPassword(password, user.passwordHash);
           if (passwordValid) {
-            (req.session as any).userId = user.id;
-            (req as any).user = { id: user.id };
+            req.session.userId = user.id;
+            req.user = { id: user.id };
             logger.info("AUTH", `Basic auth successful for user: ${username}`);
             return next();
           }
@@ -668,8 +668,8 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
   if (isDevAuthBypassEnabled()) {
     try {
       const user = await ensureDevBypassUser();
-      (req.session as any).userId = user.id;
-      (req as any).user = { id: user.id };
+      req.session.userId = user.id;
+      req.user = { id: user.id };
       logger.warn("AUTH", `Dev auth bypass granted for ${req.path}`);
       return next();
     } catch (error) {

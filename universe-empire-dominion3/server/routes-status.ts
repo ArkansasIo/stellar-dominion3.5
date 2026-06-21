@@ -11,7 +11,7 @@ import { adminUsers } from '../shared/schema';
 import { eq } from 'drizzle-orm';
 
 function getUserId(req: Request) {
-  return (req.session as any)?.userId || '';
+  return req.session?.userId || '';
 }
 
 export function registerStatusRoutes(app: Express) {

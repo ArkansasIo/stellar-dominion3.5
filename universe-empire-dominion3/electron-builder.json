@@ -16,7 +16,6 @@
   ],
   "win": {
     "target": ["nsis", "portable"],
-    "icon": "build-resources/icon.ico",
     "artifactName": "${productName}-Setup-${version}.${ext}"
   },
   "nsis": {

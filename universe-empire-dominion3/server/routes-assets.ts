@@ -56,7 +56,7 @@ router.get('/search', async (req, res) => {
  */
 router.delete('/:assetId', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const success = await GameAssetsService.deleteAsset(req.params.assetId);
@@ -72,7 +72,7 @@ router.delete('/:assetId', isAuthenticated, async (req, res) => {
  */
 router.put('/:assetId', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const asset = await GameAssetsService.updateAssetMetadata(req.params.assetId, req.body);
@@ -129,7 +129,7 @@ router.get('/bundles/:bundleId', async (req, res) => {
  */
 router.post('/bundles/create', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const { name, description, assetIds, platform } = req.body;
@@ -146,7 +146,7 @@ router.post('/bundles/create', isAuthenticated, async (req, res) => {
  */
 router.put('/bundles/:bundleId', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const bundle = await GameAssetsService.updateAssetBundle(req.params.bundleId, req.body);
@@ -162,7 +162,7 @@ router.put('/bundles/:bundleId', isAuthenticated, async (req, res) => {
  */
 router.delete('/bundles/:bundleId', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const success = await GameAssetsService.deleteAssetBundle(req.params.bundleId);
@@ -178,7 +178,7 @@ router.delete('/bundles/:bundleId', isAuthenticated, async (req, res) => {
  */
 router.post('/bundles/:bundleId/package', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const result = await GameAssetsService.packageAssetBundle(req.params.bundleId);
@@ -221,7 +221,7 @@ router.get('/manifest', async (req, res) => {
  */
 router.post('/manifest/generate', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const manifest = await GameAssetsService.generateAssetManifest();
@@ -263,7 +263,7 @@ router.get('/catalogs/:category', async (req, res) => {
  */
 router.post('/cache/clear', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const { assetOrBundleId } = req.body;
@@ -293,7 +293,7 @@ router.get('/:assetId/validate', async (req, res) => {
  */
 router.post('/:assetId/optimize', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const { platform } = req.body;
@@ -324,7 +324,7 @@ router.get('/preset/:preset/:platform', async (req, res) => {
  */
 router.get('/report', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const report = await GameAssetsService.generateAssetReport();
@@ -340,7 +340,7 @@ router.get('/report', isAuthenticated, async (req, res) => {
  */
 router.post('/sync-cdn', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const result = await GameAssetsService.syncAssetsToCDN();
@@ -382,7 +382,7 @@ router.get('/:assetId/versions', async (req, res) => {
  */
 router.post('/:assetId/rollback/:version', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     if (!userId) return res.status(401).json({ success: false, error: 'Unauthorized' });
 
     const asset = await GameAssetsService.rollbackAssetVersion(req.params.assetId, req.params.version);

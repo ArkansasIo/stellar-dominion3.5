@@ -179,7 +179,7 @@ export function registerMoonRoutes(app: Express) {
       }
 
       // Check if player has enough resources (simplified)
-      const userId = req.session?.userId;
+      const userId = req.session?.userId || "";
       if (!userId) {
         return res.status(401).json({ error: "Unauthorized" });
       }
@@ -260,7 +260,7 @@ export function registerMoonRoutes(app: Express) {
         return res.status(404).json({ error: "Moon not found" });
       }
 
-      const userId = req.session?.userId;
+      const userId = req.session?.userId || "";
       if (!userId) {
         return res.status(401).json({ error: "Unauthorized" });
       }
@@ -344,7 +344,7 @@ export function registerMoonRoutes(app: Express) {
         return res.status(404).json({ error: "Moon not found" });
       }
 
-      const userId = req.session?.userId;
+      const userId = req.session?.userId || "";
       if (!userId) {
         return res.status(401).json({ error: "Unauthorized" });
       }

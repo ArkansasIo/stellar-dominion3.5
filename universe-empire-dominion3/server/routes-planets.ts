@@ -1,6 +1,6 @@
 import type { Express, Request, Response } from "express";
 import { db } from "./db";
-import { playerStates } from "../shared/schema";
+import { playerStates, playerColonies } from "../shared/schema";
 import { eq } from "drizzle-orm";
 
 interface SubPlaneState {
@@ -446,21 +446,94 @@ export function registerPlanetRoutes(app: Express) {
   app.get("/api/planets/:id", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const planetId = req.params.id;
-      const planet = PLANET_DATABASE[planetId];
+      const userId = req.session?.userId;
 
-      if (!planet) {
-        return res.status(404).json({ error: "Planet not found" });
+      // First check hardcoded database
+      let planet = PLANET_DATABASE[planetId];
+
+      // If not found in hardcoded DB, check player's colonies in the database
+      if (!planet && userId) {
+        const colony = await db.query.playerColonies.findFirst({
+          where: eq(playerColonies.id, planetId),
+        });
+
+        if (colony) {
+          const resources = (await db.query.playerStates.findFirst({
+            where: eq(playerStates.userId, userId),
+          }))?.resources as Record<string, number> || { metal: 0, crystal: 0, deuterium: 0 };
+
+          planet = {
+            id: colony.id,
+            name: colony.colonyName,
+            type: colony.colonyType,
+            size: "medium",
+            class: "M",
+            coordinates: `[${colony.planetId}:${colony.id.slice(0, 4)}]`,
+            temperature: 280,
+            habitability: 70 + (colony.colonyLevel || 1) * 3,
+            waterPercentage: 40,
+            resources: {
+              metal: Math.round(resources.metal * 0.3) || 10000,
+              crystal: Math.round(resources.crystal * 0.3) || 5000,
+              deuterium: Math.round(resources.deuterium * 0.3) || 2000,
+            },
+            colonized: true,
+            owner: "Player",
+            population: colony.population || 1000,
+            defenses: (colony.colonyLevel || 1) * 100,
+            buildings: {
+              metalMine: colony.colonyLevel || 1,
+              crystalMine: Math.max(1, (colony.colonyLevel || 1) - 1),
+              deuteriumSynthesizer: Math.max(0, (colony.colonyLevel || 1) - 2),
+              solarPlant: (colony.colonyLevel || 1) + 1,
+              roboticsFactory: Math.max(1, Math.floor((colony.colonyLevel || 1) / 2)),
+            },
+          };
+        }
       }
 
-      // If planet is colonized, check if it belongs to the player
-      if (planet.colonized && req.session?.userId) {
+      // If still not found, build a basic planet from player state
+      if (!planet && userId) {
         const playerState = await db.query.playerStates.findFirst({
-          where: eq(playerStates.userId, req.session.userId),
+          where: eq(playerStates.userId, userId),
         });
 
         if (playerState) {
-          planet.owner = playerState.planetName || "Player";
+          const resources = (playerState.resources as Record<string, number>) || { metal: 1000, crystal: 500, deuterium: 0 };
+          const buildings = (playerState.buildings as Record<string, number>) || {};
+
+          planet = {
+            id: planetId,
+            name: playerState.planetName || "Homeworld",
+            type: "temperate",
+            size: "large",
+            class: "M",
+            coordinates: playerState.coordinates || "[1:1:1]",
+            temperature: 290,
+            habitability: 90,
+            waterPercentage: 60,
+            resources: {
+              metal: resources.metal || 1000,
+              crystal: resources.crystal || 500,
+              deuterium: resources.deuterium || 0,
+            },
+            colonized: true,
+            owner: "Player",
+            population: 10000,
+            defenses: 200,
+            buildings: {
+              metalMine: buildings.metalMine || 0,
+              crystalMine: buildings.crystalMine || 0,
+              deuteriumSynthesizer: buildings.deuteriumSynthesizer || 0,
+              solarPlant: buildings.solarPlant || 0,
+              roboticsFactory: buildings.roboticsFactory || 0,
+            },
+          };
         }
+      }
+
+      if (!planet) {
+        return res.status(404).json({ error: "Planet not found" });
       }
 
       res.json(planet);

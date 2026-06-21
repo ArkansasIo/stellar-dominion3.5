@@ -6,7 +6,7 @@ const router = Router();
 
 router.get("/", isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     const friends = await storage.getPlayerFriends(userId);
 
     res.json(
@@ -28,7 +28,7 @@ router.get("/", isAuthenticated, async (req, res) => {
 
 router.get("/requests", isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     const requests = await storage.getPlayerFriendRequests(userId);
 
     res.json(
@@ -50,7 +50,7 @@ router.get("/requests", isAuthenticated, async (req, res) => {
 
 router.post("/requests", isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     const targetUsername = String(req.body?.username || "").trim();
     const message = typeof req.body?.message === "string" ? req.body.message.trim() : undefined;
 
@@ -96,7 +96,7 @@ router.post("/requests", isAuthenticated, async (req, res) => {
 
 router.post("/requests/:requestId/accept", isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     const requestId = String(req.params.requestId);
 
     const requests = await storage.getPlayerFriendRequests(userId);
@@ -115,7 +115,7 @@ router.post("/requests/:requestId/accept", isAuthenticated, async (req, res) => 
 
 router.post("/requests/:requestId/reject", isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     const requestId = String(req.params.requestId);
 
     const requests = await storage.getPlayerFriendRequests(userId);
@@ -134,7 +134,7 @@ router.post("/requests/:requestId/reject", isAuthenticated, async (req, res) => 
 
 router.delete("/:friendId", isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     const friendId = String(req.params.friendId);
 
     await storage.removeFriend(userId, friendId);
@@ -147,7 +147,7 @@ router.delete("/:friendId", isAuthenticated, async (req, res) => {
 
 router.patch("/:friendId/favorite", isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     const friendId = String(req.params.friendId);
     const isFavorite = Boolean(req.body?.isFavorite);
 
@@ -161,7 +161,7 @@ router.patch("/:friendId/favorite", isAuthenticated, async (req, res) => {
 
 router.patch("/:friendId/nickname", isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     const friendId = String(req.params.friendId);
     const nickname = String(req.body?.nickname || "").trim();
 

@@ -11,7 +11,7 @@ const SEED_REALMS = [
 ];
 
 function getSessionRealmId(req: Request): string {
-  return ((req.session as any)?.realmId as string | undefined) || "nexus-alpha";
+  return (req.session.realmId as string | undefined) || "nexus-alpha";
 }
 
 async function ensureSeedRealms() {
@@ -53,7 +53,7 @@ export function registerRealmRoutes(app: Express) {
         return res.status(400).json({ message: "Realm is not available" });
       }
 
-      (req.session as any).realmId = realm.slug;
+      req.session.realmId = realm.slug;
 
       req.session.save((error) => {
         if (error) {

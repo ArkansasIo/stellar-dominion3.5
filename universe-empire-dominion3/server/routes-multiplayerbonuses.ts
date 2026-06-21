@@ -15,7 +15,7 @@ const router = Router();
  */
 router.get('/bonuses', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     const bonuses = await MultiplayerBonusesService.getPlayerAllianceBonuses(userId);
 
     res.json({
@@ -36,7 +36,7 @@ router.get('/bonuses', isAuthenticated, async (req, res) => {
  */
 router.post('/create', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     const { name, faction } = req.body;
 
     if (!name || !faction) {
@@ -66,7 +66,7 @@ router.post('/create', isAuthenticated, async (req, res) => {
  */
 router.post('/join', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     const { allianceId } = req.body;
 
     if (!allianceId) {
@@ -117,7 +117,7 @@ router.get('/:allianceId/members', isAuthenticated, async (req, res) => {
  */
 router.post('/contribute', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     const { allianceId, metals, credits } = req.body;
 
     if (!allianceId || !metals || !credits) {
@@ -152,7 +152,7 @@ router.post('/contribute', isAuthenticated, async (req, res) => {
  */
 router.post('/withdraw', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     const { allianceId, metals, credits } = req.body;
 
     if (!allianceId || !metals || !credits) {
@@ -232,7 +232,7 @@ router.get('/cooperative-bonus/:participants', (req, res) => {
  */
 router.post('/sync-bonuses', isAuthenticated, async (req, res) => {
   try {
-    const userId = (req.session as any)?.userId;
+    const userId = req.session?.userId || "";
     await MultiplayerBonusesService.syncAllianceBonusesToResearch(userId);
 
     res.json({

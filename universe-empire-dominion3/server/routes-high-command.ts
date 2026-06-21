@@ -46,7 +46,7 @@ import type {
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
 function getUserId(req: Request): string {
-  return (req.session as any)?.userId as string;
+  return req.session?.userId as string;
 }
 
 const isAuthenticated = (req: Request, res: Response, next: any) => {

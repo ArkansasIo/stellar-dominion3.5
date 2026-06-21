@@ -12,7 +12,7 @@ import {
 import { getYardEntryById, type YardDomain } from '../shared/config/constructorYardSystemsConfig';
 
 function getUserId(req: Request): string {
-  return (req.session as any)?.userId || '';
+  return req.session?.userId || '';
 }
 
 function isYardDomain(value: unknown): value is YardDomain {
