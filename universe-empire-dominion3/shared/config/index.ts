@@ -1010,3 +1010,15 @@ export {
   type CSSAccessibilityConfig,
 } from './cssConfig';
 
+export {
+  EMPIRE_ATTRIBUTES,
+  getAttributeById,
+  calculateAttributeCost,
+  calculateTotalAttributePoints,
+  getDefaultEmpireAttributes,
+  getEmpireOverallLevel,
+  getEmpirePowerRating,
+  type EmpireAttribute,
+  type EmpireAttributeEffect,
+} from './empireProfileConfig';
+

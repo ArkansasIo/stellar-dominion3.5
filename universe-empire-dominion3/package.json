@@ -1,7 +1,8 @@
 {
   "name": "rest-express",
   "version": "1.6.0",
-  "main": "electron-main.js",
+  "description": "Universe Empire Dominion - A 4X space strategy game",
+  "main": "electron-main.cjs",
   "type": "module",
   "license": "MIT",
   "author": "Stephen (https://github.com/ArkansasIo | https://github.com/Apocalypsecoder0)",

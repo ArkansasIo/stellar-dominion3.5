@@ -93,6 +93,7 @@ const ThreeDViewerPortal = lazy(() => import("@/pages/ThreeDViewerPortal"));
 const DatabaseAdmin = lazy(() => import("@/pages/DatabaseAdmin"));
 const PowerGrid = lazy(() => import("@/pages/PowerGrid"));
 const OrbitalDefense = lazy(() => import("@/pages/OrbitalDefense"));
+const EmpireProfile = lazy(() => import("@/pages/EmpireProfile"));
 
 function LoadingSplash() {
   return (
@@ -280,6 +281,7 @@ function RouterContent() {
       <Route path="/empire-planets" component={EmpirePlanetViewer} />
       <Route path="/empire-view" component={EmpireView} />
       <Route path="/empire-command-center" component={EmpireCommandCenter} />
+      <Route path="/empire-profile" component={EmpireProfile} />
       <Route path="/planet/:id" component={PlanetDetail} />
       <Route path="/planet-command" component={PlanetCommand} />
       <Route path="/planet-occupation" component={PlanetaryOccupation} />

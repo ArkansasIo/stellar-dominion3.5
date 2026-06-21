@@ -24,6 +24,7 @@ import { registerDatabaseAdminRoutes } from "./routes-database-admin";
 import { registerCoreApiRoutes } from "./routes-api-core";
 import { ServerStatusService } from "./services/serverStatusService";
 import { registerGameAssetLibraryRoutes } from "./routes-game-asset-library";
+import { registerEmpireProfileRoutes } from "./routes-empire-profile";
 
 const runtimeNodeEnv = process.env.NODE_ENV ?? "production";
 
@@ -270,6 +271,7 @@ import { eq, ilike, or } from "drizzle-orm";
   registerDatabaseAdminRoutes(app);
   registerPhpMyAdminRoutes(app, { db, pool, adminUsers, users, eq, ilike, or });
   registerGameAssetLibraryRoutes(app);
+  registerEmpireProfileRoutes(app);
   registerMoonRoutes(app);
   registerSporeDriveRoutes(app);
   registerWeeklyMissionRoutes(app);

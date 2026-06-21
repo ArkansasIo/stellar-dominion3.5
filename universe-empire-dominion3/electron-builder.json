@@ -7,16 +7,18 @@
     "buildResources": "build-resources"
   },
   "files": [
-    "electron-main.js",
+    "electron-main.cjs",
     "dist/**/*",
     "shared/**/*",
     "package.json",
     ".env.example",
+    "assets/**/*",
     "node_modules/**/*"
   ],
   "win": {
     "target": ["nsis", "portable"],
-    "artifactName": "${productName}-Setup-${version}.${ext}"
+    "artifactName": "${productName}-Setup-${version}.${ext}",
+    "icon": "build-resources/icon.ico"
   },
   "nsis": {
     "oneClick": false,

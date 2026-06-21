@@ -2106,3 +2106,44 @@ export const pathOfAscension = pgTable("path_of_ascension", {
 export type PathOfAscension = typeof pathOfAscension.$inferSelect;
 export const insertPathOfAscensionSchema = createInsertSchema(pathOfAscension).omit({ id: true, createdAt: true, updatedAt: true });
 export type InsertPathOfAscension = z.infer<typeof insertPathOfAscensionSchema>;
+
+// Empire Profile - 9-attribute system for empire specialization
+export const empireProfiles = pgTable("empire_profiles", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().unique().references(() => users.id, { onDelete: "cascade" }),
+
+  // 9 core attributes (each level 1-100)
+  military: integer("military").notNull().default(1),
+  economy: integer("economy").notNull().default(1),
+  research: integer("research").notNull().default(1),
+  industry: integer("industry").notNull().default(1),
+  diplomacy: integer("diplomacy").notNull().default(1),
+  espionage: integer("espionage").notNull().default(1),
+  exploration: integer("exploration").notNull().default(1),
+  governance: integer("governance").notNull().default(1),
+  innovation: integer("innovation").notNull().default(1),
+
+  // Points spent on each attribute
+  attributePoints: jsonb("attribute_points").notNull().default({
+    military: 0, economy: 0, research: 0, industry: 0,
+    diplomacy: 0, espionage: 0, exploration: 0, governance: 0, innovation: 0
+  }),
+
+  // Available points to allocate
+  availablePoints: integer("available_points").notNull().default(0),
+  totalPointsEarned: integer("total_points_earned").notNull().default(0),
+
+  // Empire name and title
+  empireName: varchar("empire_name"),
+  empireTitle: varchar("empire_title").default("新兴帝国"),
+
+  // Power rating (computed)
+  powerRating: integer("power_rating").notNull().default(0),
+
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type EmpireProfile = typeof empireProfiles.$inferSelect;
+export const insertEmpireProfileSchema = createInsertSchema(empireProfiles).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertEmpireProfile = z.infer<typeof insertEmpireProfileSchema>;

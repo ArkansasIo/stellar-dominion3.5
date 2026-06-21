@@ -325,6 +325,7 @@ const menuSections: MenuSection[] = [
         description: "Core empire oversight and planetary command tools.",
         items: [
           { href: "/empire-command-center", icon: Crown, label: "Command Center", description: "Review empire status, strategic alerts, and central command tools." },
+          { href: "/empire-profile", icon: User, label: "Empire Profile", description: "Manage your empire's 9 core attributes and specializations." },
           { href: "/empire-view", icon: LayoutDashboard, label: "Empire View", description: "See your empire at a glance across worlds and systems." },
           { href: "/empire-planets", icon: Globe, label: "Empire Planets", description: "Browse controlled planets and inspect planet detail pages.", activePrefixes: ["/planet/"] },
           { href: "/planet-command", icon: Rocket, label: "Planet Command", description: "Issue direct orders for planetary production and control." },
