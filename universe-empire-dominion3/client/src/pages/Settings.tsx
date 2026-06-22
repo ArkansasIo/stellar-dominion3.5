@@ -1316,10 +1316,7 @@ export default function Settings() {
                     </CardContent>
                     </Card>
                 </div>
-               </div>
             </TabsContent>
-
-           {/* SOUND TAB */}
            <TabsContent value="sound" className="mt-6">
               <Card className="bg-white border-slate-200" data-testid="card-sound">
                  <CardHeader>
@@ -1626,8 +1623,9 @@ export default function Settings() {
                              </div>
                           ))}
                        </CardContent>
-                   </Card>
+                    </Card>
                 </div>
+              )}
             </TabsContent>
            )}
 
