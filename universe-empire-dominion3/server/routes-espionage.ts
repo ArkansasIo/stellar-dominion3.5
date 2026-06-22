@@ -19,7 +19,7 @@ export function calculateEspionageSuccessRate(
   defenderIntelligence: number = 1,
   numSpies: number = 1
 ): number {
-  const baseRate = ESPIONAGE_CONFIG.BASE_SUCCESS_RATE;
+  const baseRate = ESPIONAGE_CONFIG.baseSuccessRate;
   
   // Attacker bonus: +5% per espionage tech level
   const attackerBonus = attackerEspionage * 0.05;
@@ -74,7 +74,7 @@ export function generateIntelReport(
     intel: {},
   };
 
-  if (categories.includes(ESPIONAGE_CONFIG.INTEL_CATEGORIES.RESOURCES)) {
+  if (categories.includes(ESPIONAGE_CONFIG.intelCategories.RESOURCES)) {
     // Reveal resources with some inaccuracy based on success rate
     const resources = targetState.resources || {};
     report.intel.resources = Object.fromEntries(
@@ -85,7 +85,7 @@ export function generateIntelReport(
     );
   }
 
-  if (categories.includes(ESPIONAGE_CONFIG.INTEL_CATEGORIES.FLEET)) {
+  if (categories.includes(ESPIONAGE_CONFIG.intelCategories.FLEET)) {
     // Reveal fleet composition
     const units = targetState.units || {};
     report.intel.fleet = Object.fromEntries(
@@ -96,13 +96,13 @@ export function generateIntelReport(
     );
   }
 
-  if (categories.includes(ESPIONAGE_CONFIG.INTEL_CATEGORIES.BUILDINGS)) {
+  if (categories.includes(ESPIONAGE_CONFIG.intelCategories.BUILDINGS)) {
     // Reveal building levels
     const buildings = targetState.buildings || {};
     report.intel.buildings = buildings;
   }
 
-  if (categories.includes(ESPIONAGE_CONFIG.INTEL_CATEGORIES.MISSIONS)) {
+  if (categories.includes(ESPIONAGE_CONFIG.intelCategories.MISSIONS)) {
     // Reveal active missions (if successful enough)
     if (successRate > 0.6) {
       const travelState = targetState.travelState || {};
@@ -110,7 +110,7 @@ export function generateIntelReport(
     }
   }
 
-  if (categories.includes(ESPIONAGE_CONFIG.INTEL_CATEGORIES.RESEARCH)) {
+  if (categories.includes(ESPIONAGE_CONFIG.intelCategories.RESEARCH)) {
     // Reveal research progress
     if (successRate > 0.7) {
       const research = targetState.research || {};
@@ -196,9 +196,9 @@ export function registerEspionageRoutes(app: Express) {
 
       // Calculate cost
       const totalCost = {
-        metal: ESPIONAGE_CONFIG.COST_PER_SPY.metal * numSpies,
-        crystal: ESPIONAGE_CONFIG.COST_PER_SPY.crystal * numSpies,
-        deuterium: ESPIONAGE_CONFIG.COST_PER_SPY.deuterium * numSpies,
+        metal: ESPIONAGE_CONFIG.costPerSpy.metal * numSpies,
+        crystal: ESPIONAGE_CONFIG.costPerSpy.crystal * numSpies,
+        deuterium: ESPIONAGE_CONFIG.costPerSpy.deuterium * numSpies,
       };
 
       const resources = playerState.resources as any || {};

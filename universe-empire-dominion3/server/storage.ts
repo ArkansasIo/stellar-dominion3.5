@@ -1078,7 +1078,7 @@ export class DatabaseStorage implements IStorage {
       .where(eq(espionageScans.playerId, playerId))
       .orderBy(desc(espionageScans.createdAt))
       .limit(1);
-    return row ? row.createdAt.getTime() : 0;
+    return row?.createdAt ? row.createdAt.getTime() : 0;
   }
 
   async createEspionageScan(scan: any): Promise<any> {

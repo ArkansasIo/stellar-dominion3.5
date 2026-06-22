@@ -701,3 +701,539 @@ export const blueprints = [
   { id: "voidArmor", name: "Void Armor Blueprint", resultId: "voidArmor", type: "armor", cost: { metal: 10000, crystal: 5000 } },
   { id: "aiCore", name: "AI Core Blueprint", resultId: "aiCore", type: "module", cost: { metal: 5000, crystal: 10000, deuterium: 2000 } },
 ];
+
+// ============================================================================
+// RACE-SPECIFIC NAMING SYSTEM
+// ============================================================================
+
+export interface RaceNameOverride {
+  raceId: RaceId;
+  displayName: string;
+  flavorText?: string;
+}
+
+export type RaceNameCategory = 
+  | 'technology'
+  | 'building'
+  | 'ship'
+  | 'resource'
+  | 'research_category'
+  | 'ui_text';
+
+export interface RaceNameMap {
+  [key: string]: Partial<Record<RaceId, RaceNameOverride>>;
+}
+
+// Technology names by race
+export const TECHNOLOGY_RACE_NAMES: RaceNameMap = {
+  // Weapons
+  'laser_weapons': {
+    terran: { raceId: 'terran', displayName: 'Laser Cannon' },
+    aquarian: { raceId: 'aquarian', displayName: 'Bio-Luminescent Lance' },
+    mechborn: { raceId: 'mechborn', displayName: 'Directed Energy Array' },
+    lithoid: { raceId: 'lithoid', displayName: 'Photon Razor' },
+    zypherian: { raceId: 'zypherian', displayName: 'Chitin Beam' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Rift Piercer' },
+    silicate: { raceId: 'silicate', displayName: 'Prismatic Spire' },
+    ethereal: { raceId: 'ethereal', displayName: 'Spectral Lance' },
+  },
+  'plasma_weapons': {
+    terran: { raceId: 'terran', displayName: 'Plasma Torpedo' },
+    aquarian: { raceId: 'aquarian', displayName: 'Thermal Vent Projector' },
+    mechborn: { raceId: 'mechborn', displayName: 'Plasma Conduit' },
+    lithoid: { raceId: 'lithoid', displayName: 'Magma Emitter' },
+    zypherian: { raceId: 'zypherian', displayName: 'Hive Thermal Bomb' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Singularity Bolt' },
+    silicate: { raceId: 'silicate', displayName: 'Molten Core Lance' },
+    ethereal: { raceId: 'ethereal', displayName: 'Entropy Beam' },
+  },
+  'missile_weapons': {
+    terran: { raceId: 'terran', displayName: 'Guided Missile' },
+    aquarian: { raceId: 'aquarian', displayName: 'Coral-Spine Launcher' },
+    mechborn: { raceId: 'mechborn', displayName: 'Smart Missile Pod' },
+    lithoid: { raceId: 'lithoid', displayName: 'Stone Shatter' },
+    zypherian: { raceId: 'zypherian', displayName: 'Swarm Missile' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Phase Missile' },
+    silicate: { raceId: 'silicate', displayName: 'Crystal Shards' },
+    ethereal: { raceId: 'ethereal', displayName: 'Karma Rockets' },
+  },
+  'railgun': {
+    terran: { raceId: 'terran', displayName: 'Mass Driver' },
+    aquarian: { raceId: 'aquarian', displayName: 'Pressure Cannon' },
+    mechborn: { raceId: 'mechborn', displayName: 'Kinetic Rail' },
+    lithoid: { raceId: 'lithoid', displayName: 'Litho Cannon' },
+    zypherian: { raceId: 'zypherian', displayName: 'Mandible Rail' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Void Spike' },
+    silicate: { raceId: 'silicate', displayName: 'Resonance Piercer' },
+    ethereal: { raceId: 'ethereal', displayName: 'Thought Accelerator' },
+  },
+  'drone_weapons': {
+    terran: { raceId: 'terran', displayName: 'Combat Drone' },
+    aquarian: { raceId: 'aquarian', displayName: 'Symbiote Swarm' },
+    mechborn: { raceId: 'mechborn', displayName: 'Micro-Drone Cloud' },
+    lithoid: { raceId: 'lithoid', displayName: 'Mineralite Swarm' },
+    zypherian: { raceId: 'zypherian', displayName: 'Hive Drones' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Rift Constructs' },
+    silicate: { raceId: 'silicate', displayName: 'Shard Sentinels' },
+    ethereal: { raceId: 'ethereal', displayName: 'Spectral Phantoms' },
+  },
+  // Defenses
+  'shields': {
+    terran: { raceId: 'terran', displayName: 'Energy Shield' },
+    aquarian: { raceId: 'aquarian', displayName: 'Hydro-Barrier' },
+    mechborn: { raceId: 'mechborn', displayName: 'Deflector Grid' },
+    lithoid: { raceId: 'lithoid', displayName: 'Stone Mantle' },
+    zypherian: { raceId: 'zypherian', displayName: 'Carapace Field' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Warp Bubble' },
+    silicate: { raceId: 'silicate', displayName: 'Crystal Lattice' },
+    ethereal: { raceId: 'ethereal', displayName: 'Void Cloak' },
+  },
+  'armor': {
+    terran: { raceId: 'terran', displayName: 'Titanium Plating' },
+    aquarian: { raceId: 'aquarian', displayName: 'Bio-Armor' },
+    mechborn: { raceId: 'mechborn', displayName: 'Nano-Composite' },
+    lithoid: { raceId: 'lithoid', displayName: 'Crystal Plating' },
+    zypherian: { raceId: 'zypherian', displayName: 'Chitin Armor' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Phase Armor' },
+    silicate: { raceId: 'silicate', displayName: 'Diamond Shell' },
+    ethereal: { raceId: 'ethereal', displayName: 'Ethereal Vestment' },
+  },
+  'point_defense': {
+    terran: { raceId: 'terran', displayName: 'CIWS Turret' },
+    aquarian: { raceId: 'aquarian', displayName: 'Reflexive Membrane' },
+    mechborn: { raceId: 'mechborn', displayName: 'Auto-Counter System' },
+    lithoid: { raceId: 'lithoid', displayName: 'Echolocation Grid' },
+    zypherian: { raceId: 'zypherian', displayName: 'Wing Guard' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Rift Sentinel' },
+    silicate: { raceId: 'silicate', displayName: 'Harmonic Disruptor' },
+    ethereal: { raceId: 'ethereal', displayName: 'Thought Shield' },
+  },
+  // Propulsion
+  'engines': {
+    terran: { raceId: 'terran', displayName: 'Ion Thruster' },
+    aquarian: { raceId: 'aquarian', displayName: 'Current Rider' },
+    mechborn: { raceId: 'mechborn', displayName: 'Quantum Drive' },
+    lithoid: { raceId: 'lithoid', displayName: 'Graviton Pulse' },
+    zypherian: { raceId: 'zypherian', displayName: 'Swarm Propulsion' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Warp Nacelle' },
+    silicate: { raceId: 'silicate', displayName: 'Crystal Harmonics' },
+    ethereal: { raceId: 'ethereal', displayName: 'Phase Shift' },
+  },
+  'warp_drive': {
+    terran: { raceId: 'terran', displayName: 'Warp Drive' },
+    aquarian: { raceId: 'aquarian', displayName: 'Tidal Gate' },
+    mechborn: { raceId: 'mechborn', displayName: 'Phase Translocator' },
+    lithoid: { raceId: 'lithoid', displayName: 'Deep Stone Rift' },
+    zypherian: { raceId: 'zypherian', displayName: 'Hive Jump' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Rift撕裂者' },
+    silicate: { raceId: 'silicate', displayName: 'Resonance Gate' },
+    ethereal: { raceId: 'ethereal', displayName: 'Transcendence Portal' },
+  },
+  'hyperdrive': {
+    terran: { raceId: 'terran', displayName: 'Hyperdrive' },
+    aquarian: { raceId: 'aquarian', displayName: 'Current Fold' },
+    mechborn: { raceId: 'mechborn', displayName: 'Quantum Tunnel' },
+    lithoid: { raceId: 'lithoid', displayName: 'Litho-Warp' },
+    zypherian: { raceId: 'zypherian', displayName: 'Swarm Blink' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Void Gate' },
+    silicate: { raceId: 'silicate', displayName: 'Crystal Fold' },
+    ethereal: { raceId: 'ethereal', displayName: 'Spirit Walk' },
+  },
+  // Economy
+  'mining': {
+    terran: { raceId: 'terran', displayName: 'Excavation Drill' },
+    aquarian: { raceId: 'aquarian', displayName: 'Deep Trench Miner' },
+    mechborn: { raceId: 'mechborn', displayName: 'Automated Extractor' },
+    lithoid: { raceId: 'lithoid', displayName: 'Crystal Bore' },
+    zypherian: { raceId: 'zypherian', displayName: 'Hive Burrower' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Rift Harvester' },
+    silicate: { raceId: 'silicate', displayName: 'Resonance Miner' },
+    ethereal: { raceId: 'ethereal', displayName: 'Thought Excavator' },
+  },
+  'energy': {
+    terran: { raceId: 'terran', displayName: 'Fusion Reactor' },
+    aquarian: { raceId: 'aquarian', displayName: 'Thermal Vent Core' },
+    mechborn: { raceId: 'mechborn', displayName: 'Zero-Point Module' },
+    lithoid: { raceId: 'lithoid', displayName: 'Geothermal Tap' },
+    zypherian: { raceId: 'zypherian', displayName: 'Hive Power Node' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Void Reactor' },
+    silicate: { raceId: 'silicate', displayName: 'Crystal Core' },
+    ethereal: { raceId: 'ethereal', displayName: 'Astral Engine' },
+  },
+  'research': {
+    terran: { raceId: 'terran', displayName: 'Research Lab' },
+    aquarian: { raceId: 'aquarian', displayName: 'Tidal Observatory' },
+    mechborn: { raceId: 'mechborn', displayName: 'Processing Core' },
+    lithoid: { raceId: 'lithoid', displayName: 'Deep Stone Archive' },
+    zypherian: { raceId: 'zypherian', displayName: 'Hive Intelligence' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Rift Nexus' },
+    silicate: { raceId: 'silicate', displayName: 'Crystal Matrix' },
+    ethereal: { raceId: 'ethereal', displayName: 'Oracle Shrine' },
+  },
+  // Special
+  'colony_ship': {
+    terran: { raceId: 'terran', displayName: 'Colony Ship' },
+    aquarian: { raceId: 'aquarian', displayName: 'Reef Seeder' },
+    mechborn: { raceId: 'mechborn', displayName: 'Construction Drone' },
+    lithoid: { raceId: 'lithoid', displayName: 'Litho-Colonizer' },
+    zypherian: { raceId: 'zypherian', displayName: 'Hive Spore' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Rift Colonizer' },
+    silicate: { raceId: 'silicate', displayName: 'Crystal Seeder' },
+    ethereal: { raceId: 'ethereal', displayName: 'Spirit Vessel' },
+  },
+  'terraforming': {
+    terran: { raceId: 'terran', displayName: 'Terraforming' },
+    aquarian: { raceId: 'aquarian', displayName: 'Ocean Reshaping' },
+    mechborn: { raceId: 'mechborn', displayName: 'Planetary Engineering' },
+    lithoid: { raceId: 'lithoid', displayName: 'Geological Restructuring' },
+    zypherian: { raceId: 'zypherian', displayName: 'Hive Adaptation' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Dimensional Folding' },
+    silicate: { raceId: 'silicate', displayName: 'Crystal Seeding' },
+    ethereal: { raceId: 'ethereal', displayName: 'Astral Conversion' },
+  },
+  'ftl_comms': {
+    terran: { raceId: 'terran', displayName: 'Subspace Radio' },
+    aquarian: { raceId: 'aquarian', displayName: 'Tidal Pulse Network' },
+    mechborn: { raceId: 'mechborn', displayName: 'Quantum Entanglement' },
+    lithoid: { raceId: 'lithoid', displayName: 'Stone Resonance' },
+    zypherian: { raceId: 'zypherian', displayName: 'Hive Mind Link' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Rift Comm' },
+    silicate: { raceId: 'silicate', displayName: 'Harmonic Broadcast' },
+    ethereal: { raceId: 'ethereal', displayName: 'Thought Network' },
+  },
+};
+
+// Building names by race
+export const BUILDING_RACE_NAMES: RaceNameMap = {
+  // Resource Buildings
+  'metal_mine': {
+    terran: { raceId: 'terran', displayName: 'Metal Mine' },
+    aquarian: { raceId: 'aquarian', displayName: 'Reef Extractor' },
+    mechborn: { raceId: 'mechborn', displayName: 'Auto-Forge' },
+    lithoid: { raceId: 'lithoid', displayName: 'Crystal Bore' },
+    zypherian: { raceId: 'zypherian', displayName: 'Hive Excavator' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Rift Tapper' },
+    silicate: { raceId: 'silicate', displayName: 'Resonance Mine' },
+    ethereal: { raceId: 'ethereal', displayName: 'Astral Forge' },
+  },
+  'crystal_mine': {
+    terran: { raceId: 'terran', displayName: 'Crystal Mine' },
+    aquarian: { raceId: 'aquarian', displayName: 'Deep Trench Rig' },
+    mechborn: { raceId: 'mechborn', displayName: 'Nano-Refinery' },
+    lithoid: { raceId: 'lithoid', displayName: 'Mineral Spire' },
+    zypherian: { raceId: 'zypherian', displayName: 'Swarm Refinery' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Void Extractor' },
+    silicate: { raceId: 'silicate', displayName: 'Shard Mine' },
+    ethereal: { raceId: 'ethereal', displayName: 'Spirit Well' },
+  },
+  'deuterium_plant': {
+    terran: { raceId: 'terran', displayName: 'Deuterium Plant' },
+    aquarian: { raceId: 'aquarian', displayName: 'Thermal Vent' },
+    mechborn: { raceId: 'mechborn', displayName: 'Quantum Converter' },
+    lithoid: { raceId: 'lithoid', displayName: 'Litho-Synthesizer' },
+    zypherian: { raceId: 'zypherian', displayName: 'Hive Synthesizer' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Rift Condenser' },
+    silicate: { raceId: 'silicate', displayName: 'Crystal Synthesizer' },
+    ethereal: { raceId: 'ethereal', displayName: 'Ethereal Distiller' },
+  },
+  'solar_panel': {
+    terran: { raceId: 'terran', displayName: 'Solar Array' },
+    aquarian: { raceId: 'aquarian', displayName: 'Thermal Collector' },
+    mechborn: { raceId: 'mechborn', displayName: 'Energy Module' },
+    lithoid: { raceId: 'lithoid', displayName: 'Sunstone Grid' },
+    zypherian: { raceId: 'zypherian', displayName: 'Hive Solar Node' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Rift Harvester' },
+    silicate: { raceId: 'silicate', displayName: 'Prism Collector' },
+    ethereal: { raceId: 'ethereal', displayName: 'Astral Gatherer' },
+  },
+  'storage_depot': {
+    terran: { raceId: 'terran', displayName: 'Storage Depot' },
+    aquarian: { raceId: 'aquarian', displayName: 'Coral Vault' },
+    mechborn: { raceId: 'mechborn', displayName: 'Nano-Bunker' },
+    lithoid: { raceId: 'lithoid', displayName: 'Stone Repository' },
+    zypherian: { raceId: 'zypherian', displayName: 'Hive Cache' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Rift Vault' },
+    silicate: { raceId: 'silicate', displayName: 'Crystal Vault' },
+    ethereal: { raceId: 'ethereal', displayName: 'Spirit Repository' },
+  },
+  // Military Buildings
+  'shipyard': {
+    terran: { raceId: 'terran', displayName: 'Shipyard' },
+    aquarian: { raceId: 'aquarian', displayName: 'Reef Drydock' },
+    mechborn: { raceId: 'mechborn', displayName: 'Construction Bay' },
+    lithoid: { raceId: 'lithoid', displayName: 'Litho-Dock' },
+    zypherian: { raceId: 'zypherian', displayName: 'Hive Spawning Pool' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Rift Forge' },
+    silicate: { raceId: 'silicate', displayName: 'Crystal Forge' },
+    ethereal: { raceId: 'ethereal', displayName: 'Spirit Yards' },
+  },
+  'defense_tower': {
+    terran: { raceId: 'terran', displayName: 'Missile Turret' },
+    aquarian: { raceId: 'aquarian', displayName: 'Stinger Battery' },
+    mechborn: { raceId: 'mechborn', displayName: 'Laser Turret' },
+    lithoid: { raceId: 'lithoid', displayName: 'Crystal Spire' },
+    zypherian: { raceId: 'zypherian', displayName: 'Chitin Turret' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Rift Cannon' },
+    silicate: { raceId: 'silicate', displayName: 'Shard Tower' },
+    ethereal: { raceId: 'ethereal', displayName: 'Spectral Bastion' },
+  },
+  'shield_generator': {
+    terran: { raceId: 'terran', displayName: 'Shield Generator' },
+    aquarian: { raceId: 'aquarian', displayName: 'Hydro-Dome' },
+    mechborn: { raceId: 'mechborn', displayName: 'Deflector Array' },
+    lithoid: { raceId: 'lithoid', displayName: 'Stone Shield' },
+    zypherian: { raceId: 'zypherian', displayName: 'Carapace Dome' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Warp Shroud' },
+    silicate: { raceId: 'silicate', displayName: 'Crystal Dome' },
+    ethereal: { raceId: 'ethereal', displayName: 'Void Barrier' },
+  },
+  'barracks': {
+    terran: { raceId: 'terran', displayName: 'Military Academy' },
+    aquarian: { raceId: 'aquarian', displayName: 'Warrior Pool' },
+    mechborn: { raceId: 'mechborn', displayName: 'Training Core' },
+    lithoid: { raceId: 'lithoid', displayName: 'Stone Drill' },
+    zypherian: { raceId: 'zypherian', displayName: 'Hive Warrior Nest' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Rift Training' },
+    silicate: { raceId: 'silicate', displayName: 'Resonance Drill' },
+    ethereal: { raceId: 'ethereal', displayName: 'Spirit Sanctum' },
+  },
+  // Science Buildings
+  'research_lab': {
+    terran: { raceId: 'terran', displayName: 'Research Lab' },
+    aquarian: { raceId: 'aquarian', displayName: 'Tidal Lab' },
+    mechborn: { raceId: 'mechborn', displayName: 'Processing Core' },
+    lithoid: { raceId: 'lithoid', displayName: 'Deep Stone Archive' },
+    zypherian: { raceId: 'zypherian', displayName: 'Hive Think Tank' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Rift Nexus' },
+    silicate: { raceId: 'silicate', displayName: 'Crystal Lab' },
+    ethereal: { raceId: 'ethereal', displayName: 'Oracle Shrine' },
+  },
+  'observatory': {
+    terran: { raceId: 'terran', displayName: 'Space Observatory' },
+    aquarian: { raceId: 'aquarian', displayName: 'Oceanic Lens' },
+    mechborn: { raceId: 'mechborn', displayName: 'Scanner Array' },
+    lithoid: { raceId: 'lithoid', displayName: 'Starstone Eye' },
+    zypherian: { raceId: 'zypherian', displayName: 'Hive Sensor' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Rift Eye' },
+    silicate: { raceId: 'silicate', displayName: 'Prism Observatory' },
+    ethereal: { raceId: 'ethereal', displayName: 'Astral Observatory' },
+  },
+  'academy': {
+    terran: { raceId: 'terran', displayName: 'Academy' },
+    aquarian: { raceId: 'aquarian', displayName: 'Current School' },
+    mechborn: { raceId: 'mechborn', displayName: 'Logic Institute' },
+    lithoid: { raceId: 'lithoid', displayName: 'Litho-Library' },
+    zypherian: { raceId: 'zypherian', displayName: 'Hive Academy' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Rift Academy' },
+    silicate: { raceId: 'silicate', displayName: 'Harmonic School' },
+    ethereal: { raceId: 'ethereal', displayName: 'Spirit Academy' },
+  },
+  // Government Buildings
+  'capitol': {
+    terran: { raceId: 'terran', displayName: 'Capitol' },
+    aquarian: { raceId: 'aquarian', displayName: 'Coral Palace' },
+    mechborn: { raceId: 'mechborn', displayName: 'Central Core' },
+    lithoid: { raceId: 'lithoid', displayName: 'Stone Throne' },
+    zypherian: { raceId: 'zypherian', displayName: 'Hive Nexus' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Rift Citadel' },
+    silicate: { raceId: 'silicate', displayName: 'Crystal Citadel' },
+    ethereal: { raceId: 'ethereal', displayName: 'Spirit Sanctum' },
+  },
+  'embassy': {
+    terran: { raceId: 'terran', displayName: 'Embassy' },
+    aquarian: { raceId: 'aquarian', displayName: 'Current Hall' },
+    mechborn: { raceId: 'mechborn', displayName: 'Diplomacy Node' },
+    lithoid: { raceId: 'lithoid', displayName: 'Stone Circle' },
+    zypherian: { raceId: 'zypherian', displayName: 'Hive Council' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Rift Hall' },
+    silicate: { raceId: 'silicate', displayName: 'Resonance Hall' },
+    ethereal: { raceId: 'ethereal', displayName: 'Council of Echoes' },
+  },
+  'market': {
+    terran: { raceId: 'terran', displayName: 'Trade Hub' },
+    aquarian: { raceId: 'aquarian', displayName: 'Tide Market' },
+    mechborn: { raceId: 'mechborn', displayName: 'Commerce Node' },
+    lithoid: { raceId: 'lithoid', displayName: 'Stone Exchange' },
+    zypherian: { raceId: 'zypherian', displayName: 'Hive Bazaar' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Rift Market' },
+    silicate: { raceId: 'silicate', displayName: 'Crystal Exchange' },
+    ethereal: { raceId: 'ethereal', displayName: 'Astral Bazaar' },
+  },
+};
+
+// Ship names by race
+export const SHIP_RACE_NAMES: RaceNameMap = {
+  // Ship Classes
+  'light_fighter': {
+    terran: { raceId: 'terran', displayName: 'Interceptor' },
+    aquarian: { raceId: 'aquarian', displayName: 'Reef Skimmer' },
+    mechborn: { raceId: 'mechborn', displayName: 'Scout Drone' },
+    lithoid: { raceId: 'lithoid', displayName: 'Stone Dart' },
+    zypherian: { raceId: 'zypherian', displayName: 'Swarm Wing' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Rift Blade' },
+    silicate: { raceId: 'silicate', displayName: 'Shard Flyer' },
+    ethereal: { raceId: 'ethereal', displayName: 'Spectral Wisp' },
+  },
+  'heavy_fighter': {
+    terran: { raceId: 'terran', displayName: 'Strike Fighter' },
+    aquarian: { raceId: 'aquarian', displayName: 'Deep Hunter' },
+    mechborn: { raceId: 'mechborn', displayName: 'Heavy Drone' },
+    lithoid: { raceId: 'lithoid', displayName: 'Crystal Hammer' },
+    zypherian: { raceId: 'zypherian', displayName: 'Swarm Lancer' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Rift Striker' },
+    silicate: { raceId: 'silicate', displayName: 'Prism Hunter' },
+    ethereal: { raceId: 'ethereal', displayName: 'Astral Fang' },
+  },
+  'cruiser': {
+    terran: { raceId: 'terran', displayName: 'Cruiser' },
+    aquarian: { raceId: 'aquarian', displayName: 'Leviathan' },
+    mechborn: { raceId: 'mechborn', displayName: 'Battle Unit' },
+    lithoid: { raceId: 'lithoid', displayName: 'Litho-Cruiser' },
+    zypherian: { raceId: 'zypherian', displayName: 'Hive Cruiser' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Rift Cruiser' },
+    silicate: { raceId: 'silicate', displayName: 'Crystal Cruiser' },
+    ethereal: { raceId: 'ethereal', displayName: 'Spirit Cruiser' },
+  },
+  'battleship': {
+    terran: { raceId: 'terran', displayName: 'Battleship' },
+    aquarian: { raceId: 'aquarian', displayName: 'Abyssal Dreadnought' },
+    mechborn: { raceId: 'mechborn', displayName: 'War Platform' },
+    lithoid: { raceId: 'lithoid', displayName: 'Stone Juggernaut' },
+    zypherian: { raceId: 'zypherian', displayName: 'Hive Dreadnought' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Rift Titan' },
+    silicate: { raceId: 'silicate', displayName: 'Diamond Colossus' },
+    ethereal: { raceId: 'ethereal', displayName: 'Astral Titan' },
+  },
+  'battlecruiser': {
+    terran: { raceId: 'terran', displayName: 'Battlecruiser' },
+    aquarian: { raceId: 'aquarian', displayName: 'Tide Runner' },
+    mechborn: { raceId: 'mechborn', displayName: 'Assault Platform' },
+    lithoid: { raceId: 'lithoid', displayName: 'Litho-Breaker' },
+    zypherian: { raceId: 'zypherian', displayName: 'Hive Breaker' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Rift Breaker' },
+    silicate: { raceId: 'silicate', displayName: 'Prism Breaker' },
+    ethereal: { raceId: 'ethereal', displayName: 'Void Breaker' },
+  },
+  'dreadnought': {
+    terran: { raceId: 'terran', displayName: 'Dreadnought' },
+    aquarian: { raceId: 'aquarian', displayName: 'Kraken' },
+    mechborn: { raceId: 'mechborn', displayName: 'Annihilation Unit' },
+    lithoid: { raceId: 'lithoid', displayName: 'World Crusher' },
+    zypherian: { raceId: 'zypherian', displayName: 'Hive Annihilator' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Rift Destroyer' },
+    silicate: { raceId: 'silicate', displayName: 'Star Shatterer' },
+    ethereal: { raceId: 'ethereal', displayName: 'Cosmic Destroyer' },
+  },
+  // Utility Ships
+  'colony_ship': {
+    terran: { raceId: 'terran', displayName: 'Colony Ship' },
+    aquarian: { raceId: 'aquarian', displayName: 'Reef Seeder' },
+    mechborn: { raceId: 'mechborn', displayName: 'Construction Drone' },
+    lithoid: { raceId: 'lithoid', displayName: 'Litho-Colonizer' },
+    zypherian: { raceId: 'zypherian', displayName: 'Hive Spore' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Rift Colonizer' },
+    silicate: { raceId: 'silicate', displayName: 'Crystal Seed' },
+    ethereal: { raceId: 'ethereal', displayName: 'Spirit Vessel' },
+  },
+  'transport': {
+    terran: { raceId: 'terran', displayName: 'Transport' },
+    aquarian: { raceId: 'aquarian', displayName: 'Current Hauler' },
+    mechborn: { raceId: 'mechborn', displayName: 'Supply Drone' },
+    lithoid: { raceId: 'lithoid', displayName: 'Stone Carrier' },
+    zypherian: { raceId: 'zypherian', displayName: 'Hive Carrier' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Rift Transport' },
+    silicate: { raceId: 'silicate', displayName: 'Shard Hauler' },
+    ethereal: { raceId: 'ethereal', displayName: 'Astral Barge' },
+  },
+  'spy_ship': {
+    terran: { raceId: 'terran', displayName: 'Recon Ship' },
+    aquarian: { raceId: 'aquarian', displayName: 'Shadow Eel' },
+    mechborn: { raceId: 'mechborn', displayName: 'Stealth Drone' },
+    lithoid: { raceId: 'lithoid', displayName: 'Invisible Stone' },
+    zypherian: { raceId: 'zypherian', displayName: 'Hive Lurker' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Rift Phantom' },
+    silicate: { raceId: 'silicate', displayName: 'Crystal Ghost' },
+    ethereal: { raceId: 'ethereal', displayName: 'Spirit Shade' },
+  },
+  'explorer': {
+    terran: { raceId: 'terran', displayName: 'Scout' },
+    aquarian: { raceId: 'aquarian', displayName: 'Tide Rider' },
+    mechborn: { raceId: 'mechborn', displayName: 'Survey Drone' },
+    lithoid: { raceId: 'lithoid', displayName: 'Pathfinder' },
+    zypherian: { raceId: 'zypherian', displayName: 'Hive Scout' },
+    vortexborn: { raceId: 'vortexborn', displayName: 'Rift Walker' },
+    silicate: { raceId: 'silicate', displayName: 'Prism Seeker' },
+    ethereal: { raceId: 'ethereal', displayName: 'Astral Wanderer' },
+  },
+};
+
+// Resource names by race
+export const RESOURCE_RACE_NAMES: Record<RaceId, { metal: string; crystal: string; deuterium: string; energy: string }> = {
+  terran: { metal: 'Metal', crystal: 'Crystal', deuterium: 'Deuterium', energy: 'Energy' },
+  aquarian: { metal: 'Coral', crystal: 'Pearl', deuterium: 'Thermal Vent', energy: 'Bioluminescence' },
+  mechborn: { metal: 'Alloy', crystal: 'Polymer', deuterium: 'Plasma', energy: 'Charge' },
+  lithoid: { metal: 'Ore', crystal: 'Gem', deuterium: 'Lithium', energy: 'Resonance' },
+  zypherian: { metal: 'Chitin', crystal: 'Silk', deuterium: 'Pheromone', energy: 'Swarm Energy' },
+  vortexborn: { metal: 'Rift Matter', crystal: 'Dimensional Shard', deuterium: 'Void Essence', energy: 'Warp Charge' },
+  silicate: { metal: 'Crystal', crystal: 'Prism', deuterium: 'Harmonic Core', energy: 'Spectrum' },
+  ethereal: { metal: 'Spirit Dust', crystal: 'Astral Shard', deuterium: 'Void Essence', energy: 'Mana' },
+};
+
+// Research category names by race
+export const RESEARCH_CATEGORY_RACE_NAMES: Record<RaceId, { weapons: string; shields: string; propulsion: string; economy: string; computing: string }> = {
+  terran: { weapons: 'Ballistics', shields: 'Defense Systems', propulsion: 'Propulsion', economy: 'Industrial', computing: 'Computing' },
+  aquarian: { weapons: 'Combat Biology', shields: 'Hydro-Shields', propulsion: 'Current Dynamics', economy: 'Deep Harvesting', computing: 'Neural Coral' },
+  mechborn: { weapons: 'Directed Energy', shields: 'Deflectors', propulsion: 'Quantum Movement', economy: 'Automation', computing: 'Logic Cores' },
+  lithoid: { weapons: 'Crystal Weapons', shields: 'Stone Mantles', propulsion: 'Graviton Drive', economy: 'Mineral Processing', computing: 'Stone Computation' },
+  zypherian: { weapons: 'Hive Armaments', shields: 'Carapace Tech', propulsion: 'Swarm Propulsion', economy: 'Hive Industry', computing: 'Collective Mind' },
+  vortexborn: { weapons: 'Rift Weaponry', shields: 'Warp Shields', propulsion: 'Dimensional Travel', economy: 'Void Harvesting', computing: 'Rift Computing' },
+  silicate: { weapons: 'Prism Weapons', shields: 'Lattice Shields', propulsion: 'Harmonic Travel', economy: 'Crystal Industry', computing: 'Resonance Core' },
+  ethereal: { weapons: 'Spectral Arms', shields: 'Void Cloaks', propulsion: 'Phase Shifting', economy: 'Astral Harvesting', computing: 'Oracle Network' },
+};
+
+// Welcome messages by race
+export const RACE_WELCOME_MESSAGES: Record<RaceId, string> = {
+  terran: 'Welcome, Commander. The stars await your command.',
+  aquarian: 'The currents have guided you here, Tidal One. The depths welcome your wisdom.',
+  mechborn: 'Efficiency protocol engaged. Awaiting operational directives, Commander.',
+  lithoid: 'The stone remembers. You have been chosen to shape the cosmos.',
+  zypherian: 'The Hive has spoken. One mind, one purpose, one destiny.',
+  vortexborn: 'Reality bends to your will. The rift opens for you, Walker.',
+  silicate: 'Harmony resonates through crystal. You are the frequency of change.',
+  ethereal: 'Between dimensions, between moments — you are the bridge. We await your vision.',
+};
+
+// Helper function to get race-specific name
+export function getRaceName(
+  configKey: string,
+  raceId: RaceId,
+  nameMap: RaceNameMap,
+  defaultName?: string
+): string {
+  const raceOverrides = nameMap[configKey];
+  if (raceOverrides && raceOverrides[raceId]) {
+    return raceOverrides[raceId].displayName;
+  }
+  return defaultName || configKey;
+}
+
+// Helper function to get race-specific resource name
+export function getRaceResourceName(
+  resourceType: 'metal' | 'crystal' | 'deuterium' | 'energy',
+  raceId: RaceId
+): string {
+  return RESOURCE_RACE_NAMES[raceId][resourceType];
+}
+
+// Helper function to get race-specific research category name
+export function getRaceResearchCategoryName(
+  category: 'weapons' | 'shields' | 'propulsion' | 'economy' | 'computing',
+  raceId: RaceId
+): string {
+  return RESEARCH_CATEGORY_RACE_NAMES[raceId][category];
+}
+
+// Helper function to get race welcome message
+export function getRaceWelcomeMessage(raceId: RaceId): string {
+  return RACE_WELCOME_MESSAGES[raceId];
+}

@@ -24,7 +24,7 @@ async function getSporeDrives(userId: string): Promise<SporeDrive[]> {
     where: eq(playerStates.userId, userId),
     columns: { sporeDriveState: true },
   });
-  const state = row?.sporeDriveState as SporeDriveState | null;
+  const state = row?.sporeDriveState as any;
   return state?.drives || [];
 }
 
@@ -33,7 +33,7 @@ async function setSporeDrives(userId: string, drives: SporeDrive[]) {
     where: eq(playerStates.userId, userId),
     columns: { sporeDriveState: true },
   });
-  const existing = (row?.sporeDriveState as SporeDriveState | null) || { drives: [], networkNodes: [], activeMode: 'standard' as SporeDriveMode };
+  const existing = (row?.sporeDriveState as any) || { drives: [], networkNodes: [], activeMode: 'standard' };
   existing.drives = drives;
   await db
     .update(playerStates)

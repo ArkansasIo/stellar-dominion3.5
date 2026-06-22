@@ -1010,10 +1010,11 @@ export default function Settings() {
                               <Trash2 className="w-4 h-4 mr-2" /> Delete Account Permanently
                            </Button>
                         </CardContent>
-                     </Card>
-                  </div>
+                      </Card>
+                   </div>
+                   </div>
 
-                  {/* Account Statistics */}
+                   {/* Account Statistics */}
                   <Card className="bg-white border-slate-200">
                      <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-slate-900">
@@ -1105,9 +1106,8 @@ export default function Settings() {
                            </div>
                         </div>
                      </CardContent>
-                   </Card>
+                    </Card>
                 </div>
-               </div>
             </TabsContent>
 
            {/* NOTIFICATIONS TAB */}

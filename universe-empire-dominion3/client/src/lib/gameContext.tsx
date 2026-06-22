@@ -12,7 +12,24 @@ import {
   createDefaultCommanderEquipment,
   COMMANDER_EQUIPMENT_SLOT_DEFINITIONS,
   type CommanderEquipmentSlotId,
+  TECHNOLOGY_RACE_NAMES,
+  BUILDING_RACE_NAMES,
+  SHIP_RACE_NAMES,
+  RESOURCE_RACE_NAMES,
+  RESEARCH_CATEGORY_RACE_NAMES,
+  RACE_WELCOME_MESSAGES,
+  type RaceNameMap,
 } from './commanderTypes';
+import {
+  TERRAN_TECH_TREE,
+  SHARED_MODULES,
+  TIER_GATES,
+  CONVERGENCE_REQUIREMENTS,
+  type WoWsTechNode,
+  type TechBranch,
+  type ForkOption,
+  type SharedModule,
+} from '@shared/config/wowsTechTreeConfig';
 import { GovernmentState, GOVERNMENTS, GovernmentId, POLICIES } from './governmentData';
 import { Alliance, AllianceMember, MOCK_ALLIANCES } from './allianceData';
 import { Artifact, ARTIFACTS } from './artifactData';
@@ -46,6 +63,75 @@ async function apiRequest(method: string, url: string, data?: any) {
     throw new Error(error);
   }
   return res.json();
+}
+
+// ============================================================================
+// RACE-SPECIFIC NAMING HELPERS
+// ============================================================================
+
+export function getRaceName(
+  configKey: string,
+  raceId: RaceId,
+  nameMap: RaceNameMap,
+  defaultName?: string
+): string {
+  const raceOverrides = nameMap[configKey];
+  if (raceOverrides && raceOverrides[raceId]) {
+    return raceOverrides[raceId].displayName;
+  }
+  return defaultName || configKey;
+}
+
+export function getRaceResourceName(
+  resourceType: 'metal' | 'crystal' | 'deuterium' | 'energy',
+  raceId: RaceId
+): string {
+  return RESOURCE_RACE_NAMES[raceId][resourceType];
+}
+
+export function getRaceResearchCategoryName(
+  category: 'weapons' | 'shields' | 'propulsion' | 'economy' | 'computing',
+  raceId: RaceId
+): string {
+  return RESEARCH_CATEGORY_RACE_NAMES[raceId][category];
+}
+
+export function getRaceWelcomeMessage(raceId: RaceId): string {
+  return RACE_WELCOME_MESSAGES[raceId];
+}
+
+// ============================================================================
+// WOWS TECH TREE HELPERS
+// ============================================================================
+
+export function getWoWsTechNodes(raceId: RaceId): WoWsTechNode[] {
+  if (raceId === 'terran') return TERRAN_TECH_TREE;
+  return TERRAN_TECH_TREE;
+}
+
+export function getWoWsTechNodeById(nodeId: string, raceId: RaceId): WoWsTechNode | undefined {
+  return getWoWsTechNodes(raceId).find(node => node.id === nodeId);
+}
+
+export function getWoWsNodesByBranch(branch: TechBranch, raceId: RaceId): WoWsTechNode[] {
+  return getWoWsTechNodes(raceId).filter(node => node.branch === branch);
+}
+
+export function getWoWsNodesByTier(tier: number, raceId: RaceId): WoWsTechNode[] {
+  return getWoWsTechNodes(raceId).filter(node => node.tier === tier);
+}
+
+export function canResearchWoWsNode(nodeId: string, researchedTechs: string[], raceId: RaceId): boolean {
+  const node = getWoWsTechNodeById(nodeId, raceId);
+  if (!node) return false;
+  return node.prerequisiteTechs.every(prereq => researchedTechs.includes(prereq));
+}
+
+export function getSharedModulesForHull(hullType: string, category: 'weapon' | 'engine' | 'shield'): SharedModule[] {
+  return SHARED_MODULES.filter(mod => 
+    mod.category === category && 
+    (mod.compatibleHulls.includes('all') || mod.compatibleHulls.includes(hullType))
+  );
 }
 
 

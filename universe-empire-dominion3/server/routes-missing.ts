@@ -391,7 +391,7 @@ export function registerMissingRoutes(app: Express) {
 
       const candidateRaid = castRaid(candidateDbRaid);
       const playerState = await requirePlayerState(userId);
-      const power = calculateCommanderRaidPower(playerState.commander, playerState.raidCareer, ownEntry.preferredRole || "dps");
+      const power = calculateCommanderRaidPower(playerState.commander, playerState.raidCareer, (ownEntry.preferredRole || "dps") as RaidRole);
       if (power < candidateRaid.powerRequirement) {
         return res.status(400).json({
           error: `Commander raid power ${power.toLocaleString()} is below the ${candidateRaid.powerRequirement.toLocaleString()} requirement`,

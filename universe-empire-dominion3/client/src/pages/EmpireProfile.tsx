@@ -340,7 +340,7 @@ export default function EmpireProfilePage() {
 
   const renameMutation = useMutation({
     mutationFn: async (newName: string) => {
-      const res = await fetch("/api/empire-profile/rename", {
+      const res = await fetch("/api/empire-profile/name", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
