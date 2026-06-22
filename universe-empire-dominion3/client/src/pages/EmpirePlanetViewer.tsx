@@ -36,6 +36,14 @@ type PlanetTypeRecord = {
     metalRichness: number;
     crystalRichness: number;
     deuteriumRichness: number;
+    temperature: number;
+    gravity: number;
+    atmosphere: string;
+    radiation: number;
+    waterCoverage: number;
+    biomeDiversity: number;
+    strategicValue: number;
+    defenseRating: number;
   };
 };
 
@@ -164,13 +172,44 @@ export default function EmpirePlanetViewer() {
         metal: acc.metal + planet.stats.metalRichness,
         crystal: acc.crystal + planet.stats.crystalRichness,
         deuterium: acc.deuterium + planet.stats.deuteriumRichness,
+        temperature: acc.temperature + planet.stats.temperature,
+        gravity: acc.gravity + planet.stats.gravity,
+        radiation: acc.radiation + planet.stats.radiation,
+        waterCoverage: acc.waterCoverage + planet.stats.waterCoverage,
+        biomeDiversity: acc.biomeDiversity + planet.stats.biomeDiversity,
+        strategicValue: acc.strategicValue + planet.stats.strategicValue,
+        defenseRating: acc.defenseRating + planet.stats.defenseRating,
       }),
-      { habitability: 0, metal: 0, crystal: 0, deuterium: 0 },
+      { habitability: 0, metal: 0, crystal: 0, deuterium: 0, temperature: 0, gravity: 0, radiation: 0, waterCoverage: 0, biomeDiversity: 0, strategicValue: 0, defenseRating: 0 },
     );
   }, [filteredPlanets]);
 
   const avgHabitability = filteredPlanets.length
     ? Math.round(stats.habitability / filteredPlanets.length)
+    : 0;
+
+  const avgTemperature = filteredPlanets.length
+    ? Math.round(stats.temperature / filteredPlanets.length)
+    : 0;
+
+  const avgGravity = filteredPlanets.length
+    ? (stats.gravity / filteredPlanets.length).toFixed(2)
+    : "0.00";
+
+  const avgWaterCoverage = filteredPlanets.length
+    ? Math.round(stats.waterCoverage / filteredPlanets.length)
+    : 0;
+
+  const avgBiomeDiversity = filteredPlanets.length
+    ? Math.round(stats.biomeDiversity / filteredPlanets.length)
+    : 0;
+
+  const avgStrategicValue = filteredPlanets.length
+    ? Math.round(stats.strategicValue / filteredPlanets.length)
+    : 0;
+
+  const avgDefenseRating = filteredPlanets.length
+    ? Math.round(stats.defenseRating / filteredPlanets.length)
     : 0;
 
   const pageData = useMemo(() => getEmpireColoniesPage(page, COLONIES_PER_PAGE), [page]);
@@ -245,62 +284,67 @@ export default function EmpirePlanetViewer() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200 shadow-sm">
+          <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 shadow-sm">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-xs text-muted-foreground uppercase tracking-wider">Known Types</div>
-                  <div className="text-2xl font-orbitron font-bold text-slate-900">{planetsQuery.data?.count ?? 0}</div>
+                  <div className="text-xs text-orange-600 uppercase tracking-wider">Avg Temperature</div>
+                  <div className="text-2xl font-orbitron font-bold text-orange-900">{avgTemperature}°C</div>
+                  <div className="text-[10px] text-orange-600 mt-1">Climate stability index</div>
                 </div>
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
-                  <img src={TECH_BRANCH_ASSETS.COMPUTING.path} alt="known types" className="w-8 h-8 object-contain" onError={(e) => { (e.target as HTMLImageElement).src = TEMP_THEME_IMAGE; }} />
+                <div className="w-12 h-12 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-600 text-xs font-bold">
+                  TEMP
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 shadow-sm">
+          <Card className="bg-gradient-to-br from-indigo-50 to-indigo-100 border-indigo-200 shadow-sm">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-xs text-blue-600 uppercase tracking-wider">Discovered</div>
-                  <div className="text-2xl font-orbitron font-bold text-blue-900">{travelStateQuery.data?.knownPlanets?.length ?? 0}</div>
+                  <div className="text-xs text-indigo-600 uppercase tracking-wider">Avg Gravity</div>
+                  <div className="text-2xl font-orbitron font-bold text-indigo-900">{avgGravity}g</div>
+                  <div className="text-[10px] text-indigo-600 mt-1">Surface gravity force</div>
                 </div>
-                <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden">
-                  <img src={TECH_BRANCH_ASSETS.SENSORS.path} alt="discovered" className="w-8 h-8 object-contain" onError={(e) => { (e.target as HTMLImageElement).src = TEMP_THEME_IMAGE; }} />
+                <div className="w-12 h-12 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-600 text-xs font-bold">
+                  GRAV
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 shadow-sm">
+          <Card className="bg-gradient-to-br from-cyan-50 to-cyan-100 border-cyan-200 shadow-sm">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-xs text-purple-600 uppercase tracking-wider">Colonies</div>
-                  <div className="text-2xl font-orbitron font-bold text-purple-900">{pageData.totalItems.toLocaleString()}</div>
+                  <div className="text-xs text-cyan-600 uppercase tracking-wider">Water Coverage</div>
+                  <div className="text-2xl font-orbitron font-bold text-cyan-900">{avgWaterCoverage}%</div>
+                  <div className="text-[10px] text-cyan-600 mt-1">Hydrological potential</div>
                 </div>
-                <div className="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center overflow-hidden">
-                  <img src={TECH_BRANCH_ASSETS.PROPULSION.path} alt="colonies" className="w-8 h-8 object-contain" onError={(e) => { (e.target as HTMLImageElement).src = TEMP_THEME_IMAGE; }} />
+                <div className="w-12 h-12 rounded-full bg-cyan-500/10 flex items-center justify-center text-cyan-600 text-xs font-bold">
+                  H2O
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200 shadow-sm">
+          <Card className="bg-gradient-to-br from-rose-50 to-rose-100 border-rose-200 shadow-sm">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-xs text-emerald-700 uppercase tracking-wider">Avg Habitability</div>
-                  <div className="text-2xl font-orbitron font-bold text-emerald-900">{avgHabitability}</div>
+                  <div className="text-xs text-rose-600 uppercase tracking-wider">Biome Diversity</div>
+                  <div className="text-2xl font-orbitron font-bold text-rose-900">{avgBiomeDiversity}</div>
+                  <div className="text-[10px] text-rose-600 mt-1">Ecosystem variety index</div>
                 </div>
-                <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center overflow-hidden">
-                  <img src={TECH_BRANCH_ASSETS.RESOURCES.path} alt="habitability" className="w-8 h-8 object-contain" onError={(e) => { (e.target as HTMLImageElement).src = TEMP_THEME_IMAGE; }} />
+                <div className="w-12 h-12 rounded-full bg-rose-500/10 flex items-center justify-center text-rose-600 text-xs font-bold">
+                  BIO
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
+
 
         <Card className="bg-white border-slate-200 shadow-sm">
           <CardHeader className="pb-3">
@@ -437,16 +481,20 @@ export default function EmpirePlanetViewer() {
             {filteredPlanets.length > 0 && (
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[1000px] text-sm">
-                  <thead className="bg-slate-50 border-y border-slate-200">
-                    <tr>
-                      <th className="text-left px-4 py-3 font-bold text-slate-600 uppercase tracking-wider text-xs">Planet</th>
-                      <th className="text-left px-4 py-3 font-bold text-slate-600 uppercase tracking-wider text-xs">Family / Class</th>
-                      <th className="text-left px-4 py-3 font-bold text-slate-600 uppercase tracking-wider text-xs">Habitability</th>
-                      <th className="text-left px-4 py-3 font-bold text-slate-600 uppercase tracking-wider text-xs">Resources (M/C/D)</th>
-                      <th className="text-left px-4 py-3 font-bold text-slate-600 uppercase tracking-wider text-xs">Rarity</th>
-                      <th className="text-left px-4 py-3 font-bold text-slate-600 uppercase tracking-wider text-xs">Actions</th>
-                    </tr>
-                  </thead>
+                   <thead className="bg-slate-50 border-y border-slate-200">
+                     <tr>
+                       <th className="text-left px-4 py-3 font-bold text-slate-600 uppercase tracking-wider text-xs">Planet</th>
+                       <th className="text-left px-4 py-3 font-bold text-slate-600 uppercase tracking-wider text-xs">Family / Class</th>
+                       <th className="text-left px-4 py-3 font-bold text-slate-600 uppercase tracking-wider text-xs">Habitability</th>
+                       <th className="text-left px-4 py-3 font-bold text-slate-600 uppercase tracking-wider text-xs">Temperature</th>
+                       <th className="text-left px-4 py-3 font-bold text-slate-600 uppercase tracking-wider text-xs">Gravity</th>
+                       <th className="text-left px-4 py-3 font-bold text-slate-600 uppercase tracking-wider text-xs">Resources (M/C/D)</th>
+                       <th className="text-left px-4 py-3 font-bold text-slate-600 uppercase tracking-wider text-xs">Water</th>
+                       <th className="text-left px-4 py-3 font-bold text-slate-600 uppercase tracking-wider text-xs">Biomes</th>
+                       <th className="text-left px-4 py-3 font-bold text-slate-600 uppercase tracking-wider text-xs">Rarity</th>
+                       <th className="text-left px-4 py-3 font-bold text-slate-600 uppercase tracking-wider text-xs">Actions</th>
+                     </tr>
+                   </thead>
                   <tbody>
                     {filteredPlanets.map((planet) => (
                       <>
@@ -459,20 +507,38 @@ export default function EmpirePlanetViewer() {
                             <div>{planet.family}</div>
                             <div className="text-xs text-slate-500 mt-1">Class {planet.class}</div>
                           </td>
-                          <td className="px-4 py-3">
-                            <span className={`font-mono font-bold ${getHabitabilityColor(planet.stats.habitabilityIndex)}`}>
-                              {planet.stats.habitabilityIndex}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3 font-mono text-slate-800">
-                            <div className="flex gap-2">
-                              <span title="Metal" className="text-blue-700">{planet.stats.metalRichness}</span>
-                              <span>/</span>
-                              <span title="Crystal" className="text-purple-700">{planet.stats.crystalRichness}</span>
-                              <span>/</span>
-                              <span title="Deuterium" className="text-cyan-700">{planet.stats.deuteriumRichness}</span>
-                            </div>
-                          </td>
+                           <td className="px-4 py-3">
+                             <span className={`font-mono font-bold ${getHabitabilityColor(planet.stats.habitabilityIndex)}`}>
+                               {planet.stats.habitabilityIndex}
+                             </span>
+                             <div className="text-[10px] text-slate-500 mt-0.5">/100</div>
+                           </td>
+                           <td className="px-4 py-3">
+                             <div className="font-mono font-bold text-orange-700">{planet.stats.temperature}°C</div>
+                             <div className="text-[10px] text-slate-500 mt-0.5">Surface temp</div>
+                           </td>
+                           <td className="px-4 py-3">
+                             <div className="font-mono font-bold text-indigo-700">{planet.stats.gravity.toFixed(2)}g</div>
+                             <div className="text-[10px] text-slate-500 mt-0.5">Gravity force</div>
+                           </td>
+                           <td className="px-4 py-3 font-mono text-slate-800">
+                             <div className="flex gap-2">
+                               <span title="Metal" className="text-blue-700 font-bold">{planet.stats.metalRichness}</span>
+                               <span className="text-slate-400">/</span>
+                               <span title="Crystal" className="text-purple-700 font-bold">{planet.stats.crystalRichness}</span>
+                               <span className="text-slate-400">/</span>
+                               <span title="Deuterium" className="text-cyan-700 font-bold">{planet.stats.deuteriumRichness}</span>
+                             </div>
+                             <div className="text-[10px] text-slate-500 mt-0.5">M/C/D</div>
+                           </td>
+                           <td className="px-4 py-3">
+                             <div className="font-mono font-bold text-cyan-700">{planet.stats.waterCoverage}%</div>
+                             <div className="text-[10px] text-slate-500 mt-0.5">Coverage</div>
+                           </td>
+                           <td className="px-4 py-3">
+                             <div className="font-mono font-bold text-rose-700">{planet.stats.biomeDiversity}</div>
+                             <div className="text-[10px] text-slate-500 mt-0.5">Types</div>
+                           </td>
                           <td className="px-4 py-3">
                             <Badge variant="outline" className={`capitalize ${getRarityBadgeClass(planet.rarity)}`}>
                               {planet.rarity}
@@ -492,51 +558,152 @@ export default function EmpirePlanetViewer() {
                             </div>
                           </td>
                         </tr>
-                        {expandedPlanet === planet.id && (
-                          <tr key={`${planet.id}-expanded`}>
-                            <td colSpan={6} className="px-4 py-3 bg-slate-50 border-b border-slate-200">
-                              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-                                <div className="bg-white rounded border border-slate-200 p-2">
-                                  <div className="font-bold text-slate-700 mb-1">Habitability</div>
-                                  <Progress value={planet.stats.habitabilityIndex} className="h-1.5" />
-                                  <div className="mt-1 text-slate-500">{planet.stats.habitabilityIndex}/100</div>
-                                </div>
-                                <div className="bg-white rounded border border-slate-200 p-2">
-                                  <div className="font-bold text-blue-700 mb-1">Metal Richness</div>
-                                  <Progress value={planet.stats.metalRichness} className="h-1.5" />
-                                  <div className="mt-1 text-slate-500">{planet.stats.metalRichness}/100</div>
-                                </div>
-                                <div className="bg-white rounded border border-slate-200 p-2">
-                                  <div className="font-bold text-purple-700 mb-1">Crystal Richness</div>
-                                  <Progress value={planet.stats.crystalRichness} className="h-1.5" />
-                                  <div className="mt-1 text-slate-500">{planet.stats.crystalRichness}/100</div>
-                                </div>
-                                <div className="bg-white rounded border border-slate-200 p-2">
-                                  <div className="font-bold text-cyan-700 mb-1">Deuterium Richness</div>
-                                  <Progress value={planet.stats.deuteriumRichness} className="h-1.5" />
-                                  <div className="mt-1 text-slate-500">{planet.stats.deuteriumRichness}/100</div>
-                                </div>
-                              </div>
-                              <div className="mt-2 flex flex-wrap gap-2">
-                                <Button size="sm" variant="outline" onClick={() => toast({ title: "Planet Info", description: `${planet.name}: ${planet.description}` })}>
-                                  <Info className="w-3 h-3 mr-1" /> Full Details
-                                </Button>
-                                <Button size="sm" variant="outline" onClick={() => scanMutation.mutate(planet.id)} disabled={scanMutation.isPending}>
-                                  <Search className="w-3 h-3 mr-1" /> Deep Scan
-                                </Button>
-                                <Button size="sm" variant="outline" onClick={() => colonizeMutation.mutate(planet.id)} disabled={colonizeMutation.isPending}>
-                                  <Rocket className="w-3 h-3 mr-1" /> Send Colony Ship
-                                </Button>
-                                <Button size="sm" variant="outline" onClick={() => toast({ title: "Moon Survey", description: `Scanning moons around ${planet.name}...` })}>
-                                  <Moon className="w-3 h-3 mr-1" /> Survey Moons
-                                </Button>
-                                <Button size="sm" variant="outline" onClick={() => extractMutation.mutate(planet.id)} disabled={extractMutation.isPending}>
-                                  <Pickaxe className="w-3 h-3 mr-1" /> Extract Resources
-                                </Button>
-                              </div>
-                            </td>
-                          </tr>
-                        )}
+                         {expandedPlanet === planet.id && (
+                           <tr key={`${planet.id}-expanded`}>
+                             <td colSpan={10} className="px-4 py-4 bg-slate-50 border-b border-slate-200">
+                               <div className="space-y-4">
+                                 <div>
+                                   <div className="text-sm font-bold text-slate-800 mb-2">Planet Description</div>
+                                   <p className="text-xs text-slate-600 leading-relaxed">{planet.description}</p>
+                                 </div>
+
+                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                                   <div className="bg-white rounded border border-slate-200 p-3">
+                                     <div className="font-bold text-emerald-700 mb-1">Habitability Index</div>
+                                     <Progress value={planet.stats.habitabilityIndex} className="h-2" />
+                                     <div className="mt-2 text-slate-500">{planet.stats.habitabilityIndex}/100</div>
+                                     <div className="text-[10px] text-slate-400 mt-1">Suitability for human colonization</div>
+                                   </div>
+                                   <div className="bg-white rounded border border-slate-200 p-3">
+                                     <div className="font-bold text-blue-700 mb-1">Metal Richness</div>
+                                     <Progress value={planet.stats.metalRichness} className="h-2" />
+                                     <div className="mt-2 text-slate-500">{planet.stats.metalRichness}/100</div>
+                                     <div className="text-[10px] text-slate-400 mt-1">Industrial resource density</div>
+                                   </div>
+                                   <div className="bg-white rounded border border-slate-200 p-3">
+                                     <div className="font-bold text-purple-700 mb-1">Crystal Richness</div>
+                                     <Progress value={planet.stats.crystalRichness} className="h-2" />
+                                     <div className="mt-2 text-slate-500">{planet.stats.crystalRichness}/100</div>
+                                     <div className="text-[10px] text-slate-400 mt-1">Rare mineral abundance</div>
+                                   </div>
+                                   <div className="bg-white rounded border border-slate-200 p-3">
+                                     <div className="font-bold text-cyan-700 mb-1">Deuterium Richness</div>
+                                     <Progress value={planet.stats.deuteriumRichness} className="h-2" />
+                                     <div className="mt-2 text-slate-500">{planet.stats.deuteriumRichness}/100</div>
+                                     <div className="text-[10px] text-slate-400 mt-1">Fusion fuel potential</div>
+                                   </div>
+                                   <div className="bg-white rounded border border-slate-200 p-3">
+                                     <div className="font-bold text-orange-700 mb-1">Temperature</div>
+                                     <div className="text-lg font-bold text-orange-900">{planet.stats.temperature}°C</div>
+                                     <div className="text-[10px] text-slate-400 mt-1">Average surface temperature</div>
+                                   </div>
+                                   <div className="bg-white rounded border border-slate-200 p-3">
+                                     <div className="font-bold text-indigo-700 mb-1">Gravity</div>
+                                     <div className="text-lg font-bold text-indigo-900">{planet.stats.gravity.toFixed(2)}g</div>
+                                     <div className="text-[10px] text-slate-400 mt-1">Surface gravity force</div>
+                                   </div>
+                                   <div className="bg-white rounded border border-slate-200 p-3">
+                                     <div className="font-bold text-cyan-700 mb-1">Water Coverage</div>
+                                     <div className="text-lg font-bold text-cyan-900">{planet.stats.waterCoverage}%</div>
+                                     <div className="text-[10px] text-slate-400 mt-1">Hydrological coverage</div>
+                                   </div>
+                                   <div className="bg-white rounded border border-slate-200 p-3">
+                                     <div className="font-bold text-rose-700 mb-1">Biome Diversity</div>
+                                     <div className="text-lg font-bold text-rose-900">{planet.stats.biomeDiversity}</div>
+                                     <div className="text-[10px] text-slate-400 mt-1">Ecosystem variety</div>
+                                   </div>
+                                   <div className="bg-white rounded border border-slate-200 p-3">
+                                     <div className="font-bold text-amber-700 mb-1">Strategic Value</div>
+                                     <div className="text-lg font-bold text-amber-900">{planet.stats.strategicValue}/100</div>
+                                     <div className="text-[10px] text-slate-400 mt-1">Military & economic importance</div>
+                                   </div>
+                                   <div className="bg-white rounded border border-slate-200 p-3">
+                                     <div className="font-bold text-slate-700 mb-1">Defense Rating</div>
+                                     <div className="text-lg font-bold text-slate-900">{planet.stats.defenseRating}/100</div>
+                                     <div className="text-[10px] text-slate-400 mt-1">Natural fortification score</div>
+                                   </div>
+                                   <div className="bg-white rounded border border-slate-200 p-3">
+                                     <div className="font-bold text-violet-700 mb-1">Atmosphere</div>
+                                     <div className="text-sm font-bold text-violet-900">{planet.stats.atmosphere}</div>
+                                     <div className="text-[10px] text-slate-400 mt-1">Primary atmospheric composition</div>
+                                   </div>
+                                   <div className="bg-white rounded border border-slate-200 p-3">
+                                     <div className="font-bold text-red-700 mb-1">Radiation</div>
+                                     <div className="text-lg font-bold text-red-900">{planet.stats.radiation} mSv</div>
+                                     <div className="text-[10px] text-slate-400 mt-1">Background radiation level</div>
+                                   </div>
+                                 </div>
+
+                                 <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded">
+                                   <div className="text-xs font-bold text-blue-900 mb-1">Colonization Assessment</div>
+                                   <div className="text-xs text-blue-700">
+                                     {planet.stats.habitabilityIndex >= 70 && planet.stats.waterCoverage >= 50
+                                       ? "Excellent colonization candidate. High habitability and water resources support large populations."
+                                       : planet.stats.habitabilityIndex >= 50
+                                         ? "Moderate colonization potential. Requires terraforming or specialized habitats."
+                                         : "Challenging environment. Advanced life support systems required for permanent settlement."}
+                                   </div>
+                                 </div>
+
+                                 <div className="mt-3 p-4 bg-slate-50 border border-slate-200 rounded">
+                                   <div className="text-sm font-bold text-slate-800 mb-2">About Planet Statistics</div>
+                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-slate-600">
+                                     <div>
+                                       <div className="font-bold text-slate-700 mb-1">Habitability Index (0-100)</div>
+                                       <p className="text-slate-600">Measures overall suitability for human colonization. Factors include temperature range, atmospheric composition, water availability, and radiation levels. Higher values indicate less terraforming required.</p>
+                                     </div>
+                                     <div>
+                                       <div className="font-bold text-blue-700 mb-1">Resource Richness (0-100)</div>
+                                       <p className="text-slate-600">Metal, Crystal, and Deuterium values represent resource density. Higher values mean more efficient extraction and greater long-term economic value. Deuterium is critical for fusion reactors and FTL fuel.</p>
+                                     </div>
+                                     <div>
+                                       <div className="font-bold text-orange-700 mb-1">Temperature & Gravity</div>
+                                       <p className="text-slate-600">Surface temperature affects infrastructure costs and life support requirements. Gravity influences construction, transportation, and human physiological adaptation. Standard Earth gravity is 1.0g.</p>
+                                     </div>
+                                     <div>
+                                       <div className="font-bold text-cyan-700 mb-1">Water Coverage & Biomes</div>
+                                       <p className="text-slate-600">Water coverage percentage indicates hydrological potential for agriculture and industry. Biome diversity represents ecosystem variety, which correlates with biological resources and research opportunities.</p>
+                                     </div>
+                                     <div>
+                                       <div className="font-bold text-amber-700 mb-1">Strategic Value (0-100)</div>
+                                       <p className="text-slate-600">Combined military and economic importance. Factors include location, resources, defensibility, and infrastructure potential. High-value planets are priority targets for expansion and defense.</p>
+                                     </div>
+                                     <div>
+                                       <div className="font-bold text-slate-700 mb-1">Defense Rating (0-100)</div>
+                                       <p className="text-slate-600">Natural fortification score based on terrain, atmospheric conditions, and strategic positioning. Higher ratings reduce invasion success rates and provide defensive bonuses during combat.</p>
+                                     </div>
+                                     <div>
+                                       <div className="font-bold text-violet-700 mb-1">Atmosphere & Radiation</div>
+                                       <p className="text-slate-600">Atmospheric composition affects breathability and industrial processes. Radiation levels indicate background radiation from the star and planetary core. High radiation requires shielding and affects population health.</p>
+                                     </div>
+                                     <div>
+                                       <div className="font-bold text-rose-700 mb-1">Rarity Classification</div>
+                                       <p className="text-slate-600">Common planets are abundant but may lack strategic value. Legendary planets possess exceptional stats across multiple categories and are highly sought after for capital worlds or military bases.</p>
+                                     </div>
+                                   </div>
+                                 </div>
+
+                                 <div className="mt-2 flex flex-wrap gap-2">
+                                   <Button size="sm" variant="outline" onClick={() => toast({ title: "Planet Info", description: `${planet.name}: ${planet.description}` })}>
+                                     <Info className="w-3 h-3 mr-1" /> Full Details
+                                   </Button>
+                                   <Button size="sm" variant="outline" onClick={() => scanMutation.mutate(planet.id)} disabled={scanMutation.isPending}>
+                                     <Search className="w-3 h-3 mr-1" /> Deep Scan
+                                   </Button>
+                                   <Button size="sm" variant="outline" onClick={() => colonizeMutation.mutate(planet.id)} disabled={colonizeMutation.isPending}>
+                                     <Rocket className="w-3 h-3 mr-1" /> Send Colony Ship
+                                   </Button>
+                                   <Button size="sm" variant="outline" onClick={() => toast({ title: "Moon Survey", description: `Scanning moons around ${planet.name}...` })}>
+                                     <Moon className="w-3 h-3 mr-1" /> Survey Moons
+                                   </Button>
+                                   <Button size="sm" variant="outline" onClick={() => extractMutation.mutate(planet.id)} disabled={extractMutation.isPending}>
+                                     <Pickaxe className="w-3 h-3 mr-1" /> Extract Resources
+                                   </Button>
+                                 </div>
+                               </div>
+                             </td>
+                           </tr>
+                         )}
                       </>
                     ))}
                   </tbody>

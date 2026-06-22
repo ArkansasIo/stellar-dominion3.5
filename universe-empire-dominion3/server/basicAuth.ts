@@ -344,7 +344,7 @@ export async function setupAuth(app: Express) {
     await ensureBootstrapAdminAccounts();
     if (isDevAuthBypassEnabled()) {
       await ensureDevBypassUser();
-      logger.warn("AUTH", "DEV_AUTH_BYPASS is enabled; protected routes will auto-authenticate locally");
+      logger.info("AUTH", "DEV_AUTH_BYPASS is enabled; protected routes will auto-authenticate locally");
     }
   } catch (error) {
     logger.warn("AUTH", `Auth bootstrap skipped: ${(error as Error).message}`);

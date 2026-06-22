@@ -878,7 +878,7 @@ function GameSidebar({
   );
 }
 
-export default function GameLayout({ children }: { children: React.ReactNode }) {
+export default function GameLayout({ children, title, subtitle }: { children: React.ReactNode; title?: string; subtitle?: string }) {
   const [location] = useLocation();
   const {
     resources,
@@ -1206,15 +1206,20 @@ export default function GameLayout({ children }: { children: React.ReactNode }) 
            <div className="w-10 h-10 bg-primary rounded flex items-center justify-center shadow-sm shrink-0">
              <Rocket className="text-white w-6 h-6" />
            </div>
-           <div>
-             <h1 className={cn("font-orbitron font-bold tracking-wider text-slate-900", isMobile ? "text-base" : "text-lg xl:text-xl")}>Universe-<span className="text-primary text-xs font-normal xl:text-sm">Empires-Dominions</span></h1>
-             <p className="font-rajdhani text-[10px] uppercase tracking-[0.2em] text-muted-foreground sm:text-xs">
-               Server: Nexus-Alpha // User: {username || "Commander"}
-             </p>
-             <p className="font-rajdhani text-[10px] uppercase tracking-[0.18em] text-slate-500 sm:text-xs">
-               Empire: {empireName || "Stellar Dominion"} // Homeworld: {planetName || "Prime World"}
-             </p>
-           </div>
+            <div>
+              <h1 className={cn("font-orbitron font-bold tracking-wider text-slate-900", isMobile ? "text-base" : "text-lg xl:text-xl")}>{title || <><span className="text-primary text-xs font-normal xl:text-sm">Universe-</span>Empires-Dominions</>}</h1>
+              {subtitle && (
+                <p className="font-rajdhani text-[10px] uppercase tracking-[0.2em] text-muted-foreground sm:text-xs">
+                  {subtitle}
+                </p>
+              )}
+              <p className="font-rajdhani text-[10px] uppercase tracking-[0.2em] text-muted-foreground sm:text-xs">
+                Server: Nexus-Alpha // User: {username || "Commander"}
+              </p>
+              <p className="font-rajdhani text-[10px] uppercase tracking-[0.18em] text-slate-500 sm:text-xs">
+                Empire: {empireName || "Stellar Dominion"} // Homeworld: {planetName || "Prime World"}
+              </p>
+            </div>
           </div>
 
           {isMobile && (
