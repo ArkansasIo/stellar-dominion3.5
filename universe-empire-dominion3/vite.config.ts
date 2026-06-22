@@ -42,7 +42,7 @@ export default defineConfig({
     emptyOutDir: true,
   },
   server: {
-    host: "0.0.0.0",
+    host: process.env.VITE_HOST || "localhost",
     allowedHosts: true,
     fs: {
       strict: true,

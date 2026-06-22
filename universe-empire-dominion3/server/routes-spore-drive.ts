@@ -15,15 +15,39 @@ import {
   type SporeDriveState,
 } from "../shared/config/sporeDriveSystem";
 
-// In-memory spore drive storage (in production, this would be in the database)
-const SPORE_DRIVE_DATABASE: Record<string, SporeDrive> = {};
+import { db } from "./db";
+import { playerStates } from "../shared/schema";
+import { eq } from "drizzle-orm";
+
+async function getSporeDrives(userId: string): Promise<SporeDrive[]> {
+  const row = await db.query.playerStates.findFirst({
+    where: eq(playerStates.userId, userId),
+    columns: { sporeDriveState: true },
+  });
+  const state = row?.sporeDriveState as SporeDriveState | null;
+  return state?.drives || [];
+}
+
+async function setSporeDrives(userId: string, drives: SporeDrive[]) {
+  const row = await db.query.playerStates.findFirst({
+    where: eq(playerStates.userId, userId),
+    columns: { sporeDriveState: true },
+  });
+  const existing = (row?.sporeDriveState as SporeDriveState | null) || { drives: [], networkNodes: [], activeMode: 'standard' as SporeDriveMode };
+  existing.drives = drives;
+  await db
+    .update(playerStates)
+    .set({ sporeDriveState: existing as any, updatedAt: new Date() })
+    .where(eq(playerStates.userId, userId));
+}
 
 export function registerSporeDriveRoutes(app: Express) {
   // Get all spore drives for a ship
   app.get("/api/spore-drive/ship/:shipId", async (req: Request, res: Response) => {
     try {
       const shipId = req.params.shipId;
-      const drives = Object.values(SPORE_DRIVE_DATABASE).filter(d => d.shipId === shipId);
+      const allDrives = await getSporeDrives(req.session?.userId || "");
+      const drives = allDrives.filter(d => d.shipId === shipId);
       
       res.json({
         drives,
@@ -40,7 +64,8 @@ export function registerSporeDriveRoutes(app: Express) {
   app.get("/api/spore-drive/:driveId", async (req: Request, res: Response) => {
     try {
       const driveId = req.params.driveId;
-      const drive = SPORE_DRIVE_DATABASE[driveId];
+      const allDrives = await getSporeDrives(req.session?.userId || "");
+      const drive = allDrives.find(d => d.id === driveId);
 
       if (!drive) {
         return res.status(404).json({ error: "Spore drive not found" });
@@ -57,7 +82,8 @@ export function registerSporeDriveRoutes(app: Express) {
   app.get("/api/spore-drive/:driveId/stats", async (req: Request, res: Response) => {
     try {
       const driveId = req.params.driveId;
-      const drive = SPORE_DRIVE_DATABASE[driveId];
+      const allDrives = await getSporeDrives(req.session?.userId || "");
+      const drive = allDrives.find(d => d.id === driveId);
 
       if (!drive) {
         return res.status(404).json({ error: "Spore drive not found" });
@@ -84,7 +110,8 @@ export function registerSporeDriveRoutes(app: Express) {
   app.get("/api/spore-drive/:driveId/status", async (req: Request, res: Response) => {
     try {
       const driveId = req.params.driveId;
-      const drive = SPORE_DRIVE_DATABASE[driveId];
+      const allDrives = await getSporeDrives(req.session?.userId || "");
+      const drive = allDrives.find(d => d.id === driveId);
 
       if (!drive) {
         return res.status(404).json({ error: "Spore drive not found" });
@@ -119,7 +146,8 @@ export function registerSporeDriveRoutes(app: Express) {
   app.get("/api/spore-drive/:driveId/details", async (req: Request, res: Response) => {
     try {
       const driveId = req.params.driveId;
-      const drive = SPORE_DRIVE_DATABASE[driveId];
+      const allDrives = await getSporeDrives(req.session?.userId || "");
+      const drive = allDrives.find(d => d.id === driveId);
 
       if (!drive) {
         return res.status(404).json({ error: "Spore drive not found" });
@@ -153,7 +181,8 @@ export function registerSporeDriveRoutes(app: Express) {
   app.get("/api/spore-drive/:driveId/network", async (req: Request, res: Response) => {
     try {
       const driveId = req.params.driveId;
-      const drive = SPORE_DRIVE_DATABASE[driveId];
+      const allDrives = await getSporeDrives(req.session?.userId || "");
+      const drive = allDrives.find(d => d.id === driveId);
 
       if (!drive) {
         return res.status(404).json({ error: "Spore drive not found" });
@@ -178,7 +207,8 @@ export function registerSporeDriveRoutes(app: Express) {
   app.get("/api/spore-drive/:driveId/jumps", async (req: Request, res: Response) => {
     try {
       const driveId = req.params.driveId;
-      const drive = SPORE_DRIVE_DATABASE[driveId];
+      const allDrives = await getSporeDrives(req.session?.userId || "");
+      const drive = allDrives.find(d => d.id === driveId);
 
       if (!drive) {
         return res.status(404).json({ error: "Spore drive not found" });
@@ -205,7 +235,8 @@ export function registerSporeDriveRoutes(app: Express) {
       const driveId = req.params.driveId;
       const { destination, destinationType, coordinates } = req.body;
 
-      const drive = SPORE_DRIVE_DATABASE[driveId];
+      const allDrives = await getSporeDrives(req.session?.userId || "");
+      const drive = allDrives.find(d => d.id === driveId);
       if (!drive) {
         return res.status(404).json({ error: "Spore drive not found" });
       }
@@ -349,7 +380,8 @@ export function registerSporeDriveRoutes(app: Express) {
   app.post("/api/spore-drive/:driveId/abort-jump", async (req: Request, res: Response) => {
     try {
       const driveId = req.params.driveId;
-      const drive = SPORE_DRIVE_DATABASE[driveId];
+      const allDrives = await getSporeDrives(req.session?.userId || "");
+      const drive = allDrives.find(d => d.id === driveId);
 
       if (!drive) {
         return res.status(404).json({ error: "Spore drive not found" });
@@ -398,7 +430,8 @@ export function registerSporeDriveRoutes(app: Express) {
       const driveId = req.params.driveId;
       const { mode } = req.body;
 
-      const drive = SPORE_DRIVE_DATABASE[driveId];
+      const allDrives = await getSporeDrives(req.session?.userId || "");
+      const drive = allDrives.find(d => d.id === driveId);
       if (!drive) {
         return res.status(404).json({ error: "Spore drive not found" });
       }
@@ -453,7 +486,8 @@ export function registerSporeDriveRoutes(app: Express) {
   app.post("/api/spore-drive/:driveId/upgrade", async (req: Request, res: Response) => {
     try {
       const driveId = req.params.driveId;
-      const drive = SPORE_DRIVE_DATABASE[driveId];
+      const allDrives = await getSporeDrives(req.session?.userId || "");
+      const drive = allDrives.find(d => d.id === driveId);
 
       if (!drive) {
         return res.status(404).json({ error: "Spore drive not found" });
@@ -545,7 +579,9 @@ export function registerSporeDriveRoutes(app: Express) {
         lastUsed: null,
       };
 
-      SPORE_DRIVE_DATABASE[driveId] = drive;
+      const existingDrives = await getSporeDrives(req.session?.userId || "");
+      existingDrives.push(drive);
+      await setSporeDrives(req.session?.userId || "", existingDrives);
 
       res.json({
         message: "Spore drive generated successfully",
@@ -561,7 +597,8 @@ export function registerSporeDriveRoutes(app: Express) {
   app.post("/api/spore-drive/:driveId/recharge", async (req: Request, res: Response) => {
     try {
       const driveId = req.params.driveId;
-      const drive = SPORE_DRIVE_DATABASE[driveId];
+      const allDrives = await getSporeDrives(req.session?.userId || "");
+      const drive = allDrives.find(d => d.id === driveId);
 
       if (!drive) {
         return res.status(404).json({ error: "Spore drive not found" });

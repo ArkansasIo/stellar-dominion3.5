@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 200" width="800" height="200">
+  <defs>
+    <linearGradient id="nebula" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a2e;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#1a0a3e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0a1a3e;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#4a9eff;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#a0d4ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4a9eff;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="starGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4a9eff;stop-opacity:0.8" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="200" fill="url(#nebula)" rx="8"/>
+
+  <!-- Stars background -->
+  <circle cx="50" cy="30" r="1" fill="#fff" opacity="0.6"/>
+  <circle cx="120" cy="60" r="0.8" fill="#fff" opacity="0.4"/>
+  <circle cx="200" cy="20" r="1.2" fill="#fff" opacity="0.7"/>
+  <circle cx="350" cy="45" r="0.7" fill="#fff" opacity="0.5"/>
+  <circle cx="450" cy="15" r="1" fill="#fff" opacity="0.6"/>
+  <circle cx="550" cy="55" r="0.9" fill="#fff" opacity="0.4"/>
+  <circle cx="650" cy="25" r="1.1" fill="#fff" opacity="0.7"/>
+  <circle cx="750" cy="50" r="0.8" fill="#fff" opacity="0.5"/>
+  <circle cx="100" cy="170" r="0.7" fill="#fff" opacity="0.3"/>
+  <circle cx="300" cy="180" r="1" fill="#fff" opacity="0.4"/>
+  <circle cx="500" cy="175" r="0.8" fill="#fff" opacity="0.5"/>
+  <circle cx="700" cy="185" r="0.9" fill="#fff" opacity="0.3"/>
+  <circle cx="80" cy="100" r="0.6" fill="#4a9eff" opacity="0.5"/>
+  <circle cx="720" cy="95" r="0.6" fill="#4a9eff" opacity="0.5"/>
+
+  <!-- Galaxy spiral icon -->
+  <g transform="translate(70, 100)" filter="url(#softGlow)">
+    <!-- Spiral arms -->
+    <ellipse cx="0" cy="0" rx="28" ry="10" fill="none" stroke="#4a9eff" stroke-width="1.5" opacity="0.6" transform="rotate(0)"/>
+    <ellipse cx="0" cy="0" rx="22" ry="8" fill="none" stroke="#6ab4ff" stroke-width="1.2" opacity="0.5" transform="rotate(60)"/>
+    <ellipse cx="0" cy="0" rx="16" ry="6" fill="none" stroke="#8ac8ff" stroke-width="1" opacity="0.4" transform="rotate(120)"/>
+    <!-- Core -->
+    <circle cx="0" cy="0" r="4" fill="url(#starGrad)" filter="url(#glow)"/>
+    <circle cx="0" cy="0" r="2" fill="#fff"/>
+  </g>
+
+  <!-- Title: STELLAR -->
+  <text x="130" y="95" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="52" font-weight="700" fill="url(#textGrad)" filter="url(#glow)" letter-spacing="8">STELLAR</text>
+
+  <!-- Title: DOMINION -->
+  <text x="130" y="145" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="44" font-weight="300" fill="#c0d8ff" letter-spacing="12">DOMINION</text>
+
+  <!-- Subtle underline accent -->
+  <line x1="130" y1="158" x2="560" y2="158" stroke="url(#textGrad)" stroke-width="1" opacity="0.4"/>
+
+  <!-- Tagline -->
+  <text x="130" y="178" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11" fill="#6a8ab0" letter-spacing="3">4X SPACE STRATEGY MMORPG</text>
+
+  <!-- Version badge -->
+  <rect x="680" y="155" width="80" height="22" rx="11" fill="none" stroke="#4a9eff" stroke-width="1" opacity="0.5"/>
+  <text x="720" y="170" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#4a9eff" text-anchor="middle" opacity="0.7">ALPHA 1.5</text>
+</svg>

@@ -344,17 +344,21 @@ export async function setupAuth(app: Express) {
   
   // Add CORS headers to allow credentials
   app.use((req, res, next) => {
-    const allowedOrigins = [
+    const envOrigins = process.env.CORS_ORIGINS
+      ? process.env.CORS_ORIGINS.split(',').map(o => o.trim())
+      : [];
+    const defaultOrigins = [
       'http://localhost:5000',
       'http://localhost:5001',
       'http://127.0.0.1:5000',
       'http://127.0.0.1:5001',
     ];
+    const allowedOrigins = [...new Set([...defaultOrigins, ...envOrigins])];
     const origin = req.get('origin');
     if (origin && allowedOrigins.includes(origin)) {
       res.header('Access-Control-Allow-Origin', origin);
     } else if (!origin) {
-      res.header('Access-Control-Allow-Origin', 'http://localhost:5000');
+      res.header('Access-Control-Allow-Origin', allowedOrigins[0]);
     }
     res.header('Access-Control-Allow-Credentials', 'true');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');

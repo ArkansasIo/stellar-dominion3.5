@@ -1,13 +1,13 @@
 import { pool } from "../db";
 import { registerCronJob, recordGameTick, type CronJobResult } from "./cronService";
 
-const RESOURCE_TICK_INTERVAL = 10000;
-const TURN_TICK_INTERVAL = 15000;
-const CONSTRUCTION_TICK_INTERVAL = 5000;
-const DAILY_RESET_INTERVAL = 86400000;
-const WEEKLY_RESET_INTERVAL = 604800000;
-const MAINTENANCE_INTERVAL = 3600000;
-const MARKET_TICK_INTERVAL = 900000;
+const RESOURCE_TICK_INTERVAL = parseInt(process.env.RESOURCE_TICK_INTERVAL || '10000', 10);
+const TURN_TICK_INTERVAL = parseInt(process.env.TURN_TICK_INTERVAL || '15000', 10);
+const CONSTRUCTION_TICK_INTERVAL = parseInt(process.env.CONSTRUCTION_TICK_INTERVAL || '5000', 10);
+const DAILY_RESET_INTERVAL = parseInt(process.env.DAILY_RESET_INTERVAL || '86400000', 10);
+const WEEKLY_RESET_INTERVAL = parseInt(process.env.WEEKLY_RESET_INTERVAL || '604800000', 10);
+const MAINTENANCE_INTERVAL = parseInt(process.env.MAINTENANCE_INTERVAL || '3600000', 10);
+const MARKET_TICK_INTERVAL = parseInt(process.env.MARKET_TICK_INTERVAL || '900000', 10);
 
 export async function registerAllGameJobs(): Promise<void> {
   await registerCronJob({
@@ -54,7 +54,10 @@ export async function registerAllGameJobs(): Promise<void> {
     scheduleType: "daily",
     intervalMs: DAILY_RESET_INTERVAL,
     enabled: true,
-    params: { loginBonusCredits: 500, loginBonusMetal: 1000 },
+    params: {
+      loginBonusCredits: parseInt(process.env.LOGIN_BONUS_CREDITS || '500', 10),
+      loginBonusMetal: parseInt(process.env.LOGIN_BONUS_METAL || '1000', 10),
+    },
     handler: dailyResetHandler,
   });
 
@@ -149,10 +152,15 @@ async function resourceTickHandler(_job: any, params: any): Promise<CronJobResul
         const deuteriumSynth = buildings.deuteriumSynthesizer || 0;
         const solarPlant = buildings.solarPlant || 0;
 
-        const metalProd = Math.floor(30 * metalMine * (1 + metalMine / 10) * elapsedHours);
-        const crystalProd = Math.floor(20 * crystalMine * (1 + crystalMine / 10) * elapsedHours);
-        const deuteriumProd = Math.floor(10 * deuteriumSynth * (1 + deuteriumSynth / 12) * elapsedHours);
-        const energyProd = Math.floor(20 * solarPlant * (1 + solarPlant / 10) * elapsedHours);
+        const metalMultiplier = parseFloat(process.env.PRODUCTION_METAL_MULTIPLIER || '30');
+        const crystalMultiplier = parseFloat(process.env.PRODUCTION_CRYSTAL_MULTIPLIER || '20');
+        const deuteriumMultiplier = parseFloat(process.env.PRODUCTION_DEUTERIUM_MULTIPLIER || '10');
+        const energyMultiplier = parseFloat(process.env.PRODUCTION_ENERGY_MULTIPLIER || '20');
+
+        const metalProd = Math.floor(metalMultiplier * metalMine * (1 + metalMine / 10) * elapsedHours);
+        const crystalProd = Math.floor(crystalMultiplier * crystalMine * (1 + crystalMine / 10) * elapsedHours);
+        const deuteriumProd = Math.floor(deuteriumMultiplier * deuteriumSynth * (1 + deuteriumSynth / 12) * elapsedHours);
+        const energyProd = Math.floor(energyMultiplier * solarPlant * (1 + solarPlant / 10) * elapsedHours);
         const energyConsumed = Math.floor((10 * metalMine + 10 * crystalMine + 20 * deuteriumSynth) * elapsedHours);
         const netEnergy = Math.max(0, energyProd - energyConsumed);
 

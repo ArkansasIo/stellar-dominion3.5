@@ -7,7 +7,7 @@ let mainWindow;
 let serverProcess;
 let tray;
 
-const SERVER_PORT = 5001;
+const SERVER_PORT = parseInt(process.env.PORT || process.env.SERVER_PORT || '5001', 10);
 const SERVER_URL = `http://localhost:${SERVER_PORT}`;
 
 function getAssetPath(relativePath) {
@@ -99,6 +99,23 @@ async function createWindow() {
     show: false
   });
 
+  mainWindow.webContents.on('will-navigate', (event, url) => {
+    const parsed = new URL(url);
+    const allowed = [`http://localhost:${SERVER_PORT}`, `http://127.0.0.1:${SERVER_PORT}`];
+    if (!allowed.some(origin => parsed.origin === origin)) {
+      event.preventDefault();
+    }
+  });
+
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    const parsed = new URL(url);
+    const allowed = [`http://localhost:${SERVER_PORT}`, `http://127.0.0.1:${SERVER_PORT}`];
+    if (allowed.some(origin => parsed.origin === origin)) {
+      return { action: 'allow' };
+    }
+    return { action: 'deny' };
+  });
+
   mainWindow.loadURL(SERVER_URL);
 
   mainWindow.once('ready-to-show', () => {
@@ -159,7 +176,7 @@ function createTray() {
       }
     });
   } catch (e) {
-    console.log('Tray icon not found, skipping tray setup');
+    console.error('Tray icon setup failed:', e);
   }
 }
 

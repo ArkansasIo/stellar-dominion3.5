@@ -13,15 +13,29 @@ import {
 } from "../shared/config/enhancedMoonSystem";
 import type { MoonType } from "../shared/config/moonsProgression";
 
-// In-memory moon storage (in production, this would be in the database)
-const MOON_DATABASE: Record<string, EnhancedMoon> = {};
+async function getMoonsData(userId: string): Promise<Record<string, EnhancedMoon>> {
+  const row = await db.query.playerStates.findFirst({
+    where: eq(playerStates.userId, userId),
+    columns: { moonsData: true },
+  });
+  return (row?.moonsData as Record<string, EnhancedMoon>) || {};
+}
+
+async function setMoonsData(userId: string, data: Record<string, EnhancedMoon>) {
+  await db
+    .update(playerStates)
+    .set({ moonsData: data as any, updatedAt: new Date() })
+    .where(eq(playerStates.userId, userId));
+}
 
 export function registerMoonRoutes(app: Express) {
   // Get all moons for a planet
   app.get("/api/moons/planet/:planetId", async (req: Request, res: Response) => {
     try {
       const planetId = req.params.planetId;
-      const moons = Object.values(MOON_DATABASE).filter(m => m.parentPlanetId === planetId);
+      const userId = req.session?.userId || "";
+      const moonsDb = await getMoonsData(userId);
+      const moons = Object.values(moonsDb).filter(m => m.parentPlanetId === planetId);
       
       res.json({
         moons,
@@ -38,7 +52,9 @@ export function registerMoonRoutes(app: Express) {
   app.get("/api/moons/:moonId", async (req: Request, res: Response) => {
     try {
       const moonId = req.params.moonId;
-      const moon = MOON_DATABASE[moonId];
+      const userId = req.session?.userId || "";
+      const moonsDb = await getMoonsData(userId);
+      const moon = moonsDb[moonId];
 
       if (!moon) {
         return res.status(404).json({ error: "Moon not found" });
@@ -55,7 +71,9 @@ export function registerMoonRoutes(app: Express) {
   app.get("/api/moons/:moonId/stats", async (req: Request, res: Response) => {
     try {
       const moonId = req.params.moonId;
-      const moon = MOON_DATABASE[moonId];
+      const userId = req.session?.userId || "";
+      const moonsDb = await getMoonsData(userId);
+      const moon = moonsDb[moonId];
 
       if (!moon) {
         return res.status(404).json({ error: "Moon not found" });
@@ -83,7 +101,9 @@ export function registerMoonRoutes(app: Express) {
   app.get("/api/moons/:moonId/status", async (req: Request, res: Response) => {
     try {
       const moonId = req.params.moonId;
-      const moon = MOON_DATABASE[moonId];
+      const userId = req.session?.userId || "";
+      const moonsDb = await getMoonsData(userId);
+      const moon = moonsDb[moonId];
 
       if (!moon) {
         return res.status(404).json({ error: "Moon not found" });
@@ -113,7 +133,9 @@ export function registerMoonRoutes(app: Express) {
   app.get("/api/moons/:moonId/attributes", async (req: Request, res: Response) => {
     try {
       const moonId = req.params.moonId;
-      const moon = MOON_DATABASE[moonId];
+      const userId = req.session?.userId || "";
+      const moonsDb = await getMoonsData(userId);
+      const moon = moonsDb[moonId];
 
       if (!moon) {
         return res.status(404).json({ error: "Moon not found" });
@@ -139,7 +161,9 @@ export function registerMoonRoutes(app: Express) {
   app.get("/api/moons/:moonId/details", async (req: Request, res: Response) => {
     try {
       const moonId = req.params.moonId;
-      const moon = MOON_DATABASE[moonId];
+      const userId = req.session?.userId || "";
+      const moonsDb = await getMoonsData(userId);
+      const moon = moonsDb[moonId];
 
       if (!moon) {
         return res.status(404).json({ error: "Moon not found" });
@@ -168,7 +192,9 @@ export function registerMoonRoutes(app: Express) {
   app.post("/api/moons/:moonId/colonize", async (req: Request, res: Response) => {
     try {
       const moonId = req.params.moonId;
-      const moon = MOON_DATABASE[moonId];
+      const userId = req.session?.userId || "";
+      const moonsDb = await getMoonsData(userId);
+      const moon = moonsDb[moonId];
 
       if (!moon) {
         return res.status(404).json({ error: "Moon not found" });
@@ -254,7 +280,9 @@ export function registerMoonRoutes(app: Express) {
   app.post("/api/moons/:moonId/upgrade", async (req: Request, res: Response) => {
     try {
       const moonId = req.params.moonId;
-      const moon = MOON_DATABASE[moonId];
+      const userId = req.session?.userId || "";
+      const moonsDb = await getMoonsData(userId);
+      const moon = moonsDb[moonId];
 
       if (!moon) {
         return res.status(404).json({ error: "Moon not found" });
@@ -339,7 +367,9 @@ export function registerMoonRoutes(app: Express) {
       const moonId = req.params.moonId;
       const { baseType, baseClass } = req.body;
 
-      const moon = MOON_DATABASE[moonId];
+      const userId = req.session?.userId || "";
+      const moonsDb = await getMoonsData(userId);
+      const moon = moonsDb[moonId];
       if (!moon) {
         return res.status(404).json({ error: "Moon not found" });
       }
@@ -514,7 +544,10 @@ export function registerMoonRoutes(app: Express) {
         updatedAt: Date.now(),
       };
 
-      MOON_DATABASE[moonId] = moon;
+      const userId = req.session?.userId || "";
+      const moonsDb = await getMoonsData(userId);
+      moonsDb[moonId] = moon;
+      await setMoonsData(userId, moonsDb);
 
       res.json({
         message: "Moon generated successfully",

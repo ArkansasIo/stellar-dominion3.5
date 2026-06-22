@@ -115,9 +115,36 @@ export const playerStates = pgTable("player_states", {
   
   // Artifacts
   artifacts: jsonb("artifacts").notNull().default([]),
-  
+
   // Cron jobs
   cronJobs: jsonb("cron_jobs").notNull().default([]),
+
+  // Smithy state (crafted items, materials, blueprints)
+  smithyState: jsonb("smithy_state").notNull().default(null),
+
+  // Bank & vault state (currencies, vault items, insurance)
+  bankVaultState: jsonb("bank_vault_state").notNull().default(null),
+
+  // Orbital stations (platforms, satellites, defense systems)
+  orbitalStations: jsonb("orbital_stations").notNull().default(null),
+
+  // Spore drive state (jump cooldowns, upgrades, modes)
+  sporeDriveState: jsonb("spore_drive_state").notNull().default(null),
+
+  // Moons data (moon details, bases, resources)
+  moonsData: jsonb("moons_data").notNull().default({}),
+
+  // Active raids participation
+  activeRaids: jsonb("active_raids").notNull().default([]),
+
+  // Active expeditions
+  expeditionsData: jsonb("expeditions_data").notNull().default([]),
+
+  // Universe events participation
+  eventParticipation: jsonb("event_participation").notNull().default([]),
+
+  // Realm selection
+  realmId: varchar("realm_id"),
   
   // Empire progression (1-999 levels)
   empireLevel: integer("empire_level").notNull().default(1),
