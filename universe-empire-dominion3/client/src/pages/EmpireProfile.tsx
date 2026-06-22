@@ -305,6 +305,15 @@ export default function EmpireProfilePage() {
     },
   });
 
+  const { data: playerProfile } = useQuery<{ uid: string; displayName: string; level: number; prestigeLevel: number }>({
+    queryKey: ["/api/player-profile"],
+    queryFn: async () => {
+      const res = await fetch("/api/player-profile", { credentials: "include" });
+      if (!res.ok) throw new Error("Failed to load player profile");
+      return res.json();
+    },
+  });
+
   const allocateMutation = useMutation({
     mutationFn: async ({ attribute, points }: { attribute: string; points: number }) => {
       const res = await fetch("/api/empire-profile/allocate", {
@@ -404,41 +413,46 @@ export default function EmpireProfilePage() {
                     <h2 className="text-xl font-bold">
                       {profile.empireName || "Unnamed Empire"}
                     </h2>
-                    <Dialog open={isRenameDialogOpen} onOpenChange={setIsRenameDialogOpen}>
-                      <DialogTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                          <Edit3 className="w-3 h-3" />
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Rename Empire</DialogTitle>
-                          <DialogDescription>
-                            Enter a new name for your empire. This will be displayed across all empire interfaces.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className="space-y-4">
-                          <Input
-                            placeholder="Enter empire name..."
-                            value={newEmpireName}
-                            onChange={(e) => setNewEmpireName(e.target.value)}
-                            maxLength={50}
-                          />
-                          <div className="flex justify-end gap-2">
-                            <Button variant="outline" onClick={() => setIsRenameDialogOpen(false)}>
-                              Cancel
-                            </Button>
-                            <Button
-                              onClick={() => renameMutation.mutate(newEmpireName)}
-                              disabled={!newEmpireName.trim() || renameMutation.isPending}
-                            >
-                              {renameMutation.isPending ? "Renaming..." : "Rename Empire"}
-                            </Button>
-                          </div>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
+                    {playerProfile?.uid && (
+                      <Badge variant="outline" className="font-mono text-xs">
+                        UID: {playerProfile.uid}
+                      </Badge>
+                    )}
                   </div>
+                  <Dialog open={isRenameDialogOpen} onOpenChange={setIsRenameDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                        <Edit3 className="w-3 h-3" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Rename Empire</DialogTitle>
+                        <DialogDescription>
+                          Enter a new name for your empire. This will be displayed across all empire interfaces.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <Input
+                          placeholder="Enter empire name..."
+                          value={newEmpireName}
+                          onChange={(e) => setNewEmpireName(e.target.value)}
+                          maxLength={50}
+                        />
+                        <div className="flex justify-end gap-2">
+                          <Button variant="outline" onClick={() => setIsRenameDialogOpen(false)}>
+                            Cancel
+                          </Button>
+                          <Button
+                            onClick={() => renameMutation.mutate(newEmpireName)}
+                            disabled={!newEmpireName.trim() || renameMutation.isPending}
+                          >
+                            {renameMutation.isPending ? "Renaming..." : "Rename Empire"}
+                          </Button>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                   <p className="text-sm text-muted-foreground">{tierName}</p>
                   <Badge variant="outline" className="mt-1 text-xs">
                     <Star className="w-3 h-3 mr-1" />

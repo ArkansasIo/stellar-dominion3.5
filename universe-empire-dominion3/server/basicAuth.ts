@@ -5,7 +5,7 @@ import { storage } from "./storage";
 import { logger } from "./logger";
 import crypto from "crypto";
 import { db } from "./db";
-import { adminUsers, users, type User } from "../shared/schema";
+import { adminUsers, users, playerProfiles, type User } from "../shared/schema";
 import { eq, ilike, or } from "drizzle-orm";
 import { getRolePermissions, normalizeAdminRole } from "./adminPermissions";
 import { requireAdminIp, logAdminActivity } from "./middleware/adminIpCheck";
@@ -104,6 +104,34 @@ export function getSession() {
 
 function hashPassword(password: string): string {
   return crypto.createHash("sha256").update(password).digest("hex");
+}
+
+function generate10DigitUID(): string {
+  // Generate a random 10-digit number between 1000000000 and 9999999999
+  const min = 1000000000;
+  const max = 9999999999;
+  const randomNum = Math.floor(Math.random() * (max - min + 1)) + min;
+  return randomNum.toString();
+}
+
+async function generateUniqueUID(): Promise<string> {
+  let uid = generate10DigitUID();
+  let attempts = 0;
+  const maxAttempts = 10;
+
+  // Ensure UID is unique
+  while (attempts < maxAttempts) {
+    const existing = await storage.getPlayerProfileByUid(uid);
+    if (!existing) {
+      return uid;
+    }
+    uid = generate10DigitUID();
+    attempts++;
+  }
+
+  // Fallback: use timestamp-based UID if random generation fails
+  const timestamp = Date.now().toString().slice(-10);
+  return timestamp;
 }
 
 function verifyPassword(password: string, hash: string): boolean {
@@ -383,13 +411,32 @@ export async function setupAuth(app: Express) {
         firstName: firstName || username,
       });
 
+      // Generate unique 10-digit UID and create player profile
+      const uid = await generateUniqueUID();
+      await storage.createPlayerProfile({
+        userId: user.id,
+        uid: uid,
+        displayName: username,
+        level: 1,
+        prestigeLevel: 0,
+      });
+
+      logger.info("AUTH", `Player profile created with UID: ${uid} for user: ${username}`);
+
       req.session.userId = user.id;
       req.session.save((err) => {
         if (err) {
           console.error("Session save error:", err);
           return res.status(500).json({ message: "Session creation failed" });
         }
-        res.json({ message: "Account created", user: { id: user.id, username: user.username } });
+        res.json({ 
+          message: "Account created", 
+          user: { 
+            id: user.id, 
+            username: user.username,
+            uid: uid
+          } 
+        });
       });
     } catch (error) {
       console.error("Registration error:", error);
