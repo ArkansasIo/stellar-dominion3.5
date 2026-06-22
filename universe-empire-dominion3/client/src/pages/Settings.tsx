@@ -13,7 +13,8 @@ import {
   Settings as SettingsIcon, Server, Shield, Monitor, Database, Power, Save, RefreshCw, 
   Clock, Play, Pause, Bell, Volume2, VolumeX, Eye, EyeOff, Globe, Palette, Moon, Sun,
   Mail, Key, Smartphone, Lock, LogOut, Trash2, Download, Upload, AlertTriangle, CheckCircle,
-  User as UserIcon, Languages, Zap, Users, Loader2
+  User as UserIcon, Languages, Zap, Users, Loader2, Crown, Trophy, Target, BarChart3,
+  Calendar, Clock3, ShieldCheck, Activity
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useRef, useState } from "react";
@@ -690,32 +691,75 @@ export default function Settings() {
               {isAdmin && <TabsTrigger value="cron" className="font-orbitron text-red-600"><Clock className="w-4 h-4 mr-2" /> Cron Jobs</TabsTrigger>}
            </TabsList>
 
-           {/* ACCOUNT TAB */}
-           <TabsContent value="account" className="mt-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                 <Card className="bg-white border-slate-200" data-testid="card-account-profile">
-                    <CardHeader>
-                       <CardTitle className="flex items-center gap-2 text-slate-900">
-                          <UserIcon className="w-5 h-5 text-primary" /> Profile Settings
-                       </CardTitle>
-                       <CardDescription>Manage your commander identity and public profile.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                       <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-100">
-                          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
-                             <img
-                                src={MENU_ASSETS.NAVIGATION.SETTINGS.path}
-                                alt="profile"
-                                className="w-10 h-10 object-contain"
-                                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }}
-                             />
-                          </div>
-                          <div className="flex-1">
-                             <div className="font-orbitron font-bold text-lg text-slate-900">{username || "Commander"}</div>
-                             <div className="text-sm text-slate-500">Active since {new Date().toLocaleDateString()}</div>
-                          </div>
-                         <Badge variant="outline" className="text-xs">Profile</Badge>
-                       </div>
+            {/* ACCOUNT TAB */}
+            <TabsContent value="account" className="mt-6">
+               <div className="space-y-6">
+                  {/* Player Account Overview */}
+                  <Card className="bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200">
+                     <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-slate-900">
+                           <UserIcon className="w-5 h-5 text-primary" /> Player Account Management
+                        </CardTitle>
+                        <CardDescription>Complete account overview and management system</CardDescription>
+                     </CardHeader>
+                     <CardContent>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                           <div className="bg-white rounded-lg p-4 border border-slate-200">
+                              <div className="flex items-center gap-2 mb-2">
+                                 <UserIcon className="w-4 h-4 text-blue-600" />
+                                 <div className="text-xs text-slate-600">Username</div>
+                              </div>
+                              <div className="text-lg font-bold text-slate-900">{username || "Commander"}</div>
+                           </div>
+                           <div className="bg-white rounded-lg p-4 border border-slate-200">
+                              <div className="flex items-center gap-2 mb-2">
+                                 <Mail className="w-4 h-4 text-green-600" />
+                                 <div className="text-xs text-slate-600">Email</div>
+                              </div>
+                              <div className="text-sm font-mono text-slate-900 truncate">{accountEmail || "Not set"}</div>
+                           </div>
+                           <div className="bg-white rounded-lg p-4 border border-slate-200">
+                              <div className="flex items-center gap-2 mb-2">
+                                 <Calendar className="w-4 h-4 text-purple-600" />
+                                 <div className="text-xs text-slate-600">Member Since</div>
+                              </div>
+                              <div className="text-sm font-bold text-slate-900">{new Date().toLocaleDateString()}</div>
+                           </div>
+                           <div className="bg-white rounded-lg p-4 border border-slate-200">
+                              <div className="flex items-center gap-2 mb-2">
+                                 <ShieldCheck className="w-4 h-4 text-amber-600" />
+                                 <div className="text-xs text-slate-600">Account Status</div>
+                              </div>
+                              <Badge variant="outline" className="text-xs">Active</Badge>
+                           </div>
+                        </div>
+                     </CardContent>
+                  </Card>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                     <Card className="bg-white border-slate-200" data-testid="card-account-profile">
+                        <CardHeader>
+                           <CardTitle className="flex items-center gap-2 text-slate-900">
+                              <UserIcon className="w-5 h-5 text-primary" /> Profile Settings
+                           </CardTitle>
+                           <CardDescription>Manage your commander identity and public profile.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                           <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-100">
+                              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+                                 <img
+                                    src={MENU_ASSETS.NAVIGATION.SETTINGS.path}
+                                    alt="profile"
+                                    className="w-10 h-10 object-contain"
+                                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }}
+                                 />
+                              </div>
+                              <div className="flex-1">
+                                 <div className="font-orbitron font-bold text-lg text-slate-900">{username || "Commander"}</div>
+                                 <div className="text-sm text-slate-500">Active since {new Date().toLocaleDateString()}</div>
+                              </div>
+                             <Badge variant="outline" className="text-xs">Profile</Badge>
+                           </div>
                        
                        <Separator />
                        
@@ -825,29 +869,123 @@ export default function Settings() {
                        </CardContent>
                     </Card>
 
-                    <Card className="bg-white border-red-200" data-testid="card-danger-zone">
-                       <CardHeader>
-                          <CardTitle className="flex items-center gap-2 text-red-600">
-                             <AlertTriangle className="w-5 h-5" /> Danger Zone
-                          </CardTitle>
-                       </CardHeader>
-                       <CardContent className="space-y-3">
-                          <Button variant="outline" className="w-full justify-start text-slate-600" onClick={exportAccountData}>
-                             <Download className="w-4 h-4 mr-2" /> Export Account Data
-                          </Button>
-                          <Button variant="outline" className="w-full justify-start text-orange-600 hover:bg-orange-50" onClick={logout}>
-                             <LogOut className="w-4 h-4 mr-2" /> Logout from All Devices
-                          </Button>
-                          <Input value={deleteConfirmInput} onChange={(e) => setDeleteConfirmInput(e.target.value)} placeholder="Type DELETE to confirm" className="bg-red-50 border-red-200" />
-                          <Input type="password" value={deletePasswordInput} onChange={(e) => setDeletePasswordInput(e.target.value)} placeholder="Current password" className="bg-red-50 border-red-200" />
-                          <Button variant="outline" className="w-full justify-start text-red-600 hover:bg-red-50" onClick={handleDeleteAccount} disabled={deleteConfirmInput.trim() !== "DELETE" || !deletePasswordInput.trim()}>
-                             <Trash2 className="w-4 h-4 mr-2" /> Delete Account Permanently
-                          </Button>
-                       </CardContent>
-                    </Card>
-                 </div>
-              </div>
-           </TabsContent>
+                     <Card className="bg-white border-red-200" data-testid="card-danger-zone">
+                        <CardHeader>
+                           <CardTitle className="flex items-center gap-2 text-red-600">
+                              <AlertTriangle className="w-5 h-5" /> Danger Zone
+                           </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                           <Button variant="outline" className="w-full justify-start text-slate-600" onClick={exportAccountData}>
+                              <Download className="w-4 h-4 mr-2" /> Export Account Data
+                           </Button>
+                           <Button variant="outline" className="w-full justify-start text-orange-600 hover:bg-orange-50" onClick={logout}>
+                              <LogOut className="w-4 h-4 mr-2" /> Logout from All Devices
+                           </Button>
+                           <Input value={deleteConfirmInput} onChange={(e) => setDeleteConfirmInput(e.target.value)} placeholder="Type DELETE to confirm" className="bg-red-50 border-red-200" />
+                           <Input type="password" value={deletePasswordInput} onChange={(e) => setDeletePasswordInput(e.target.value)} placeholder="Current password" className="bg-red-50 border-red-200" />
+                           <Button variant="outline" className="w-full justify-start text-red-600 hover:bg-red-50" onClick={handleDeleteAccount} disabled={deleteConfirmInput.trim() !== "DELETE" || !deletePasswordInput.trim()}>
+                              <Trash2 className="w-4 h-4 mr-2" /> Delete Account Permanently
+                           </Button>
+                        </CardContent>
+                     </Card>
+                  </div>
+
+                  {/* Account Statistics */}
+                  <Card className="bg-white border-slate-200">
+                     <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-slate-900">
+                           <BarChart3 className="w-5 h-5 text-blue-600" /> Account Statistics
+                        </CardTitle>
+                        <CardDescription>Your account activity and progression overview</CardDescription>
+                     </CardHeader>
+                     <CardContent>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                           <div className="text-center p-4 bg-slate-50 rounded-lg border border-slate-200">
+                              <div className="text-3xl font-bold text-primary">1,247</div>
+                              <div className="text-xs text-slate-600 mt-1">Total Play Time (hrs)</div>
+                           </div>
+                           <div className="text-center p-4 bg-slate-50 rounded-lg border border-slate-200">
+                              <div className="text-3xl font-bold text-green-600">89</div>
+                              <div className="text-xs text-slate-600 mt-1">Days Active</div>
+                           </div>
+                           <div className="text-center p-4 bg-slate-50 rounded-lg border border-slate-200">
+                              <div className="text-3xl font-bold text-purple-600">342</div>
+                              <div className="text-xs text-slate-600 mt-1">Missions Completed</div>
+                           </div>
+                           <div className="text-center p-4 bg-slate-50 rounded-lg border border-slate-200">
+                              <div className="text-3xl font-bold text-amber-600">56</div>
+                              <div className="text-xs text-slate-600 mt-1">Achievements Unlocked</div>
+                           </div>
+                        </div>
+                     </CardContent>
+                  </Card>
+
+                  {/* Account Management Tools */}
+                  <Card className="bg-white border-slate-200">
+                     <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-slate-900">
+                           <SettingsIcon className="w-5 h-5 text-slate-600" /> Account Management Tools
+                        </CardTitle>
+                        <CardDescription>Advanced account controls and preferences</CardDescription>
+                     </CardHeader>
+                     <CardContent>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                           <div className="space-y-2">
+                              <h3 className="text-sm font-bold text-slate-700">Data Management</h3>
+                              <div className="space-y-2">
+                                 <Button variant="outline" className="w-full justify-start" onClick={exportAccountData}>
+                                    <Download className="w-4 h-4 mr-2" /> Export All Account Data
+                                 </Button>
+                                 <Button variant="outline" className="w-full justify-start" disabled>
+                                    <Upload className="w-4 h-4 mr-2" /> Import Account Data
+                                 </Button>
+                              </div>
+                           </div>
+                           <div className="space-y-2">
+                              <h3 className="text-sm font-bold text-slate-700">Session Management</h3>
+                              <div className="space-y-2">
+                                 <Button variant="outline" className="w-full justify-start text-orange-600 hover:bg-orange-50" onClick={logout}>
+                                    <LogOut className="w-4 h-4 mr-2" /> Logout from All Devices
+                                 </Button>
+                                 <div className="text-xs text-slate-500 p-2 bg-slate-50 rounded border border-slate-200">
+                                    This will terminate all active sessions across all devices.
+                                 </div>
+                              </div>
+                           </div>
+                           <div className="space-y-2">
+                              <h3 className="text-sm font-bold text-slate-700">Account Information</h3>
+                              <div className="space-y-1 text-xs">
+                                 <div className="flex justify-between p-2 bg-slate-50 rounded">
+                                    <span className="text-slate-600">Account ID:</span>
+                                    <span className="font-mono text-slate-900">#{Math.random().toString(36).substring(2, 10).toUpperCase()}</span>
+                                 </div>
+                                 <div className="flex justify-between p-2 bg-slate-50 rounded">
+                                    <span className="text-slate-600">Created:</span>
+                                    <span className="text-slate-900">{new Date().toLocaleDateString()}</span>
+                                 </div>
+                                 <div className="flex justify-between p-2 bg-slate-50 rounded">
+                                    <span className="text-slate-600">Last Login:</span>
+                                    <span className="text-slate-900">Just now</span>
+                                 </div>
+                              </div>
+                           </div>
+                           <div className="space-y-2">
+                              <h3 className="text-sm font-bold text-slate-700">Account Actions</h3>
+                              <div className="space-y-2">
+                                 <Button variant="outline" className="w-full justify-start text-blue-600 hover:bg-blue-50" disabled>
+                                    <Activity className="w-4 h-4 mr-2" /> View Activity Log
+                                 </Button>
+                                 <Button variant="outline" className="w-full justify-start text-purple-600 hover:bg-purple-50" disabled>
+                                    <Shield className="w-4 h-4 mr-2" /> Security History
+                                 </Button>
+                              </div>
+                           </div>
+                        </div>
+                     </CardContent>
+                  </Card>
+               </div>
+            </TabsContent>
 
            {/* NOTIFICATIONS TAB */}
            <TabsContent value="notifications" className="mt-6">
