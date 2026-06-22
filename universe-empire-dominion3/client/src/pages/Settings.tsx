@@ -983,8 +983,9 @@ export default function Settings() {
                            </div>
                         </div>
                      </CardContent>
-                  </Card>
-               </div>
+                   </Card>
+                </div>
+             </div>
             </TabsContent>
 
            {/* NOTIFICATIONS TAB */}
