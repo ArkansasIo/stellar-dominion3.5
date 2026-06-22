@@ -123,7 +123,7 @@ export default function BlueprintChargePage() {
     onError: (e: Error) => toast({ title: "Collect failed", description: e.message, variant: "destructive" }),
   });
 
-  const useMutation2 = useMutation({
+  const useBlueprintMutation = useMutation({
     mutationFn: async (id: string) => { const r = await fetch(`/api/blueprint-charges/use/${id}`, { method: "POST", credentials: "include" }); if (!r.ok) { const e = await r.json(); throw new Error(e.message); } return r.json(); },
     onSuccess: (data) => { queryClient.invalidateQueries({ queryKey: ["/api/blueprint-charges"] }); toast({ title: "Blueprint used", description: `${data.chargesRemaining} charges remaining` }); },
   });
@@ -180,10 +180,10 @@ export default function BlueprintChargePage() {
               {blueprints.map((bp) => (
                 <BlueprintInstanceCard
                   key={bp.id} bp={bp}
-                  onUse={(id) => useMutation2.mutate(id)}
+                  onUse={(id) => useBlueprintMutation.mutate(id)}
                   onRepair={(id) => repairMutation.mutate(id)}
                   onScrap={(id) => scrapMutation.mutate(id)}
-                  isLoading={useMutation2.isPending || repairMutation.isPending}
+                  isLoading={useBlueprintMutation.isPending || repairMutation.isPending}
                 />
               ))}
             </div>

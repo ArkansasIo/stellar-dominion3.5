@@ -11,6 +11,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Clock, Play, Pause, RotateCcw, CheckCircle2, XCircle, AlertTriangle,
   Timer, Activity, Database, Zap, RefreshCw, BarChart3, Settings,
+  Calendar, Factory, Compass,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -70,7 +71,6 @@ const JOB_ICONS: Record<string, any> = {
   anomaly_respawn: Compass,
 };
 
-import { Calendar, Factory, Compass } from "lucide-react";
 
 function formatInterval(ms: number): string {
   if (ms < 60000) return `${Math.round(ms / 1000)}s`;

@@ -1556,24 +1556,37 @@ export const raids = pgTable("raids", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   
   // Participants
-  attackingTeamId: varchar("attacking_team_id").notNull().references(() => teams.id),
-  defendingTeamId: varchar("defending_team_id").notNull().references(() => teams.id),
+  attackingTeamId: varchar("attacking_team_id").references(() => teams.id),
+  defendingTeamId: varchar("defending_team_id").references(() => teams.id),
+  
+  // Team names (for display)
+  attackingTeamName: varchar("attacking_team_name").notNull().default(""),
+  defendingTeamName: varchar("defending_team_name").notNull().default(""),
   
   // Raid details
   raidType: varchar("raid_type").notNull(), // "guild_war", "pvp_team", "boss_raid", "stronghold_attack"
-  objectiveId: varchar("objective_id"), // Optional: resource to steal, stronghold to attack
+  objectiveId: varchar("objective_id"),
   
   // Status
   status: varchar("status").notNull().default("preparing"), // "preparing", "active", "completed"
   result: varchar("result"), // "attacker_victory", "defender_victory", "tie", "cancelled"
   
   // Rewards/Losses
-  attackerLosses: jsonb("attacker_losses").notNull().default({}), // Resources/units lost
+  attackerLosses: jsonb("attacker_losses").notNull().default({}),
   defenderLosses: jsonb("defender_losses").notNull().default({}),
   rewards: jsonb("rewards").notNull().default({}),
   
+  // Raid requirements
+  minimumCommanders: integer("minimum_commanders").default(2),
+  maxCommanders: integer("max_commanders").default(6),
+  powerRequirement: integer("power_requirement").default(0),
+  
+  // Participants (jsonb array of {playerId, role, joinedAt})
+  participants: jsonb("participants").notNull().default([]),
+  
   // Timestamps
   startedAt: timestamp("started_at").defaultNow(),
+  completedAt: timestamp("completed_at"),
   endedAt: timestamp("ended_at"),
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -2231,3 +2244,28 @@ export const playerRefineries = pgTable("player_refineries", {
 export type PlayerRefineryRecord = typeof playerRefineries.$inferSelect;
 export const insertPlayerRefinerySchema = createInsertSchema(playerRefineries).omit({ id: true, createdAt: true, updatedAt: true });
 export type InsertPlayerRefinery = z.infer<typeof insertPlayerRefinerySchema>;
+
+// Moons - Persistent moon data (EnhancedMoon objects)
+export const moons = pgTable("moons", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  playerId: varchar("player_id").references(() => users.id, { onDelete: "cascade" }),
+  data: jsonb("data").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type Moon = typeof moons.$inferSelect;
+
+// Espionage Scan History
+export const espionageScans = pgTable("espionage_scans", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  playerId: varchar("player_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  targetId: varchar("target_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  scanType: varchar("scan_type").notNull().default("basic"),
+  success: boolean("success").notNull(),
+  detected: boolean("detected").notNull().default(false),
+  scanData: jsonb("scan_data"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type EspionageScan = typeof espionageScans.$inferSelect;

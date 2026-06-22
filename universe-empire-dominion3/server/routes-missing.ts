@@ -16,7 +16,6 @@ import {
   applyResourceDelta,
   buildExplorationState,
   createExpeditionRecord,
-  createStarterRelic,
   normalizeResources,
   resolveExpeditionRecord,
 } from "./services/missingFeatureService";
@@ -34,16 +33,6 @@ import {
 function getUserId(req: Request): string {
   return req.session?.userId as string;
 }
-
-// ─── static catalog seed data ────────────────────────────────────────────────
-
-const SAMPLE_RELICS = [
-  { id: "relic-1", name: "Void Crystal", description: "A shard of crystallised dark matter from the edge of the universe.", rarity: "epic", bonuses: { researchSpeed: 10 }, effects: ["Unlocks Dark Matter research"], lore: "Found only at the collapse of ancient stars." },
-  { id: "relic-2", name: "Ancient Core", description: "The pulsing core of an extinct war machine.", rarity: "legendary", bonuses: { fleetAttack: 15 }, effects: ["Fleet attack +15%"], lore: "Looted from the ruins of Fortress Zynara." },
-  { id: "relic-3", name: "Stellar Shard", description: "A fragment of a neutron star.", rarity: "rare", bonuses: { energyOutput: 8 }, effects: ["Energy production +8%"], lore: "Thrums with residual pulsar energy." },
-  { id: "relic-4", name: "Titan Rune", description: "Inscribed by the Titan builders in an age before memory.", rarity: "mythic", bonuses: { allStats: 5 }, effects: ["All stats +5%", "Unlocks Titan Codex"], lore: "Its glyphs shift when no one is watching." },
-  { id: "relic-5", name: "Ore Compass", description: "Always points to the richest mineral vein nearby.", rarity: "common", bonuses: { miningYield: 5 }, effects: ["Mining yield +5%"], lore: "Standard issue for frontier prospectors." },
-];
 
 type SampleRaidParticipant = {
   playerId: string;
@@ -69,75 +58,25 @@ type SampleRaidRecord = {
   participants: SampleRaidParticipant[];
 };
 
-const raidState: SampleRaidRecord[] = [
-  {
-    id: "raid-1",
-    attackingTeamName: "Iron Vanguard",
-    defendingTeamName: "Nebula Hold",
-    raidType: "guild_war",
-    status: "active",
-    attackerLosses: { units: 120 },
-    defenderLosses: { units: 89 },
-    result: null,
-    startedAt: new Date(Date.now() - 3600000).toISOString(),
-    minimumCommanders: 3,
-    maxCommanders: 6,
-    powerRequirement: 2200,
-    rewards: { credits: 1400, metal: 5000, crystal: 2200 },
-    participants: [
-      { playerId: "iron-lead", role: "tank", joinedAt: new Date(Date.now() - 5400000).toISOString() },
-      { playerId: "iron-wing", role: "dps", joinedAt: new Date(Date.now() - 5100000).toISOString() },
-      { playerId: "iron-med", role: "healer", joinedAt: new Date(Date.now() - 5000000).toISOString() },
-    ],
-  },
-  {
-    id: "raid-2",
-    attackingTeamName: "Dark Rift",
-    defendingTeamName: "Starfall Base",
-    raidType: "stronghold_attack",
-    status: "completed",
-    attackerLosses: { units: 45 },
-    defenderLosses: { units: 210 },
-    result: "attacker_victory",
-    startedAt: new Date(Date.now() - 86400000).toISOString(),
-    completedAt: new Date(Date.now() - 82800000).toISOString(),
-    minimumCommanders: 4,
-    maxCommanders: 8,
-    powerRequirement: 3400,
-    rewards: { credits: 3000, metal: 12000, crystal: 5000 },
-    participants: [
-      { playerId: "dark-lead", role: "tank", joinedAt: new Date(Date.now() - 90000000).toISOString() },
-      { playerId: "dark-ace", role: "dps", joinedAt: new Date(Date.now() - 89900000).toISOString() },
-      { playerId: "dark-spark", role: "support", joinedAt: new Date(Date.now() - 89800000).toISOString() },
-      { playerId: "dark-heal", role: "healer", joinedAt: new Date(Date.now() - 89700000).toISOString() },
-    ],
-  },
-  {
-    id: "raid-3",
-    attackingTeamName: "Alpha Squad",
-    defendingTeamName: "Beta Crew",
-    raidType: "pvp_team",
-    status: "preparing",
-    attackerLosses: { units: 0 },
-    defenderLosses: { units: 0 },
-    result: null,
-    startedAt: new Date(Date.now() - 600000).toISOString(),
-    minimumCommanders: 2,
-    maxCommanders: 6,
-    powerRequirement: 1600,
-    rewards: { credits: 900, metal: 2200, crystal: 900 },
-    participants: [],
-  },
-];
-
-const SAMPLE_EVENTS = [
-  { id: "evt-1", name: "Meteor Storm", description: "A dense cloud of asteroids is crossing the sector. Mining yields doubled.", eventClass: "rare", status: "active", participants: 142, rewards: { metal: 5000, crystal: 2000 }, endsAt: new Date(Date.now() + 7200000).toISOString() },
-  { id: "evt-2", name: "Solar Flare Warning", description: "Intense solar activity. All energy production boosted by 30%.", eventClass: "common", status: "active", participants: 511, rewards: { energy: 10000 }, endsAt: new Date(Date.now() + 3600000).toISOString() },
-  { id: "evt-3", name: "Warp Anomaly", description: "A rift in space-time has been detected. Exploration rewards tripled.", eventClass: "epic", status: "upcoming", participants: 0, rewards: { xp: 500, crystal: 10000 }, startsAt: new Date(Date.now() + 1800000).toISOString() },
-  { id: "evt-4", name: "Ancient Titan Resurgence", description: "Titan constructs have been reactivated deep in sector 9. All commanders get +25% XP.", eventClass: "legendary", status: "completed", participants: 892, rewards: {}, endsAt: new Date(Date.now() - 3600000).toISOString() },
-];
-
-const eventParticipants = new Map<string, Set<string>>();
+function castRaid(dbRaid: any): SampleRaidRecord {
+  return {
+    id: dbRaid.id,
+    attackingTeamName: dbRaid.attackingTeamName || "",
+    defendingTeamName: dbRaid.defendingTeamName || "",
+    raidType: (dbRaid.raidType || "guild_war") as SampleRaidRecord["raidType"],
+    status: (dbRaid.status || "preparing") as SampleRaidRecord["status"],
+    attackerLosses: dbRaid.attackerLosses || { units: 0 },
+    defenderLosses: dbRaid.defenderLosses || { units: 0 },
+    result: dbRaid.result || null,
+    startedAt: dbRaid.startedAt instanceof Date ? dbRaid.startedAt.toISOString() : (dbRaid.startedAt || new Date().toISOString()),
+    completedAt: dbRaid.completedAt instanceof Date ? dbRaid.completedAt.toISOString() : dbRaid.completedAt || undefined,
+    minimumCommanders: dbRaid.minimumCommanders || 2,
+    maxCommanders: dbRaid.maxCommanders || 6,
+    powerRequirement: dbRaid.powerRequirement || 0,
+    rewards: dbRaid.rewards || { credits: 0, metal: 0, crystal: 0 },
+    participants: (dbRaid.participants as SampleRaidParticipant[]) || [],
+  };
+}
 
 async function requirePlayerState(userId: string) {
   const playerState = await storage.getPlayerState(userId);
@@ -177,119 +116,164 @@ export function registerMissingRoutes(app: Express) {
   });
 
   // GET /api/raids  – list of current and recent raids
-  app.get("/api/raids", isAuthenticated, (req: Request, res: Response) => {
+  app.get("/api/raids", isAuthenticated, async (req: Request, res: Response) => {
     const userId = getUserId(req);
-    res.json(
-      raidState.map((raid) => {
-        const joinedPlayers = raid.participants.length;
-        const joined = raid.participants.some((participant) => participant.playerId === userId);
-        return {
-          ...raid,
-          joined,
-          joinedPlayers,
-          canLaunch: raid.status === "preparing" && joinedPlayers >= raid.minimumCommanders,
-        };
-      })
-    );
+    try {
+      const allRaids = await storage.getAllRaids();
+      res.json(
+        allRaids.map((dbRaid) => {
+          const raid = castRaid(dbRaid);
+          const joinedPlayers = raid.participants.length;
+          const joined = raid.participants.some((participant) => participant.playerId === userId);
+          return {
+            ...raid,
+            joined,
+            joinedPlayers,
+            canLaunch: raid.status === "preparing" && joinedPlayers >= raid.minimumCommanders,
+          };
+        })
+      );
+    } catch {
+      res.json([]);
+    }
   });
 
   // ─── Raid Finder ──────────────────────────────────────────────────────────
 
-  app.post("/api/raids/:raidId/join", isAuthenticated, (req: Request, res: Response) => {
+  app.post("/api/raids/:raidId/join", isAuthenticated, async (req: Request, res: Response) => {
     const userId = getUserId(req);
-    const raid = raidState.find((entry) => entry.id === req.params.raidId);
     const role = (String(req.body?.role || "dps").trim().toLowerCase() || "dps") as RaidRole;
 
-    if (!raid) return res.status(404).json({ error: "Raid not found" });
-    if (raid.status !== "preparing") {
-      return res.status(400).json({ error: "Only preparing raids can accept new commanders" });
-    }
     if (!["tank", "dps", "healer", "support"].includes(role)) {
       return res.status(400).json({ error: "Invalid raid role" });
     }
 
-    const existing = raid.participants.find((participant) => participant.playerId === userId);
-    if (existing) {
-      existing.role = role;
-      return res.json({ success: true, raid, joined: true, updatedRole: true });
+    try {
+      const dbRaid = await storage.getRaidById(req.params.raidId);
+      if (!dbRaid) return res.status(404).json({ error: "Raid not found" });
+
+      const raid = castRaid(dbRaid);
+      if (raid.status !== "preparing") {
+        return res.status(400).json({ error: "Only preparing raids can accept new commanders" });
+      }
+
+      const existing = raid.participants.find((participant) => participant.playerId === userId);
+      if (existing) {
+        existing.role = role;
+        await storage.updateRaid(raid.id, { participants: raid.participants } as any);
+        return res.json({ success: true, raid: { ...raid, participants: raid.participants }, joined: true, updatedRole: true });
+      }
+
+      if (raid.participants.length >= raid.maxCommanders) {
+        return res.status(400).json({ error: "Raid roster is full" });
+      }
+
+      const updatedParticipants = [
+        ...raid.participants,
+        { playerId: userId, role, joinedAt: new Date().toISOString() },
+      ];
+      await storage.updateRaid(raid.id, { participants: updatedParticipants } as any);
+
+      const updatedRaid = { ...raid, participants: updatedParticipants };
+      res.json({ success: true, raid: updatedRaid, joined: true });
+    } catch {
+      res.status(500).json({ error: "Failed to join raid" });
     }
-
-    if (raid.participants.length >= raid.maxCommanders) {
-      return res.status(400).json({ error: "Raid roster is full" });
-    }
-
-    raid.participants.push({
-      playerId: userId,
-      role,
-      joinedAt: new Date().toISOString(),
-    });
-
-    res.json({ success: true, raid, joined: true });
   });
 
-  app.post("/api/raids/:raidId/leave", isAuthenticated, (req: Request, res: Response) => {
+  app.post("/api/raids/:raidId/leave", isAuthenticated, async (req: Request, res: Response) => {
     const userId = getUserId(req);
-    const raid = raidState.find((entry) => entry.id === req.params.raidId);
 
-    if (!raid) return res.status(404).json({ error: "Raid not found" });
-    if (raid.status !== "preparing") {
-      return res.status(400).json({ error: "Only preparing raids can remove commanders" });
+    try {
+      const dbRaid = await storage.getRaidById(req.params.raidId);
+      if (!dbRaid) return res.status(404).json({ error: "Raid not found" });
+
+      const raid = castRaid(dbRaid);
+      if (raid.status !== "preparing") {
+        return res.status(400).json({ error: "Only preparing raids can remove commanders" });
+      }
+
+      const updatedParticipants = raid.participants.filter((participant) => participant.playerId !== userId);
+      await storage.updateRaid(raid.id, { participants: updatedParticipants } as any);
+
+      res.json({ success: true, raid: { ...raid, participants: updatedParticipants }, joined: false });
+    } catch {
+      res.status(500).json({ error: "Failed to leave raid" });
     }
-
-    raid.participants = raid.participants.filter((participant) => participant.playerId !== userId);
-    res.json({ success: true, raid, joined: false });
   });
 
-  app.post("/api/raids/:raidId/launch", isAuthenticated, (req: Request, res: Response) => {
+  app.post("/api/raids/:raidId/launch", isAuthenticated, async (req: Request, res: Response) => {
     const userId = getUserId(req);
-    const raid = raidState.find((entry) => entry.id === req.params.raidId);
 
-    if (!raid) return res.status(404).json({ error: "Raid not found" });
-    if (raid.status !== "preparing") {
-      return res.status(400).json({ error: "Raid is not in preparation" });
-    }
-    if (!raid.participants.some((participant) => participant.playerId === userId)) {
-      return res.status(403).json({ error: "Join the raid before launching it" });
-    }
-    if (raid.participants.length < raid.minimumCommanders) {
-      return res.status(400).json({ error: "Not enough commanders to launch this raid" });
-    }
+    try {
+      const dbRaid = await storage.getRaidById(req.params.raidId);
+      if (!dbRaid) return res.status(404).json({ error: "Raid not found" });
 
-    raid.status = "active";
-    raid.startedAt = new Date().toISOString();
-    raid.result = null;
+      const raid = castRaid(dbRaid);
+      if (raid.status !== "preparing") {
+        return res.status(400).json({ error: "Raid is not in preparation" });
+      }
+      if (!raid.participants.some((participant) => participant.playerId === userId)) {
+        return res.status(403).json({ error: "Join the raid before launching it" });
+      }
+      if (raid.participants.length < raid.minimumCommanders) {
+        return res.status(400).json({ error: "Not enough commanders to launch this raid" });
+      }
 
-    res.json({ success: true, raid, message: "Raid launched successfully" });
+      await storage.updateRaid(raid.id, {
+        status: "active",
+        startedAt: new Date(),
+        result: null,
+      } as any);
+
+      const updatedRaid = { ...raid, status: "active" as const, startedAt: new Date().toISOString(), result: null };
+      res.json({ success: true, raid: updatedRaid, message: "Raid launched successfully" });
+    } catch {
+      res.status(500).json({ error: "Failed to launch raid" });
+    }
   });
 
   app.post("/api/raids/:raidId/resolve", isAuthenticated, async (req: Request, res: Response) => {
     const userId = getUserId(req);
-    const raid = raidState.find((entry) => entry.id === req.params.raidId);
-
-    if (!raid) return res.status(404).json({ error: "Raid not found" });
-    if (raid.status !== "active") {
-      return res.status(400).json({ error: "Only active raids can be resolved" });
-    }
-    const participant = raid.participants.find((entry) => entry.playerId === userId);
-    if (!participant) {
-      return res.status(403).json({ error: "Only participating commanders can resolve this raid" });
-    }
-
-    const roleCount = new Set(raid.participants.map((participant) => participant.role)).size;
-    const cohesionScore = raid.participants.length + roleCount;
-    const attackerVictory = cohesionScore >= raid.minimumCommanders + 2;
-
-    raid.status = "completed";
-    raid.result = attackerVictory ? "attacker_victory" : "defender_victory";
-    raid.completedAt = new Date().toISOString();
-    raid.attackerLosses = { units: Math.max(12, 22 * raid.participants.length - roleCount * 5) };
-    raid.defenderLosses = {
-      units: attackerVictory
-        ? Math.max(30, 44 * raid.participants.length + roleCount * 8)
-        : Math.max(18, 16 * raid.participants.length),
-    };
 
     try {
+      const dbRaid = await storage.getRaidById(req.params.raidId);
+      if (!dbRaid) return res.status(404).json({ error: "Raid not found" });
+
+      const raid = castRaid(dbRaid);
+      if (raid.status !== "active") {
+        return res.status(400).json({ error: "Only active raids can be resolved" });
+      }
+      const participant = raid.participants.find((entry) => entry.playerId === userId);
+      if (!participant) {
+        return res.status(403).json({ error: "Only participating commanders can resolve this raid" });
+      }
+
+      const roleCount = new Set(raid.participants.map((participant) => participant.role)).size;
+      const cohesionScore = raid.participants.length + roleCount;
+      const attackerVictory = cohesionScore >= raid.minimumCommanders + 2;
+
+      const updatedRaid: SampleRaidRecord = {
+        ...raid,
+        status: "completed",
+        result: attackerVictory ? "attacker_victory" : "defender_victory",
+        completedAt: new Date().toISOString(),
+        attackerLosses: { units: Math.max(12, 22 * raid.participants.length - roleCount * 5) },
+        defenderLosses: {
+          units: attackerVictory
+            ? Math.max(30, 44 * raid.participants.length + roleCount * 8)
+            : Math.max(18, 16 * raid.participants.length),
+        },
+      };
+
+      await storage.updateRaid(raid.id, {
+        status: "completed",
+        result: attackerVictory ? "attacker_victory" : "defender_victory",
+        completedAt: new Date(),
+        attackerLosses: updatedRaid.attackerLosses,
+        defenderLosses: updatedRaid.defenderLosses,
+      } as any);
+
       const playerState = await requirePlayerState(userId);
       const progression = resolveCommanderRaidCareer(playerState.raidCareer, {
         raidId: raid.id,
@@ -298,8 +282,8 @@ export function registerMissingRoutes(app: Express) {
         victory: attackerVictory,
         participantCount: raid.participants.length,
         roleDiversity: roleCount,
-        attackerLosses: raid.attackerLosses.units,
-        defenderLosses: raid.defenderLosses.units,
+        attackerLosses: updatedRaid.attackerLosses.units,
+        defenderLosses: updatedRaid.defenderLosses.units,
         baseRewards: raid.rewards,
       });
       const resources = applyResourceDelta(normalizeResources(playerState.resources), progression.rewards);
@@ -318,7 +302,7 @@ export function registerMissingRoutes(app: Express) {
 
       res.json({
         success: true,
-        raid,
+        raid: updatedRaid,
         rewards: progression.rewards,
         raidCareer: progression.career,
         resources,
@@ -329,83 +313,108 @@ export function registerMissingRoutes(app: Express) {
     }
   });
 
-  const raidFinderQueue: any[] = [];
-
-  app.get("/api/raid-finder/queue", isAuthenticated, (req: Request, res: Response) => {
-    // Return current queue with player counts per role
+  app.get("/api/raid-finder/queue", isAuthenticated, async (req: Request, res: Response) => {
     const userId = getUserId(req);
-    const roles = ["tank", "dps", "healer", "support"];
-    const summary = roles.map(role => ({
-      role,
-      queued: raidFinderQueue.filter(e => e.preferredRole === role).length,
-      avgWait: Math.max(1, Math.ceil(raidFinderQueue.filter(e => e.preferredRole === role).length / 2)),
-    }));
-    const myEntry = raidFinderQueue.find((entry) => entry.userId === userId) || null;
-    const position = myEntry ? raidFinderQueue.findIndex((entry) => entry.userId === userId) + 1 : null;
-    res.json({
-      queue: raidFinderQueue,
-      roleSummary: summary,
-      queued: Boolean(myEntry),
-      position,
-      myEntry,
-    });
+    try {
+      const queueEntries = await storage.getRaidFinderQueue();
+      const roles = ["tank", "dps", "healer", "support"];
+      const summary = roles.map(role => ({
+        role,
+        queued: queueEntries.filter(e => (e.preferredRole || "dps") === role).length,
+        avgWait: Math.max(1, Math.ceil(queueEntries.filter(e => (e.preferredRole || "dps") === role).length / 2)),
+      }));
+      const myEntry = queueEntries.find((entry) => entry.playerId === userId) || null;
+      const position = myEntry ? queueEntries.findIndex((entry) => entry.playerId === userId) + 1 : null;
+      res.json({
+        queue: queueEntries.map(e => ({ userId: e.playerId, preferredRole: e.preferredRole || "dps", joinedAt: e.queuedAt?.toISOString?.() || e.createdAt?.toISOString?.() || "" })),
+        roleSummary: summary,
+        queued: Boolean(myEntry),
+        position,
+        myEntry: myEntry ? { userId: myEntry.playerId, preferredRole: myEntry.preferredRole || "dps", joinedAt: myEntry.queuedAt?.toISOString?.() || myEntry.createdAt?.toISOString?.() || "" } : null,
+      });
+    } catch {
+      res.json({ queue: [], roleSummary: [], queued: false, position: null, myEntry: null });
+    }
   });
 
-  app.post("/api/raid-finder/queue", isAuthenticated, (req: Request, res: Response) => {
+  app.post("/api/raid-finder/queue", isAuthenticated, async (req: Request, res: Response) => {
     const userId = getUserId(req);
     const { preferredRole = "dps" } = req.body as { preferredRole?: string };
     if (!["tank", "dps", "healer", "support"].includes(preferredRole)) {
       return res.status(400).json({ error: "Invalid preferred raid role" });
     }
-    const existing = raidFinderQueue.findIndex(e => e.userId === userId);
-    if (existing >= 0) {
-      raidFinderQueue[existing].preferredRole = preferredRole;
-      return res.json({ queued: true, position: existing + 1, preferredRole });
+    try {
+      const existing = await storage.getRaidFinderEntryByPlayerId(userId);
+      if (existing) {
+        await storage.updateRaidFinderEntry(existing.id, { preferredRole } as any);
+        const queueEntries = await storage.getRaidFinderQueue();
+        const position = queueEntries.findIndex(e => e.playerId === userId) + 1;
+        return res.json({ queued: true, position, preferredRole });
+      }
+      await storage.joinRaidFinder({
+        playerId: userId,
+        preferredRole,
+        status: "queued",
+      });
+      const queueEntries = await storage.getRaidFinderQueue();
+      const position = queueEntries.findIndex(e => e.playerId === userId) + 1;
+      res.json({ queued: true, position: position || queueEntries.length, preferredRole });
+    } catch {
+      res.status(500).json({ error: "Failed to join raid finder queue" });
     }
-    raidFinderQueue.push({ userId, preferredRole, joinedAt: new Date().toISOString() });
-    res.json({ queued: true, position: raidFinderQueue.length, preferredRole });
   });
 
-  app.delete("/api/raid-finder/queue", isAuthenticated, (req: Request, res: Response) => {
+  app.delete("/api/raid-finder/queue", isAuthenticated, async (req: Request, res: Response) => {
     const userId = getUserId(req);
-    const idx = raidFinderQueue.findIndex(e => e.userId === userId);
-    if (idx >= 0) raidFinderQueue.splice(idx, 1);
+    try {
+      await storage.leaveRaidFinderByPlayerId(userId);
+    } catch { }
     res.json({ queued: false });
   });
 
   app.post("/api/raid-finder/match", isAuthenticated, async (req: Request, res: Response) => {
     const userId = getUserId(req);
-    const ownEntry = raidFinderQueue.find((entry) => entry.userId === userId);
-    if (!ownEntry) return res.status(400).json({ error: "Join the queue before requesting a match" });
-
-    const candidateRaid = raidState.find((raid) =>
-      raid.status === "preparing" &&
-      raid.participants.length < raid.maxCommanders &&
-      !raid.participants.some((participant) => participant.playerId === userId),
-    );
-    if (!candidateRaid) return res.status(404).json({ error: "No compatible preparing raid is available" });
-
     try {
+      const ownEntry = await storage.getRaidFinderEntryByPlayerId(userId);
+      if (!ownEntry) return res.status(400).json({ error: "Join the queue before requesting a match" });
+
+      const allRaids = await storage.getAllRaids();
+      const candidateDbRaid = allRaids.find((dbRaid) => {
+        const raid = castRaid(dbRaid);
+        return (
+          raid.status === "preparing" &&
+          raid.participants.length < raid.maxCommanders &&
+          !raid.participants.some((participant) => participant.playerId === userId)
+        );
+      });
+      if (!candidateDbRaid) return res.status(404).json({ error: "No compatible preparing raid is available" });
+
+      const candidateRaid = castRaid(candidateDbRaid);
       const playerState = await requirePlayerState(userId);
-      const power = calculateCommanderRaidPower(playerState.commander, playerState.raidCareer, ownEntry.preferredRole);
+      const power = calculateCommanderRaidPower(playerState.commander, playerState.raidCareer, ownEntry.preferredRole || "dps");
       if (power < candidateRaid.powerRequirement) {
         return res.status(400).json({
           error: `Commander raid power ${power.toLocaleString()} is below the ${candidateRaid.powerRequirement.toLocaleString()} requirement`,
         });
       }
 
-      candidateRaid.participants.push({
-        playerId: userId,
-        role: ownEntry.preferredRole,
-        joinedAt: new Date().toISOString(),
-      });
-      raidFinderQueue.splice(raidFinderQueue.indexOf(ownEntry), 1);
+      const updatedParticipants = [
+        ...candidateRaid.participants,
+        {
+          playerId: userId,
+          role: ownEntry.preferredRole || "dps",
+          joinedAt: new Date().toISOString(),
+        },
+      ];
+      await storage.updateRaid(candidateRaid.id, { participants: updatedParticipants } as any);
+      await storage.leaveRaidFinderByPlayerId(userId);
+
       res.json({
         success: true,
         matched: true,
         raidId: candidateRaid.id,
         raidName: `${candidateRaid.attackingTeamName} vs ${candidateRaid.defendingTeamName}`,
-        role: ownEntry.preferredRole,
+        role: ownEntry.preferredRole || "dps",
         commanderPower: power,
       });
     } catch {
@@ -415,21 +424,28 @@ export function registerMissingRoutes(app: Express) {
 
   // ─── Relics ───────────────────────────────────────────────────────────────
 
-  app.get("/api/relics", isAuthenticated, (_req: Request, res: Response) => {
-    res.json(SAMPLE_RELICS);
+  app.get("/api/relics", isAuthenticated, async (_req: Request, res: Response) => {
+    try {
+      const catalog = await storage.getRelicsCatalog();
+      res.json(catalog);
+    } catch {
+      res.json([]);
+    }
   });
 
   app.get("/api/relics/inventory", isAuthenticated, async (req: Request, res: Response) => {
     const userId = getUserId(req);
     try {
-      const playerState = await storage.getPlayerState(userId);
-      const relicsOwned: any[] = (playerState as any)?.relicsInventory || [];
-      if (relicsOwned.length === 0) {
-        const starter = createStarterRelic(userId);
-        await storage.updatePlayerState(userId, { relicsInventory: [starter] } as any);
-        return res.json([starter]);
+      const inventory = await storage.getPlayerRelicInventoryFull(userId);
+      if (inventory.length === 0) {
+        const starterCatalogRelic = await storage.getRelicByCatalogId("relic-3");
+        if (starterCatalogRelic) {
+          await storage.acquireRelic(userId, starterCatalogRelic.id);
+          const enriched = await storage.getPlayerRelicInventoryFull(userId);
+          return res.json(enriched);
+        }
       }
-      res.json(relicsOwned);
+      res.json(inventory);
     } catch {
       res.json([]);
     }
@@ -440,21 +456,27 @@ export function registerMissingRoutes(app: Express) {
     const { relicId } = req.params;
 
     try {
-      const playerState = await requirePlayerState(userId);
-      const relicsOwned: any[] = Array.isArray(playerState.relicsInventory) ? [...playerState.relicsInventory] : [];
-      const relic = relicsOwned.find((entry) => entry.id === relicId || entry.relicId === relicId);
+      const catalogRelic = await storage.getRelicByCatalogId(relicId);
+      if (!catalogRelic) {
+        return res.status(404).json({ error: "Relic not found in catalog" });
+      }
 
-      if (!relic) {
+      const inventory = await storage.getPlayerRelicInventory(userId);
+      const owned = inventory.find((entry) => entry.relicId === catalogRelic.id);
+      if (!owned) {
         return res.status(404).json({ error: "Relic not found in inventory" });
       }
 
-      for (const entry of relicsOwned) {
-        entry.isEquipped = false;
+      for (const entry of inventory) {
+        if (entry.isEquipped) {
+          await storage.unequipRelic(userId, entry.relicId);
+        }
       }
-      relic.isEquipped = true;
+      await storage.equipRelic(userId, catalogRelic.id, "main");
+      const updatedInventory = await storage.getPlayerRelicInventoryFull(userId);
+      const equipped = updatedInventory.find((entry) => entry.relicId === relicId);
 
-      await storage.updatePlayerState(userId, { relicsInventory: relicsOwned } as any);
-      res.json({ success: true, relic, relicsInventory: relicsOwned });
+      res.json({ success: true, relic: equipped, relicsInventory: updatedInventory });
     } catch {
       res.status(500).json({ error: "Failed to equip relic" });
     }
@@ -465,17 +487,22 @@ export function registerMissingRoutes(app: Express) {
     const { relicId } = req.params;
 
     try {
-      const playerState = await requirePlayerState(userId);
-      const relicsOwned: any[] = Array.isArray(playerState.relicsInventory) ? [...playerState.relicsInventory] : [];
-      const relic = relicsOwned.find((entry) => entry.id === relicId || entry.relicId === relicId);
+      const catalogRelic = await storage.getRelicByCatalogId(relicId);
+      if (!catalogRelic) {
+        return res.status(404).json({ error: "Relic not found in catalog" });
+      }
 
-      if (!relic) {
+      const inventory = await storage.getPlayerRelicInventory(userId);
+      const owned = inventory.find((entry) => entry.relicId === catalogRelic.id);
+      if (!owned) {
         return res.status(404).json({ error: "Relic not found in inventory" });
       }
 
-      relic.isEquipped = false;
-      await storage.updatePlayerState(userId, { relicsInventory: relicsOwned } as any);
-      res.json({ success: true, relic, relicsInventory: relicsOwned });
+      await storage.unequipRelic(userId, catalogRelic.id);
+      const updatedInventory = await storage.getPlayerRelicInventoryFull(userId);
+      const unequipped = updatedInventory.find((entry) => entry.relicId === relicId);
+
+      res.json({ success: true, relic: unequipped, relicsInventory: updatedInventory });
     } catch {
       res.status(500).json({ error: "Failed to unequip relic" });
     }
@@ -483,35 +510,34 @@ export function registerMissingRoutes(app: Express) {
 
   // ─── Universe Events ──────────────────────────────────────────────────────
 
-  app.get("/api/events", isAuthenticated, (req: Request, res: Response) => {
+  app.get("/api/events", isAuthenticated, async (req: Request, res: Response) => {
     const userId = getUserId(req);
-    res.json(
-      SAMPLE_EVENTS.map((event) => ({
-        ...event,
-        joined: eventParticipants.get(event.id)?.has(userId) ?? false,
-        participantLimit: event.eventClass === "legendary" ? 16 : event.eventClass === "epic" ? 12 : 8,
-      }))
-    );
+    try {
+      const events = await storage.getAllUniverseEvents(userId);
+      res.json(events);
+    } catch {
+      res.json([]);
+    }
   });
 
-  app.post("/api/events/:eventId/join", isAuthenticated, (req: Request, res: Response) => {
+  app.post("/api/events/:eventId/join", isAuthenticated, async (req: Request, res: Response) => {
     const userId = getUserId(req);
-    const event = SAMPLE_EVENTS.find((entry) => entry.id === req.params.eventId);
+    try {
+      const event = await storage.getUniverseEvent(req.params.eventId);
+      if (!event) {
+        return res.status(404).json({ error: "Event not found" });
+      }
 
-    if (!event) {
-      return res.status(404).json({ error: "Event not found" });
+      const result = await storage.joinEvent(req.params.eventId, userId);
+      res.json({
+        success: true,
+        eventId: req.params.eventId,
+        joined: true,
+        participantCount: result.participantCount,
+      });
+    } catch {
+      res.status(500).json({ error: "Failed to join event" });
     }
-
-    const participants = eventParticipants.get(event.id) ?? new Set<string>();
-    participants.add(userId);
-    eventParticipants.set(event.id, participants);
-
-    res.json({
-      success: true,
-      eventId: event.id,
-      joined: true,
-      participantCount: participants.size,
-    });
   });
 
   // ─── Expeditions ─────────────────────────────────────────────────────────

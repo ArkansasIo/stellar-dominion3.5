@@ -1,13 +1,8 @@
 import { pool } from "../db";
 import { registerCronJob, recordGameTick, type CronJobResult } from "./cronService";
+import { GAME_SETTINGS } from "../config/gameSettings";
 
-const RESOURCE_TICK_INTERVAL = parseInt(process.env.RESOURCE_TICK_INTERVAL || '10000', 10);
-const TURN_TICK_INTERVAL = parseInt(process.env.TURN_TICK_INTERVAL || '15000', 10);
-const CONSTRUCTION_TICK_INTERVAL = parseInt(process.env.CONSTRUCTION_TICK_INTERVAL || '5000', 10);
-const DAILY_RESET_INTERVAL = parseInt(process.env.DAILY_RESET_INTERVAL || '86400000', 10);
-const WEEKLY_RESET_INTERVAL = parseInt(process.env.WEEKLY_RESET_INTERVAL || '604800000', 10);
-const MAINTENANCE_INTERVAL = parseInt(process.env.MAINTENANCE_INTERVAL || '3600000', 10);
-const MARKET_TICK_INTERVAL = parseInt(process.env.MARKET_TICK_INTERVAL || '900000', 10);
+const { intervals: INT, loginBonus: BONUS, resourceProduction: PROD } = GAME_SETTINGS;
 
 export async function registerAllGameJobs(): Promise<void> {
   await registerCronJob({
@@ -16,7 +11,7 @@ export async function registerAllGameJobs(): Promise<void> {
     description: "Processes resource production for all active players based on elapsed time since last update.",
     jobType: "recurring",
     scheduleType: "interval",
-    intervalMs: RESOURCE_TICK_INTERVAL,
+    intervalMs: INT.resourceTick,
     enabled: true,
     params: { maxPlayersPerTick: 50 },
     handler: resourceTickHandler,
@@ -28,7 +23,7 @@ export async function registerAllGameJobs(): Promise<void> {
     description: "Generates offline turns for all players based on elapsed time.",
     jobType: "recurring",
     scheduleType: "interval",
-    intervalMs: TURN_TICK_INTERVAL,
+    intervalMs: INT.turnTick,
     enabled: true,
     params: { maxPlayersPerTick: 50, turnsPerMinute: 4 },
     handler: turnTickHandler,
@@ -40,7 +35,7 @@ export async function registerAllGameJobs(): Promise<void> {
     description: "Completes building constructions whose timers have elapsed.",
     jobType: "recurring",
     scheduleType: "interval",
-    intervalMs: CONSTRUCTION_TICK_INTERVAL,
+    intervalMs: INT.constructionTick,
     enabled: true,
     params: { maxPlayersPerTick: 100 },
     handler: constructionTickHandler,
@@ -52,12 +47,9 @@ export async function registerAllGameJobs(): Promise<void> {
     description: "Resets daily limits, grants login bonuses, and refreshes daily missions.",
     jobType: "daily",
     scheduleType: "daily",
-    intervalMs: DAILY_RESET_INTERVAL,
+    intervalMs: INT.dailyReset,
     enabled: true,
-    params: {
-      loginBonusCredits: parseInt(process.env.LOGIN_BONUS_CREDITS || '500', 10),
-      loginBonusMetal: parseInt(process.env.LOGIN_BONUS_METAL || '1000', 10),
-    },
+    params: { loginBonusCredits: BONUS.credits, loginBonusMetal: BONUS.metal },
     handler: dailyResetHandler,
   });
 
@@ -67,7 +59,7 @@ export async function registerAllGameJobs(): Promise<void> {
     description: "Resets weekly missions, refreshes market prices, and processes weekly rewards.",
     jobType: "weekly",
     scheduleType: "weekly",
-    intervalMs: WEEKLY_RESET_INTERVAL,
+    intervalMs: INT.weeklyReset,
     enabled: true,
     params: {},
     handler: weeklyResetHandler,
@@ -79,7 +71,7 @@ export async function registerAllGameJobs(): Promise<void> {
     description: "Updates market prices based on supply/demand and recent trade activity.",
     jobType: "recurring",
     scheduleType: "interval",
-    intervalMs: MARKET_TICK_INTERVAL,
+    intervalMs: INT.marketTick,
     enabled: true,
     params: { priceVolatility: 0.05, maxPriceChange: 0.2 },
     handler: marketTickHandler,
@@ -91,7 +83,7 @@ export async function registerAllGameJobs(): Promise<void> {
     description: "Cleans expired sessions, old logs, and performs database optimization.",
     jobType: "recurring",
     scheduleType: "interval",
-    intervalMs: MAINTENANCE_INTERVAL,
+    intervalMs: INT.maintenance,
     enabled: true,
     params: { logRetentionDays: 7 },
     handler: maintenanceTickHandler,
@@ -103,7 +95,7 @@ export async function registerAllGameJobs(): Promise<void> {
     description: "Processes active refinery production for all players.",
     jobType: "recurring",
     scheduleType: "interval",
-    intervalMs: 30000,
+    intervalMs: INT.refineryTick,
     enabled: true,
     params: { maxPlayersPerTick: 50 },
     handler: refineryTickHandler,
@@ -115,7 +107,7 @@ export async function registerAllGameJobs(): Promise<void> {
     description: "Respawns expired dimensional anomalies.",
     jobType: "recurring",
     scheduleType: "interval",
-    intervalMs: 300000,
+    intervalMs: INT.anomalyRespawn,
     enabled: true,
     params: {},
     handler: anomalyRespawnHandler,
@@ -152,15 +144,10 @@ async function resourceTickHandler(_job: any, params: any): Promise<CronJobResul
         const deuteriumSynth = buildings.deuteriumSynthesizer || 0;
         const solarPlant = buildings.solarPlant || 0;
 
-        const metalMultiplier = parseFloat(process.env.PRODUCTION_METAL_MULTIPLIER || '30');
-        const crystalMultiplier = parseFloat(process.env.PRODUCTION_CRYSTAL_MULTIPLIER || '20');
-        const deuteriumMultiplier = parseFloat(process.env.PRODUCTION_DEUTERIUM_MULTIPLIER || '10');
-        const energyMultiplier = parseFloat(process.env.PRODUCTION_ENERGY_MULTIPLIER || '20');
-
-        const metalProd = Math.floor(metalMultiplier * metalMine * (1 + metalMine / 10) * elapsedHours);
-        const crystalProd = Math.floor(crystalMultiplier * crystalMine * (1 + crystalMine / 10) * elapsedHours);
-        const deuteriumProd = Math.floor(deuteriumMultiplier * deuteriumSynth * (1 + deuteriumSynth / 12) * elapsedHours);
-        const energyProd = Math.floor(energyMultiplier * solarPlant * (1 + solarPlant / 10) * elapsedHours);
+        const metalProd = Math.floor(PROD.metalMultiplier * metalMine * (1 + metalMine / 10) * elapsedHours);
+        const crystalProd = Math.floor(PROD.crystalMultiplier * crystalMine * (1 + crystalMine / 10) * elapsedHours);
+        const deuteriumProd = Math.floor(PROD.deuteriumMultiplier * deuteriumSynth * (1 + deuteriumSynth / 12) * elapsedHours);
+        const energyProd = Math.floor(PROD.energyMultiplier * solarPlant * (1 + solarPlant / 10) * elapsedHours);
         const energyConsumed = Math.floor((10 * metalMine + 10 * crystalMine + 20 * deuteriumSynth) * elapsedHours);
         const netEnergy = Math.max(0, energyProd - energyConsumed);
 

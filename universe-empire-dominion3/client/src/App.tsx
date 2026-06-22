@@ -99,6 +99,16 @@ const DimensionalAnomalies = lazy(() => import("@/pages/DimensionalAnomalies"));
 const ResourceRefineries = lazy(() => import("@/pages/ResourceRefineries"));
 const CronDashboard = lazy(() => import("@/pages/CronDashboard"));
 const BlueprintCharges = lazy(() => import("@/pages/BlueprintCharges"));
+const HighCommand = lazy(() => import("@/pages/HighCommand"));
+const Smithy = lazy(() => import("@/pages/Smithy"));
+const BankVault = lazy(() => import("@/pages/BankVault"));
+const MoonsPage = lazy(() => import("@/pages/MoonsPage"));
+const SporeDrive = lazy(() => import("@/pages/SporeDrive"));
+const ResourceTradingPage = lazy(() => import("@/pages/ResourceTradingPage"));
+const UnitTaxonomyPage = lazy(() => import("@/pages/UnitTaxonomyPage"));
+const UnitSystemsPage = lazy(() => import("@/pages/UnitSystemsPage"));
+const GovernmentBuildingsPage = lazy(() => import("@/pages/GovernmentBuildingsPage"));
+const GovernmentProgressionPage = lazy(() => import("@/pages/GovernmentProgressionPage"));
 
 function LoadingSplash() {
   return (
@@ -292,6 +302,16 @@ function RouterContent() {
       <Route path="/resource-refineries" component={ResourceRefineries} />
       <Route path="/cron-dashboard" component={CronDashboard} />
       <Route path="/blueprint-charges" component={BlueprintCharges} />
+      <Route path="/high-command" component={HighCommand} />
+      <Route path="/smithy" component={Smithy} />
+      <Route path="/bank-vault" component={BankVault} />
+      <Route path="/moons" component={MoonsPage} />
+      <Route path="/spore-drive" component={SporeDrive} />
+      <Route path="/resource-trading" component={ResourceTradingPage} />
+      <Route path="/unit-taxonomy" component={UnitTaxonomyPage} />
+      <Route path="/unit-systems" component={UnitSystemsPage} />
+      <Route path="/government-buildings" component={GovernmentBuildingsPage} />
+      <Route path="/government-progression" component={GovernmentProgressionPage} />
       <Route path="/planet/:id" component={PlanetDetail} />
       <Route path="/planet-command" component={PlanetCommand} />
       <Route path="/planet-occupation" component={PlanetaryOccupation} />

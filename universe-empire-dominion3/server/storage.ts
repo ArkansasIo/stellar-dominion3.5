@@ -28,6 +28,8 @@ import {
   expeditionEncounters,
   starbases,
   moonBases,
+  moons,
+  espionageScans,
   playerProfiles,
   megaStructures,
   empireDifficulties,
@@ -105,6 +107,8 @@ import {
   type InsertStarbase,
   type MoonBase,
   type InsertMoonBase,
+  type Moon,
+  type EspionageScan,
   type PlayerProfile,
   type InsertPlayerProfile,
   type MegaStructure,
@@ -248,6 +252,16 @@ export interface IStorage {
   updateMoonBase(id: string, updates: Partial<MoonBase>): Promise<MoonBase>;
   deleteMoonBase(id: string): Promise<void>;
   
+  // Moon persistence operations
+  getMoonsByPlanet(planetId: string): Promise<any[]>;
+  getMoonById(moonId: string): Promise<any | undefined>;
+  createMoon(moonData: any): Promise<any>;
+  updateMoon(moonId: string, data: any): Promise<any>;
+
+  // Espionage scan operations
+  getLastScanTime(playerId: string): Promise<number>;
+  createEspionageScan(scan: any): Promise<any>;
+
   // Player Profile operations
   getPlayerProfile(userId: string): Promise<PlayerProfile | undefined>;
   getPlayerProfileByUid(uid: string): Promise<PlayerProfile | undefined>;
@@ -305,6 +319,10 @@ export interface IStorage {
   getPlayerRelicInventory(userId: string): Promise<RelicInventory[]>;
   acquireRelic(userId: string, relicId: string): Promise<RelicInventory>;
   equipRelic(userId: string, relicId: string, slot: string): Promise<RelicInventory>;
+  unequipRelic(userId: string, relicId: string): Promise<RelicInventory>;
+  getRelicsCatalog(): Promise<any[]>;
+  getRelicByCatalogId(catalogRelicId: string): Promise<Relic | undefined>;
+  getPlayerRelicInventoryFull(userId: string): Promise<any[]>;
   
   // Friends operations (50 max per player)
   getPlayerFriends(userId: string): Promise<Friend[]>;
@@ -341,7 +359,10 @@ export interface IStorage {
   // Raid operations
   createRaid(raid: InsertRaid): Promise<Raid>;
   getRaidById(raidId: string): Promise<Raid | undefined>;
+  getAllRaids(): Promise<Raid[]>;
+  updateRaid(raidId: string, updates: Partial<Raid>): Promise<Raid>;
   updateRaidStatus(raidId: string, status: string, result?: string): Promise<Raid>;
+  deleteRaid(raidId: string): Promise<void>;
   getTeamRaids(teamId: string): Promise<Raid[]>;
   
   // Raid combat operations
@@ -359,6 +380,8 @@ export interface IStorage {
   getUniverseEvent(eventId: string): Promise<UniverseEvent | undefined>;
   getActiveEvents(): Promise<UniverseEvent[]>;
   updateEventStatus(eventId: string, status: string): Promise<UniverseEvent>;
+  getAllUniverseEvents(userId: string): Promise<any[]>;
+  joinEvent(eventId: string, userId: string): Promise<{ success: boolean; participantCount: number }>;
   
   // Universe bosses operations (90 bosses)
   getAllBosses(): Promise<UniverseBoss[]>;
@@ -381,7 +404,10 @@ export interface IStorage {
   // Raid finder operations
   joinRaidFinder(finderId: InsertRaidFinder): Promise<RaidFinder>;
   getRaidFinderQueue(limit?: number): Promise<RaidFinder[]>;
+  getRaidFinderEntryByPlayerId(playerId: string): Promise<RaidFinder | undefined>;
+  updateRaidFinderEntry(entryId: string, updates: Partial<RaidFinder>): Promise<RaidFinder>;
   leaveRaidFinder(finderId: string): Promise<void>;
+  leaveRaidFinderByPlayerId(playerId: string): Promise<void>;
   updateFinderStatus(finderId: string, status: string): Promise<RaidFinder>;
   
   // PvE combat logs
@@ -478,6 +504,7 @@ export interface IStorage {
 
 export class DatabaseStorage implements IStorage {
   private miningOpsTableReady = false;
+  private eventParticipantsReady = false;
 
   private async ensureMiningOperationsTable(): Promise<void> {
     if (this.miningOpsTableReady) return;
@@ -1020,6 +1047,45 @@ export class DatabaseStorage implements IStorage {
     await db.delete(moonBases).where(eq(moonBases.id, id));
   }
   
+  async getMoonsByPlanet(planetId: string): Promise<any[]> {
+    const rows = await db.select().from(moons).where(sql`(moons.data->>'parentPlanetId') = ${planetId}`);
+    return rows.map((r: any) => r.data);
+  }
+
+  async getMoonById(moonId: string): Promise<any | undefined> {
+    const [row] = await db.select().from(moons).where(eq(moons.id, moonId));
+    return row?.data || undefined;
+  }
+
+  async createMoon(moonData: any): Promise<any> {
+    const [row] = await db.insert(moons).values({
+      id: moonData.id,
+      data: moonData,
+    }).returning();
+    return row.data;
+  }
+
+  async updateMoon(moonId: string, data: any): Promise<any> {
+    await db.update(moons)
+      .set({ data, updatedAt: new Date() })
+      .where(eq(moons.id, moonId));
+    return data;
+  }
+
+  async getLastScanTime(playerId: string): Promise<number> {
+    const [row] = await db.select({ createdAt: espionageScans.createdAt })
+      .from(espionageScans)
+      .where(eq(espionageScans.playerId, playerId))
+      .orderBy(desc(espionageScans.createdAt))
+      .limit(1);
+    return row ? row.createdAt.getTime() : 0;
+  }
+
+  async createEspionageScan(scan: any): Promise<any> {
+    const [row] = await db.insert(espionageScans).values(scan).returning();
+    return row;
+  }
+
   // Player Profile operations
   async getPlayerProfile(userId: string): Promise<PlayerProfile | undefined> {
     const [profile] = await db.select().from(playerProfiles).where(eq(playerProfiles.userId, userId));
@@ -1264,6 +1330,58 @@ export class DatabaseStorage implements IStorage {
     return equipped;
   }
   
+  async unequipRelic(userId: string, relicId: string): Promise<RelicInventory> {
+    const [updated] = await db.update(relicInventory)
+      .set({ isEquipped: false })
+      .where(and(eq(relicInventory.playerId, userId), eq(relicInventory.relicId, relicId)))
+      .returning();
+    return updated;
+  }
+  
+  async getRelicsCatalog(): Promise<any[]> {
+    const catalog = await db.select().from(relics).where(sql`${relics.playerId} IS NULL`);
+    return catalog.map(r => ({
+      id: r.relicId,
+      name: r.name,
+      description: r.description,
+      rarity: r.rarity,
+      bonuses: r.bonuses,
+      effects: (r.bonuses as any)?.effects || [],
+      lore: (r.bonuses as any)?.lore || "",
+    }));
+  }
+  
+  async getRelicByCatalogId(catalogRelicId: string): Promise<Relic | undefined> {
+    const [relic] = await db.select().from(relics).where(
+      and(sql`${relics.playerId} IS NULL`, eq(relics.relicId, catalogRelicId))
+    );
+    return relic;
+  }
+  
+  async getPlayerRelicInventoryFull(userId: string): Promise<any[]> {
+    const rows = await db.select({
+      inventoryId: relicInventory.id,
+      relicDbId: relicInventory.relicId,
+      isEquipped: relicInventory.isEquipped,
+      condition: relicInventory.condition,
+      acquiredAt: relicInventory.acquiredAt,
+      catalogRelicId: relics.relicId,
+      name: relics.name,
+    })
+    .from(relicInventory)
+    .innerJoin(relics, eq(relicInventory.relicId, relics.id))
+    .where(eq(relicInventory.playerId, userId));
+    
+    return rows.map(row => ({
+      id: row.inventoryId,
+      relicId: row.catalogRelicId,
+      name: row.name,
+      condition: row.condition,
+      isEquipped: row.isEquipped,
+      acquiredAt: row.acquiredAt?.toISOString(),
+    }));
+  }
+  
   // Friends operations (50 max per player)
   async getPlayerFriends(userId: string): Promise<Friend[]> {
     return await db.select().from(friends).where(
@@ -1495,12 +1613,25 @@ export class DatabaseStorage implements IStorage {
     return raid;
   }
   
+  async getAllRaids(): Promise<Raid[]> {
+    return await db.select().from(raids).orderBy(desc(raids.createdAt));
+  }
+  
+  async updateRaid(raidId: string, updates: Partial<Raid>): Promise<Raid> {
+    const [updated] = await db.update(raids).set(updates).where(eq(raids.id, raidId)).returning();
+    return updated;
+  }
+  
   async updateRaidStatus(raidId: string, status: string, result?: string): Promise<Raid> {
     const updates: any = { status };
     if (result) updates.result = result;
     if (status === "completed") updates.endedAt = new Date();
     const [updated] = await db.update(raids).set(updates).where(eq(raids.id, raidId)).returning();
     return updated;
+  }
+  
+  async deleteRaid(raidId: string): Promise<void> {
+    await db.delete(raids).where(eq(raids.id, raidId));
   }
   
   async getTeamRaids(teamId: string): Promise<Raid[]> {
@@ -1556,6 +1687,64 @@ export class DatabaseStorage implements IStorage {
   async updateEventStatus(eventId: string, status: string): Promise<UniverseEvent> {
     const [updated] = await db.update(universeEvents).set({ status }).where(eq(universeEvents.id, eventId)).returning();
     return updated;
+  }
+  
+  async getAllUniverseEvents(userId: string): Promise<any[]> {
+    await this.ensureEventParticipantsTable();
+    const events = await db.select().from(universeEvents);
+    const results = [];
+    for (const event of events) {
+      const participantRows = await db.execute(sql`
+        SELECT COUNT(*) as count FROM event_participants WHERE event_id = ${event.id}
+      `);
+      const participantCount = Number(participantRows.rows[0]?.count || 0);
+      
+      const joinedRows = await db.execute(sql`
+        SELECT 1 FROM event_participants WHERE event_id = ${event.id} AND user_id = ${userId} LIMIT 1
+      `);
+      const joined = joinedRows.rows.length > 0;
+      
+      results.push({
+        id: event.id,
+        name: event.name,
+        description: event.description,
+        eventClass: event.eventClass,
+        status: event.status,
+        participants: participantCount,
+        rewards: event.rewards,
+        endsAt: event.endTime?.toISOString(),
+        startsAt: event.startTime?.toISOString(),
+        joined,
+        participantLimit: event.participantLimit || (event.eventClass === "legendary" ? 16 : event.eventClass === "epic" ? 12 : 8),
+      });
+    }
+    return results;
+  }
+  
+  async joinEvent(eventId: string, userId: string): Promise<{ success: boolean; participantCount: number }> {
+    await this.ensureEventParticipantsTable();
+    await db.execute(sql`
+      INSERT INTO event_participants (event_id, user_id) VALUES (${eventId}, ${userId})
+      ON CONFLICT (event_id, user_id) DO NOTHING
+    `);
+    const countRows = await db.execute(sql`
+      SELECT COUNT(*) as count FROM event_participants WHERE event_id = ${eventId}
+    `);
+    return { success: true, participantCount: Number(countRows.rows[0]?.count || 0) };
+  }
+  
+  private async ensureEventParticipantsTable(): Promise<void> {
+    if (this.eventParticipantsReady) return;
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS event_participants (
+        id varchar PRIMARY KEY DEFAULT gen_random_uuid(),
+        event_id varchar NOT NULL,
+        user_id varchar NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        joined_at timestamp NOT NULL DEFAULT now(),
+        UNIQUE(event_id, user_id)
+      )
+    `);
+    this.eventParticipantsReady = true;
   }
   
   // Universe bosses operations (90 bosses)
@@ -1640,8 +1829,24 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(raidFinder).where(eq(raidFinder.status, "queued")).limit(limit);
   }
   
+  async getRaidFinderEntryByPlayerId(playerId: string): Promise<RaidFinder | undefined> {
+    const [entry] = await db.select().from(raidFinder).where(
+      and(eq(raidFinder.playerId, playerId), eq(raidFinder.status, "queued"))
+    );
+    return entry;
+  }
+  
+  async updateRaidFinderEntry(entryId: string, updates: Partial<RaidFinder>): Promise<RaidFinder> {
+    const [updated] = await db.update(raidFinder).set(updates).where(eq(raidFinder.id, entryId)).returning();
+    return updated;
+  }
+  
   async leaveRaidFinder(finderId: string): Promise<void> {
     await db.delete(raidFinder).where(eq(raidFinder.id, finderId));
+  }
+  
+  async leaveRaidFinderByPlayerId(playerId: string): Promise<void> {
+    await db.delete(raidFinder).where(and(eq(raidFinder.playerId, playerId), eq(raidFinder.status, "queued")));
   }
   
   async updateFinderStatus(finderId: string, status: string): Promise<RaidFinder> {

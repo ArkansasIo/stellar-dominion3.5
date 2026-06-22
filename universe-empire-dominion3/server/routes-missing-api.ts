@@ -1,8 +1,10 @@
 import type { Express, Request, Response } from "express";
 import { db } from "./db";
-import { playerStates, users, marketOrders } from "../shared/schema";
+import { playerStates, users, marketOrders, messages } from "../shared/schema";
 import { eq, and, desc, sql } from "drizzle-orm";
-import { isAuthenticated } from "./basicAuth";
+import { isAuthenticated, isAdmin } from "./basicAuth";
+import { logger, type LogLevel, type LogCategory } from "./logger";
+import { storage } from "./storage";
 
 export function registerMissingApiRoutes(app: Express) {
   // GET /api/market/orders - List market orders
@@ -142,6 +144,19 @@ export function registerMissingApiRoutes(app: Express) {
       const { targetUserId, scanType } = req.body;
       if (!targetUserId) return res.status(400).json({ error: "targetUserId is required" });
 
+      if (targetUserId === userId) {
+        return res.status(400).json({ error: "Cannot scan yourself" });
+      }
+
+      const SCAN_COOLDOWN_MS = 60 * 1000;
+      const lastScanTime = await storage.getLastScanTime(userId);
+      const now = Date.now();
+      const timeSinceLastScan = now - lastScanTime;
+      if (timeSinceLastScan < SCAN_COOLDOWN_MS) {
+        const remainingSeconds = Math.ceil((SCAN_COOLDOWN_MS - timeSinceLastScan) / 1000);
+        return res.status(429).json({ error: `Scan cooldown active. Try again in ${remainingSeconds} seconds.` });
+      }
+
       const targetState = await db.query.playerStates.findFirst({
         where: eq(playerStates.userId, targetUserId),
       });
@@ -156,14 +171,30 @@ export function registerMissingApiRoutes(app: Express) {
 
       const research = (playerState.research as any) || {};
       const scanLevel = research.espionageTech || 1;
+      const targetResearch = (targetState.research as any) || {};
+      const targetCounterIntel = targetResearch.counterIntelligence || 1;
+
+      const baseSuccessRate = 0.65 + scanLevel * 0.05;
+      const targetDefensePenalty = targetCounterIntel * 0.02;
+      const successRate = Math.max(0.1, Math.min(0.95, baseSuccessRate - targetDefensePenalty));
+      const success = Math.random() < successRate;
+
+      const detectionChance = success
+        ? Math.max(0.05, 0.30 - scanLevel * 0.02 - targetCounterIntel * 0.01)
+        : Math.min(0.80, 0.40 + targetCounterIntel * 0.03);
+      const detected = Math.random() < detectionChance;
 
       const targetResources = (targetState.resources as any) || {};
       const scanResult: any = {
         scanType: scanType || "basic",
-        success: Math.random() < 0.65 + scanLevel * 0.05,
+        success,
+        detected,
+        detectionChance: Math.round(detectionChance * 100),
+        spyLevel: scanLevel,
+        targetDefenseLevel: targetCounterIntel,
       };
 
-      if (scanResult.success) {
+      if (success) {
         scanResult.resources = {
           metal: Math.round(targetResources.metal * (0.8 + Math.random() * 0.2)),
           crystal: Math.round(targetResources.crystal * (0.8 + Math.random() * 0.2)),
@@ -173,6 +204,46 @@ export function registerMissingApiRoutes(app: Express) {
           scanResult.buildings = targetState.buildings;
           scanResult.units = targetState.units;
         }
+      }
+
+      await storage.createEspionageScan({
+        playerId: userId,
+        targetId: targetUserId,
+        scanType: scanType || "basic",
+        success,
+        detected,
+        scanData: scanResult,
+      });
+
+      if (detected) {
+        const [attackerUser] = await db.select({ username: users.username })
+          .from(users).where(eq(users.id, userId)).limit(1);
+
+        const targetTravelLog = Array.isArray(targetState.travelLog) ? [...(targetState.travelLog as any[])] : [];
+        targetTravelLog.unshift({
+          id: `counterintel_scan_${Date.now()}`,
+          type: "counter-intelligence",
+          createdAt: new Date().toISOString(),
+          attackerUserId: userId,
+          attackerName: attackerUser?.username || "Unknown Commander",
+          detected: true,
+          scanType: scanType || "basic",
+          summary: `Detected espionage scan from ${attackerUser?.username || "an unknown commander"}.`,
+        });
+
+        await db.update(playerStates)
+          .set({ travelLog: targetTravelLog.slice(0, 50), updatedAt: new Date() })
+          .where(eq(playerStates.userId, targetUserId));
+
+        await db.insert(messages).values({
+          fromUserId: userId,
+          toUserId: targetUserId,
+          from: "Counter-Intelligence Network",
+          to: targetState.planetName || "Commander",
+          subject: "Espionage Scan Detected",
+          body: `${attackerUser?.username || "An unknown commander"} attempted to scan your empire. Counter-intelligence systems detected the probe.${success ? " Some intelligence may have been gathered." : " The scan was blocked."}`,
+          type: "espionage",
+        });
       }
 
       res.json({ success: true, scan: scanResult });
@@ -213,7 +284,16 @@ export function registerMissingApiRoutes(app: Express) {
         updatedAt: new Date(),
       }).where(eq(playerStates.userId, userId));
 
-      res.json({ success: true, message: `Planet ${planetId} colonized`, cost: colonizeCost });
+      const colonyName = `Colony ${planetId}`;
+      const colony = await storage.createPlayerColony({
+        playerId: userId,
+        planetId: typeof planetId === 'string' ? parseInt(planetId) || 0 : planetId,
+        colonyName,
+        colonyType: "standard",
+        colonyLevel: 1,
+      });
+
+      res.json({ success: true, message: `Planet ${planetId} colonized`, cost: colonizeCost, colony });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
@@ -302,20 +382,27 @@ export function registerMissingApiRoutes(app: Express) {
     }
   });
 
-  // GET /api/logs - Server logs (alias for admin logs)
-  app.get("/api/logs", isAuthenticated, async (req: Request, res: Response) => {
+  // GET /api/logs - Server logs (admin only)
+  app.get("/api/logs", isAuthenticated, isAdmin, async (req: Request, res: Response) => {
     try {
-      const userId = (req as any).session?.userId;
-      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const level = req.query.level as LogLevel | undefined;
+      const category = req.query.category as LogCategory | undefined;
+      const limit = Math.min(parseInt(req.query.limit as string) || 100, 500);
+      const offset = parseInt(req.query.offset as string) || 0;
 
-      const type = req.query.type as string || "access";
-      const limit = parseInt(req.query.limit as string) || 100;
+      const allLogs = logger.getLogs(level, category);
+      const total = allLogs.length;
+      const logs = allLogs.slice(offset, offset + limit);
+
+      const stats = logger.getStats();
 
       res.json({
         success: true,
-        logs: [],
-        type,
-        message: "Log endpoint available - connect to admin for log access",
+        logs,
+        total,
+        offset,
+        limit,
+        stats,
       });
     } catch (error: any) {
       res.status(500).json({ error: error.message });

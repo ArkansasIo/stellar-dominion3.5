@@ -1,0 +1,10 @@
+ALTER TABLE raids DROP CONSTRAINT IF EXISTS raids_attacking_team_id_fkey;
+ALTER TABLE raids ALTER COLUMN attacking_team_id DROP NOT NULL;
+ALTER TABLE raids ALTER COLUMN defending_team_id DROP NOT NULL;
+ALTER TABLE raids ADD COLUMN IF NOT EXISTS attacking_team_name varchar NOT NULL DEFAULT '';
+ALTER TABLE raids ADD COLUMN IF NOT EXISTS defending_team_name varchar NOT NULL DEFAULT '';
+ALTER TABLE raids ADD COLUMN IF NOT EXISTS minimum_commanders integer DEFAULT 2;
+ALTER TABLE raids ADD COLUMN IF NOT EXISTS max_commanders integer DEFAULT 6;
+ALTER TABLE raids ADD COLUMN IF NOT EXISTS power_requirement integer DEFAULT 0;
+ALTER TABLE raids ADD COLUMN IF NOT EXISTS participants jsonb NOT NULL DEFAULT '[]';
+ALTER TABLE raids ADD COLUMN IF NOT EXISTS completed_at timestamp;

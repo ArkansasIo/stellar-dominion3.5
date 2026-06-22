@@ -319,19 +319,19 @@ export default function DimensionalAnomaliesPage() {
   };
 
   const getTypeStats = () => {
-    const stats: Record<string, number> = {};
+    const typeStats: Record<string, number> = {};
     anomalies.forEach(a => {
-      stats[a.type] = (stats[a.type] || 0) + 1;
+      typeStats[a.type] = (typeStats[a.type] || 0) + 1;
     });
-    return stats;
+    return typeStats;
   };
 
   const getRarityStats = () => {
-    const stats: Record<string, number> = {};
+    const rarityStats: Record<string, number> = {};
     anomalies.forEach(a => {
-      stats[a.rarity] = (stats[a.rarity] || 0) + 1;
+      rarityStats[a.rarity] = (rarityStats[a.rarity] || 0) + 1;
     });
-    return stats;
+    return rarityStats;
   };
 
   const typeStats = getTypeStats();

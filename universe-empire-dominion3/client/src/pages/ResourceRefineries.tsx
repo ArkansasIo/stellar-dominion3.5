@@ -13,7 +13,7 @@ import React from "react";
 import {
   Hammer, Gem, Atom, Eye, Zap, RefreshCw, Skull, ArrowUp,
   Play, Pause, Package, Plus, Settings, TrendingUp, Clock,
-  BarChart3, GitBranch, Zap as Lightning, Factory, Cpu,
+  BarChart3, GitBranch, Factory,
   Activity, Timer, Coins, ArrowRightLeft,
 } from "lucide-react";
 import { useState } from "react";

@@ -9,6 +9,7 @@ import { adminUsers, users, playerProfiles, type User } from "../shared/schema";
 import { eq, ilike, or } from "drizzle-orm";
 import { getRolePermissions, normalizeAdminRole } from "./adminPermissions";
 import { requireAdminIp, logAdminActivity } from "./middleware/adminIpCheck";
+import { GAME_SETTINGS } from "./config/gameSettings";
 
 const NON_ADMIN_USERNAMES = new Set(["player1", "player2", "player3"]);
 const NON_ADMIN_EMAIL_SUFFIX = "@universe-empire-domions.game";
@@ -344,21 +345,12 @@ export async function setupAuth(app: Express) {
   
   // Add CORS headers to allow credentials
   app.use((req, res, next) => {
-    const envOrigins = process.env.CORS_ORIGINS
-      ? process.env.CORS_ORIGINS.split(',').map(o => o.trim())
-      : [];
-    const defaultOrigins = [
-      'http://localhost:5000',
-      'http://localhost:5001',
-      'http://127.0.0.1:5000',
-      'http://127.0.0.1:5001',
-    ];
-    const allowedOrigins = [...new Set([...defaultOrigins, ...envOrigins])];
+    const allowedOrigins = GAME_SETTINGS.cors.allowedOrigins;
     const origin = req.get('origin');
     if (origin && allowedOrigins.includes(origin)) {
       res.header('Access-Control-Allow-Origin', origin);
     } else if (!origin) {
-      res.header('Access-Control-Allow-Origin', allowedOrigins[0]);
+      res.header('Access-Control-Allow-Origin', GAME_SETTINGS.cors.fallbackOrigin);
     }
     res.header('Access-Control-Allow-Credentials', 'true');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');

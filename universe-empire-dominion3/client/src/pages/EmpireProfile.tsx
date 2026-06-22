@@ -127,6 +127,7 @@ interface EmpireAttribute {
 }
 
 interface EmpireProfile {
+  [key: string]: any;
   id: string;
   userId: string;
   military: number;
@@ -377,11 +378,11 @@ export default function EmpireProfilePage() {
   };
 
   const getPowerDistribution = () => {
-    const total = attributes.reduce((sum, attr) => sum + ((profile as any)[attr.id] || 1), 0);
+    const total = attributes.reduce((sum, attr) => sum + (profile[attr.id] || 1), 0);
     return attributes.map(attr => ({
       ...attr,
-      level: (profile as any)[attr.id] || 1,
-      percentage: total > 0 ? Math.round(((profile as any)[attr.id] || 1) / total * 100) : 0,
+      level: profile[attr.id] || 1,
+      percentage: total > 0 ? Math.round(((profile[attr.id] || 1) / total) * 100) : 0,
     }));
   };
 
@@ -517,8 +518,8 @@ export default function EmpireProfilePage() {
                 <AttributeCard
                   key={attr.id}
                   attr={attr}
-                  level={(profile as any)[attr.id] || 1}
-                  pointsSpent={(profile.attributePoints as any)[attr.id] || 0}
+                  level={profile[attr.id] || 1}
+                  pointsSpent={profile.attributePoints[attr.id] || 0}
                   availablePoints={profile.availablePoints || 0}
                   onAllocate={(attribute, points) =>
                     allocateMutation.mutate({ attribute, points })
@@ -544,7 +545,7 @@ export default function EmpireProfilePage() {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {attributes.map((attr) => {
-                    const level = (profile as any)[attr.id] || 1;
+                    const level = profile[attr.id] || 1;
                     const IconComponent = ICON_MAP[attr.icon] || Swords;
                     const rank = getAttributeRank(level);
                     return (

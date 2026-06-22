@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, Tray, dialog } = require('electron');
+const { app, BrowserWindow, Menu, Tray, dialog, shell, session } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
 const net = require('net');
@@ -7,7 +7,7 @@ let mainWindow;
 let serverProcess;
 let tray;
 
-const SERVER_PORT = parseInt(process.env.PORT || process.env.SERVER_PORT || '5001', 10);
+const SERVER_PORT = process.env.PORT || 5001;
 const SERVER_URL = `http://localhost:${SERVER_PORT}`;
 
 function getAssetPath(relativePath) {
@@ -92,28 +92,34 @@ async function createWindow() {
     title: 'Universe Empire Dominion',
     webPreferences: {
       nodeIntegration: false,
-      contextIsolation: true
+      contextIsolation: true,
+      sandbox: true
     },
     autoHideMenuBar: true,
     backgroundColor: '#0a0a0a',
     show: false
   });
 
-  mainWindow.webContents.on('will-navigate', (event, url) => {
-    const parsed = new URL(url);
-    const allowed = [`http://localhost:${SERVER_PORT}`, `http://127.0.0.1:${SERVER_PORT}`];
-    if (!allowed.some(origin => parsed.origin === origin)) {
-      event.preventDefault();
-    }
+  mainWindow.webContents.on('will-navigate', (event) => {
+    event.preventDefault();
   });
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    const parsed = new URL(url);
-    const allowed = [`http://localhost:${SERVER_PORT}`, `http://127.0.0.1:${SERVER_PORT}`];
-    if (allowed.some(origin => parsed.origin === origin)) {
-      return { action: 'allow' };
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      shell.openExternal(url);
     }
     return { action: 'deny' };
+  });
+
+  session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+    callback({
+      responseHeaders: {
+        ...details.responseHeaders,
+        'Content-Security-Policy': [
+          "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' ws: wss:"
+        ]
+      }
+    });
   });
 
   mainWindow.loadURL(SERVER_URL);
@@ -176,7 +182,7 @@ function createTray() {
       }
     });
   } catch (e) {
-    console.error('Tray icon setup failed:', e);
+    console.warn('Tray icon not found, skipping tray setup');
   }
 }
 

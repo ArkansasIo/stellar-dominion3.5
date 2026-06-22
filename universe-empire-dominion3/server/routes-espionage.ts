@@ -3,44 +3,9 @@ import { db } from "./db";
 import { messages, playerStates, users } from "../shared/schema";
 import { eq } from "drizzle-orm";
 import { isAuthenticated } from "./basicAuth";
+import { GAME_SETTINGS } from "./config/gameSettings";
 
-// Espionage configuration
-export const ESPIONAGE_CONFIG = {
-  // Base success rates
-  BASE_SUCCESS_RATE: 0.65,
-  
-  // Cost per spy mission
-  COST_PER_SPY: {
-    metal: 100,
-    crystal: 100,
-    deuterium: 50,
-  },
-
-  // Research bonuses
-  RESEARCH_BONUSES: {
-    espionageTech: 0.05,
-  },
-
-  // Defense penalties
-  DEFENSE_MULTIPLIERS: {
-    perDefenseLevel: 0.01,
-  },
-
-  // Intel value (what gets revealed on success)
-  INTEL_CATEGORIES: {
-    RESOURCES: "resources",
-    FLEET: "fleet",
-    BUILDINGS: "buildings",
-    MISSIONS: "missions",
-    RESEARCH: "research",
-  },
-
-  // Risk of detection and counter-measures
-  DETECTION_MULTIPLIERS: {
-    perSpyMission: 0.1,
-    baseCatchChance: 0.3,
-  },
-};
+export const ESPIONAGE_CONFIG = GAME_SETTINGS.espionage;
 
 /**
  * Calculate espionage success rate
