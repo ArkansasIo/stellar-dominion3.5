@@ -59,6 +59,7 @@ const Factions = lazy(() => import("@/pages/Factions"));
 const EmpireProgression = lazy(() => import("@/pages/EmpireProgression"));
 const WarpNetwork = lazy(() => import("@/pages/WarpNetwork"));
 const Stations = lazy(() => import("@/pages/Stations"));
+const Starbases = lazy(() => import("@/pages/Starbases"));
 const Merchants = lazy(() => import("@/pages/Merchants"));
 const Storefront = lazy(() => import("@/pages/Storefront"));
 const CelestialBrowser = lazy(() => import("@/pages/CelestialBrowser"));
@@ -265,6 +266,7 @@ function RouterContent() {
       <Route path="/empire-progression" component={EmpireProgression} />
       <Route path="/warp-network" component={WarpNetwork} />
       <Route path="/stations" component={Stations} />
+      <Route path="/starbases" component={Starbases} />
       <Route path="/merchants" component={Merchants} />
       <Route path="/storefront" component={Storefront} />
       <Route path="/celestial-browser" component={CelestialBrowser} />
