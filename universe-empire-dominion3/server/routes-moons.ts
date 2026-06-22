@@ -204,12 +204,6 @@ export function registerMoonRoutes(app: Express) {
         return res.status(400).json({ error: "Moon is already colonized" });
       }
 
-      // Check if player has enough resources (simplified)
-      const userId = req.session?.userId || "";
-      if (!userId) {
-        return res.status(401).json({ error: "Unauthorized" });
-      }
-
       const playerState = await db.query.playerStates.findFirst({
         where: eq(playerStates.userId, userId),
       });
@@ -286,11 +280,6 @@ export function registerMoonRoutes(app: Express) {
 
       if (!moon) {
         return res.status(404).json({ error: "Moon not found" });
-      }
-
-      const userId = req.session?.userId || "";
-      if (!userId) {
-        return res.status(401).json({ error: "Unauthorized" });
       }
 
       if (moon.details.currentOwner !== userId) {
@@ -372,11 +361,6 @@ export function registerMoonRoutes(app: Express) {
       const moon = moonsDb[moonId];
       if (!moon) {
         return res.status(404).json({ error: "Moon not found" });
-      }
-
-      const userId = req.session?.userId || "";
-      if (!userId) {
-        return res.status(401).json({ error: "Unauthorized" });
       }
 
       if (moon.details.currentOwner !== userId) {

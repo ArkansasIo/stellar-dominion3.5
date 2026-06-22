@@ -985,6 +985,7 @@ export default function Settings() {
                      </CardContent>
                    </Card>
                 </div>
+               </div>
             </TabsContent>
 
            {/* NOTIFICATIONS TAB */}
@@ -1313,9 +1314,10 @@ export default function Settings() {
                           <div className="mt-2 text-xl font-bold text-slate-900">{displaySettings.browserWidth}</div>
                        </div>
                     </CardContent>
-                 </Card>
-              </div>
-           </TabsContent>
+                    </Card>
+                </div>
+               </div>
+            </TabsContent>
 
            {/* SOUND TAB */}
            <TabsContent value="sound" className="mt-6">

@@ -17,6 +17,12 @@ const basePort = Number.isFinite(preferredPort) && preferredPort > 0 ? preferred
 
 const pgDataDir = resolve(projectRoot, ".postgres_data");
 const pgLogFile = resolve(pgDataDir, "server.log");
+const PG_PORT = 15434;
+
+const PSQL_PATH = "C:\\Program Files\\PostgreSQL\\17\\bin\\psql.exe";
+const PG_CTL_PATH = "C:\\Program Files\\PostgreSQL\\17\\bin\\pg_ctl.exe";
+const PG_ISREADY_PATH = "C:\\Program Files\\PostgreSQL\\17\\bin\\pg_isready.exe";
+const PG_USER = process.env.PG_USER || process.env.USER || "Shadow";
 
 function isPortFree(port: number): Promise<boolean> {
   return new Promise((resolvePort) => {
@@ -31,7 +37,7 @@ function isPortFree(port: number): Promise<boolean> {
 
 async function isPgReady(port: number): Promise<boolean> {
   return new Promise((resolve) => {
-    const check = spawn("pg_isready", ["-h", "localhost", "-p", String(port)], { stdio: "ignore" });
+    const check = spawn(PG_ISREADY_PATH, ["-h", "localhost", "-p", String(PG_PORT)], { stdio: "ignore" });
     check.on("exit", (code) => resolve(code === 0));
   });
 }
@@ -63,7 +69,7 @@ function ensurePgLockDirectory(): void {
 async function startLocalPostgres(): Promise<void> {
   const pgReady = await isPgReady(15432);
   if (pgReady) {
-    console.log("✅ Local PostgreSQL already running on port 15432");
+    console.log(`✅ Local PostgreSQL already running on port ${PG_PORT}`);
     return;
   }
 
@@ -71,19 +77,20 @@ async function startLocalPostgres(): Promise<void> {
 
   if (!existsSync(pgDataDir)) {
     console.log("🔧 Initializing PostgreSQL data directory...");
-    const init = spawn("pg_ctl", ["init", "-D", pgDataDir], { stdio: "inherit" });
+    const init = spawn(PG_CTL_PATH, ["init", "-D", pgDataDir], { stdio: "inherit" });
     await new Promise((resolve, reject) => {
       init.on("exit", (code) => (code === 0 ? resolve(undefined) : reject(new Error(`pg_ctl init failed: ${code}`))));
     });
-
-    const pgConf = resolve(pgDataDir, "postgresql.conf");
-    const pgHba = resolve(pgDataDir, "pg_hba.conf");
-    writeFileSync(pgConf, "listen_addresses = 'localhost'\nport = 15432\nmax_connections = 20\nshared_buffers = 64MB\n");
-    writeFileSync(pgHba, "local   all             all                                     trust\nhost    all             all             127.0.0.1/32            trust\nhost    all             all             ::1/128                 trust\n");
   }
 
-  console.log("🚀 Starting local PostgreSQL on port 15432...");
-  const pgStart = spawn("pg_ctl", ["start", "-D", pgDataDir, "-l", pgLogFile], {
+  // Always write config files (initdb may overwrite them)
+  const pgConf = resolve(pgDataDir, "postgresql.conf");
+  const pgHba = resolve(pgDataDir, "pg_hba.conf");
+  writeFileSync(pgConf, `listen_addresses = 'localhost'\nport = ${PG_PORT}\nmax_connections = 20\nshared_buffers = 64MB\n`);
+  writeFileSync(pgHba, "local   all             all                                     trust\nhost    all             all             127.0.0.1/32            trust\nhost    all             all             ::1/128                 trust\n");
+
+  console.log(`🚀 Starting local PostgreSQL on port ${PG_PORT}...`);
+  const pgStart = spawn(PG_CTL_PATH, ["start", "-D", pgDataDir, "-l", pgLogFile], {
     stdio: "inherit",
     detached: true,
   });
@@ -114,7 +121,7 @@ async function startLocalPostgres(): Promise<void> {
 
 async function createDatabaseIfNeeded(): Promise<void> {
   return new Promise((resolve, reject) => {
-    const check = spawn("psql", ["-h", "localhost", "-p", "15432", "-U", process.env.USER || "runner", "-d", "postgres", "-c", "SELECT 1 FROM pg_database WHERE datname = 'stellar_dominion';"], {
+    const check = spawn(PSQL_PATH, ["-h", "localhost", "-p", String(PG_PORT), "-U", PG_USER, "-d", "postgres", "-c", "SELECT 1 FROM pg_database WHERE datname = 'stellar_dominion';"], {
       stdio: ["ignore", "pipe", "pipe"],
       shell: false,
     });
@@ -128,7 +135,7 @@ async function createDatabaseIfNeeded(): Promise<void> {
         return;
       }
       console.log("🔧 Creating database stellar_dominion...");
-      const create = spawn("psql", ["-h", "localhost", "-p", "15432", "-U", process.env.USER || "runner", "-d", "postgres", "-c", "CREATE DATABASE stellar_dominion;"], {
+      const create = spawn(PSQL_PATH, ["-h", "localhost", "-p", String(PG_PORT), "-U", PG_USER, "-d", "postgres", "-c", "CREATE DATABASE stellar_dominion;"], {
         stdio: "inherit",
       });
       create.on("exit", (code) => {
@@ -158,7 +165,7 @@ async function startDev() {
   if (!dbUrl) {
     await startLocalPostgres();
     await createDatabaseIfNeeded();
-    process.env.DATABASE_URL = "postgresql://runner@localhost:15432/stellar_dominion";
+    process.env.DATABASE_URL = `postgresql://${PG_USER}@localhost:${PG_PORT}/stellar_dominion`;
   }
 
   const selectedPort = await findAvailablePort(basePort);
