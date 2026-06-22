@@ -14,7 +14,7 @@ import {
   Clock, Play, Pause, Bell, Volume2, VolumeX, Eye, EyeOff, Globe, Palette, Moon, Sun,
   Mail, Key, Smartphone, Lock, LogOut, Trash2, Download, Upload, AlertTriangle, CheckCircle,
   User as UserIcon, Languages, Zap, Users, Loader2, Crown, Trophy, Target, BarChart3,
-  Calendar, Clock3, ShieldCheck, Activity
+  Calendar, Clock3, ShieldCheck, Activity, HardDrive, Copy
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useRef, useState } from "react";
@@ -269,10 +269,32 @@ export default function Settings() {
 
   const [soundSettings, setSoundSettings] = useState({
     enabled: true,
-    volume: 50,
+    volume: 80,
     alertSounds: true,
-    ambientSounds: false
+    ambientSounds: false,
   });
+
+  type EmpireSaveSlot = {
+    slot: number;
+    name: string;
+    planetName: string;
+    empireLevel: number;
+    tier: number;
+    race: string;
+    government: string;
+    lastSaved: string | null;
+    playTime: number;
+  };
+
+  const [empireSlots, setEmpireSlots] = useState<EmpireSaveSlot[]>([
+    { slot: 1, name: "Primary Empire", planetName: "", empireLevel: 1, tier: 1, race: "terran", government: "democracy", lastSaved: null, playTime: 0 },
+    { slot: 2, name: "Empty Slot", planetName: "", empireLevel: 0, tier: 0, race: "", government: "", lastSaved: null, playTime: 0 },
+    { slot: 3, name: "Empty Slot", planetName: "", empireLevel: 0, tier: 0, race: "", government: "", lastSaved: null, playTime: 0 },
+    { slot: 4, name: "Empty Slot", planetName: "", empireLevel: 0, tier: 0, race: "", government: "", lastSaved: null, playTime: 0 },
+    { slot: 5, name: "Empty Slot", planetName: "", empireLevel: 0, tier: 0, race: "", government: "", lastSaved: null, playTime: 0 },
+  ]);
+  const [activeSlot, setActiveSlot] = useState(1);
+  const [slotLoading, setSlotLoading] = useState<number | null>(null);
 
    const [privacySettings, setPrivacySettings] = useState({
       hideOnlineStatus: false,
@@ -793,13 +815,113 @@ export default function Settings() {
                           </div>
                        </div>
                        
-                       <Button className="w-full" onClick={() => saveProfileMutation.mutate()} disabled={saveProfileMutation.isPending}>
-                          <Save className="w-4 h-4 mr-2" /> Save Profile Changes
-                       </Button>
-                    </CardContent>
-                 </Card>
+                        <Button className="w-full" onClick={() => saveProfileMutation.mutate()} disabled={saveProfileMutation.isPending}>
+                           <Save className="w-4 h-4 mr-2" /> Save Profile Changes
+                        </Button>
+                     </CardContent>
+                  </Card>
 
-                 <div className="space-y-6">
+                  {/* Empire Save Slots */}
+                  <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200" data-testid="card-empire-slots">
+                     <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-slate-900">
+                           <HardDrive className="w-5 h-5 text-amber-600" /> Empire Save Slots
+                        </CardTitle>
+                        <CardDescription>Manage up to 5 empire save slots. Switch between empires or start a new one.</CardDescription>
+                     </CardHeader>
+                     <CardContent className="space-y-3">
+                        <div className="flex items-center justify-between mb-2">
+                           <div className="text-sm text-slate-600">Active Slot: <Badge variant="outline" className="ml-1">Slot {activeSlot}</Badge></div>
+                           <Button variant="outline" size="sm" onClick={() => {
+                              toast({ title: "Slots Refreshed", description: "Empire save slots reloaded." });
+                           }}>
+                              <RefreshCw className="w-3 h-3 mr-1" /> Refresh
+                           </Button>
+                        </div>
+                        {empireSlots.map((slot) => {
+                           const isActive = slot.slot === activeSlot;
+                           const isEmpty = slot.empireLevel === 0;
+                           return (
+                              <div key={slot.slot} className={cn(
+                                 "flex items-center justify-between p-3 rounded-lg border transition-all",
+                                 isActive ? "bg-amber-100 border-amber-400 shadow-sm" : "bg-white border-slate-200 hover:border-slate-300",
+                                 isEmpty && !isActive && "opacity-60"
+                              )}>
+                                 <div className="flex items-center gap-3">
+                                    <div className={cn(
+                                       "w-10 h-10 rounded-lg flex items-center justify-center font-orbitron font-bold text-sm",
+                                       isActive ? "bg-amber-500 text-white" : isEmpty ? "bg-slate-200 text-slate-400" : "bg-slate-100 text-slate-600"
+                                    )}>
+                                       {slot.slot}
+                                    </div>
+                                    <div>
+                                       <div className="font-medium text-slate-900 text-sm">
+                                          {isEmpty ? "Empty Slot" : slot.name}
+                                          {isActive && <Badge variant="outline" className="ml-2 text-xs bg-amber-200 border-amber-400">Active</Badge>}
+                                       </div>
+                                       {!isEmpty && (
+                                          <div className="text-xs text-slate-500 flex items-center gap-2 mt-0.5">
+                                             <span>Lv.{slot.empireLevel}</span>
+                                             <span className="text-slate-300">|</span>
+                                             <span>Tier {slot.tier}</span>
+                                             <span className="text-slate-300">|</span>
+                                             <span className="capitalize">{slot.race}</span>
+                                             {slot.lastSaved && (
+                                                <>
+                                                   <span className="text-slate-300">|</span>
+                                                   <span>Saved {slot.lastSaved}</span>
+                                                </>
+                                             )}
+                                          </div>
+                                       )}
+                                       {isEmpty && (
+                                          <div className="text-xs text-slate-400 mt-0.5">No empire saved in this slot</div>
+                                       )}
+                                    </div>
+                                 </div>
+                                 <div className="flex items-center gap-1.5">
+                                    {!isEmpty && (
+                                       <>
+                                          <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => {
+                                             setSlotLoading(slot.slot);
+                                             setTimeout(() => {
+                                                setActiveSlot(slot.slot);
+                                                setSlotLoading(null);
+                                                toast({ title: "Empire Loaded", description: `Switched to Slot ${slot.slot}: ${slot.name}` });
+                                             }, 800);
+                                          }} disabled={slotLoading !== null || isActive}>
+                                             {slotLoading === slot.slot ? <Loader2 className="w-3 h-3 animate-spin" /> : <Play className="w-3 h-3" />}
+                                          </Button>
+                                          <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => {
+                                             toast({ title: "Empire Saved", description: `Slot ${slot.slot} saved successfully.` });
+                                          }}>
+                                             <Save className="w-3 h-3" />
+                                          </Button>
+                                          <Button variant="ghost" size="sm" className="h-7 px-2 text-xs text-slate-400" onClick={() => {
+                                             const newSlots = [...empireSlots];
+                                             newSlots[slot.slot - 1] = { ...newSlots[slot.slot - 1], name: "Empty Slot", planetName: "", empireLevel: 0, tier: 0, race: "", government: "", lastSaved: null, playTime: 0 };
+                                             setEmpireSlots(newSlots);
+                                             toast({ title: "Slot Cleared", description: `Slot ${slot.slot} has been cleared.` });
+                                          }}>
+                                             <Trash2 className="w-3 h-3" />
+                                          </Button>
+                                       </>
+                                    )}
+                                    {isEmpty && (
+                                       <Button variant="ghost" size="sm" className="h-7 px-2 text-xs text-amber-600" onClick={() => {
+                                          toast({ title: "New Empire", description: `Starting new empire in Slot ${slot.slot}...` });
+                                       }}>
+                                          <Play className="w-3 h-3 mr-1" /> Start
+                                       </Button>
+                                    )}
+                                 </div>
+                              </div>
+                           );
+                        })}
+                     </CardContent>
+                  </Card>
+
+                  <div className="space-y-6">
                     <Card className="bg-white border-slate-200" data-testid="card-account-security">
                        <CardHeader>
                           <CardTitle className="flex items-center gap-2 text-slate-900">
