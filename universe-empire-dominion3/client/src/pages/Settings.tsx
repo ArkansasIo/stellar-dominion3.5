@@ -1624,10 +1624,9 @@ export default function Settings() {
                              </div>
                           ))}
                        </CardContent>
-                    </Card>
-                 </div>
-              )}
-           </TabsContent>
+                   </Card>
+                </div>
+            </TabsContent>
            )}
 
            {/* GAME RULES TAB (Admin Only) */}
