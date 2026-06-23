@@ -1572,7 +1572,7 @@ export class DatabaseStorage implements IStorage {
   }
   
   async getPlayerTeams(userId: string): Promise<Team[]> {
-    return await db.select().from(teams).where(sql`${userId} = ANY(members)`);
+    return await db.select().from(teams).where(sql`(${userId}::text) = ANY(SELECT jsonb_array_elements_text(${teams.members}))`);
   }
   
   async updateTeam(teamId: string, updates: Partial<Team>): Promise<Team> {
@@ -1588,12 +1588,16 @@ export class DatabaseStorage implements IStorage {
     const team = await this.getTeamById(teamId);
     if (!team) throw new Error("Team not found");
     if ((team.members as any[]).length >= 6) throw new Error("Team is full (6 max)");
-    const [updated] = await db.update(teams).set({ members: sql`array_append(members, ${playerId})` }).where(eq(teams.id, teamId)).returning();
+    const newMembers = [...(team.members as any[] || []), playerId];
+    const [updated] = await db.update(teams).set({ members: newMembers }).where(eq(teams.id, teamId)).returning();
     return updated;
   }
   
   async removeTeamMember(teamId: string, playerId: string): Promise<Team> {
-    const [updated] = await db.update(teams).set({ members: sql`array_remove(members, ${playerId})` }).where(eq(teams.id, teamId)).returning();
+    const team = await this.getTeamById(teamId);
+    if (!team) throw new Error("Team not found");
+    const newMembers = (team.members as any[] || []).filter((id: string) => id !== playerId);
+    const [updated] = await db.update(teams).set({ members: newMembers }).where(eq(teams.id, teamId)).returning();
     return updated;
   }
   
@@ -1798,7 +1802,7 @@ export class DatabaseStorage implements IStorage {
   }
   
   async getPlayerRaidGroups(playerId: string): Promise<RaidGroup[]> {
-    return await db.select().from(raidGroups).where(sql`${playerId} = ANY(members)`);
+    return await db.select().from(raidGroups).where(sql`(${playerId}::text) = ANY(SELECT jsonb_array_elements_text(${raidGroups.members}))`);
   }
   
   async addGroupMember(groupId: string, playerId: string): Promise<RaidGroup> {

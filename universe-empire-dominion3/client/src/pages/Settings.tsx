@@ -299,6 +299,65 @@ export default function Settings() {
    const [privacySettings, setPrivacySettings] = useState({
       hideOnlineStatus: false,
       blockStrangers: false,
+      showLastOnline: true,
+      showEmpireLevel: true,
+      showAllianceTag: true,
+      allowSpectators: true,
+      hideFromLeaderboard: false,
+      showBattleReports: "everyone",
+      profileVisibility: "alliance",
+      showPlayTime: true,
+      showAchievementProgress: false,
+   });
+
+   const [gameplaySettings, setGameplaySettings] = useState({
+      autoUseTurns: false,
+      turnsPerAction: 1,
+      autoCollectResources: true,
+      confirmFleetSend: true,
+      confirmAttack: true,
+      defaultFleetSpeed: "fast",
+      autoRepairEquipment: false,
+      autoRepairThreshold: 50,
+      showDamageNumbers: true,
+      showResourcePopups: true,
+      combatLogVerbosity: "detailed",
+      galaxyMapStyle: "standard",
+      defaultGalaxyView: "system",
+      showPlayerCoordinates: true,
+      autoExpireOrders: true,
+      orderExpiryDays: 7,
+      preferredTradeResource: "metal",
+      showMarketGraphs: true,
+      defaultSortOrder: "power",
+      enableQuickActions: true,
+      enableSwipeActions: true,
+      autoBookmarkPlanets: false,
+      showFlightTimes: true,
+      showResourceRatesOnPlanet: true,
+      enableFleetPresets: true,
+   });
+
+   const [accessibilitySettings, setAccessibilitySettings] = useState({
+      reducedMotion: false,
+      highContrast: false,
+      fontSize: "medium",
+      colorBlindMode: "none",
+      screenReaderMode: false,
+      keyboardNavigation: true,
+      focusIndicators: true,
+      announceNotifications: true,
+      pauseAnimationsOnHover: false,
+      simplifyTransitions: false,
+   });
+
+   const [dataSettings, setDataSettings] = useState({
+      autoSaveInterval: 30,
+      enableCloudSync: true,
+      exportFormat: "json",
+      compressionEnabled: true,
+      lastExportDate: null,
+      storageUsed: 0,
    });
 
    const { data: accountSettings } = useQuery<AccountSettingsResponse>({
@@ -309,6 +368,21 @@ export default function Settings() {
    const { data: playerOptions } = useQuery<PlayerOptions>({
       queryKey: ["player-options"],
       queryFn: () => fetchJson<PlayerOptions>("/api/settings/player/options"),
+   });
+
+   const { data: gameplayOptions } = useQuery<any>({
+      queryKey: ["player-gameplay"],
+      queryFn: () => fetchJson<any>("/api/settings/player/gameplay"),
+   });
+
+   const { data: accessibilityOptions } = useQuery<any>({
+      queryKey: ["player-accessibility"],
+      queryFn: () => fetchJson<any>("/api/settings/player/accessibility"),
+   });
+
+   const { data: dataOptions } = useQuery<any>({
+      queryKey: ["player-data"],
+      queryFn: () => fetchJson<any>("/api/settings/player/data"),
    });
 
    const { data: adminOperations } = useQuery<AdminOperationLogResponse>({
@@ -381,6 +455,18 @@ export default function Settings() {
       setSoundSettings(playerOptions.sound);
       setPrivacySettings(playerOptions.privacy);
    }, [playerOptions]);
+
+   useEffect(() => {
+      if (gameplayOptions) setGameplaySettings(prev => ({ ...prev, ...gameplayOptions }));
+   }, [gameplayOptions]);
+
+   useEffect(() => {
+      if (accessibilityOptions) setAccessibilitySettings(prev => ({ ...prev, ...accessibilityOptions }));
+   }, [accessibilityOptions]);
+
+   useEffect(() => {
+      if (dataOptions) setDataSettings(prev => ({ ...prev, ...dataOptions }));
+   }, [dataOptions]);
 
    useEffect(() => {
       const updateViewportInfo = () => {
@@ -464,21 +550,57 @@ export default function Settings() {
    });
 
    const savePlayerOptionsMutation = useMutation({
-      mutationFn: () => fetchJson<PlayerOptions>("/api/settings/player/options", {
-         method: "PUT",
-         body: JSON.stringify({
-            notifications,
-            display: displaySettings,
-            sound: soundSettings,
-            privacy: privacySettings,
-         }),
-      }),
+      mutationFn: async () => {
+         await fetchJson<PlayerOptions>("/api/settings/player/options", {
+            method: "PUT",
+            body: JSON.stringify({
+               notifications,
+               display: displaySettings,
+               sound: soundSettings,
+               privacy: privacySettings,
+            }),
+         });
+         await fetchJson("/api/settings/player/gameplay", {
+            method: "PUT",
+            body: JSON.stringify(gameplaySettings),
+         });
+         await fetchJson("/api/settings/player/accessibility", {
+            method: "PUT",
+            body: JSON.stringify(accessibilitySettings),
+         });
+         await fetchJson("/api/settings/player/data", {
+            method: "PUT",
+            body: JSON.stringify(dataSettings),
+         });
+      },
       onSuccess: () => {
-         toast({ title: "Options saved", description: "Settings menus and submenus updated." });
+         toast({ title: "Options saved", description: "All settings menus and submenus updated." });
          queryClient.invalidateQueries({ queryKey: ["player-options"] });
+         queryClient.invalidateQueries({ queryKey: ["player-gameplay"] });
+         queryClient.invalidateQueries({ queryKey: ["player-accessibility"] });
+         queryClient.invalidateQueries({ queryKey: ["player-data"] });
       },
       onError: (error: Error) => {
          toast({ title: "Unable to save options", description: error.message, variant: "destructive" });
+      },
+   });
+
+   const exportSettingsMutation = useMutation({
+      mutationFn: () => fetchJson<any>("/api/settings/player/export", { method: "POST" }),
+      onSuccess: (data) => {
+         const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+         const url = URL.createObjectURL(blob);
+         const a = document.createElement("a");
+         a.href = url;
+         a.download = `stellar-settings-${Date.now()}.json`;
+         a.click();
+         URL.revokeObjectURL(url);
+         setDataSettings(prev => ({ ...prev, lastExportDate: new Date().toISOString() }));
+         toast({ title: "Settings exported", description: "Settings file downloaded." });
+         queryClient.invalidateQueries({ queryKey: ["player-data"] });
+      },
+      onError: (error: Error) => {
+         toast({ title: "Export failed", description: error.message, variant: "destructive" });
       },
    });
 
@@ -706,8 +828,12 @@ export default function Settings() {
               <TabsTrigger value="account" className="font-orbitron"><UserIcon className="w-4 h-4 mr-2" /> Account</TabsTrigger>
               {isActualAdmin && <TabsTrigger value="admin-access" className={cn("font-orbitron", "text-red-600")}><Shield className="w-4 h-4 mr-2" /> Admin Access</TabsTrigger>}
               <TabsTrigger value="notifications" className="font-orbitron"><Bell className="w-4 h-4 mr-2" /> Notifications</TabsTrigger>
-              <TabsTrigger value="display" className="font-orbitron"><Monitor className="w-4 h-4 mr-2" /> Display</TabsTrigger>
-              <TabsTrigger value="sound" className="font-orbitron"><Volume2 className="w-4 h-4 mr-2" /> Sound</TabsTrigger>
+               <TabsTrigger value="display" className="font-orbitron"><Monitor className="w-4 h-4 mr-2" /> Display</TabsTrigger>
+               <TabsTrigger value="gameplay" className="font-orbitron"><Zap className="w-4 h-4 mr-2" /> Gameplay</TabsTrigger>
+               <TabsTrigger value="sound" className="font-orbitron"><Volume2 className="w-4 h-4 mr-2" /> Sound</TabsTrigger>
+               <TabsTrigger value="accessibility" className="font-orbitron"><Eye className="w-4 h-4 mr-2" /> Accessibility</TabsTrigger>
+               <TabsTrigger value="privacy" className="font-orbitron"><Shield className="w-4 h-4 mr-2" /> Privacy</TabsTrigger>
+               <TabsTrigger value="data" className="font-orbitron"><Database className="w-4 h-4 mr-2" /> Data</TabsTrigger>
               {isAdmin && <TabsTrigger value="game" className="font-orbitron text-red-600"><Zap className="w-4 h-4 mr-2" /> Game Rules</TabsTrigger>}
               {isAdmin && <TabsTrigger value="server" className="font-orbitron text-red-600"><Server className="w-4 h-4 mr-2" /> Server</TabsTrigger>}
               {isAdmin && <TabsTrigger value="cron" className="font-orbitron text-red-600"><Clock className="w-4 h-4 mr-2" /> Cron Jobs</TabsTrigger>}
@@ -1502,12 +1628,445 @@ export default function Settings() {
                        </div>
                     </div>
 
-                    <Button className="w-full" onClick={() => savePlayerOptionsMutation.mutate()} disabled={savePlayerOptionsMutation.isPending}>
-                       <Save className="w-4 h-4 mr-2" /> Save Sound Settings
-                    </Button>
-                 </CardContent>
-              </Card>
-           </TabsContent>
+                     <Button className="w-full" onClick={() => savePlayerOptionsMutation.mutate()} disabled={savePlayerOptionsMutation.isPending}>
+                        <Save className="w-4 h-4 mr-2" /> Save Sound Settings
+                     </Button>
+                  </CardContent>
+               </Card>
+            </TabsContent>
+
+            {/* GAMEPLAY TAB */}
+            <TabsContent value="gameplay" className="mt-6">
+               <div className="space-y-6">
+                  <Card className="bg-white border-slate-200">
+                     <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-slate-900">
+                           <Zap className="w-5 h-5 text-amber-500" /> Gameplay Preferences
+                        </CardTitle>
+                        <CardDescription>Configure automation, combat behavior, fleet management, and UI preferences.</CardDescription>
+                     </CardHeader>
+                     <CardContent className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                           <div className="space-y-4">
+                              <h3 className="font-bold text-slate-900 border-b border-slate-100 pb-2">Automation</h3>
+                              <div className="flex items-center justify-between p-3 bg-slate-50 rounded border border-slate-100">
+                                 <div><div className="font-medium text-sm text-slate-900">Auto-Use Turns</div><div className="text-xs text-slate-500">Automatically spend turns on actions</div></div>
+                                 <Switch checked={gameplaySettings.autoUseTurns} onCheckedChange={(v) => setGameplaySettings({...gameplaySettings, autoUseTurns: v})} />
+                              </div>
+                              <div className="flex items-center justify-between p-3 bg-slate-50 rounded border border-slate-100">
+                                 <div><div className="font-medium text-sm text-slate-900">Auto-Collect Resources</div><div className="text-xs text-slate-500">Collect resources when arriving at planets</div></div>
+                                 <Switch checked={gameplaySettings.autoCollectResources} onCheckedChange={(v) => setGameplaySettings({...gameplaySettings, autoCollectResources: v})} />
+                              </div>
+                              <div className="flex items-center justify-between p-3 bg-slate-50 rounded border border-slate-100">
+                                 <div><div className="font-medium text-sm text-slate-900">Auto-Repair Equipment</div><div className="text-xs text-slate-500">Auto-repair when durability is low</div></div>
+                                 <Switch checked={gameplaySettings.autoRepairEquipment} onCheckedChange={(v) => setGameplaySettings({...gameplaySettings, autoRepairEquipment: v})} />
+                              </div>
+                              {gameplaySettings.autoRepairEquipment && (
+                                 <div className="space-y-2 pl-4 border-l-2 border-amber-200">
+                                    <div className="flex justify-between items-center">
+                                       <label className="text-xs font-medium text-slate-700">Repair Threshold</label>
+                                       <span className="text-xs font-mono text-slate-600">{gameplaySettings.autoRepairThreshold}%</span>
+                                    </div>
+                                    <Slider value={[gameplaySettings.autoRepairThreshold]} min={10} max={90} step={5} onValueChange={(v) => setGameplaySettings({...gameplaySettings, autoRepairThreshold: v[0]})} />
+                                 </div>
+                              )}
+                              <div className="flex items-center justify-between p-3 bg-slate-50 rounded border border-slate-100">
+                                 <div><div className="font-medium text-sm text-slate-900">Auto-Expire Orders</div><div className="text-xs text-slate-500">Auto-cancel stale market/trade orders</div></div>
+                                 <Switch checked={gameplaySettings.autoExpireOrders} onCheckedChange={(v) => setGameplaySettings({...gameplaySettings, autoExpireOrders: v})} />
+                              </div>
+                           </div>
+
+                           <div className="space-y-4">
+                              <h3 className="font-bold text-slate-900 border-b border-slate-100 pb-2">Combat & Fleet</h3>
+                              <div className="flex items-center justify-between p-3 bg-slate-50 rounded border border-slate-100">
+                                 <div><div className="font-medium text-sm text-slate-900">Confirm Fleet Send</div><div className="text-xs text-slate-500">Show confirmation before launching fleet</div></div>
+                                 <Switch checked={gameplaySettings.confirmFleetSend} onCheckedChange={(v) => setGameplaySettings({...gameplaySettings, confirmFleetSend: v})} />
+                              </div>
+                              <div className="flex items-center justify-between p-3 bg-slate-50 rounded border border-slate-100">
+                                 <div><div className="font-medium text-sm text-slate-900">Confirm Attack</div><div className="text-xs text-slate-500">Show confirmation before attacks</div></div>
+                                 <Switch checked={gameplaySettings.confirmAttack} onCheckedChange={(v) => setGameplaySettings({...gameplaySettings, confirmAttack: v})} />
+                              </div>
+                              <div className="flex items-center justify-between p-3 bg-slate-50 rounded border border-slate-100">
+                                 <div><div className="font-medium text-sm text-slate-900">Show Damage Numbers</div><div className="text-xs text-slate-500">Display floating combat text</div></div>
+                                 <Switch checked={gameplaySettings.showDamageNumbers} onCheckedChange={(v) => setGameplaySettings({...gameplaySettings, showDamageNumbers: v})} />
+                              </div>
+                              <div className="flex items-center justify-between p-3 bg-slate-50 rounded border border-slate-100">
+                                 <div><div className="font-medium text-sm text-slate-900">Show Flight Times</div><div className="text-xs text-slate-500">Display fleet travel duration</div></div>
+                                 <Switch checked={gameplaySettings.showFlightTimes} onCheckedChange={(v) => setGameplaySettings({...gameplaySettings, showFlightTimes: v})} />
+                              </div>
+                              <div className="space-y-2">
+                                 <label className="text-xs font-medium text-slate-700">Default Fleet Speed</label>
+                                 <Select value={gameplaySettings.defaultFleetSpeed} onValueChange={(v) => setGameplaySettings({...gameplaySettings, defaultFleetSpeed: v})}>
+                                    <SelectTrigger className="bg-slate-50 border-slate-200 h-9"><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                       <SelectItem value="slow">Slow (25%)</SelectItem>
+                                       <SelectItem value="normal">Normal (50%)</SelectItem>
+                                       <SelectItem value="fast">Fast (75%)</SelectItem>
+                                       <SelectItem value="maximum">Maximum (100%)</SelectItem>
+                                    </SelectContent>
+                                 </Select>
+                              </div>
+                              <div className="space-y-2">
+                                 <label className="text-xs font-medium text-slate-700">Combat Log Verbosity</label>
+                                 <Select value={gameplaySettings.combatLogVerbosity} onValueChange={(v) => setGameplaySettings({...gameplaySettings, combatLogVerbosity: v})}>
+                                    <SelectTrigger className="bg-slate-50 border-slate-200 h-9"><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                       <SelectItem value="minimal">Minimal</SelectItem>
+                                       <SelectItem value="normal">Normal</SelectItem>
+                                       <SelectItem value="detailed">Detailed</SelectItem>
+                                    </SelectContent>
+                                 </Select>
+                              </div>
+                           </div>
+                        </div>
+
+                        <Separator />
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                           <div className="space-y-4">
+                              <h3 className="font-bold text-slate-900 border-b border-slate-100 pb-2">Galaxy & Navigation</h3>
+                              <div className="flex items-center justify-between p-3 bg-slate-50 rounded border border-slate-100">
+                                 <div><div className="font-medium text-sm text-slate-900">Show Player Coordinates</div><div className="text-xs text-slate-500">Display [G:S:P] format coordinates</div></div>
+                                 <Switch checked={gameplaySettings.showPlayerCoordinates} onCheckedChange={(v) => setGameplaySettings({...gameplaySettings, showPlayerCoordinates: v})} />
+                              </div>
+                              <div className="flex items-center justify-between p-3 bg-slate-50 rounded border border-slate-100">
+                                 <div><div className="font-medium text-sm text-slate-900">Auto-Bookmark Planets</div><div className="text-xs text-slate-500">Auto-bookmark visited planets</div></div>
+                                 <Switch checked={gameplaySettings.autoBookmarkPlanets} onCheckedChange={(v) => setGameplaySettings({...gameplaySettings, autoBookmarkPlanets: v})} />
+                              </div>
+                              <div className="space-y-2">
+                                 <label className="text-xs font-medium text-slate-700">Default Galaxy View</label>
+                                 <Select value={gameplaySettings.defaultGalaxyView} onValueChange={(v) => setGameplaySettings({...gameplaySettings, defaultGalaxyView: v})}>
+                                    <SelectTrigger className="bg-slate-50 border-slate-200 h-9"><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                       <SelectItem value="system">System View</SelectItem>
+                                       <SelectItem value="galaxy">Galaxy View</SelectItem>
+                                       <SelectItem value="list">List View</SelectItem>
+                                    </SelectContent>
+                                 </Select>
+                              </div>
+                           </div>
+
+                           <div className="space-y-4">
+                              <h3 className="font-bold text-slate-900 border-b border-slate-100 pb-2">Trading & Economy</h3>
+                              <div className="flex items-center justify-between p-3 bg-slate-50 rounded border border-slate-100">
+                                 <div><div className="font-medium text-sm text-slate-900">Show Market Graphs</div><div className="text-xs text-slate-500">Display price history charts</div></div>
+                                 <Switch checked={gameplaySettings.showMarketGraphs} onCheckedChange={(v) => setGameplaySettings({...gameplaySettings, showMarketGraphs: v})} />
+                              </div>
+                              <div className="space-y-2">
+                                 <label className="text-xs font-medium text-slate-700">Preferred Trade Resource</label>
+                                 <Select value={gameplaySettings.preferredTradeResource} onValueChange={(v) => setGameplaySettings({...gameplaySettings, preferredTradeResource: v})}>
+                                    <SelectTrigger className="bg-slate-50 border-slate-200 h-9"><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                       <SelectItem value="metal">Metal</SelectItem>
+                                       <SelectItem value="crystal">Crystal</SelectItem>
+                                       <SelectItem value="deuterium">Deuterium</SelectItem>
+                                    </SelectContent>
+                                 </Select>
+                              </div>
+                              <div className="space-y-2">
+                                 <label className="text-xs font-medium text-slate-700">Default Sort Order</label>
+                                 <Select value={gameplaySettings.defaultSortOrder} onValueChange={(v) => setGameplaySettings({...gameplaySettings, defaultSortOrder: v})}>
+                                    <SelectTrigger className="bg-slate-50 border-slate-200 h-9"><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                       <SelectItem value="power">Power</SelectItem>
+                                       <SelectItem value="level">Level</SelectItem>
+                                       <SelectItem value="name">Name</SelectItem>
+                                       <SelectItem value="recent">Recent</SelectItem>
+                                    </SelectContent>
+                                 </Select>
+                              </div>
+                              {gameplaySettings.autoExpireOrders && (
+                                 <div className="space-y-2">
+                                    <div className="flex justify-between items-center">
+                                       <label className="text-xs font-medium text-slate-700">Order Expiry Days</label>
+                                       <span className="text-xs font-mono text-slate-600">{gameplaySettings.orderExpiryDays}d</span>
+                                    </div>
+                                    <Slider value={[gameplaySettings.orderExpiryDays]} min={1} max={30} step={1} onValueChange={(v) => setGameplaySettings({...gameplaySettings, orderExpiryDays: v[0]})} />
+                                 </div>
+                              )}
+                           </div>
+                        </div>
+
+                        <Button className="w-full" onClick={() => savePlayerOptionsMutation.mutate()} disabled={savePlayerOptionsMutation.isPending}>
+                           <Save className="w-4 h-4 mr-2" /> Save Gameplay Settings
+                        </Button>
+                     </CardContent>
+                  </Card>
+               </div>
+            </TabsContent>
+
+            {/* PRIVACY TAB */}
+            <TabsContent value="privacy" className="mt-6">
+               <Card className="bg-white border-slate-200">
+                  <CardHeader>
+                     <CardTitle className="flex items-center gap-2 text-slate-900">
+                        <Shield className="w-5 h-5 text-blue-600" /> Privacy & Visibility
+                     </CardTitle>
+                     <CardDescription>Control what other players can see about your empire and activity.</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-4">
+                           <h3 className="font-bold text-slate-900 border-b border-slate-100 pb-2">Online Presence</h3>
+                           <div className="flex items-center justify-between p-3 bg-slate-50 rounded border border-slate-100">
+                              <div><div className="font-medium text-sm text-slate-900">Hide Online Status</div><div className="text-xs text-slate-500">Others cannot see when you are online</div></div>
+                              <Switch checked={privacySettings.hideOnlineStatus} onCheckedChange={(v) => setPrivacySettings({...privacySettings, hideOnlineStatus: v})} />
+                           </div>
+                           <div className="flex items-center justify-between p-3 bg-slate-50 rounded border border-slate-100">
+                              <div><div className="font-medium text-sm text-slate-900">Show Last Online</div><div className="text-xs text-slate-500">Display your last login timestamp</div></div>
+                              <Switch checked={privacySettings.showLastOnline} onCheckedChange={(v) => setPrivacySettings({...privacySettings, showLastOnline: v})} />
+                           </div>
+                           <div className="flex items-center justify-between p-3 bg-slate-50 rounded border border-slate-100">
+                              <div><div className="font-medium text-sm text-slate-900">Show Play Time</div><div className="text-xs text-slate-500">Display total play time on profile</div></div>
+                              <Switch checked={privacySettings.showPlayTime} onCheckedChange={(v) => setPrivacySettings({...privacySettings, showPlayTime: v})} />
+                           </div>
+                           <div className="flex items-center justify-between p-3 bg-slate-50 rounded border border-slate-100">
+                              <div><div className="font-medium text-sm text-slate-900">Allow Spectators</div><div className="text-xs text-slate-500">Let others view your empire</div></div>
+                              <Switch checked={privacySettings.allowSpectators} onCheckedChange={(v) => setPrivacySettings({...privacySettings, allowSpectators: v})} />
+                           </div>
+                        </div>
+
+                        <div className="space-y-4">
+                           <h3 className="font-bold text-slate-900 border-b border-slate-100 pb-2">Profile Display</h3>
+                           <div className="flex items-center justify-between p-3 bg-slate-50 rounded border border-slate-100">
+                              <div><div className="font-medium text-sm text-slate-900">Show Empire Level</div><div className="text-xs text-slate-500">Display empire level on profile</div></div>
+                              <Switch checked={privacySettings.showEmpireLevel} onCheckedChange={(v) => setPrivacySettings({...privacySettings, showEmpireLevel: v})} />
+                           </div>
+                           <div className="flex items-center justify-between p-3 bg-slate-50 rounded border border-slate-100">
+                              <div><div className="font-medium text-sm text-slate-900">Show Alliance Tag</div><div className="text-xs text-slate-500">Display alliance membership</div></div>
+                              <Switch checked={privacySettings.showAllianceTag} onCheckedChange={(v) => setPrivacySettings({...privacySettings, showAllianceTag: v})} />
+                           </div>
+                           <div className="flex items-center justify-between p-3 bg-slate-50 rounded border border-slate-100">
+                              <div><div className="font-medium text-sm text-slate-900">Hide From Leaderboard</div><div className="text-xs text-slate-500">Remove yourself from public rankings</div></div>
+                              <Switch checked={privacySettings.hideFromLeaderboard} onCheckedChange={(v) => setPrivacySettings({...privacySettings, hideFromLeaderboard: v})} />
+                           </div>
+                           <div className="flex items-center justify-between p-3 bg-slate-50 rounded border border-slate-100">
+                              <div><div className="font-medium text-sm text-slate-900">Show Achievement Progress</div><div className="text-xs text-slate-500">Display incomplete achievements</div></div>
+                              <Switch checked={privacySettings.showAchievementProgress} onCheckedChange={(v) => setPrivacySettings({...privacySettings, showAchievementProgress: v})} />
+                           </div>
+                           <div className="space-y-2">
+                              <label className="text-xs font-medium text-slate-700">Profile Visibility</label>
+                              <Select value={privacySettings.profileVisibility} onValueChange={(v) => setPrivacySettings({...privacySettings, profileVisibility: v})}>
+                                 <SelectTrigger className="bg-slate-50 border-slate-200 h-9"><SelectValue /></SelectTrigger>
+                                 <SelectContent>
+                                    <SelectItem value="everyone">Everyone</SelectItem>
+                                    <SelectItem value="alliance">Alliance Only</SelectItem>
+                                    <SelectItem value="friends">Friends Only</SelectItem>
+                                    <SelectItem value="nobody">Nobody</SelectItem>
+                                 </SelectContent>
+                              </Select>
+                           </div>
+                           <div className="space-y-2">
+                              <label className="text-xs font-medium text-slate-700">Battle Reports Visibility</label>
+                              <Select value={privacySettings.showBattleReports} onValueChange={(v) => setPrivacySettings({...privacySettings, showBattleReports: v})}>
+                                 <SelectTrigger className="bg-slate-50 border-slate-200 h-9"><SelectValue /></SelectTrigger>
+                                 <SelectContent>
+                                    <SelectItem value="everyone">Everyone</SelectItem>
+                                    <SelectItem value="alliance">Alliance Only</SelectItem>
+                                    <SelectItem value="self">Self Only</SelectItem>
+                                    <SelectItem value="nobody">Nobody</SelectItem>
+                                 </SelectContent>
+                              </Select>
+                           </div>
+                        </div>
+                     </div>
+
+                     <div className="flex items-center justify-between p-4 bg-slate-50 rounded border border-slate-100">
+                        <div><div className="font-medium text-slate-900">Block Stranger Messages</div><div className="text-xs text-slate-500">Only receive messages from alliance members and friends</div></div>
+                        <Switch checked={privacySettings.blockStrangers} onCheckedChange={(v) => setPrivacySettings({...privacySettings, blockStrangers: v})} />
+                     </div>
+
+                     <Button className="w-full" onClick={() => savePlayerOptionsMutation.mutate()} disabled={savePlayerOptionsMutation.isPending}>
+                        <Save className="w-4 h-4 mr-2" /> Save Privacy Settings
+                     </Button>
+                  </CardContent>
+               </Card>
+            </TabsContent>
+
+            {/* ACCESSIBILITY TAB */}
+            <TabsContent value="accessibility" className="mt-6">
+               <Card className="bg-white border-slate-200">
+                  <CardHeader>
+                     <CardTitle className="flex items-center gap-2 text-slate-900">
+                        <Eye className="w-5 h-5 text-indigo-600" /> Accessibility
+                     </CardTitle>
+                     <CardDescription>Visual, motion, and navigation accessibility options.</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-4">
+                           <h3 className="font-bold text-slate-900 border-b border-slate-100 pb-2">Visual</h3>
+                           <div className="space-y-2">
+                              <label className="text-xs font-medium text-slate-700">Font Size</label>
+                              <Select value={accessibilitySettings.fontSize} onValueChange={(v) => setAccessibilitySettings({...accessibilitySettings, fontSize: v})}>
+                                 <SelectTrigger className="bg-slate-50 border-slate-200 h-9"><SelectValue /></SelectTrigger>
+                                 <SelectContent>
+                                    <SelectItem value="small">Small</SelectItem>
+                                    <SelectItem value="medium">Medium (Default)</SelectItem>
+                                    <SelectItem value="large">Large</SelectItem>
+                                    <SelectItem value="x-large">Extra Large</SelectItem>
+                                 </SelectContent>
+                              </Select>
+                           </div>
+                           <div className="space-y-2">
+                              <label className="text-xs font-medium text-slate-700">Color Blind Mode</label>
+                              <Select value={accessibilitySettings.colorBlindMode} onValueChange={(v) => setAccessibilitySettings({...accessibilitySettings, colorBlindMode: v})}>
+                                 <SelectTrigger className="bg-slate-50 border-slate-200 h-9"><SelectValue /></SelectTrigger>
+                                 <SelectContent>
+                                    <SelectItem value="none">None</SelectItem>
+                                    <SelectItem value="protanopia">Protanopia (Red-Green)</SelectItem>
+                                    <SelectItem value="deuteranopia">Deuteranopia (Green-Red)</SelectItem>
+                                    <SelectItem value="tritanopia">Tritanopia (Blue-Yellow)</SelectItem>
+                                    <SelectItem value="achromatopsia">Achromatopsia (Grayscale)</SelectItem>
+                                 </SelectContent>
+                              </Select>
+                           </div>
+                           <div className="flex items-center justify-between p-3 bg-slate-50 rounded border border-slate-100">
+                              <div><div className="font-medium text-sm text-slate-900">High Contrast</div><div className="text-xs text-slate-500">Increase visual contrast</div></div>
+                              <Switch checked={accessibilitySettings.highContrast} onCheckedChange={(v) => setAccessibilitySettings({...accessibilitySettings, highContrast: v})} />
+                           </div>
+                           <div className="flex items-center justify-between p-3 bg-slate-50 rounded border border-slate-100">
+                              <div><div className="font-medium text-sm text-slate-900">Focus Indicators</div><div className="text-xs text-slate-500">Show focus outlines on interactive elements</div></div>
+                              <Switch checked={accessibilitySettings.focusIndicators} onCheckedChange={(v) => setAccessibilitySettings({...accessibilitySettings, focusIndicators: v})} />
+                           </div>
+                        </div>
+
+                        <div className="space-y-4">
+                           <h3 className="font-bold text-slate-900 border-b border-slate-100 pb-2">Motion & Interaction</h3>
+                           <div className="flex items-center justify-between p-3 bg-slate-50 rounded border border-slate-100">
+                              <div><div className="font-medium text-sm text-slate-900">Reduced Motion</div><div className="text-xs text-slate-500">Minimize animations and transitions</div></div>
+                              <Switch checked={accessibilitySettings.reducedMotion} onCheckedChange={(v) => setAccessibilitySettings({...accessibilitySettings, reducedMotion: v})} />
+                           </div>
+                           <div className="flex items-center justify-between p-3 bg-slate-50 rounded border border-slate-100">
+                              <div><div className="font-medium text-sm text-slate-900">Simplify Transitions</div><div className="text-xs text-slate-500">Use instant transitions instead of animations</div></div>
+                              <Switch checked={accessibilitySettings.simplifyTransitions} onCheckedChange={(v) => setAccessibilitySettings({...accessibilitySettings, simplifyTransitions: v})} />
+                           </div>
+                           <div className="flex items-center justify-between p-3 bg-slate-50 rounded border border-slate-100">
+                              <div><div className="font-medium text-sm text-slate-900">Pause Animations on Hover</div><div className="text-xs text-slate-500">Stop animations when hovering</div></div>
+                              <Switch checked={accessibilitySettings.pauseAnimationsOnHover} onCheckedChange={(v) => setAccessibilitySettings({...accessibilitySettings, pauseAnimationsOnHover: v})} />
+                           </div>
+                           <div className="flex items-center justify-between p-3 bg-slate-50 rounded border border-slate-100">
+                              <div><div className="font-medium text-sm text-slate-900">Keyboard Navigation</div><div className="text-xs text-slate-500">Navigate with keyboard shortcuts</div></div>
+                              <Switch checked={accessibilitySettings.keyboardNavigation} onCheckedChange={(v) => setAccessibilitySettings({...accessibilitySettings, keyboardNavigation: v})} />
+                           </div>
+                        </div>
+                     </div>
+
+                     <Separator />
+
+                     <div className="space-y-4">
+                        <h3 className="font-bold text-slate-900 border-b border-slate-100 pb-2">Screen Reader & Notifications</h3>
+                        <div className="flex items-center justify-between p-3 bg-slate-50 rounded border border-slate-100">
+                           <div><div className="font-medium text-sm text-slate-900">Screen Reader Mode</div><div className="text-xs text-slate-500">Optimize UI for screen readers</div></div>
+                           <Switch checked={accessibilitySettings.screenReaderMode} onCheckedChange={(v) => setAccessibilitySettings({...accessibilitySettings, screenReaderMode: v})} />
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-slate-50 rounded border border-slate-100">
+                           <div><div className="font-medium text-sm text-slate-900">Announce Notifications</div><div className="text-xs text-slate-500">Announce new notifications audibly</div></div>
+                           <Switch checked={accessibilitySettings.announceNotifications} onCheckedChange={(v) => setAccessibilitySettings({...accessibilitySettings, announceNotifications: v})} />
+                        </div>
+                     </div>
+
+                     <Button className="w-full" onClick={() => savePlayerOptionsMutation.mutate()} disabled={savePlayerOptionsMutation.isPending}>
+                        <Save className="w-4 h-4 mr-2" /> Save Accessibility Settings
+                     </Button>
+                  </CardContent>
+               </Card>
+            </TabsContent>
+
+            {/* DATA MANAGEMENT TAB */}
+            <TabsContent value="data" className="mt-6">
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <Card className="bg-white border-slate-200">
+                     <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-slate-900">
+                           <Database className="w-5 h-5 text-cyan-600" /> Data & Sync
+                        </CardTitle>
+                        <CardDescription>Manage game data, cloud sync, and auto-save.</CardDescription>
+                     </CardHeader>
+                     <CardContent className="space-y-4">
+                        <div className="flex items-center justify-between p-3 bg-slate-50 rounded border border-slate-100">
+                           <div><div className="font-medium text-sm text-slate-900">Cloud Sync</div><div className="text-xs text-slate-500">Sync settings across devices</div></div>
+                           <Switch checked={dataSettings.enableCloudSync} onCheckedChange={(v) => setDataSettings({...dataSettings, enableCloudSync: v})} />
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-slate-50 rounded border border-slate-100">
+                           <div><div className="font-medium text-sm text-slate-900">Compression</div><div className="text-xs text-slate-500">Compress exported data files</div></div>
+                           <Switch checked={dataSettings.compressionEnabled} onCheckedChange={(v) => setDataSettings({...dataSettings, compressionEnabled: v})} />
+                        </div>
+                        <div className="space-y-2">
+                           <div className="flex justify-between items-center">
+                              <label className="text-xs font-medium text-slate-700">Auto-Save Interval</label>
+                              <span className="text-xs font-mono text-slate-600">{dataSettings.autoSaveInterval}s</span>
+                           </div>
+                           <Slider value={[dataSettings.autoSaveInterval]} min={10} max={120} step={5} onValueChange={(v) => setDataSettings({...dataSettings, autoSaveInterval: v[0]})} />
+                        </div>
+                        <div className="space-y-2">
+                           <label className="text-xs font-medium text-slate-700">Export Format</label>
+                           <Select value={dataSettings.exportFormat} onValueChange={(v) => setDataSettings({...dataSettings, exportFormat: v})}>
+                              <SelectTrigger className="bg-slate-50 border-slate-200 h-9"><SelectValue /></SelectTrigger>
+                              <SelectContent>
+                                 <SelectItem value="json">JSON</SelectItem>
+                                 <SelectItem value="csv">CSV</SelectItem>
+                                 <SelectItem value="xml">XML</SelectItem>
+                              </SelectContent>
+                           </Select>
+                        </div>
+                        <div className="text-xs text-slate-500">
+                           {dataSettings.lastExportDate ? `Last export: ${new Date(dataSettings.lastExportDate).toLocaleDateString()}` : "No exports yet"}
+                        </div>
+                        <Button className="w-full" onClick={() => savePlayerOptionsMutation.mutate()} disabled={savePlayerOptionsMutation.isPending}>
+                           <Save className="w-4 h-4 mr-2" /> Save Data Settings
+                        </Button>
+                     </CardContent>
+                  </Card>
+
+                  <Card className="bg-white border-slate-200">
+                     <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-slate-900">
+                           <Download className="w-5 h-5 text-green-600" /> Export & Import
+                        </CardTitle>
+                        <CardDescription>Backup or transfer your settings between accounts.</CardDescription>
+                     </CardHeader>
+                     <CardContent className="space-y-4">
+                        <div className="p-4 bg-slate-50 rounded border border-slate-100">
+                           <div className="text-sm font-medium text-slate-900 mb-1">Export Settings</div>
+                           <div className="text-xs text-slate-500 mb-3">Download all your settings as a JSON file that can be imported later.</div>
+                           <Button variant="outline" className="w-full" onClick={() => exportSettingsMutation.mutate()} disabled={exportSettingsMutation.isPending}>
+                              <Download className="w-4 h-4 mr-2" /> {exportSettingsMutation.isPending ? "Exporting..." : "Export Settings File"}
+                           </Button>
+                        </div>
+
+                        <div className="p-4 bg-slate-50 rounded border border-slate-100">
+                           <div className="text-sm font-medium text-slate-900 mb-1">Import Settings</div>
+                           <div className="text-xs text-slate-500 mb-3">Restore settings from a previously exported file.</div>
+                           <label className="flex items-center justify-center w-full h-10 border-2 border-dashed border-slate-300 rounded-lg cursor-pointer hover:border-primary transition-colors">
+                              <Upload className="w-4 h-4 mr-2 text-slate-500" />
+                              <span className="text-sm text-slate-600">Choose Settings File</span>
+                              <input type="file" accept=".json" className="hidden" onChange={async (e) => {
+                                 const file = e.target.files?.[0];
+                                 if (!file) return;
+                                 try {
+                                    const text = await file.text();
+                                    const data = JSON.parse(text);
+                                    await fetchJson("/api/settings/player/import", { method: "POST", body: JSON.stringify(data) });
+                                    toast({ title: "Settings imported", description: "Your settings have been restored." });
+                                    queryClient.invalidateQueries({ queryKey: ["player-options"] });
+                                    queryClient.invalidateQueries({ queryKey: ["player-gameplay"] });
+                                    queryClient.invalidateQueries({ queryKey: ["player-accessibility"] });
+                                    queryClient.invalidateQueries({ queryKey: ["player-data"] });
+                                 } catch (err) {
+                                    toast({ title: "Import failed", description: "Invalid settings file.", variant: "destructive" });
+                                 }
+                              }} />
+                           </label>
+                        </div>
+
+                        <div className="p-3 bg-blue-50 rounded border border-blue-200 text-xs text-blue-700">
+                           <strong>Tip:</strong> Export your settings before making major changes so you can restore them if needed.
+                        </div>
+                     </CardContent>
+                  </Card>
+               </div>
+            </TabsContent>
 
            {isActualAdmin && (
            <TabsContent value="admin-access" className="mt-6">

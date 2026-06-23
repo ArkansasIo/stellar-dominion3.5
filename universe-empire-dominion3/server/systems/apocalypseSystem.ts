@@ -1,4 +1,3 @@
-import { SCHEDULER_CONFIG } from "../../shared/config/xenoberage/schedulerConfig";
 import { COLONIZATION_CONFIG } from "../../shared/config/xenoberage/colonizationConfig";
 
 export interface ApocalypseEvent {

@@ -1,6 +1,6 @@
 import { Router, Request, Response } from "express";
 import { eq, desc, and, or, like, asc, sql } from "drizzle-orm";
-import { db } from "./db";
+import { db, runTransaction } from "./db";
 import {
   users,
   playerStates,
@@ -575,25 +575,47 @@ export function registerRoutes(app: any) {
         return res.status(400).json({ message: `Bid must be at least ${minimumBid}` });
       }
 
-      await db.insert(auctionBids).values({
-        auctionId,
-        bidderId: userId,
-        bidderName: user.username || "Unknown Bidder",
-        bidAmount,
+      const result = await runTransaction(async (tx) => {
+        const [playerState] = await tx.select({ resources: playerStates.resources, id: playerStates.id }).from(playerStates).where(eq(playerStates.userId, userId)).limit(1);
+        const credits = Number((playerState?.resources as any)?.credits || 0);
+        if (credits < bidAmount) {
+          throw new Error(`Insufficient credits. You have ${credits}, bid requires ${bidAmount}`);
+        }
+
+        if (listing.currentBidderId && listing.currentBidderId !== userId) {
+          const [prevBidderState] = await tx.select({ resources: playerStates.resources, id: playerStates.id }).from(playerStates).where(eq(playerStates.userId, listing.currentBidderId)).limit(1);
+          if (prevBidderState) {
+            const prevCredits = Number((prevBidderState.resources as any)?.credits || 0);
+            const refundAmount = Number(listing.currentBid || 0);
+            await tx.update(playerStates).set({ resources: { ...(prevBidderState.resources as any), credits: prevCredits + refundAmount } }).where(eq(playerStates.id, prevBidderState.id));
+          }
+        }
+
+        const newCredits = credits - bidAmount;
+        await tx.update(playerStates).set({ resources: { ...(playerState?.resources as any), credits: newCredits } }).where(eq(playerStates.id, playerState.id));
+
+        await tx.insert(auctionBids).values({
+          auctionId,
+          bidderId: userId,
+          bidderName: user.username || "Unknown Bidder",
+          bidAmount,
+        });
+
+        const [updated] = await tx
+          .update(auctionListings)
+          .set({
+            currentBid: bidAmount,
+            currentBidderId: userId,
+            currentBidderName: user.username || "Unknown Bidder",
+            bidCount: (listing.bidCount || 0) + 1,
+          })
+          .where(eq(auctionListings.id, auctionId))
+          .returning();
+
+        return updated;
       });
 
-      const [updated] = await db
-        .update(auctionListings)
-        .set({
-          currentBid: bidAmount,
-          currentBidderId: userId,
-          currentBidderName: user.username || "Unknown Bidder",
-          bidCount: (listing.bidCount || 0) + 1,
-        })
-        .where(eq(auctionListings.id, auctionId))
-        .returning();
-
-      res.json(updated);
+      res.json(result);
     } catch (error: any) {
       res.status(500).json({ message: error?.message || "Failed to place bid" });
     }
@@ -613,27 +635,51 @@ export function registerRoutes(app: any) {
       if (listing.sellerId === userId) return res.status(400).json({ message: "Cannot buyout your own listing" });
       if (!listing.buyoutPrice || listing.buyoutPrice <= 0) return res.status(400).json({ message: "Buyout not available" });
 
-      const [updated] = await db
-        .update(auctionListings)
-        .set({
-          status: "sold",
-          completedAt: new Date(),
-          currentBid: listing.buyoutPrice,
-          currentBidderId: userId,
-          currentBidderName: user.username || "Unknown Buyer",
-          bidCount: Math.max(1, listing.bidCount || 0),
-        })
-        .where(eq(auctionListings.id, auctionId))
-        .returning();
+      const buyoutCost = Number(listing.buyoutPrice);
 
-      await db.insert(auctionBids).values({
-        auctionId,
-        bidderId: userId,
-        bidderName: user.username || "Unknown Buyer",
-        bidAmount: listing.buyoutPrice,
+      const result = await runTransaction(async (tx) => {
+        const [playerState] = await tx.select({ resources: playerStates.resources, id: playerStates.id }).from(playerStates).where(eq(playerStates.userId, userId)).limit(1);
+        const credits = Number((playerState?.resources as any)?.credits || 0);
+        if (credits < buyoutCost) {
+          throw new Error(`Insufficient credits. You have ${credits}, buyout requires ${buyoutCost}`);
+        }
+
+        if (listing.currentBidderId && listing.currentBidderId !== userId) {
+          const [prevBidderState] = await tx.select({ resources: playerStates.resources, id: playerStates.id }).from(playerStates).where(eq(playerStates.userId, listing.currentBidderId)).limit(1);
+          if (prevBidderState) {
+            const prevCredits = Number((prevBidderState.resources as any)?.credits || 0);
+            const refundAmount = Number(listing.currentBid || 0);
+            await tx.update(playerStates).set({ resources: { ...(prevBidderState.resources as any), credits: prevCredits + refundAmount } }).where(eq(playerStates.id, prevBidderState.id));
+          }
+        }
+
+        const newCredits = credits - buyoutCost;
+        await tx.update(playerStates).set({ resources: { ...(playerState?.resources as any), credits: newCredits } }).where(eq(playerStates.id, playerState.id));
+
+        const [updated] = await tx
+          .update(auctionListings)
+          .set({
+            status: "sold",
+            completedAt: new Date(),
+            currentBid: buyoutCost,
+            currentBidderId: userId,
+            currentBidderName: user.username || "Unknown Buyer",
+            bidCount: Math.max(1, listing.bidCount || 0),
+          })
+          .where(eq(auctionListings.id, auctionId))
+          .returning();
+
+        await tx.insert(auctionBids).values({
+          auctionId,
+          bidderId: userId,
+          bidderName: user.username || "Unknown Buyer",
+          bidAmount: buyoutCost,
+        });
+
+        return updated;
       });
 
-      res.json(updated);
+      res.json(result);
     } catch (error: any) {
       res.status(500).json({ message: error?.message || "Failed buyout" });
     }

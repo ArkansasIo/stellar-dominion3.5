@@ -5,7 +5,6 @@
  * ============================================================================
  */
 
-export { SCHEDULER_CONFIG, type SchedulerConfig } from './schedulerConfig';
 export {
   UNIVERSE,
   RATING,
