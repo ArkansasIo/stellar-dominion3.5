@@ -22,6 +22,7 @@ interface CronJob {
   job_type: string;
   schedule_type: string;
   interval_ms: number;
+  cron_expression: string | null;
   enabled: boolean;
   last_run_at: string | null;
   last_run_duration_ms: number;
@@ -94,6 +95,9 @@ export default function CronDashboard() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("jobs");
+  const [editingJob, setEditingJob] = useState<string | null>(null);
+  const [editInterval, setEditInterval] = useState<number>(10000);
+  const [editCronExpr, setEditCronExpr] = useState<string>("");
 
   const { data: jobsData } = useQuery<{ success: boolean; jobs: CronJob[] }>({
     queryKey: ["/api/cron/jobs"],
@@ -158,6 +162,24 @@ export default function CronDashboard() {
     },
   });
 
+  const scheduleMutation = useMutation({
+    mutationFn: async ({ jobId, intervalMs, cronExpression }: { jobId: string; intervalMs?: number; cronExpression?: string }) => {
+      const res = await fetch(`/api/cron/jobs/${jobId}/schedule`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ intervalMs, cronExpression }),
+      });
+      if (!res.ok) throw new Error("Failed");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/cron/jobs"] });
+      toast({ title: "Schedule updated" });
+      setEditingJob(null);
+    },
+  });
+
   const jobs = jobsData?.jobs || [];
   const logs = logsData?.logs || [];
   const ticks = ticksData?.ticks || [];
@@ -206,6 +228,7 @@ export default function CronDashboard() {
           <TabsContent value="jobs" className="space-y-3">
             {jobs.map((job) => {
               const Icon = JOB_ICONS[job.id] || Clock;
+              const isEditing = editingJob === job.id;
               return (
                 <Card key={job.id} className={cn("transition-all", !job.enabled && "opacity-60")}>
                   <CardContent className="p-4">
@@ -234,6 +257,21 @@ export default function CronDashboard() {
                         <Button
                           size="sm"
                           variant="outline"
+                          onClick={() => {
+                            if (isEditing) {
+                              setEditingJob(null);
+                            } else {
+                              setEditingJob(job.id);
+                              setEditInterval(job.interval_ms);
+                              setEditCronExpr(job.cron_expression || "");
+                            }
+                          }}
+                        >
+                          <Settings className="w-3 h-3" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
                           onClick={() => toggleMutation.mutate({ jobId: job.id, enabled: !job.enabled })}
                           disabled={toggleMutation.isPending}
                         >
@@ -251,6 +289,54 @@ export default function CronDashboard() {
                     </div>
                     {job.last_run_error && (
                       <div className="mt-2 p-2 bg-red-50 rounded text-xs text-red-700">{job.last_run_error}</div>
+                    )}
+                    {isEditing && (
+                      <div className="mt-3 p-3 bg-slate-50 rounded border space-y-3">
+                        <div className="text-xs font-medium text-muted-foreground">Schedule Configuration</div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="text-xs text-muted-foreground">Interval (ms)</label>
+                            <input
+                              type="number"
+                              value={editInterval}
+                              onChange={(e) => setEditInterval(parseInt(e.target.value) || 0)}
+                              className="w-full mt-1 px-2 py-1 text-xs border rounded bg-white"
+                            />
+                            <div className="text-[10px] text-muted-foreground mt-1">
+                              = {formatInterval(editInterval)}
+                            </div>
+                          </div>
+                          <div>
+                            <label className="text-xs text-muted-foreground">Cron Expression (optional)</label>
+                            <input
+                              type="text"
+                              value={editCronExpr}
+                              onChange={(e) => setEditCronExpr(e.target.value)}
+                              placeholder="*/5 * * * *"
+                              className="w-full mt-1 px-2 py-1 text-xs border rounded bg-white font-mono"
+                            />
+                            <div className="text-[10px] text-muted-foreground mt-1">
+                              e.g. */10 * * * * (every 10 min)
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            onClick={() => scheduleMutation.mutate({
+                              jobId: job.id,
+                              intervalMs: editInterval,
+                              cronExpression: editCronExpr || undefined,
+                            })}
+                            disabled={scheduleMutation.isPending}
+                          >
+                            Save Schedule
+                          </Button>
+                          <Button size="sm" variant="outline" onClick={() => setEditingJob(null)}>
+                            Cancel
+                          </Button>
+                        </div>
+                      </div>
                     )}
                   </CardContent>
                 </Card>

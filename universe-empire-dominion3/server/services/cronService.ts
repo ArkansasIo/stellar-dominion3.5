@@ -1,4 +1,6 @@
 import { pool } from "../db";
+import { CronExpressionParser } from "cron-parser";
+
 export function cronLog(message: string, source = "cron", level: "info" | "success" | "error" | "warn" = "info") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
     hour: "numeric",
@@ -78,6 +80,17 @@ export async function registerCronJob(config: CronJobConfig): Promise<void> {
   }
 }
 
+function calculateCronIntervalMs(cronExpression: string): number | null {
+  try {
+    const interval = CronExpressionParser.parse(cronExpression);
+    const now = new Date();
+    const next = interval.next().toDate();
+    return next.getTime() - now.getTime();
+  } catch {
+    return null;
+  }
+}
+
 export function startCronJob(jobId: string): void {
   if (activeTimers.has(jobId)) {
     clearInterval(activeTimers.get(jobId)!);
@@ -87,12 +100,40 @@ export function startCronJob(jobId: string): void {
     .then(async (result) => {
       if (result.rows.length === 0) return;
       const job = result.rows[0] as CronJobRecord;
-      const intervalMs = job.intervalMs || 60000;
 
-      cronLog(`Starting cron job: ${job.name} (every ${Math.round(intervalMs / 1000)}s)`, "cron");
+      let intervalMs = job.intervalMs || 60000;
+      let scheduleDesc = `every ${Math.round(intervalMs / 1000)}s`;
+
+      if (job.cronExpression && job.scheduleType === "cron") {
+        const cronMs = calculateCronIntervalMs(job.cronExpression);
+        if (cronMs && cronMs > 0) {
+          intervalMs = cronMs;
+          scheduleDesc = `cron: ${job.cronExpression} (next in ${Math.round(intervalMs / 1000)}s)`;
+        }
+      }
+
+      cronLog(`Starting cron job: ${job.name} (${scheduleDesc})`, "cron");
 
       const timer = setInterval(async () => {
         await executeJob(job.id);
+        if (job.cronExpression && job.scheduleType === "cron") {
+          const newMs = calculateCronIntervalMs(job.cronExpression);
+          if (newMs && newMs > 0) {
+            clearInterval(activeTimers.get(jobId)!);
+            const newTimer = setInterval(async () => {
+              await executeJob(jobId);
+              if (job.cronExpression) {
+                const nextMs = calculateCronIntervalMs(job.cronExpression);
+                if (nextMs && nextMs > 0) {
+                  clearInterval(activeTimers.get(jobId)!);
+                  const renewed = setInterval(() => executeJob(jobId), nextMs);
+                  activeTimers.set(jobId, renewed);
+                }
+              }
+            }, newMs);
+            activeTimers.set(jobId, newTimer);
+          }
+        }
       }, intervalMs);
 
       activeTimers.set(jobId, timer);
@@ -140,6 +181,12 @@ export async function executeJob(jobId: string): Promise<CronJobResult | null> {
        VALUES ($1, $2, $3, $4, 'success', $5, $6, $7)`,
       [jobId, startedAt, new Date(), durationMs, result.recordsProcessed || 0, result.recordsAffected || 0, JSON.stringify(result.metadata || {})]
     );
+
+    if (job.jobType === "one-shot") {
+      stopCronJob(jobId);
+      await pool.query("UPDATE server_cron_jobs SET enabled = false, updated_at = now() WHERE id = $1", [jobId]);
+      cronLog(`One-shot job ${jobId} completed and disabled`, "cron", "success");
+    }
 
     return result;
   } catch (error: any) {
@@ -226,10 +273,106 @@ export async function deleteTimer(id: string): Promise<void> {
   await pool.query("DELETE FROM server_timers WHERE id = $1", [id]);
 }
 
+let timerPoller: NodeJS.Timeout | null = null;
+const timerFireHandlers: Map<string, (params: Record<string, any>) => Promise<void>> = new Map();
+
+export function registerTimerFireHandler(timerType: string, handler: (params: Record<string, any>) => Promise<void>): void {
+  timerFireHandlers.set(timerType, handler);
+}
+
+export function startTimerPoller(intervalMs = 5000): void {
+  if (timerPoller) clearInterval(timerPoller);
+
+  timerPoller = setInterval(async () => {
+    try {
+      const result = await pool.query(
+        `SELECT * FROM server_timers WHERE enabled = true AND end_time <= now()`
+      );
+
+      for (const timer of result.rows) {
+        try {
+          const handler = timerFireHandlers.get(timer.timer_type);
+          if (handler) {
+            await handler(timer.params || {});
+          }
+
+          if (timer.max_repeats === -1) {
+            if (timer.interval_ms && timer.interval_ms > 0) {
+              const nextEnd = new Date(Date.now() + timer.interval_ms);
+              await pool.query(
+                `UPDATE server_timers SET end_time = $2, current_repeat = current_repeat + 1, last_fired_at = now() WHERE id = $1`,
+                [timer.id, nextEnd]
+              );
+            } else {
+              await pool.query("DELETE FROM server_timers WHERE id = $1", [timer.id]);
+            }
+          } else if (timer.current_repeat + 1 >= timer.max_repeats) {
+            await pool.query("DELETE FROM server_timers WHERE id = $1", [timer.id]);
+          } else {
+            const nextEnd = new Date(Date.now() + (timer.interval_ms || 60000));
+            await pool.query(
+              `UPDATE server_timers SET end_time = $2, current_repeat = current_repeat + 1, last_fired_at = now() WHERE id = $1`,
+              [timer.id, nextEnd]
+            );
+          }
+
+          cronLog(`Timer fired: ${timer.name} (${timer.timer_type})`, "timer");
+        } catch (e: any) {
+          cronLog(`Timer fire error ${timer.id}: ${e.message}`, "timer", "error");
+        }
+      }
+    } catch (e: any) {
+      cronLog(`Timer poller error: ${e.message}`, "timer", "error");
+    }
+  }, intervalMs);
+
+  cronLog(`Timer poller started (interval: ${intervalMs}ms)`, "timer");
+}
+
+export function stopTimerPoller(): void {
+  if (timerPoller) {
+    clearInterval(timerPoller);
+    timerPoller = null;
+    cronLog("Timer poller stopped", "timer", "warn");
+  }
+}
+
+export async function updateCronJobSchedule(jobId: string, intervalMs?: number, cronExpression?: string): Promise<boolean> {
+  const updates: string[] = [];
+  const values: any[] = [jobId];
+  let paramIndex = 2;
+
+  if (intervalMs !== undefined) {
+    updates.push(`interval_ms = $${paramIndex}`);
+    values.push(intervalMs);
+    paramIndex++;
+  }
+  if (cronExpression !== undefined) {
+    updates.push(`cron_expression = $${paramIndex}`);
+    values.push(cronExpression || null);
+    paramIndex++;
+    if (cronExpression) {
+      updates.push(`schedule_type = 'cron'`);
+    } else {
+      updates.push(`schedule_type = 'interval'`);
+    }
+  }
+
+  if (updates.length === 0) return false;
+
+  updates.push(`updated_at = now()`);
+  await pool.query(`UPDATE server_cron_jobs SET ${updates.join(", ")} WHERE id = $1`, values);
+
+  stopCronJob(jobId);
+  startCronJob(jobId);
+  return true;
+}
+
 export function shutdownAllCronJobs(): void {
   for (const [jobId, timer] of activeTimers) {
     clearInterval(timer);
   }
   activeTimers.clear();
+  stopTimerPoller();
   cronLog("All cron jobs stopped", "cron", "warn");
 }

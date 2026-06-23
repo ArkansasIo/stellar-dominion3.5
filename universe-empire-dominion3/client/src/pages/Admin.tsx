@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { ShieldAlert, Users, Activity, Server, Database, Ban, Lock, Eye, Terminal, RefreshCw, AlertTriangle, UserCog, Trash2 } from "lucide-react";
+import { ShieldAlert, Users, Activity, Server, Database, Ban, Lock, Eye, Terminal, RefreshCw, AlertTriangle, UserCog, Trash2, Clock } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -99,6 +99,44 @@ type AdminOperationsResponse = {
    }>;
 };
 
+type CronJobRecord = {
+   id: string;
+   name: string;
+   description: string | null;
+   job_type: string;
+   schedule_type: string;
+   interval_ms: number;
+   enabled: boolean;
+   last_run_at: string | null;
+   last_run_duration_ms: number;
+   last_run_status: string;
+   last_run_error: string | null;
+   run_count: number;
+   consecutive_failures: number;
+};
+
+type CronJobsResponse = {
+   success: boolean;
+   jobs: CronJobRecord[];
+};
+
+type CronLogRecord = {
+   id: number;
+   job_id: string;
+   started_at: string;
+   finished_at: string | null;
+   duration_ms: number;
+   status: string;
+   records_processed: number;
+   records_affected: number;
+   error_message: string | null;
+};
+
+type CronLogsResponse = {
+   success: boolean;
+   logs: CronLogRecord[];
+};
+
 async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
    const response = await fetch(url, {
       credentials: "include",
@@ -159,6 +197,46 @@ export default function Admin() {
       queryKey: ["admin-operations"],
       queryFn: () => fetchJson<AdminOperationsResponse>("/api/admin/operations"),
       refetchInterval: 15000,
+   });
+
+   const { data: cronJobsData } = useQuery<CronJobsResponse>({
+      queryKey: ["admin-cron-jobs"],
+      queryFn: () => fetchJson<CronJobsResponse>("/api/cron/jobs"),
+      refetchInterval: 10000,
+   });
+
+   const { data: cronLogsData } = useQuery<CronLogsResponse>({
+      queryKey: ["admin-cron-logs"],
+      queryFn: () => fetchJson<CronLogsResponse>("/api/cron/logs?limit=30"),
+      refetchInterval: 10000,
+   });
+
+   const toggleCronMutation = useMutation({
+      mutationFn: ({ jobId, enabled }: { jobId: string; enabled: boolean }) =>
+         fetchJson(`/api/cron/jobs/${jobId}/toggle`, {
+            method: "POST",
+            body: JSON.stringify({ enabled }),
+         }),
+      onSuccess: () => {
+         queryClient.invalidateQueries({ queryKey: ["admin-cron-jobs"] });
+         toast({ title: "Cron job updated", description: "Job toggle state saved." });
+      },
+      onError: (error: Error) => {
+         toast({ title: "Toggle failed", description: error.message, variant: "destructive" });
+      },
+   });
+
+   const runCronMutation = useMutation({
+      mutationFn: (jobId: string) =>
+         fetchJson(`/api/cron/jobs/${jobId}/run`, { method: "POST" }),
+      onSuccess: () => {
+         queryClient.invalidateQueries({ queryKey: ["admin-cron-jobs"] });
+         queryClient.invalidateQueries({ queryKey: ["admin-cron-logs"] });
+         toast({ title: "Job executed", description: "Cron job triggered successfully." });
+      },
+      onError: (error: Error) => {
+         toast({ title: "Execution failed", description: error.message, variant: "destructive" });
+      },
    });
 
    const updateStatusMutation = useMutation({
@@ -392,7 +470,8 @@ export default function Admin() {
               <TabsTrigger value="users" className="font-orbitron"><Users className="w-4 h-4 mr-2" /> User Management</TabsTrigger>
               <TabsTrigger value="console" className="font-orbitron"><Terminal className="w-4 h-4 mr-2" /> System Console</TabsTrigger>
               <TabsTrigger value="config" className="font-orbitron"><RefreshCw className="w-4 h-4 mr-2" /> Global Config</TabsTrigger>
-              <TabsTrigger value="logs" className="font-orbitron"><Activity className="w-4 h-4 mr-2" /> Audit Logs</TabsTrigger>
+               <TabsTrigger value="logs" className="font-orbitron"><Activity className="w-4 h-4 mr-2" /> Audit Logs</TabsTrigger>
+               <TabsTrigger value="cron" className="font-orbitron"><Clock className="w-4 h-4 mr-2" /> Cron Jobs</TabsTrigger>
            </TabsList>
 
            {/* USERS TAB */}
@@ -624,42 +703,178 @@ export default function Admin() {
               </Card>
            </TabsContent>
            
-           {/* LOGS TAB */}
-           <TabsContent value="logs" className="mt-6">
-              <Card className="bg-white border-slate-200">
-                 <CardContent className="p-0">
-                    <Table>
-                       <TableHeader>
-                          <TableRow>
-                             <TableHead>Timestamp</TableHead>
-                             <TableHead>Level</TableHead>
-                             <TableHead>Source</TableHead>
-                             <TableHead>Event</TableHead>
-                          </TableRow>
-                       </TableHeader>
-                       <TableBody>
-                          {(auditData?.logs || []).map((log) => (
-                             <TableRow key={log.id}>
-                                <TableCell className="font-mono text-xs text-slate-500">{new Date(log.timestamp).toLocaleTimeString()}</TableCell>
-                                <TableCell>
-                                   <Badge variant="outline" className={
-                                      log.action.includes("status") ? "text-yellow-600 border-yellow-200" : "text-blue-600 border-blue-200"
-                                   }>{log.action.includes("status") ? "WARN" : "INFO"}</Badge>
-                                </TableCell>
-                                <TableCell className="text-sm font-bold text-slate-700">Admin</TableCell>
-                                <TableCell className="text-sm text-slate-600">{log.details || log.action}</TableCell>
+            {/* LOGS TAB */}
+            <TabsContent value="logs" className="mt-6">
+               <Card className="bg-white border-slate-200">
+                  <CardContent className="p-0">
+                     <Table>
+                        <TableHeader>
+                           <TableRow>
+                              <TableHead>Timestamp</TableHead>
+                              <TableHead>Level</TableHead>
+                              <TableHead>Source</TableHead>
+                              <TableHead>Event</TableHead>
+                           </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                           {(auditData?.logs || []).map((log) => (
+                              <TableRow key={log.id}>
+                                 <TableCell className="font-mono text-xs text-slate-500">{new Date(log.timestamp).toLocaleTimeString()}</TableCell>
+                                 <TableCell>
+                                    <Badge variant="outline" className={
+                                       log.action.includes("status") ? "text-yellow-600 border-yellow-200" : "text-blue-600 border-blue-200"
+                                    }>{log.action.includes("status") ? "WARN" : "INFO"}</Badge>
+                                 </TableCell>
+                                 <TableCell className="text-sm font-bold text-slate-700">Admin</TableCell>
+                                 <TableCell className="text-sm text-slate-600">{log.details || log.action}</TableCell>
+                              </TableRow>
+                           ))}
+                           {(auditData?.logs || []).length === 0 && (
+                             <TableRow>
+                               <TableCell colSpan={4} className="text-center text-slate-500 py-8">No audit entries yet.</TableCell>
                              </TableRow>
-                          ))}
-                          {(auditData?.logs || []).length === 0 && (
-                            <TableRow>
-                              <TableCell colSpan={4} className="text-center text-slate-500 py-8">No audit entries yet.</TableCell>
-                            </TableRow>
-                          )}
-                       </TableBody>
-                    </Table>
-                 </CardContent>
-              </Card>
-           </TabsContent>
+                           )}
+                        </TableBody>
+                     </Table>
+                  </CardContent>
+               </Card>
+            </TabsContent>
+
+            {/* CRON JOBS TAB */}
+            <TabsContent value="cron" className="mt-6">
+               <div className="space-y-6">
+                  <Card className="bg-white border-slate-200">
+                     <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><Clock className="w-5 h-5" /> Scheduled Cron Jobs</CardTitle>
+                        <CardDescription>Manage server-side scheduled tasks. Toggle enabled/disabled or trigger immediate execution.</CardDescription>
+                     </CardHeader>
+                     <CardContent>
+                        <Table>
+                           <TableHeader>
+                              <TableRow>
+                                 <TableHead>Job Name</TableHead>
+                                 <TableHead>Type</TableHead>
+                                 <TableHead>Interval</TableHead>
+                                 <TableHead>Status</TableHead>
+                                 <TableHead>Last Run</TableHead>
+                                 <TableHead>Runs</TableHead>
+                                 <TableHead>Failures</TableHead>
+                                 <TableHead className="text-right">Actions</TableHead>
+                              </TableRow>
+                           </TableHeader>
+                           <TableBody>
+                              {(cronJobsData?.jobs || []).map((job) => (
+                                 <TableRow key={job.id}>
+                                    <TableCell>
+                                       <div className="font-medium text-sm">{job.name}</div>
+                                       <div className="text-xs text-slate-500">{job.id}</div>
+                                    </TableCell>
+                                    <TableCell>
+                                       <Badge variant="outline" className="text-xs">{job.job_type}</Badge>
+                                    </TableCell>
+                                    <TableCell className="text-xs font-mono text-slate-600">
+                                       {job.interval_ms >= 86400000 ? `${Math.round(job.interval_ms / 86400000)}d` :
+                                        job.interval_ms >= 3600000 ? `${Math.round(job.interval_ms / 3600000)}h` :
+                                        job.interval_ms >= 60000 ? `${Math.round(job.interval_ms / 60000)}m` :
+                                        `${Math.round(job.interval_ms / 1000)}s`}
+                                    </TableCell>
+                                    <TableCell>
+                                       <Badge className={
+                                          job.enabled ?
+                                             (job.last_run_status === "error" ? "bg-yellow-100 text-yellow-700" : "bg-green-100 text-green-700") :
+                                             "bg-slate-100 text-slate-600"
+                                       }>
+                                          {job.enabled ? (job.last_run_status === "error" ? "Warning" : "Running") : "Disabled"}
+                                       </Badge>
+                                    </TableCell>
+                                    <TableCell className="text-xs text-slate-500">
+                                       {job.last_run_at ? new Date(job.last_run_at).toLocaleString() : "Never"}
+                                       {job.last_run_duration_ms > 0 && (
+                                          <div className="text-xs text-slate-400">{job.last_run_duration_ms}ms</div>
+                                       )}
+                                    </TableCell>
+                                    <TableCell className="text-xs font-mono">{job.run_count}</TableCell>
+                                    <TableCell>
+                                       <span className={`text-xs font-mono ${job.consecutive_failures > 0 ? "text-red-600" : "text-slate-500"}`}>
+                                          {job.consecutive_failures}
+                                       </span>
+                                    </TableCell>
+                                    <TableCell className="text-right space-x-1">
+                                       <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          className="h-7 text-xs"
+                                          onClick={() => runCronMutation.mutate(job.id)}
+                                          disabled={runCronMutation.isPending || !job.enabled}
+                                       >
+                                          <RefreshCw className="w-3 h-3 mr-1" /> Run
+                                       </Button>
+                                       <Switch
+                                          checked={job.enabled}
+                                          onCheckedChange={(v) => toggleCronMutation.mutate({ jobId: job.id, enabled: v })}
+                                          disabled={toggleCronMutation.isPending}
+                                       />
+                                    </TableCell>
+                                 </TableRow>
+                              ))}
+                              {(cronJobsData?.jobs || []).length === 0 && (
+                                 <TableRow>
+                                    <TableCell colSpan={8} className="text-center text-slate-500 py-8">
+                                       No cron jobs registered. Jobs will appear after server initialization.
+                                    </TableCell>
+                                 </TableRow>
+                              )}
+                           </TableBody>
+                        </Table>
+                     </CardContent>
+                  </Card>
+
+                  <Card className="bg-white border-slate-200">
+                     <CardHeader>
+                        <CardTitle className="text-sm">Recent Cron Execution Logs</CardTitle>
+                     </CardHeader>
+                     <CardContent>
+                        <Table>
+                           <TableHeader>
+                              <TableRow>
+                                 <TableHead>Job</TableHead>
+                                 <TableHead>Started</TableHead>
+                                 <TableHead>Duration</TableHead>
+                                 <TableHead>Status</TableHead>
+                                 <TableHead>Processed</TableHead>
+                                 <TableHead>Affected</TableHead>
+                                 <TableHead>Error</TableHead>
+                              </TableRow>
+                           </TableHeader>
+                           <TableBody>
+                              {(cronLogsData?.logs || []).map((log) => (
+                                 <TableRow key={log.id}>
+                                    <TableCell className="text-xs font-mono">{log.job_id}</TableCell>
+                                    <TableCell className="text-xs text-slate-500">{new Date(log.started_at).toLocaleString()}</TableCell>
+                                    <TableCell className="text-xs font-mono">{log.duration_ms}ms</TableCell>
+                                    <TableCell>
+                                       <Badge variant="outline" className={
+                                          log.status === "success" ? "text-green-600 border-green-200" : "text-red-600 border-red-200"
+                                       }>
+                                          {log.status}
+                                       </Badge>
+                                    </TableCell>
+                                    <TableCell className="text-xs">{log.records_processed}</TableCell>
+                                    <TableCell className="text-xs">{log.records_affected}</TableCell>
+                                    <TableCell className="text-xs text-red-500 max-w-[200px] truncate">{log.error_message || "-"}</TableCell>
+                                 </TableRow>
+                              ))}
+                              {(cronLogsData?.logs || []).length === 0 && (
+                                 <TableRow>
+                                    <TableCell colSpan={7} className="text-center text-slate-500 py-4">No execution logs yet.</TableCell>
+                                 </TableRow>
+                              )}
+                           </TableBody>
+                        </Table>
+                     </CardContent>
+                  </Card>
+               </div>
+            </TabsContent>
 
         </Tabs>
       </div>

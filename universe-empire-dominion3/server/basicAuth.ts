@@ -1,9 +1,11 @@
 import session from "express-session";
 import type { Express, RequestHandler } from "express";
-import MemoryStore from "memorystore";
+import connectPgSimple from "connect-pg-simple";
 import { storage } from "./storage";
 import { logger } from "./logger";
 import crypto from "crypto";
+import bcrypt from "bcrypt";
+import { pool } from "./db";
 import { db } from "./db";
 import { adminUsers, users, playerProfiles, type User } from "../shared/schema";
 import { eq, ilike, or } from "drizzle-orm";
@@ -11,8 +13,10 @@ import { getRolePermissions, normalizeAdminRole } from "./adminPermissions";
 import { requireAdminIp, logAdminActivity } from "./middleware/adminIpCheck";
 import { GAME_SETTINGS } from "./config/gameSettings";
 
+const BCRYPT_ROUNDS = 12;
+
 const NON_ADMIN_USERNAMES = new Set(["player1", "player2", "player3"]);
-const NON_ADMIN_EMAIL_SUFFIX = "@universe-empire-domions.game";
+const NON_ADMIN_EMAIL_SUFFIX = "@universe-empire-dominion.game";
 
 function isProtectedNonAdminAccount(user: Pick<User, "username" | "email"> | null | undefined) {
   const username = String(user?.username || "").trim().toLowerCase();
@@ -79,17 +83,35 @@ async function ensureDevBypassUser() {
 export function getSession() {
   const sessionTtl = 7 * 24 * 60 * 60 * 1000; // 1 week
   
-  // Use in-memory session store to avoid database connection issues
-  const SessionStore = MemoryStore(session);
-  const sessionStore = new SessionStore({
-    checkPeriod: 86400000, // Check for expired sessions every day
-  });
-  
   const isDevelopment = process.env.NODE_ENV === "development";
+  
+  const sessionSecret = process.env.SESSION_SECRET;
+  if (!sessionSecret) {
+    if (isDevelopment) {
+      logger.warn("AUTH", "SESSION_SECRET not set — using random fallback for development only");
+    } else {
+      throw new Error("SESSION_SECRET environment variable is required in production");
+    }
+  }
+  
+  let sessionStore: session.Store;
+  if (isDevelopment && !process.env.DATABASE_URL) {
+    const MemoryStore = require("memorystore")(session);
+    sessionStore = new MemoryStore({ checkPeriod: 86400000 });
+    logger.warn("AUTH", "Using in-memory session store (no DATABASE_URL in development)");
+  } else {
+    const PgSession = connectPgSimple(session);
+    sessionStore = new PgSession({
+      pool,
+      tableName: "user_sessions",
+      createTableIfMissing: true,
+    });
+    logger.info("AUTH", "Using PostgreSQL session store");
+  }
   
   return session({
     name: 'connect.sid',
-    secret: process.env.SESSION_SECRET || "dev-secret-key",
+    secret: sessionSecret || crypto.randomBytes(32).toString("hex"),
     store: sessionStore,
     resave: false,
     saveUninitialized: false,
@@ -104,7 +126,11 @@ export function getSession() {
 }
 
 function hashPassword(password: string): string {
-  return crypto.createHash("sha256").update(password).digest("hex");
+  return bcrypt.hashSync(password, BCRYPT_ROUNDS);
+}
+
+function isLegacySha256Hash(hash: string): boolean {
+  return /^[a-f0-9]{64}$/i.test(hash);
 }
 
 function generate10DigitUID(): string {
@@ -118,7 +144,7 @@ function generate10DigitUID(): string {
 async function generateUniqueUID(): Promise<string> {
   let uid = generate10DigitUID();
   let attempts = 0;
-  const maxAttempts = 10;
+  const maxAttempts = 50;
 
   // Ensure UID is unique
   while (attempts < maxAttempts) {
@@ -130,13 +156,25 @@ async function generateUniqueUID(): Promise<string> {
     attempts++;
   }
 
-  // Fallback: use timestamp-based UID if random generation fails
-  const timestamp = Date.now().toString().slice(-10);
-  return timestamp;
+  // Fallback: use UUID-based UID if random generation fails
+  return crypto.randomBytes(5).readUInt32BE(0).toString().slice(0, 10);
 }
 
-function verifyPassword(password: string, hash: string): boolean {
-  return hashPassword(password) === hash;
+async function verifyPassword(password: string, hash: string): Promise<boolean> {
+  if (isLegacySha256Hash(hash)) {
+    const legacyHash = crypto.createHash("sha256").update(password).digest("hex");
+    return crypto.timingSafeEqual(Buffer.from(legacyHash), Buffer.from(hash));
+  }
+  return bcrypt.compare(password, hash);
+}
+
+async function upgradePasswordHash(userId: string, password: string): Promise<void> {
+  try {
+    const newHash = hashPassword(password);
+    await storage.updateUser(userId, { passwordHash: newHash });
+  } catch (e) {
+    logger.warn("AUTH", `Failed to upgrade password hash for user ${userId}`);
+  }
 }
 
 async function resolveUserByIdentifier(identifier: string | null | undefined): Promise<User | null> {
@@ -167,11 +205,12 @@ async function syncDevPasswordIfNeeded(
     return user;
   }
 
-  const nextHash = hashPassword(password);
-  if (user.passwordHash === nextHash) {
-    return user;
+  if (user.passwordHash && !isLegacySha256Hash(user.passwordHash)) {
+    const matches = await bcrypt.compare(password, user.passwordHash);
+    if (matches) return user;
   }
 
+  const nextHash = hashPassword(password);
   const updatedUser = await storage.updateUser(user.id, { passwordHash: nextHash });
   logger.info("AUTH", `${label} password synchronized for development: ${updatedUser.username || updatedUser.id}`);
   return updatedUser;
@@ -462,11 +501,16 @@ export async function setupAuth(app: Express) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      const passwordValid = verifyPassword(password, user.passwordHash);
+      const passwordValid = await verifyPassword(password, user.passwordHash);
       
       if (!passwordValid) {
         logger.warn("AUTH", `Invalid password for user: ${username}`);
         return res.status(401).json({ message: "Invalid credentials" });
+      }
+
+      if (isLegacySha256Hash(user.passwordHash)) {
+        await upgradePasswordHash(user.id, password);
+        logger.info("AUTH", `Upgraded legacy SHA-256 hash to bcrypt for user: ${username}`);
       }
 
       logger.info("AUTH", `Login successful for user: ${username}`, { userId: user.id });
@@ -508,7 +552,9 @@ export async function setupAuth(app: Express) {
         if (!securityCode) {
           return res.status(400).json({ message: "Security access code is required", field: "securityCode" });
         }
-        if (securityCode.toUpperCase() !== expectedCode.toUpperCase()) {
+        const codeBuf = Buffer.from(securityCode.toUpperCase());
+        const expectedBuf = Buffer.from(expectedCode.toUpperCase());
+        if (codeBuf.length !== expectedBuf.length || !crypto.timingSafeEqual(codeBuf, expectedBuf)) {
           logger.warn("AUTH", `Admin login blocked — wrong security code from: ${identifier}`);
           return res.status(401).json({ message: "Invalid security access code", field: "securityCode" });
         }
@@ -516,7 +562,7 @@ export async function setupAuth(app: Express) {
 
       const user = await resolveUserByIdentifier(identifier);
 
-      if (!user || !user.passwordHash || !verifyPassword(password, user.passwordHash)) {
+      if (!user || !user.passwordHash || !(await verifyPassword(password, user.passwordHash))) {
         logger.warn("AUTH", `Admin login failed for identifier: ${identifier}`);
         return res.status(401).json({ message: "Invalid credentials" });
       }
@@ -573,18 +619,63 @@ export async function setupAuth(app: Express) {
         return res.status(401).json({ message: "Email does not match account" });
       }
 
-      const temporaryPassword = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-      const passwordHash = hashPassword(temporaryPassword);
-      
-      await storage.updateUser(user.id, { passwordHash });
-      
-      logger.info("AUTH", `Password reset requested for user: ${username}`);
-      // In production, send temporaryPassword via email. Never expose it in the response.
-      res.json({ 
-        message: "Password has been reset. Check your email for the temporary password.",
+      const resetToken = crypto.randomBytes(32).toString("hex");
+      const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+      await pool.query(`
+        INSERT INTO password_reset_tokens (user_id, token, expires_at)
+        VALUES ($1, $2, $3)
+        ON CONFLICT (user_id) DO UPDATE SET token = $2, expires_at = $3, used = false
+      `, [user.id, resetToken, expiresAt]);
+
+      logger.info("AUTH", `Password reset token generated for user: ${username}`);
+
+      const isDev = process.env.NODE_ENV === "development";
+      res.json({
+        message: "Password reset token generated. Check your email for the reset link.",
+        ...(isDev && { resetToken, expiresIn: "1 hour" }),
       });
     } catch (error) {
       logger.error("AUTH", "Password reset error", {}, error);
+      res.status(500).json({ message: "Password reset failed" });
+    }
+  });
+
+  app.post("/api/auth/reset-password/confirm", async (req, res) => {
+    try {
+      const { token, newPassword } = req.body;
+
+      if (!token || !newPassword) {
+        return res.status(400).json({ message: "Token and new password required" });
+      }
+
+      if (newPassword.length < 6) {
+        return res.status(400).json({ message: "Password must be at least 6 characters" });
+      }
+
+      const resetResult = await pool.query(
+        "SELECT user_id, expires_at, used FROM password_reset_tokens WHERE token = $1 AND used = false",
+        [token]
+      );
+
+      if (resetResult.rows.length === 0) {
+        return res.status(401).json({ message: "Invalid or expired reset token" });
+      }
+
+      const record = resetResult.rows[0];
+      if (new Date(record.expires_at).getTime() < Date.now()) {
+        return res.status(401).json({ message: "Reset token has expired" });
+      }
+
+      const newHash = hashPassword(newPassword);
+      await storage.updateUser(record.user_id, { passwordHash: newHash });
+
+      await pool.query("UPDATE password_reset_tokens SET used = true WHERE token = $1", [token]);
+
+      logger.info("AUTH", `Password reset completed for user_id: ${record.user_id}`);
+      res.json({ message: "Password has been reset successfully" });
+    } catch (error) {
+      logger.error("AUTH", "Password reset confirm error", {}, error);
       res.status(500).json({ message: "Password reset failed" });
     }
   });
@@ -624,7 +715,7 @@ export async function setupAuth(app: Express) {
 
           if (username && password) {
             const user = await resolveUserByIdentifier(username);
-            if (user && user.passwordHash && verifyPassword(password, user.passwordHash)) {
+            if (user && user.passwordHash && await verifyPassword(password, user.passwordHash)) {
               req.session.userId = user.id;
               const adminStatus = await resolveAdminStatus(user.id);
               if (adminStatus.isAdmin) {
@@ -694,7 +785,7 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
       if (username && password) {
         const user = await resolveUserByIdentifier(username);
         if (user && user.passwordHash) {
-          const passwordValid = verifyPassword(password, user.passwordHash);
+          const passwordValid = await verifyPassword(password, user.passwordHash);
           if (passwordValid) {
             req.session.userId = user.id;
             req.user = { id: user.id };

@@ -34,7 +34,7 @@ import { GovernmentState, GOVERNMENTS, GovernmentId, POLICIES } from './governme
 import { Alliance, AllianceMember, MOCK_ALLIANCES } from './allianceData';
 import { Artifact, ARTIFACTS } from './artifactData';
 import { simulateCombat, simulateEspionage, simulateSabotage, BattleReport, EspionageReport } from './gameLogic';
-import { CronJob, DEFAULT_CRON_JOBS } from './cronData';
+import { CronJob, DEFAULT_CRON_JOBS, fetchCronJobs } from './cronData';
 import { calculateConstructionCost, getMegaStructureTemplateById } from './megaStructures';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Megastructure, createMegastructure } from '@shared/config/megastructuresConfig';
@@ -1160,6 +1160,14 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   }, [serverAlliance]);
 
   useEffect(() => {
+    if (isInitialized && isLoggedIn && isActualAdmin) {
+      fetchCronJobs().then((jobs) => {
+        if (jobs.length > 0) setCronJobs(jobs);
+      });
+    }
+  }, [isInitialized, isLoggedIn, isActualAdmin]);
+
+  useEffect(() => {
     if (isInitialized && isLoggedIn) {
       const autosavePayload = {
         resources,
@@ -1256,7 +1264,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 
   const addEvent = (title: string, description: string, type: GameEvent["type"]) => {
     setEvents(prev => [{
-      id: Math.random().toString(36).substr(2, 9),
+      id: Math.random().toString(36).substring(2, 11),
       title,
       description,
       type,
@@ -1913,7 +1921,18 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   };
 
   const toggleCronJob = (id: string) => {
-    setCronJobs(prev => prev.map(j => j.id === id ? { ...j, enabled: !j.enabled } : j));
+    const job = cronJobs.find(j => j.id === id);
+    if (!job) return;
+    const newEnabled = !job.enabled;
+    setCronJobs(prev => prev.map(j => j.id === id ? { ...j, enabled: newEnabled } : j));
+    fetch(`/api/cron/jobs/${id}/toggle`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ enabled: newEnabled }),
+    }).catch(() => {
+      setCronJobs(prev => prev.map(j => j.id === id ? { ...j, enabled: !newEnabled } : j));
+    });
   };
 
   const login = async () => {
@@ -1955,6 +1974,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     if (job) {
        addEvent("Manual Job Trigger", `Manually triggered ${job.name}`, "info");
        setCronJobs(prev => prev.map(j => j.id === id ? { ...j, lastRun: Date.now() } : j));
+       fetch(`/api/cron/jobs/${id}/run`, { method: "POST", credentials: "include" }).catch(() => {});
     }
   };
 

@@ -8,6 +8,7 @@ import {
   getTimers,
   createTimer,
   deleteTimer,
+  updateCronJobSchedule,
 } from "./services/cronService";
 import { isAuthenticated, isAdmin } from "./basicAuth";
 
@@ -37,6 +38,17 @@ export function registerCronRoutes(app: Express) {
       const { jobId } = req.params;
       const result = await executeJob(jobId);
       res.json({ success: true, result });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/cron/jobs/:jobId/schedule", isAuthenticated, isAdmin, async (req: Request, res: Response) => {
+    try {
+      const { jobId } = req.params;
+      const { intervalMs, cronExpression } = req.body;
+      const updated = await updateCronJobSchedule(jobId, intervalMs, cronExpression);
+      res.json({ success: updated });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }

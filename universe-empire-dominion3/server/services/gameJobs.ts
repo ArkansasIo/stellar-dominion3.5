@@ -1,5 +1,5 @@
 import { pool } from "../db";
-import { registerCronJob, recordGameTick, type CronJobResult } from "./cronService";
+import { registerCronJob, recordGameTick, registerTimerFireHandler, startTimerPoller, type CronJobResult } from "./cronService";
 import { GAME_SETTINGS } from "../config/gameSettings";
 
 const { intervals: INT, loginBonus: BONUS, resourceProduction: PROD } = GAME_SETTINGS;
@@ -498,6 +498,20 @@ export async function registerAllGameJobs(): Promise<void> {
     params: { retentionDays: 30, backupHour: 3 },
     handler: backupCriticalDataHandler,
   });
+
+  registerTimerFireHandler("construction_complete", async (params) => {
+    if (params.playerId && params.buildingType) {
+      const buildings = { ...((await pool.query("SELECT buildings FROM player_states WHERE id = $1", [params.playerId])).rows[0]?.buildings || {}) };
+      buildings[params.buildingType] = (buildings[params.buildingType] || 0) + 1;
+      await pool.query("UPDATE player_states SET buildings = $2, updated_at = now() WHERE id = $1", [params.playerId, JSON.stringify(buildings)]);
+    }
+  });
+
+  registerTimerFireHandler("battle_resolve", async (params) => {
+    console.log(`[Timer] Battle resolve: ${JSON.stringify(params)}`);
+  });
+
+  startTimerPoller(5000);
 }
 
 // ========== CORE HANDLERS ==========

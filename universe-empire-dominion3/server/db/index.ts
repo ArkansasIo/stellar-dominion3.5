@@ -10,6 +10,8 @@ console.log('🔌 Connecting to database...');
 export const pool = new Pool({
   connectionString: databaseUrl,
   connectionTimeoutMillis: 5000,
+  max: parseInt(process.env.DB_POOL_MAX || "20"),
+  idleTimeoutMillis: parseInt(process.env.DB_IDLE_TIMEOUT || "30000"),
 });
 
 // Test connection and log status
@@ -25,3 +27,16 @@ pool.connect()
   });
 
 export const db = drizzle({ client: pool, schema });
+
+export async function runTransaction<T>(fn: (tx: any) => Promise<T>): Promise<T> {
+  return db.transaction(fn);
+}
+
+export async function shutdownDb(): Promise<void> {
+  try {
+    await pool.end();
+    console.log('🔌 Database connections closed');
+  } catch (error) {
+    console.error('❌ Error closing database:', error);
+  }
+}

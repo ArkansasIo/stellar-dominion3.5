@@ -1,5 +1,5 @@
 import { Switch, Route } from "wouter";
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -114,22 +114,33 @@ const SaveSlotsPage = lazy(() => import("@/pages/SaveSlotsPage"));
 const RealmPickerPage = lazy(() => import("@/pages/RealmPickerPage"));
 
 function LoadingSplash() {
+  const stars = useMemo(() => Array.from({ length: 60 }).map((_, i) => ({
+    key: i,
+    width: (i * 7 + 3) % 3 + 1,
+    height: (i * 11 + 5) % 3 + 1,
+    top: (i * 37 + 13) % 100,
+    left: (i * 53 + 29) % 100,
+    opacity: ((i * 17 + 7) % 50) / 100 + 0.1,
+    duration: (i * 23 + 11) % 3000 + 2000,
+    delay: (i * 31 + 19) % 3000,
+  })), []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex flex-col items-center justify-center relative overflow-hidden">
       {/* Background stars */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {Array.from({ length: 60 }).map((_, i) => (
+        {stars.map((star) => (
           <div
-            key={i}
+            key={star.key}
             className="absolute rounded-full bg-white"
             style={{
-              width: Math.random() * 2 + 1,
-              height: Math.random() * 2 + 1,
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              opacity: Math.random() * 0.5 + 0.1,
-              animation: `pulse ${2 + Math.random() * 3}s ease-in-out infinite`,
-              animationDelay: `${Math.random() * 3}s`,
+              width: star.width,
+              height: star.height,
+              top: `${star.top}%`,
+              left: `${star.left}%`,
+              opacity: star.opacity,
+              animation: `pulse ${star.duration}ms ease-in-out infinite`,
+              animationDelay: `${star.delay}ms`,
             }}
           />
         ))}

@@ -1,5 +1,6 @@
 import "./loadEnv";
 import express, { type Request, Response, NextFunction } from "express";
+import rateLimit from "express-rate-limit";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
@@ -53,6 +54,28 @@ app.use(
 );
 
 app.use(express.urlencoded({ extended: false }));
+
+const apiLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 120,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Too many requests, please try again later" },
+  keyGenerator: (req) => req.ip || req.socket.remoteAddress || "unknown",
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Too many auth attempts, please try again later" },
+  keyGenerator: (req) => req.ip || req.socket.remoteAddress || "unknown",
+});
+
+app.use("/api/auth", authLimiter);
+app.use("/api/admin", authLimiter);
+app.use("/api", apiLimiter);
 
 export function log(message: string, source = "express", level: "info" | "success" | "error" | "warn" = "info") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
@@ -318,8 +341,8 @@ import { eq, ilike, or } from "drizzle-orm";
     const { registerAllGameJobs } = await import("./services/gameJobs");
     await registerAllGameJobs();
     log("Cron job system initialized", "startup", "success");
-    process.on("SIGTERM", () => { shutdownAllCronJobs(); });
-    process.on("SIGINT", () => { shutdownAllCronJobs(); });
+    process.on("SIGTERM", async () => { shutdownAllCronJobs(); const { shutdownDb } = await import("./db"); await shutdownDb(); process.exit(0); });
+    process.on("SIGINT", async () => { shutdownAllCronJobs(); const { shutdownDb } = await import("./db"); await shutdownDb(); process.exit(0); });
   } catch (error) {
     log(`Cron job init skipped: ${(error as Error).message}`, "startup", "warn");
   }

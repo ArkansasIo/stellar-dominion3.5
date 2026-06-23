@@ -93,5 +93,3 @@ export {
   getTopPlayers,
   calculateRatingChange,
 } from "./rankingSystem";
-
-export { SchedulerSystem } from "./schedulerSystem";

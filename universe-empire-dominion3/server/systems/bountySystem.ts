@@ -1,5 +1,5 @@
 import { BOUNTY_CONFIG, Bounty as BountyType } from "../../shared/config/xenoberage/bountyConfig";
-import { db } from "../db";
+import { db, runTransaction } from "../db";
 import { bounties, playerStates } from "../../shared/schema";
 import { eq, and } from "drizzle-orm";
 
@@ -126,16 +126,18 @@ export async function claimBounty(
   const resources = (attackerState.resources as any) || {};
   const reward = activeBounty.amount;
 
-  await db.update(playerStates).set({
-    resources: { ...resources, credits: (resources.credits || 0) + reward },
-    updatedAt: new Date(),
-  }).where(eq(playerStates.userId, attackerId));
+  await runTransaction(async (tx) => {
+    await tx.update(playerStates).set({
+      resources: { ...resources, credits: (resources.credits || 0) + reward },
+      updatedAt: new Date(),
+    }).where(eq(playerStates.userId, attackerId));
 
-  await db.update(bounties).set({
-    active: false,
-    claimedBy: attackerId,
-    claimedAt: new Date(),
-  }).where(eq(bounties.id, activeBounty.id));
+    await tx.update(bounties).set({
+      active: false,
+      claimedBy: attackerId,
+      claimedAt: new Date(),
+    }).where(eq(bounties.id, activeBounty.id));
+  });
 
   return {
     success: true,
