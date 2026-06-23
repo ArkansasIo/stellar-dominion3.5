@@ -23,6 +23,9 @@ import {
   Search, Heart, Cpu, Play, Plus, Activity
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useGame } from "@/lib/gameContext";
+import { Input } from "@/components/ui/input";
 import { createHabitatConditionProfile } from "@/lib/environmentSystems";
 
 type StationsTab = "moon" | "station" | "active" | "infrastructure";
@@ -670,9 +673,9 @@ export default function Stations() {
 
   const [infrastructureBuildCounts, setInfrastructureBuildCounts] = useState<Record<string, number>>({});
 
-  const totalFacilityLevels = Object.values(buildingLevels).reduce((sum, level) => sum + level, 0);
-  const totalInfrastructureBuilt = Object.values(infrastructureBuildCounts).reduce((sum, count) => sum + count, 0);
-  const totalStrongholds = Object.values(deployedStrongholds).reduce((sum, count) => sum + count, 0);
+  const totalFacilityLevels = Object.values(buildingLevels).reduce<number>((sum, level) => sum + level, 0);
+  const totalInfrastructureBuilt = Object.values(infrastructureBuildCounts).reduce<number>((sum, count) => sum + count, 0);
+  const totalStrongholds = Object.values(deployedStrongholds).reduce<number>((sum, count) => sum + count, 0);
   const averageCostFactor =
     activeBuildingPool.length > 0
       ? (activeBuildingPool.reduce((sum, building) => sum + building.costFactor, 0) / activeBuildingPool.length).toFixed(2)
