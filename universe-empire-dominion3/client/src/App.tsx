@@ -110,6 +110,8 @@ const UnitTaxonomyPage = lazy(() => import("@/pages/UnitTaxonomyPage"));
 const UnitSystemsPage = lazy(() => import("@/pages/UnitSystemsPage"));
 const GovernmentBuildingsPage = lazy(() => import("@/pages/GovernmentBuildingsPage"));
 const GovernmentProgressionPage = lazy(() => import("@/pages/GovernmentProgressionPage"));
+const SaveSlotsPage = lazy(() => import("@/pages/SaveSlotsPage"));
+const RealmPickerPage = lazy(() => import("@/pages/RealmPickerPage"));
 
 function LoadingSplash() {
   return (
@@ -158,7 +160,7 @@ function LoadingSplash() {
 }
 
 function RouterContent() {
-  const { isLoggedIn, needsSetup, isLoading } = useGame();
+  const { isLoggedIn, needsSetup, isLoading, onboardingStep } = useGame();
   const [showSplash, setShowSplash] = useState(true);
   const loadingStartedAtRef = useRef<number | null>(null);
 
@@ -213,6 +215,38 @@ function RouterContent() {
   }
 
   if (needsSetup) {
+    if (onboardingStep === 0) {
+      return (
+        <Switch>
+          <Route path="/threejs-viewer" component={ThreeDViewerPortal} />
+          <Route path="/admin-login" component={AdminLogin} />
+          <Route path="/admin" component={Admin} />
+          <Route path="/admin/database" component={DatabaseAdmin} />
+          <Route path="/about" component={About} />
+          <Route path="/forums" component={Forums} />
+          <Route path="/terms" component={Terms} />
+          <Route path="/privacy" component={Privacy} />
+          <Route component={SaveSlotsPage} />
+        </Switch>
+      );
+    }
+
+    if (onboardingStep === 1) {
+      return (
+        <Switch>
+          <Route path="/threejs-viewer" component={ThreeDViewerPortal} />
+          <Route path="/admin-login" component={AdminLogin} />
+          <Route path="/admin" component={Admin} />
+          <Route path="/admin/database" component={DatabaseAdmin} />
+          <Route path="/about" component={About} />
+          <Route path="/forums" component={Forums} />
+          <Route path="/terms" component={Terms} />
+          <Route path="/privacy" component={Privacy} />
+          <Route component={RealmPickerPage} />
+        </Switch>
+      );
+    }
+
     return (
       <Switch>
         <Route path="/threejs-viewer" component={ThreeDViewerPortal} />

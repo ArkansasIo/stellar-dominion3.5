@@ -371,6 +371,8 @@ interface GameState {
   adminRole: string | null;
   isLoggedIn: boolean;
   needsSetup: boolean;
+  onboardingStep: number;
+  setOnboardingStep: (step: number) => void;
   username: string;
   totalTurns: number;
   currentTurns: number;
@@ -625,6 +627,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   const [adminRole, setAdminRole] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [needsSetup, setNeedsSetup] = useState(false);
+  const [onboardingStep, setOnboardingStep] = useState(0);
   const [username, setUsername] = useState("");
   const [isInitialized, setIsInitialized] = useState(false);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -2006,6 +2009,8 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
        adminRole,
        isLoggedIn,
        needsSetup,
+       onboardingStep,
+       setOnboardingStep,
        isLoading,
        username,
        login,
