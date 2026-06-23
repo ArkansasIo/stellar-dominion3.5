@@ -356,7 +356,7 @@ export default function Settings() {
       enableCloudSync: true,
       exportFormat: "json",
       compressionEnabled: true,
-      lastExportDate: null,
+      lastExportDate: null as string | null,
       storageUsed: 0,
    });
 
@@ -453,8 +453,8 @@ export default function Settings() {
          browserWidth: display.browserWidth,
          stickyMobileBars: display.stickyMobileBars,
       });
-      setSoundSettings(playerOptions.sound);
-      setPrivacySettings(playerOptions.privacy);
+      setSoundSettings(playerOptions.sound || {});
+      setPrivacySettings(prev => ({ ...prev, ...(playerOptions.privacy || {}) }));
    }, [playerOptions]);
 
    useEffect(() => {
