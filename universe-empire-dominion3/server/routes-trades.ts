@@ -108,6 +108,19 @@ router.post("/api/trades", isAuthenticated, async (req, res) => {
       originalOfferId: null,
     });
 
+    try {
+      await storage.createMessage({
+        to: receiver.id,
+        from: sender.username || "Commander",
+        subject: "New Trade Offer Received",
+        body: `You have received a new trade offer from ${sender.username || "Commander"}.\n\n${sender.username || "Commander"} offers:\n${offerMetal > 0 ? `  ${offerMetal.toLocaleString()} Metal\n` : ""}${offerCrystal > 0 ? `  ${offerCrystal.toLocaleString()} Crystal\n` : ""}${offerDeuterium > 0 ? `  ${offerDeuterium.toLocaleString()} Deuterium\n` : ""}\n${sender.username || "Commander"} requests:\n${requestMetal > 0 ? `  ${requestMetal.toLocaleString()} Metal\n` : ""}${requestCrystal > 0 ? `  ${requestCrystal.toLocaleString()} Crystal\n` : ""}${requestDeuterium > 0 ? `  ${requestDeuterium.toLocaleString()} Deuterium\n` : ""}${message ? `\nMessage: ${message}` : ""}`,
+        type: "player",
+        read: false,
+      } as any);
+    } catch (notifyError) {
+      console.error("Failed to send trade notification:", notifyError);
+    }
+
     res.status(201).json(trade);
   } catch (error) {
     console.error("Failed to create trade offer:", error);
@@ -125,6 +138,24 @@ router.post("/api/trades/:tradeId/accept", isAuthenticated, async (req, res) => 
       return res.status(400).json({ message: result.error || "Failed to accept trade" });
     }
 
+    try {
+      const trade = result.trade;
+      const playerState = await storage.getPlayerState(userId);
+      const playerName = (playerState as any)?.empireName || "Commander";
+      if (trade?.senderId) {
+        await storage.createMessage({
+          to: trade.senderId,
+          from: "Trade System",
+          subject: `Trade Accepted by ${playerName}`,
+          body: `Your trade offer has been accepted by ${playerName}. Resources have been exchanged successfully.\n\nOffer: ${trade.offerMetal || 0} Metal, ${trade.offerCrystal || 0} Crystal, ${trade.offerDeuterium || 0} Deuterium\nRequest: ${trade.requestMetal || 0} Metal, ${trade.requestCrystal || 0} Crystal, ${trade.requestDeuterium || 0} Deuterium`,
+          type: "player",
+          read: false,
+        } as any);
+      }
+    } catch (notifyError) {
+      console.error("Failed to send trade notification:", notifyError);
+    }
+
     res.json({ success: true, trade: result.trade });
   } catch (error) {
     console.error("Failed to accept trade:", error);
@@ -140,6 +171,24 @@ router.post("/api/trades/:tradeId/decline", isAuthenticated, async (req, res) =>
     const result = await storage.declineTradeOffer(req.params.tradeId, userId);
     if (!result.success) {
       return res.status(400).json({ message: result.error || "Failed to decline trade" });
+    }
+
+    try {
+      const playerState = await storage.getPlayerState(userId);
+      const playerName = (playerState as any)?.empireName || "Commander";
+      const trade = await storage.getTradeOfferById(req.params.tradeId);
+      if (trade) {
+        await storage.createMessage({
+          to: trade.senderId,
+          from: "Trade System",
+          subject: `Trade Declined by ${playerName}`,
+          body: `Your trade offer has been declined by ${playerName}. You may send a new offer or negotiate different terms.\n\nYour offer: ${trade.offerMetal || 0} Metal, ${trade.offerCrystal || 0} Crystal, ${trade.offerDeuterium || 0} Deuterium`,
+          type: "player",
+          read: false,
+        } as any);
+      }
+    } catch (notifyError) {
+      console.error("Failed to send trade notification:", notifyError);
     }
 
     res.json({ success: true });

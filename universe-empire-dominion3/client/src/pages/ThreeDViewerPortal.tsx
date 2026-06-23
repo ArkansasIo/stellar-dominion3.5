@@ -26,7 +26,7 @@ export default function ThreeDViewerPortal() {
               </p>
             </div>
             <a
-              href="/viewer-3d/"
+              href="/threejs-viewer"
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-2 rounded-full border border-cyan-400/40 bg-cyan-500/10 px-4 py-2 text-sm font-medium text-cyan-100 transition hover:border-cyan-300 hover:bg-cyan-500/20"
@@ -49,7 +49,7 @@ export default function ThreeDViewerPortal() {
               </div>
               <div>
                 <p className="text-slate-500">Raw viewer</p>
-                <p className="font-mono text-cyan-100">/viewer-3d/</p>
+                <p className="font-mono text-cyan-100">/threejs-viewer</p>
               </div>
               <div>
                 <p className="text-slate-500">Backend status</p>
@@ -61,7 +61,7 @@ export default function ThreeDViewerPortal() {
           <div className="overflow-hidden rounded-3xl border border-cyan-500/20 bg-slate-950/80 shadow-[0_0_50px_rgba(14,165,233,0.12)]">
             <iframe
               title="Three.js Universe Viewer"
-              src="/viewer-3d/"
+              src="/threejs-viewer"
               className="h-[78vh] min-h-[720px] w-full bg-black"
             />
           </div>

@@ -1,6 +1,7 @@
 import { 
   Cpu, Microchip, Hammer, Zap, Anchor, Shield, 
-  Radio, Skull, Gem, Box, FileKey, Syringe 
+  Radio, Skull, Gem, Box, FileKey, Syringe,
+  Rocket, Sword, Target, Lock, Eye, Star
 } from "lucide-react";
 
 export type ItemRarity = "common" | "uncommon" | "rare" | "legendary" | "contraband";
@@ -117,6 +118,95 @@ export const MARKET_ITEMS: MarketItem[] = [
     rarity: "rare",
     icon: Gem,
     basePrice: { metal: 0, crystal: 0, deuterium: 10000 }
+  },
+
+  // --- WEAPONS ---
+  {
+    id: "plasma_turret",
+    name: "Plasma Turret MK-III",
+    description: "High-output plasma weapon for capital ship defense batteries.",
+    type: "component",
+    rarity: "uncommon",
+    icon: Target,
+    basePrice: { metal: 2000, crystal: 1500, deuterium: 300 }
+  },
+  {
+    id: "ion_disruptor",
+    name: "Ion Disruptor Array",
+    description: "Disables enemy shields and electronic systems on impact.",
+    type: "component",
+    rarity: "rare",
+    icon: Zap,
+    basePrice: { metal: 3000, crystal: 2500, deuterium: 800 }
+  },
+  {
+    id: "missile_pack",
+    name: "Guided Missile Rack",
+    description: "Swarm missile system for anti-fighter defense.",
+    type: "component",
+    rarity: "common",
+    icon: Rocket,
+    basePrice: { metal: 1500, crystal: 500, deuterium: 200 }
+  },
+
+  // --- DEFENSE ---
+  {
+    id: "shield_generator",
+    name: "Deflector Shield Unit",
+    description: "Energy shield generator for orbital station defense.",
+    type: "component",
+    rarity: "uncommon",
+    icon: Shield,
+    basePrice: { metal: 2500, crystal: 2000, deuterium: 500 }
+  },
+  {
+    id: "hull_plate",
+    name: "Titanium Hull Plating",
+    description: "Reinforced armor plating for ship hull upgrades.",
+    type: "material",
+    rarity: "common",
+    icon: Anchor,
+    basePrice: { metal: 800, crystal: 200, deuterium: 0 }
+  },
+
+  // --- ESPIONAGE ---
+  {
+    id: "stealth_module",
+    name: "Cloaking Field Module",
+    description: "Reduces ship visibility on enemy sensors by 80%.",
+    type: "component",
+    rarity: "rare",
+    icon: Eye,
+    basePrice: { metal: 1000, crystal: 3000, deuterium: 1500 }
+  },
+  {
+    id: "hacking_toolkit",
+    name: "Infiltration Toolkit",
+    description: "Advanced hacking suite for espionage operations.",
+    type: "commodity",
+    rarity: "uncommon",
+    icon: Lock,
+    basePrice: { metal: 500, crystal: 1200, deuterium: 300 }
+  },
+
+  // --- COMMANDER GEAR ---
+  {
+    id: "commander_medal",
+    name: "Medal of Valor",
+    description: "Awarded for exceptional service. Grants +5% XP bonus.",
+    type: "commodity",
+    rarity: "rare",
+    icon: Star,
+    basePrice: { metal: 0, crystal: 0, deuterium: 5000 }
+  },
+  {
+    id: "commander芯片",
+    name: "Neural Enhancement Chip",
+    description: "Boosts commander reaction time. Reduces fleet command delay.",
+    type: "component",
+    rarity: "epic",
+    icon: Cpu,
+    basePrice: { metal: 5000, crystal: 8000, deuterium: 2000 }
   }
 ];
 
@@ -129,7 +219,7 @@ export const VENDORS: Vendor[] = [
     type: "official",
     specialty: "Construction Materials",
     avatarColor: "bg-blue-600",
-    inventory: ["plasteel", "nanofiber", "circuit_board"]
+    inventory: ["plasteel", "nanofiber", "circuit_board", "hull_plate", "missile_pack"]
   },
   {
     id: "tech_vendor",
@@ -139,7 +229,7 @@ export const VENDORS: Vendor[] = [
     type: "scientist",
     specialty: "High-Tech Components",
     avatarColor: "bg-purple-600",
-    inventory: ["circuit_board", "fusion_core", "targeting_matrix", "nanofiber"]
+    inventory: ["circuit_board", "fusion_core", "targeting_matrix", "nanofiber", "ion_disruptor", "commander芯片"]
   },
   {
     id: "black_market",
@@ -149,6 +239,46 @@ export const VENDORS: Vendor[] = [
     type: "black_market",
     specialty: "Contraband & Rare Tech",
     avatarColor: "bg-slate-900",
-    inventory: ["hacked_chip", "stim_pack", "alien_artifact", "dark_matter", "fusion_core"]
+    inventory: ["hacked_chip", "stim_pack", "alien_artifact", "dark_matter", "fusion_core", "stealth_module"]
+  },
+  {
+    id: "terran_armory",
+    name: "Quartermaster Hale",
+    title: "Terran Empire Armorer",
+    description: "Official Terran Empire weapons dealer. Only sells to verified imperial citizens with proper clearance.",
+    type: "official",
+    specialty: "Military Weapons & Defense",
+    avatarColor: "bg-red-700",
+    inventory: ["plasma_turret", "ion_disruptor", "missile_pack", "shield_generator", "hull_plate"]
+  },
+  {
+    id: "merchant_guild_trader",
+    name: "Trade Master Voss",
+    title: "Merchant Guild Representative",
+    description: "The galactic merchant guild's finest negotiator. Always has a deal ready and a profit margin to match.",
+    type: "official",
+    specialty: "Bulk Resources & Trade Goods",
+    avatarColor: "bg-amber-600",
+    inventory: ["plasteel", "nanofiber", "hull_plate", "commander_medal", "dark_matter"]
+  },
+  {
+    id: "void_corsair_smuggler",
+    name: "Captain Blackmaw",
+    title: "Void Corsairs Trade Ship",
+    description: "Runs the corsair trading post at Rogue Station. Stolen goods, contraband, and rare finds.",
+    type: "black_market",
+    specialty: "Contraband & Stolen Tech",
+    avatarColor: "bg-slate-800",
+    inventory: ["hacked_chip", "stim_pack", "stealth_module", "hacking_toolkit", "alien_artifact"]
+  },
+  {
+    id: "zyx_tech_dealer",
+    name: "Zyx-7 Exchange Node",
+    title: "Zyx Collective Tech Broker",
+    description: "Silicon-based intelligence offering advanced Zyx technology. Trades in data and resources.",
+    type: "scientist",
+    specialty: "Advanced Alien Technology",
+    avatarColor: "bg-cyan-600",
+    inventory: ["fusion_core", "targeting_matrix", "ion_disruptor", "stealth_module", "commander芯片"]
   }
 ];

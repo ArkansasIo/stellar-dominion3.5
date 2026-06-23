@@ -436,6 +436,176 @@ export const VENDORS: Vendor[] = [
     location: 'The Transcendence Station - Digital Realm',
     availability: 'Accessible through consciousness bridges',
     tradingStyle: 'Philosophical, accepts transcendent concepts as payment'
+  },
+
+  {
+    id: 'vendor_013',
+    name: 'Captain Reva Stormblade',
+    type: 'merchant',
+    title: 'Iron Dominion Arms Dealer',
+    faction: 'ironDominion',
+    description: 'Former military officer turned weapons merchant. Specializes in heavy ordnance and siege equipment.',
+    personality: 'Blunt, efficient, speaks with military directness. Values loyalty above all.',
+    specialty: 'Heavy weapons, siege equipment, military contracts, fleet blueprints',
+    offerings: [
+      {
+        category: 'Heavy Ordnance',
+        items: ['Plasma Cannons', 'Ion Disruptors', 'Antimatter Launchers', 'Orbital Bombardment Systems'],
+        discountPercent: 10
+      },
+      {
+        category: 'Siege Equipment',
+        items: ['Planet Crackers', 'Shield Busters', 'Troop Carriers', 'Garrison Blueprints']
+      }
+    ],
+    questsAvailable: [
+      'Procure heavy weapons for a planetary assault',
+      'Test new siege weapon in a live battle',
+      'Secure a weapons convoy through hostile territory'
+    ],
+    relations: {
+      likes: ['abyssalAlliance', 'crystallineSyndicate'],
+      dislikes: ['luminousOrder', 'freeAlliance']
+    },
+    location: 'Fortress World Khorne - Military Exchange',
+    availability: 'Available during active operations',
+    tradingStyle: 'Direct, military protocol, bulk discounts for allies'
+  },
+
+  {
+    id: 'vendor_014',
+    name: 'Ambassador Lira Dawnfield',
+    type: 'diplomat',
+    title: 'Free Alliance Trade Envoy',
+    faction: 'freeAlliance',
+    description: 'Diplomatic representative of the Free Alliance. Promotes fair trade and peaceful coexistence.',
+    personality: 'Warm, diplomatic, believes in mutual prosperity. Skilled negotiator.',
+    specialty: 'Diplomatic trade agreements, cross-faction commerce, peace treaties',
+    offerings: [
+      {
+        category: 'Diplomacy',
+        items: ['Trade Agreements', 'Peace Treaties', 'Cross-Faction Permits', 'Embassy Access'],
+        discountPercent: 15
+      },
+      {
+        category: 'Commerce',
+        items: ['Market Licenses', 'Trade Route Maps', 'Customs Clearances']
+      }
+    ],
+    questsAvailable: [
+      'Negotiate a trade agreement with a hostile faction',
+      'Establish a neutral trading post in disputed territory',
+      'Mediate a resource dispute between allies'
+    ],
+    relations: {
+      likes: ['terranEmpire', 'luminousOrder', 'solarConsortium'],
+      dislikes: ['ironDominion', 'abyssalAlliance']
+    },
+    location: 'Liberty Station - Trade Commission',
+    availability: 'Always available during business hours',
+    tradingStyle: 'Fair and transparent, emphasizes mutual benefit'
+  },
+
+  {
+    id: 'vendor_015',
+    name: 'Artificer Nox Ironhand',
+    type: 'armorer',
+    title: 'Star Forgers Master Smith',
+    faction: 'starForgers',
+    description: 'Legendary weapons crafter from the Star Forgers guild. Forges the finest weapons in the galaxy.',
+    personality: 'Perfectionist, proud, speaks with artisan authority. Only accepts quality work.',
+    specialty: 'Custom weapons, legendary gear, masterwork armor, artisan crafts',
+    offerings: [
+      {
+        category: 'Masterwork Weapons',
+        items: ['Forged Plasma Blades', 'Crystal Edge Swords', 'Void Strike Hammers', 'Star Fire Staffs'],
+        discountPercent: 5
+      },
+      {
+        category: 'Artisan Armor',
+        items: ['Master Forged Plate', 'Crystal Mesh Armor', 'Void-Resistant Suits', 'Starforged Helmets']
+      }
+    ],
+    questsAvailable: [
+      'Forge a legendary weapon from rare materials',
+      'Repair an ancient Star Forger artifact',
+      'Create custom armor for an elite squad'
+    ],
+    relations: {
+      likes: ['mechanicsSect', 'terranEmpire'],
+      dislikes: ['voidWalkers', 'shadowSyndicate']
+    },
+    location: 'Construction Sphere 1 - Master Forge',
+    availability: 'Available for commissioned work only',
+    tradingStyle: 'Quality over quantity, commissions take time'
+  },
+
+  {
+    id: 'vendor_016',
+    name: 'Shadow Broker Xiv',
+    type: 'mystic',
+    title: 'Shadow Syndicate Intelligence Dealer',
+    faction: 'shadowSyndicate',
+    description: 'Anonymous intelligence broker. Sells secrets, blackmail material, and classified data.',
+    personality: 'Mysterious, cautious, communicates through intermediaries. Trust is earned slowly.',
+    specialty: 'Espionage data, classified intel, blackmail material, undercover gear',
+    offerings: [
+      {
+        category: 'Intelligence',
+        items: ['Spy Reports', 'Classified Documents', 'Blackmail Dossiers', 'Encrypted Data'],
+        discountPercent: 10
+      },
+      {
+        category: 'Espionage Gear',
+        items: ['Cloaking Devices', 'Infiltration Kits', 'Disguise Modules', 'Dead Drop Locations']
+      }
+    ],
+    questsAvailable: [
+      'Infiltrate a rival faction headquarters',
+      'Extract a prisoner from maximum security',
+      'Plant false intelligence to mislead the enemy'
+    ],
+    relations: {
+      likes: ['abyssalAlliance', 'voidCorsairs'],
+      dislikes: ['luminousOrder', 'sentinelLegion']
+    },
+    location: 'Unknown - Contact via encrypted channel',
+    availability: 'Available through secure contacts only',
+    tradingStyle: 'Anonymous, payment in untraceable credits'
+  },
+
+  {
+    id: 'vendor_017',
+    name: 'Oracle Nyx Voidwalker',
+    type: 'scout',
+    title: 'Precursor Cult Lorekeeper',
+    faction: 'precursorCult',
+    description: 'Ancient explorer who has decoded more precursor ruins than any living being.',
+    personality: 'Eccentric, speaks in riddles, obsessed with ancient knowledge.',
+    specialty: 'Precursor artifacts, ancient maps, ruin locations, relic identification',
+    offerings: [
+      {
+        category: 'Precursor Tech',
+        items: ['Ancient Star Maps', 'Ruin Coordinates', 'Relic Identification', 'Decoded Inscriptions'],
+        discountPercent: 20
+      },
+      {
+        category: 'Artifacts',
+        items: ['Precursor Relics', 'Ancient Devices', 'Mysterious Artifacts', 'Fossilized Data']
+      }
+    ],
+    questsAvailable: [
+      'Decipher an ancient precursor inscription',
+      'Locate a lost precursor vault',
+      'Retrieve a powerful precursor relic'
+    ],
+    relations: {
+      likes: ['eternalWatchers', 'ancientOrder'],
+      dislikes: ['ironDominion', 'shadowSyndicate']
+    },
+    location: 'The Precursor Vault - Archive Chamber',
+    availability: 'Available during alignment events',
+    tradingStyle: 'Values knowledge over credits, trades in information'
   }
 ];
 

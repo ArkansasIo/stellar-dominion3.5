@@ -67,6 +67,7 @@ const BiomeCodex = lazy(() => import("@/pages/BiomeCodex"));
 const BiomeDetail = lazy(() => import("@/pages/BiomeDetail"));
 const Diagnostics = lazy(() => import("@/pages/Diagnostics"));
 const StoryMode = lazy(() => import("@/pages/StoryMode"));
+const Preludes = lazy(() => import("@/pages/Preludes"));
 const SeasonPass = lazy(() => import("@/pages/SeasonPass"));
 const BattlePass = lazy(() => import("@/pages/BattlePass"));
 const CivilizationSystems = lazy(() => import("@/pages/CivilizationSystems"));
@@ -332,6 +333,7 @@ function RouterContent() {
       <Route path="/biome/:id" component={BiomeDetail} />
       <Route path="/diagnostics" component={Diagnostics} />
       <Route path="/story-mode" component={StoryMode} />
+      <Route path="/preludes" component={Preludes} />
       <Route path="/season-pass" component={SeasonPass} />
       <Route path="/battle-pass" component={BattlePass} />
       <Route path="/civilization-systems" component={CivilizationSystems} />

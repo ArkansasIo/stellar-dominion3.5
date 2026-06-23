@@ -341,6 +341,8 @@ const menuSections: MenuSection[] = [
           { href: "/facilities", icon: Factory, label: "Facilities", description: "Construct and upgrade industrial, research, and support facilities." },
           { href: "/colonies", icon: Home, label: "Colonies", description: "Manage colonization targets, colony slots, and expansion plans." },
           { href: "/stations", icon: Satellite, label: "Stations", description: "Control orbital stations, outposts, and support platforms." },
+          { href: "/starbases", icon: Satellite, label: "Starbases", description: "Build and manage deep-space starbase facilities." },
+          { href: "/moons", icon: CircleDot, label: "Moons", description: "Manage moon bases and lunar resource extraction." },
           { href: "/megastructures", icon: CircleDot, label: "Megastructures", description: "Develop late-game empire-scale construction projects." },
           { href: "/resource-refineries", icon: Factory, label: "Resource Refineries", description: "Convert, refine, and produce resources from raw materials." },
         ],
@@ -351,6 +353,8 @@ const menuSections: MenuSection[] = [
         items: [
           { href: "/civilization-systems", icon: Users, label: "Civilization Systems", description: "Review your civilization systems, bonuses, and societal traits." },
           { href: "/civilization-management", icon: Building2, label: "Civilization Mgmt", description: "Adjust policies and manage civilization-wide development." },
+          { href: "/government-buildings", icon: Building2, label: "Government Buildings", description: "Construct and upgrade government structures and civic facilities." },
+          { href: "/government-progression", icon: Award, label: "Government Progression", description: "Track government advancement through civic tech tree." },
           { href: "/empire-progression", icon: Award, label: "Kardashev Scale", description: "Track empire advancement through long-term progression tiers." },
         ],
       },
@@ -410,6 +414,9 @@ const menuSections: MenuSection[] = [
           { href: "/army", icon: Users, label: "Army", description: "Review land units, formations, and force composition." },
           { href: "/army-management", icon: Swords, label: "Army Management", description: "Train, equip, and reorganize planetary armies." },
           { href: "/training-center", icon: GraduationCap, label: "Training Center", description: "Unlock training tracks, staff academies, and manage force capacity." },
+          { href: "/unit-taxonomy", icon: BookOpen, label: "Unit Taxonomy", description: "Browse the complete unit classification and stats database." },
+          { href: "/unit-systems", icon: Swords, label: "Unit Systems", description: "Manage unit loadouts, formations, and combat roles." },
+          { href: "/smithy", icon: Hammer, label: "Smithy", description: "Forge and upgrade weapons, armor, and equipment." },
         ],
       },
       {
@@ -421,6 +428,7 @@ const menuSections: MenuSection[] = [
           { href: "/ground-combat", icon: Swords, label: "Ground Combat", description: "Assemble invasion troops, shock units, and special ops detachments." },
           { href: "/planet-occupation", icon: TowerControl, label: "Planet Occupation", description: "Control captured worlds through garrisons, suppression, extraction, and fortifications." },
           { href: "/battle-logs", icon: ScrollText, label: "Battle Logs", description: "Review previous engagements and combat outcomes." },
+          { href: "/high-command", icon: Target, label: "High Command", description: "Strategic command interface for fleet and army coordination." },
         ],
       },
       {
@@ -455,6 +463,7 @@ const menuSections: MenuSection[] = [
         items: [
           { href: "/exploration", icon: Compass, label: "Exploration", description: "Run exploration loops and reveal frontier opportunities." },
           { href: "/warp-network", icon: Network, label: "Warp Network", description: "Manage travel corridors and inter-system movement." },
+          { href: "/spore-drive", icon: Zap, label: "Spore Drive", description: "Advanced faster-than-light travel system for deep-space exploration." },
           { href: "/celestial-browser", icon: CircleDot, label: "Celestial Browser", description: "Inspect stars, planets, and other celestial objects." },
           { href: "/biome-codex", icon: BookOpen, label: "Biome Codex", description: "Study biome entries and their detailed environmental data.", activePrefixes: ["/biome/"] },
         ],
@@ -506,8 +515,10 @@ const menuSections: MenuSection[] = [
         description: "Buy, sell, and browse goods across the empire economy.",
         items: [
           { href: "/market", icon: ShoppingBag, label: "Market", description: "Trade raw materials, strategic goods, and market offers." },
+          { href: "/resource-trading", icon: Coins, label: "Resource Trading", description: "Open market for trading metal, crystal, and deuterium between players." },
           { href: "/merchants", icon: User, label: "Merchants", description: "Work with merchant NPCs and their specialized inventories." },
           { href: "/storefront", icon: Store, label: "Storefront", description: "Browse premium or featured storefront offerings." },
+          { href: "/bank-vault", icon: Gem, label: "Bank Vault", description: "Store credits, manage accounts, and access banking services." },
         ],
       },
       {
@@ -518,6 +529,7 @@ const menuSections: MenuSection[] = [
           { href: "/weekly-missions", icon: Target, label: "Weekly Missions", description: "Complete weekly objectives for XP, credits, and bonus multipliers." },
           { href: "/season-pass", icon: Award, label: "Season Pass", description: "Review seasonal objectives and time-limited progression rewards." },
           { href: "/battle-pass", icon: Swords, label: "Battle Pass", description: "Advance combat-focused progression tracks and rewards." },
+          { href: "/preludes", icon: ScrollText, label: "Preludes", description: "Read narrative preludes that set the stage for each campaign act and chapter." },
           { href: "/story-mode", icon: BookOpen, label: "Story Mode", description: "Play through narrative content and guided mission arcs." },
         ],
       },
@@ -529,6 +541,9 @@ const systemItems: NavItem[] = [
   { href: "/diagnostics", icon: AlertTriangle, label: "Diagnostics", description: "Inspect client, server, and gameplay diagnostic tools." },
   { href: "/cron-dashboard", icon: Clock, label: "Cron Dashboard", description: "Monitor server-side game ticks, cron jobs, and scheduled tasks." },
   { href: "/assets-gallery", icon: Image, label: "Assets Gallery", description: "Browse game assets, including the new OGameX asset pack." },
+  { href: "/news-feed", icon: Newspaper, label: "News Feed", description: "Read the latest galactic news, updates, and announcements." },
+  { href: "/patch-notes", icon: ScrollText, label: "Patch Notes", description: "View update history, bug fixes, and new feature changelogs." },
+  { href: "/threejs-viewer", icon: Orbit, label: "3D Galaxy Viewer", description: "Explore the galaxy in interactive 3D visualization." },
   { href: "/settings", icon: Settings, label: "Settings", description: "Update configuration, preferences, and account options." },
   { href: "/forums", icon: ScrollText, label: "Forums", description: "Open community discussions and support channels." },
   { href: "/about", icon: BookOpen, label: "About", description: "Read project background and game overview information." },
