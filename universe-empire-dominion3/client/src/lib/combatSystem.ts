@@ -45,16 +45,22 @@ export function getCommanderCombatBonus(commander: CommanderState | null) {
   // Class bonuses
   if (commander.class) {
     const classStr = String(commander.class);
-    if (classStr === "warrior") {
+    if (classStr === "admiral") {
       offenseMultiplier += 0.2;
       defenseMultiplier += 0.15;
-    } else if (classStr === "scout") {
+    } else if (classStr === "explorer") {
       offenseMultiplier += 0.1;
       defenseMultiplier += 0.05;
     } else if (classStr === "industrialist") {
       defenseMultiplier += 0.25;
     } else if (classStr === "scientist") {
       offenseMultiplier += 0.15;
+    } else if (classStr === "diplomat") {
+      defenseMultiplier += 0.1;
+      hpMultiplier += 0.05;
+    } else if (classStr === "merchant") {
+      offenseMultiplier += 0.05;
+      hpMultiplier += 0.1;
     }
   }
   
