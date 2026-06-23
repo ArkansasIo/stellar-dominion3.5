@@ -32,6 +32,9 @@ import { registerResourceRefineryRoutes } from "./routes-resource-refineries";
 import { registerCronRoutes } from "./routes-cron";
 import { registerBlueprintChargeRoutes } from "./routes-blueprint-charges";
 import { registerMissingApiRoutes } from "./routes-missing-api";
+import { UpdateManager } from "./update-manager";
+import { registerNewsRoutes } from "./routes-news";
+import { registerAdminConsoleRoutes } from "./routes-admin-console";
 
 const runtimeNodeEnv = process.env.NODE_ENV ?? "production";
 
@@ -308,6 +311,14 @@ import { eq, ilike, or } from "drizzle-orm";
   registerMoonRoutes(app);
   registerSporeDriveRoutes(app);
   registerWeeklyMissionRoutes(app);
+  try {
+    const updateManager = UpdateManager.getInstance();
+    updateManager.setupRoutes(app);
+  } catch (e) {
+    log(`UpdateManager skipped: ${(e as Error).message}`, "startup", "warn");
+  }
+  registerNewsRoutes(app);
+  registerAdminConsoleRoutes(app);
   const viewerRoot = path.resolve(process.cwd(), "threejs_galaxy_viewer_project");
   app.get("/api/viewer/status", (_req, res) => {
     res.json({

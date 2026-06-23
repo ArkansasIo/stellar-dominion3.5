@@ -1264,22 +1264,23 @@ export default function GameLayout({ children, title, subtitle }: { children: Re
               {isCheckingUpdate ? <RefreshCw className="h-3 w-3 animate-spin" /> : <CheckCircle2 className="h-3 w-3" />}
               {updateStatusLabel}
             </div>
-            <Link href="/forums">
+            <Link href="/news-feed">
               <Button variant="outline" size="sm" className="h-8 px-2.5 text-[11px]" data-testid="button-header-news">
                 <Newspaper className="mr-1.5 h-3.5 w-3.5" />
                 News
               </Button>
             </Link>
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-8 px-2.5 text-[11px]"
-              onClick={() => setShowPatchNotes(true)}
-              data-testid="button-header-patch-notes"
-            >
-              <ClipboardList className="mr-1.5 h-3.5 w-3.5" />
-              Patch Notes
-            </Button>
+            <Link href="/patch-notes">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 px-2.5 text-[11px]"
+                data-testid="button-header-patch-notes"
+              >
+                <ClipboardList className="mr-1.5 h-3.5 w-3.5" />
+                Patch Notes
+              </Button>
+            </Link>
             <Button
               variant={updateInfo?.available ? "default" : "outline"}
               size="sm"
@@ -1696,14 +1697,14 @@ export default function GameLayout({ children, title, subtitle }: { children: Re
         </div>
         <div className="flex flex-wrap items-center gap-4">
           <span>Version: {appVersion}</span>
-          <button
-            type="button"
-            onClick={() => setShowPatchNotes(true)}
-            className="font-semibold text-cyan-700 hover:text-cyan-900 hover:underline"
-            data-testid="button-footer-patch-info"
-          >
-            Patch: {displayedPatchVersion}
-          </button>
+          <Link href="/patch-notes">
+            <span
+              className="font-semibold text-cyan-700 hover:text-cyan-900 hover:underline cursor-pointer"
+              data-testid="button-footer-patch-info"
+            >
+              Patch: {displayedPatchVersion}
+            </span>
+          </Link>
           <span className={updateInfo?.available ? "font-semibold text-amber-700" : "text-emerald-700"}>
             Update: {updateStatusLabel}
           </span>

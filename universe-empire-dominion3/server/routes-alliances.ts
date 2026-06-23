@@ -690,4 +690,199 @@ export function registerAllianceRoutes(app: Express) {
       res.status(500).json({ message: "Failed to resolve alliance operation" });
     }
   });
+
+  app.patch("/api/alliances/:id", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const userId = getUserId(req);
+      const allianceId = req.params.id;
+      const membership = await storage.getUserAlliance(userId);
+
+      if (!membership || membership.alliance.id !== allianceId) {
+        return res.status(403).json({ message: "Alliance membership required" });
+      }
+
+      if (!membership.member || membership.member.rank !== "leader") {
+        return res.status(403).json({ message: "Only the alliance leader can update settings" });
+      }
+
+      const alliance = await storage.getAllianceById(allianceId);
+      if (!alliance) return res.status(404).json({ message: "Alliance not found" });
+
+      const updates: any = {};
+      if (req.body?.description !== undefined) updates.description = String(req.body.description).trim();
+      if (req.body?.announcement !== undefined) updates.announcement = String(req.body.announcement).trim();
+      if (req.body?.name !== undefined) updates.name = String(req.body.name).trim();
+
+      if (updates.name && updates.name.length < 3) {
+        return res.status(400).json({ message: "Alliance name must be at least 3 characters" });
+      }
+
+      await storage.updateAlliance(allianceId, updates);
+      res.json({ success: true, message: "Alliance updated" });
+    } catch (error) {
+      console.error("Failed to update alliance:", error);
+      res.status(500).json({ message: "Failed to update alliance" });
+    }
+  });
+
+  app.post("/api/alliances/:id/kick/:playerId", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const userId = getUserId(req);
+      const allianceId = req.params.id;
+      const { playerId } = req.params;
+      const membership = await storage.getUserAlliance(userId);
+
+      if (!membership || membership.alliance.id !== allianceId) {
+        return res.status(403).json({ message: "Alliance membership required" });
+      }
+
+      const canKick = membership.member?.rank === "leader" || membership.member?.rank === "officer";
+      if (!canKick) return res.status(403).json({ message: "Leader or officer rank required" });
+
+      if (playerId === userId) {
+        return res.status(400).json({ message: "Cannot kick yourself" });
+      }
+
+      await storage.removeAllianceMember(allianceId, playerId);
+      res.json({ success: true, message: "Player removed from alliance" });
+    } catch (error) {
+      console.error("Failed to kick player:", error);
+      res.status(500).json({ message: "Failed to kick player" });
+    }
+  });
+
+  app.post("/api/alliances/:id/promote/:playerId", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const userId = getUserId(req);
+      const allianceId = req.params.id;
+      const { playerId } = req.params;
+      const membership = await storage.getUserAlliance(userId);
+
+      if (!membership || membership.alliance.id !== allianceId || membership.member?.rank !== "leader") {
+        return res.status(403).json({ message: "Only the alliance leader can promote members" });
+      }
+
+      const members = await storage.getAllianceMembers(allianceId);
+      const target = members.find((m) => m.userId === playerId);
+      if (!target) return res.status(404).json({ message: "Player not in this alliance" });
+
+      const newRank = target.rank === "recruit" ? "officer" : target.rank === "officer" ? "leader" : "recruit";
+      await storage.updateAllianceMember(target.id, { rank: newRank });
+
+      res.json({ success: true, message: `Player promoted to ${newRank}`, rank: newRank });
+    } catch (error) {
+      console.error("Failed to promote player:", error);
+      res.status(500).json({ message: "Failed to promote player" });
+    }
+  });
+
+  function getAllianceChatKey(allianceId: string): string {
+    return `alliance_chat:${allianceId}`;
+  }
+
+  type AllianceChatMessage = {
+    id: string;
+    allianceId: string;
+    senderId: string;
+    senderName: string;
+    content: string;
+    createdAt: number;
+  };
+
+  app.get("/api/alliances/:id/chat", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const userId = getUserId(req);
+      const allianceId = req.params.id;
+      const membership = await storage.getUserAlliance(userId);
+
+      if (!membership || membership.alliance.id !== allianceId) {
+        return res.status(403).json({ message: "Alliance membership required" });
+      }
+
+      const setting = await storage.getSetting(getAllianceChatKey(allianceId));
+      const messages = (setting?.value as AllianceChatMessage[] || []).slice(-100);
+      res.json({ messages });
+    } catch (error) {
+      console.error("Failed to load alliance chat:", error);
+      res.status(500).json({ message: "Failed to load alliance chat" });
+    }
+  });
+
+  app.post("/api/alliances/:id/chat", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const userId = getUserId(req);
+      const allianceId = req.params.id;
+      const content = String(req.body?.content || "").trim();
+
+      if (!content || content.length > 500) {
+        return res.status(400).json({ message: "Message must be 1-500 characters" });
+      }
+
+      const membership = await storage.getUserAlliance(userId);
+      if (!membership || membership.alliance.id !== allianceId) {
+        return res.status(403).json({ message: "Alliance membership required" });
+      }
+
+      const [player] = await db.select({ username: users.username }).from(users).where(eq(users.id, userId)).limit(1);
+
+      const setting = await storage.getSetting(getAllianceChatKey(allianceId));
+      const messages = (setting?.value as AllianceChatMessage[] || []);
+      const newMessage: AllianceChatMessage = {
+        id: `ac_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+        allianceId,
+        senderId: userId,
+        senderName: player?.username || "Commander",
+        content,
+        createdAt: Date.now(),
+      };
+
+      messages.push(newMessage);
+      await storage.setSetting(getAllianceChatKey(allianceId), messages.slice(-100), `Alliance chat for ${allianceId}`, "alliance");
+
+      res.status(201).json({ message: newMessage });
+    } catch (error) {
+      console.error("Failed to post alliance chat:", error);
+      res.status(500).json({ message: "Failed to post alliance chat" });
+    }
+  });
+
+  app.get("/api/alliances/:id/leaderboard", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const allianceId = req.params.id;
+      const members = await storage.getAllianceMembers(allianceId);
+      const memberUserIds = members.map((m) => m.userId);
+      const memberUsers = memberUserIds.length
+        ? await db.select({ id: users.id, username: users.username }).from(users).where(inArray(users.id, memberUserIds))
+        : [];
+      const userMap = new Map(memberUsers.map((u) => [u.id, u.username || "Commander"]));
+
+      const sorted = members.sort((a, b) => (b.points || 0) - (a.points || 0));
+      res.json({ members: sorted.map((m, i) => ({
+        id: m.userId,
+        name: userMap.get(m.userId) || "Commander",
+        rank: m.rank,
+        points: m.points,
+        leaderboardRank: i + 1,
+      }))});
+    } catch (error) {
+      console.error("Failed to load alliance leaderboard:", error);
+      res.status(500).json({ message: "Failed to load alliance leaderboard" });
+    }
+  });
+
+  app.get("/api/alliances/:id/online", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const allianceId = req.params.id;
+      const membership = await requireAllianceMembership(req, allianceId);
+      if (!membership) return res.status(403).json({ message: "Alliance membership required" });
+
+      const members = await storage.getAllianceMembers(allianceId);
+      const memberUserIds = members.map((m) => m.userId);
+
+      res.json({ online: memberUserIds.map((id) => ({ id })), count: memberUserIds.length, total: members.length });
+    } catch (error) {
+      console.error("Failed to load online members:", error);
+      res.status(500).json({ message: "Failed to load online members" });
+    }
+  });
 }

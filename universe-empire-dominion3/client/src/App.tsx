@@ -112,6 +112,8 @@ const GovernmentBuildingsPage = lazy(() => import("@/pages/GovernmentBuildingsPa
 const GovernmentProgressionPage = lazy(() => import("@/pages/GovernmentProgressionPage"));
 const SaveSlotsPage = lazy(() => import("@/pages/SaveSlotsPage"));
 const RealmPickerPage = lazy(() => import("@/pages/RealmPickerPage"));
+const PatchNotes = lazy(() => import("@/pages/PatchNotes"));
+const NewsFeed = lazy(() => import("@/pages/NewsFeed"));
 
 function LoadingSplash() {
   const stars = useMemo(() => Array.from({ length: 60 }).map((_, i) => ({
@@ -372,6 +374,8 @@ function RouterContent() {
       <Route path="/admin" component={Admin} />
       <Route path="/admin/database" component={DatabaseAdmin} />
       <Route path="/server-console" component={ServerConsole} />
+      <Route path="/patch-notes" component={PatchNotes} />
+      <Route path="/news-feed" component={NewsFeed} />
       <Route component={NotFound} />
     </Switch>
   );
