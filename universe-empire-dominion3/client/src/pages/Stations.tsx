@@ -20,12 +20,12 @@ import {
   TrendingUp, Hammer, ChevronDown, ChevronRight, Layers,
   Zap, Shield, FlaskConical, Truck, Radio, Users, Pickaxe,
   ShoppingCart, Sword, Anchor, Eye, HandshakeIcon, Wind,
-  Search, Heart, Cpu,
+  Search, Heart, Cpu, Play, Plus, Activity
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { createHabitatConditionProfile } from "@/lib/environmentSystems";
 
-type StationsTab = "moon" | "station" | "infrastructure";
+type StationsTab = "moon" | "station" | "active" | "infrastructure";
 
 const TEMP_THEME_IMAGE = "/theme-temp.png";
 
@@ -450,13 +450,226 @@ function CategorySection({
 
 export default function Stations() {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const { orbitalBuildings, updateBuilding, resources } = useGame();
+
   const moonBuildings = ORBITAL_BUILDINGS.filter(b => b.type === 'moon');
   const stationBuildings = ORBITAL_BUILDINGS.filter(b => b.type === 'station');
   const [activeTab, setActiveTab] = useState<StationsTab>("moon");
-  const [buildingLevels, setBuildingLevels] = useState<Record<string, number>>({});
-  const [infrastructureBuildCounts, setInfrastructureBuildCounts] = useState<Record<string, number>>({});
+
   const [deployedStrongholds, setDeployedStrongholds] = useState<Record<string, number>>({});
   const activeBuildingPool = activeTab === "moon" ? moonBuildings : stationBuildings;
+  
+  const buildingLevels = orbitalBuildings || {};
+
+  // Queries
+  const { data: orbitalStatus } = useQuery<any>({
+    queryKey: ["orbital-stations-status"],
+    queryFn: async () => {
+      const response = await fetch("/api/orbital-stations/status", { credentials: "include" });
+      if (!response.ok) throw new Error("Failed to fetch status");
+      return response.json();
+    },
+  });
+
+  const { data: configPlatforms } = useQuery<any>({
+    queryKey: ["orbital-platforms"],
+    queryFn: async () => {
+      const response = await fetch("/api/orbital-stations/platforms", { credentials: "include" });
+      return response.json();
+    },
+  });
+
+  const { data: configSatellites } = useQuery<any>({
+    queryKey: ["orbital-satellites"],
+    queryFn: async () => {
+      const response = await fetch("/api/orbital-stations/satellites", { credentials: "include" });
+      return response.json();
+    },
+  });
+
+  const { data: configDefenses } = useQuery<any>({
+    queryKey: ["orbital-defenses"],
+    queryFn: async () => {
+      const response = await fetch("/api/orbital-stations/defense-systems", { credentials: "include" });
+      return response.json();
+    },
+  });
+
+  const { data: configOffenses } = useQuery<any>({
+    queryKey: ["orbital-offenses"],
+    queryFn: async () => {
+      const response = await fetch("/api/orbital-stations/offense-systems", { credentials: "include" });
+      return response.json();
+    },
+  });
+
+  const { data: configShields } = useQuery<any>({
+    queryKey: ["orbital-shields"],
+    queryFn: async () => {
+      const response = await fetch("/api/orbital-stations/shield-systems", { credentials: "include" });
+      return response.json();
+    },
+  });
+
+  // Mutations
+  const buildMutation = useMutation({
+    mutationFn: async (body: { platformType: string; name?: string; x?: number; y?: number }) => {
+      const res = await fetch("/api/orbital-stations/build", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null);
+        throw new Error(errData?.message || "Failed to build platform");
+      }
+      return res.json();
+    },
+    onSuccess: (data) => {
+      toast({ title: "Build Success", description: `Constructed ${data.station.name}` });
+      queryClient.invalidateQueries({ queryKey: ["orbital-stations-status"] });
+    },
+    onError: (err: any) => {
+      toast({ title: "Build Failed", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const upgradeMutation = useMutation({
+    mutationFn: async (stationId: string) => {
+      const res = await fetch("/api/orbital-stations/upgrade", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ stationId }),
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null);
+        throw new Error(errData?.message || "Failed to upgrade platform");
+      }
+      return res.json();
+    },
+    onSuccess: (data) => {
+      toast({ title: "Upgrade Success", description: `Upgraded ${data.station.name} to Tier ${data.station.tier}` });
+      queryClient.invalidateQueries({ queryKey: ["orbital-stations-status"] });
+    },
+    onError: (err: any) => {
+      toast({ title: "Upgrade Failed", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const deploySatelliteMutation = useMutation({
+    mutationFn: async (body: { stationId: string; satelliteType: string }) => {
+      const res = await fetch("/api/orbital-stations/deploy-satellite", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null);
+        throw new Error(errData?.message || "Failed to deploy satellite");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Satellite Deployed", description: "Successfully launched satellite into orbit." });
+      queryClient.invalidateQueries({ queryKey: ["orbital-stations-status"] });
+    },
+    onError: (err: any) => {
+      toast({ title: "Deployment Failed", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const installDefenseMutation = useMutation({
+    mutationFn: async (body: { stationId: string; defenseType: string }) => {
+      const res = await fetch("/api/orbital-stations/install-defense", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null);
+        throw new Error(errData?.message || "Failed to install defense");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Defense Installed", description: "System installed and integrated." });
+      queryClient.invalidateQueries({ queryKey: ["orbital-stations-status"] });
+    },
+    onError: (err: any) => {
+      toast({ title: "Installation Failed", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const installOffenseMutation = useMutation({
+    mutationFn: async (body: { stationId: string; offenseType: string }) => {
+      const res = await fetch("/api/orbital-stations/install-offense", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null);
+        throw new Error(errData?.message || "Failed to install offense");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Offense Installed", description: "Weapon grid online and loaded." });
+      queryClient.invalidateQueries({ queryKey: ["orbital-stations-status"] });
+    },
+    onError: (err: any) => {
+      toast({ title: "Installation Failed", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const installShieldMutation = useMutation({
+    mutationFn: async (body: { stationId: string; shieldType: string }) => {
+      const res = await fetch("/api/orbital-stations/install-shield", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null);
+        throw new Error(errData?.message || "Failed to install shield");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Shield Installed", description: "Deflector field calibrated." });
+      queryClient.invalidateQueries({ queryKey: ["orbital-stations-status"] });
+    },
+    onError: (err: any) => {
+      toast({ title: "Installation Failed", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const tickMutation = useMutation({
+    mutationFn: async (stationId?: string) => {
+      const res = await fetch("/api/orbital-stations/tick", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ stationId }),
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Failed to process tick");
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Station Tick Processed", description: "Production rates and maintenance calculated." });
+      queryClient.invalidateQueries({ queryKey: ["orbital-stations-status"] });
+    },
+  });
+
+  const [infrastructureBuildCounts, setInfrastructureBuildCounts] = useState<Record<string, number>>({});
+
   const totalFacilityLevels = Object.values(buildingLevels).reduce((sum, level) => sum + level, 0);
   const totalInfrastructureBuilt = Object.values(infrastructureBuildCounts).reduce((sum, count) => sum + count, 0);
   const totalStrongholds = Object.values(deployedStrongholds).reduce((sum, count) => sum + count, 0);
@@ -470,11 +683,11 @@ export default function Stations() {
       createHabitatConditionProfile({
         kind: "moonbase",
         name: "Lunar Base Network",
-        habitability: 42 + Math.min(buildingLevels.lunarBase || 0, 18),
+        habitability: 42 + Math.min((buildingLevels.lunarBase as number) || 0, 18),
         population: totalFacilityLevels * 1500,
-        level: Math.max(buildingLevels.lunarBase || 1, 1),
+        level: Math.max((buildingLevels.lunarBase as number) || 1, 1),
         integrity: 52 + Math.min(totalFacilityLevels, 40),
-        stability: 48 + Math.min((buildingLevels.sensorPhalanx || 0) * 6 + (buildingLevels.jumpGate || 0) * 5, 42),
+        stability: 48 + Math.min(((buildingLevels.sensorPhalanx as number) || 0) * 6 + ((buildingLevels.jumpGate as number) || 0) * 5, 42),
         storyAct: orbitalStoryAct,
       }),
     [buildingLevels, orbitalStoryAct, totalFacilityLevels],
@@ -484,11 +697,11 @@ export default function Stations() {
       createHabitatConditionProfile({
         kind: "space-station",
         name: "Orbital Dock Grid",
-        habitability: 56 + Math.min((buildingLevels.spaceStation || 0) * 7, 28),
+        habitability: 56 + Math.min(((buildingLevels.spaceStation as number) || 0) * 7, 28),
         population: totalFacilityLevels * 2200,
-        level: Math.max(buildingLevels.spaceStation || 1, 1),
+        level: Math.max((buildingLevels.spaceStation as number) || 1, 1),
         integrity: 58 + Math.min(totalFacilityLevels, 34),
-        stability: 52 + Math.min((buildingLevels.fleetAcademy || 0) * 5 + (buildingLevels.allianceDepot || 0) * 4, 40),
+        stability: 52 + Math.min(((buildingLevels.fleetAcademy as number) || 0) * 5 + ((buildingLevels.allianceDepot as number) || 0) * 4, 40),
         storyAct: orbitalStoryAct,
       }),
     [buildingLevels, orbitalStoryAct, totalFacilityLevels],
@@ -500,8 +713,8 @@ export default function Stations() {
         name: "Starbase Command Hub",
         habitability: 60 + Math.min(totalInfrastructureBuilt, 16),
         population: totalInfrastructureBuilt * 3000,
-        level: Math.max(buildingLevels.starbaseHub || 1, 1),
-        integrity: 60 + Math.min(totalInfrastructureBuilt * 2 + (buildingLevels.starbaseHub || 0) * 5, 38),
+        level: Math.max((buildingLevels.starbaseHub as number) || 1, 1),
+        integrity: 60 + Math.min(totalInfrastructureBuilt * 2 + ((buildingLevels.starbaseHub as number) || 0) * 5, 38),
         stability: 54 + Math.min(totalInfrastructureBuilt + totalFacilityLevels, 36),
         storyAct: orbitalStoryAct,
       }),
@@ -509,10 +722,10 @@ export default function Stations() {
   );
 
   const getBuildingRequirementLabel = (building: StationBuilding) => {
-    if (building.type === "moon" && building.id !== "lunarBase" && (buildingLevels.lunarBase ?? 0) === 0) {
+    if (building.type === "moon" && building.id !== "lunarBase" && ((buildingLevels.lunarBase as number) ?? 0) === 0) {
       return "Requires Lunar Base level 1 before this structure can be built.";
     }
-    if (building.type === "station" && building.id !== "starbaseHub" && (buildingLevels.starbaseHub ?? 0) === 0) {
+    if (building.type === "station" && building.id !== "starbaseHub" && ((buildingLevels.starbaseHub as number) ?? 0) === 0) {
       return "Requires Starbase Command Hub level 1 before advanced station modules.";
     }
     return null;
@@ -524,25 +737,11 @@ export default function Stations() {
       toast({ title: "Construction blocked", description: requirementLabel, variant: "destructive" });
       return;
     }
-
-    const currentLevel = buildingLevels[building.id] ?? 0;
-    const nextLevel = currentLevel + 1;
-    const multiplier = Math.pow(building.costFactor, currentLevel);
-    const cost = {
-      metal: Math.round(building.baseCost.metal * multiplier),
-      crystal: Math.round(building.baseCost.crystal * multiplier),
-      deuterium: Math.round(building.baseCost.deuterium * multiplier),
-    };
-
-    setBuildingLevels((current) => ({ ...current, [building.id]: nextLevel }));
-    toast({
-      title: currentLevel === 0 ? "Construction queued" : "Upgrade queued",
-      description: `${building.name} now targeting level ${nextLevel}. Cost ${cost.metal.toLocaleString()} metal, ${cost.crystal.toLocaleString()} crystal, ${cost.deuterium.toLocaleString()} deuterium.`,
-    });
+    updateBuilding(building.id, building.name, building.buildTime);
   };
 
   const getStationRequirementLabel = (station: OrbitalStation) => {
-    if (station.attributes.requiresMoon && (buildingLevels.lunarBase ?? 0) === 0) {
+    if (station.attributes.requiresMoon && ((buildingLevels.lunarBase as number) ?? 0) === 0) {
       return "Requires an established Lunar Base before orbital deployment.";
     }
 
@@ -570,13 +769,13 @@ export default function Stations() {
   };
 
   const getStrongholdRequirementLabel = (program: typeof STRONGHOLD_PROGRAMS[number]) => {
-    if ((buildingLevels.starbaseHub ?? 0) === 0) {
+    if (((buildingLevels.starbaseHub as number) ?? 0) === 0) {
       return "Requires Starbase Command Hub level 1 before frontier stronghold deployment.";
     }
-    if (program.tier !== "Frontier Tier I" && (buildingLevels.strongholdCommandNexus ?? 0) === 0) {
+    if (program.tier !== "Frontier Tier I" && ((buildingLevels.strongholdCommandNexus as number) ?? 0) === 0) {
       return "Requires Stronghold Command Nexus level 1 for advanced keep and citadel control.";
     }
-    if (program.status === "contested" && (buildingLevels.defenseGrid ?? 0) < 1) {
+    if (program.status === "contested" && ((buildingLevels.defenseGrid as number) || 0) < 1) {
       return "Requires Orbital Defense Grid level 1 before contesting hostile strongholds.";
     }
     return null;
@@ -601,7 +800,7 @@ export default function Stations() {
     const syncFromUrl = () => {
       const params = new URLSearchParams(window.location.search);
       const tabParam = params.get("tab");
-      if (tabParam === "moon" || tabParam === "station" || tabParam === "infrastructure") {
+      if (tabParam === "moon" || tabParam === "station" || tabParam === "active" || tabParam === "infrastructure") {
         setActiveTab(tabParam as StationsTab);
       }
     };
@@ -740,6 +939,10 @@ export default function Stations() {
               <Satellite className="w-4 h-4 mr-2" />
               Station Facilities
             </TabsTrigger>
+            <TabsTrigger value="active" data-testid="tab-active-stations">
+              <Cpu className="w-4 h-4 mr-2" />
+              Active Platforms
+            </TabsTrigger>
             <TabsTrigger value="infrastructure" data-testid="tab-infrastructure">
               <Layers className="w-4 h-4 mr-2" />
               Infrastructure
@@ -849,6 +1052,257 @@ export default function Stations() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="active" className="mt-4">
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6">
+              <div className="space-y-6">
+                {/* Active Stations Stats Dashboard */}
+                <Card className="bg-slate-900/60 border-slate-800 text-white">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Activity className="w-5 h-5 text-blue-400" /> Active Platforms Status
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                    <div className="p-3 bg-slate-950/40 rounded border border-slate-850">
+                      <div className="text-xs text-slate-400">Deployed Platforms</div>
+                      <div className="text-2xl font-bold mt-1">{orbitalStatus?.stationCount || 0} / {orbitalStatus?.maxStations || 5}</div>
+                    </div>
+                    <div className="p-3 bg-slate-950/40 rounded border border-slate-850">
+                      <div className="text-xs text-slate-400">Total Defense Score</div>
+                      <div className="text-2xl font-bold mt-1 text-emerald-400">{orbitalStatus?.totalDefenseScore || 0}</div>
+                    </div>
+                    <div className="p-3 bg-slate-950/40 rounded border border-slate-850">
+                      <div className="text-xs text-slate-400">Total Offense Score</div>
+                      <div className="text-2xl font-bold mt-1 text-rose-400">{orbitalStatus?.totalOffenseScore || 0}</div>
+                    </div>
+                    <div className="p-3 bg-slate-950/40 rounded border border-slate-850">
+                      <div className="text-xs text-slate-400">Satellites Launched</div>
+                      <div className="text-2xl font-bold mt-1 text-cyan-400">{orbitalStatus?.satellitesDeployed || 0}</div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Built Station Cards */}
+                {orbitalStatus?.stations && orbitalStatus.stations.length > 0 ? (
+                  <div className="grid grid-cols-1 gap-4">
+                    {orbitalStatus.stations.map((s: any) => (
+                      <Card key={s.id} className="bg-slate-900/60 border-slate-800 text-white">
+                        <CardHeader className="pb-2 border-b border-slate-800">
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <div className="text-xl font-bold text-white flex items-center gap-2">
+                                <span>🛸</span> {s.name}
+                              </div>
+                              <div className="text-xs text-slate-400 mt-0.5">
+                                Platform Type: <span className="font-semibold text-blue-400 capitalize">{s.platformType.replace("_", " ")}</span> · Coords: ({s.x}, {s.y})
+                              </div>
+                            </div>
+                            <div className="flex gap-2">
+                              <Badge className="bg-blue-950 text-blue-400 border border-blue-900">Tier {s.tier}</Badge>
+                              <Badge className="bg-purple-950 text-purple-400 border border-purple-900">Lv. {s.level}</Badge>
+                            </div>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="p-4 space-y-4">
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                            <div className="p-2 bg-slate-950/30 rounded border border-slate-850">
+                              <span className="text-slate-400 block mb-0.5">Metal Storage</span>
+                              <span className="font-bold text-white">{Math.round(s.resourceStorage.metal).toLocaleString()} / {s.maxStorage.metal.toLocaleString()}</span>
+                            </div>
+                            <div className="p-2 bg-slate-950/30 rounded border border-slate-850">
+                              <span className="text-slate-400 block mb-0.5">Crystal Storage</span>
+                              <span className="font-bold text-blue-400">{Math.round(s.resourceStorage.crystal).toLocaleString()} / {s.maxStorage.crystal.toLocaleString()}</span>
+                            </div>
+                            <div className="p-2 bg-slate-950/30 rounded border border-slate-850">
+                              <span className="text-slate-400 block mb-0.5">Deut. Storage</span>
+                              <span className="font-bold text-green-400">{Math.round(s.resourceStorage.deuterium).toLocaleString()} / {s.maxStorage.deuterium.toLocaleString()}</span>
+                            </div>
+                            <div className="p-2 bg-slate-950/30 rounded border border-slate-850">
+                              <span className="text-slate-400 block mb-0.5">Credits Storage</span>
+                              <span className="font-bold text-amber-400">{Math.round(s.resourceStorage.credits).toLocaleString()} / {s.maxStorage.credits.toLocaleString()}</span>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-wrap gap-2">
+                            <Button size="sm" variant="outline" className="border-blue-600 text-blue-400 hover:text-white"
+                              onClick={() => upgradeMutation.mutate(s.id)} disabled={upgradeMutation.isPending}>
+                              <TrendingUp className="w-3.5 h-3.5 mr-1" /> Upgrade Tier
+                            </Button>
+                            <Button size="sm" variant="outline" className="border-green-600 text-green-400 hover:text-white"
+                              onClick={() => tickMutation.mutate(s.id)} disabled={tickMutation.isPending}>
+                              <Play className="w-3.5 h-3.5 mr-1" /> Process Tick
+                            </Button>
+                          </div>
+
+                          {/* Modular Fittings Sub-grids */}
+                          <div className="border-t border-slate-800/80 pt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* Satellites Fitting */}
+                            <div className="space-y-2">
+                              <div className="text-sm font-bold text-slate-300 flex items-center justify-between">
+                                <span>Deployed Satellites ({s.satellites.length})</span>
+                                <select className="bg-slate-950 text-xs border border-slate-805 rounded px-1.5 py-0.5 text-blue-400"
+                                  onChange={(e) => {
+                                    if (e.target.value) {
+                                      deploySatelliteMutation.mutate({ stationId: s.id, satelliteType: e.target.value });
+                                      e.target.value = "";
+                                    }
+                                  }}>
+                                  <option value="">+ Deploy</option>
+                                  {configSatellites?.satellites?.map((sat: any) => (
+                                    <option key={sat.type} value={sat.type}>{sat.name}</option>
+                                  ))}
+                                </select>
+                              </div>
+                              <div className="space-y-1 max-h-24 overflow-y-auto">
+                                {s.satellites.length > 0 ? s.satellites.map((sat: any, idx: number) => (
+                                  <div key={idx} className="flex justify-between items-center text-xs p-1.5 bg-slate-950/20 border border-slate-850 rounded">
+                                    <span className="capitalize">{sat.type.replace("_", " ")}</span>
+                                    <span className="text-slate-400">Tier {sat.tier}</span>
+                                  </div>
+                                )) : <div className="text-xs text-slate-500 italic">No satellites deployed.</div>}
+                              </div>
+                            </div>
+
+                            {/* Shield Systems Fitting */}
+                            <div className="space-y-2">
+                              <div className="text-sm font-bold text-slate-300 flex items-center justify-between">
+                                <span>Shield Deflectors ({s.shields.length})</span>
+                                <select className="bg-slate-950 text-xs border border-slate-805 rounded px-1.5 py-0.5 text-blue-400"
+                                  onChange={(e) => {
+                                    if (e.target.value) {
+                                      installShieldMutation.mutate({ stationId: s.id, shieldType: e.target.value });
+                                      e.target.value = "";
+                                    }
+                                  }}>
+                                  <option value="">+ Install</option>
+                                  {configShields?.shieldSystems?.map((sh: any) => (
+                                    <option key={sh.type} value={sh.type}>{sh.name}</option>
+                                  ))}
+                                </select>
+                              </div>
+                              <div className="space-y-1 max-h-24 overflow-y-auto">
+                                {s.shields.length > 0 ? s.shields.map((sh: any, idx: number) => (
+                                  <div key={idx} className="flex justify-between items-center text-xs p-1.5 bg-slate-950/20 border border-slate-850 rounded">
+                                    <span className="capitalize">{sh.type.replace("_", " ")}</span>
+                                    <span className="text-emerald-400 font-mono">{sh.currentHp} / {sh.maxHp} HP</span>
+                                  </div>
+                                )) : <div className="text-xs text-slate-500 italic">No shields installed.</div>}
+                              </div>
+                            </div>
+
+                            {/* Defenses Fitting */}
+                            <div className="space-y-2">
+                              <div className="text-sm font-bold text-slate-300 flex items-center justify-between">
+                                <span>Defense Turrets ({s.defenses.length})</span>
+                                <select className="bg-slate-950 text-xs border border-slate-805 rounded px-1.5 py-0.5 text-blue-400"
+                                  onChange={(e) => {
+                                    if (e.target.value) {
+                                      installDefenseMutation.mutate({ stationId: s.id, defenseType: e.target.value });
+                                      e.target.value = "";
+                                    }
+                                  }}>
+                                  <option value="">+ Add Turret</option>
+                                  {configDefenses?.defenseSystems?.map((def: any) => (
+                                    <option key={def.type} value={def.type}>{def.name}</option>
+                                  ))}
+                                </select>
+                              </div>
+                              <div className="space-y-1 max-h-24 overflow-y-auto">
+                                {s.defenses.length > 0 ? s.defenses.map((def: any, idx: number) => (
+                                  <div key={idx} className="flex justify-between items-center text-xs p-1.5 bg-slate-950/20 border border-slate-850 rounded">
+                                    <span className="capitalize">{def.type.replace("_", " ")}</span>
+                                    <span className="text-slate-400">Level {def.level}</span>
+                                  </div>
+                                )) : <div className="text-xs text-slate-500 italic">No defenses installed.</div>}
+                              </div>
+                            </div>
+
+                            {/* Offenses Fitting */}
+                            <div className="space-y-2">
+                              <div className="text-sm font-bold text-slate-300 flex items-center justify-between">
+                                <span>Offensive Weaponry ({s.offenses.length})</span>
+                                <select className="bg-slate-950 text-xs border border-slate-805 rounded px-1.5 py-0.5 text-blue-400"
+                                  onChange={(e) => {
+                                    if (e.target.value) {
+                                      installOffenseMutation.mutate({ stationId: s.id, offenseType: e.target.value });
+                                      e.target.value = "";
+                                    }
+                                  }}>
+                                  <option value="">+ Add Cannon</option>
+                                  {configOffenses?.offenseSystems?.map((off: any) => (
+                                    <option key={off.type} value={off.type}>{off.name}</option>
+                                  ))}
+                                </select>
+                              </div>
+                              <div className="space-y-1 max-h-24 overflow-y-auto">
+                                {s.offenses.length > 0 ? s.offenses.map((off: any, idx: number) => (
+                                  <div key={idx} className="flex justify-between items-center text-xs p-1.5 bg-slate-950/20 border border-slate-850 rounded">
+                                    <span className="capitalize">{off.type.replace("_", " ")}</span>
+                                    <span className="text-slate-400">Level {off.level}</span>
+                                  </div>
+                                )) : <div className="text-xs text-slate-500 italic">No offenses installed.</div>}
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <Card className="bg-slate-900/60 border-slate-800 text-slate-400 text-center py-12">
+                    <CardContent className="space-y-3">
+                      <Satellite className="w-12 h-12 text-slate-600 mx-auto" />
+                      <div className="font-bold text-white text-base">No Deployed Orbital Platforms</div>
+                      <p className="text-sm max-w-sm mx-auto">Establish customized space stations or moon bases to gather global bonuses, construct ships, and secure defenses.</p>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+
+              {/* Build Platform Form */}
+              <div className="space-y-4">
+                <Card className="bg-slate-900 border-slate-800 text-white">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <Plus className="w-4 h-4 text-blue-400" /> Deploy New Platform
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-4">
+                    <form className="space-y-4" onSubmit={(e) => {
+                      e.preventDefault();
+                      const form = e.currentTarget;
+                      const formData = new FormData(form);
+                      const platformType = formData.get("platformType") as string;
+                      const name = formData.get("name") as string;
+                      if (!platformType) return;
+                      buildMutation.mutate({ platformType, name });
+                      form.reset();
+                    }}>
+                      <div className="space-y-2">
+                        <label className="text-xs text-slate-400 font-bold uppercase tracking-wider block">Platform Type</label>
+                        <select name="platformType" required className="w-full bg-slate-950 border border-slate-800 rounded p-2 text-sm text-white">
+                          <option value="">Select Platform Type...</option>
+                          {configPlatforms?.platforms?.map((plat: any) => (
+                            <option key={plat.type} value={plat.type}>{plat.name} ({plat.description})</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-xs text-slate-400 font-bold uppercase tracking-wider block">Name (Optional)</label>
+                        <Input name="name" placeholder="Custom platform name..." className="bg-slate-950 border-slate-850 text-white text-sm" />
+                      </div>
+
+                      <Button type="submit" className="w-full" disabled={buildMutation.isPending}>
+                        Construct Platform
+                      </Button>
+                    </form>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
           </TabsContent>
 
           <TabsContent value="infrastructure" className="mt-4">

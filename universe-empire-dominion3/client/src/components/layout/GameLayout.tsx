@@ -540,6 +540,7 @@ const adminItems: NavItem[] = [
   { href: "/admin", icon: ShieldAlert, label: "Control Panel", description: "Use administrative controls for game and player management." },
   { href: "/admin/database", icon: Database, label: "Database Admin", description: "Browse tables, execute SQL, and manage the PostgreSQL database.", activePrefixes: ["/admin/database"] },
   { href: "/server-console", icon: Terminal, label: "Server Console", description: "Review live server console tools and operational controls." },
+  { href: "/config-explorer", icon: Settings, label: "Config Explorer", description: "Browse and inspect active balancing configurations, archetypes, and formula modules." },
 ];
 
 const getCommandTiles = (context: ActivePageContext | null): CommandTile[] => {

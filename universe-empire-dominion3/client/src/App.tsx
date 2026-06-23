@@ -85,6 +85,7 @@ const ResearchLab = lazy(() => import("@/pages/ResearchLab"));
 const GameAssetsGallery = lazy(() => import("@/pages/GameAssetsGallery"));
 const KnowledgeLibrary = lazy(() => import("@/pages/KnowledgeLibrary"));
 const ResearchAnalyticsDashboard = lazy(() => import("@/pages/ResearchAnalyticsDashboard"));
+const ConfigExplorer = lazy(() => import("@/pages/ConfigExplorer"));
 const PlanetDetail = lazy(() => import("@/pages/PlanetDetail"));
 const PlanetCommand = lazy(() => import("@/pages/PlanetCommand"));
 const PlanetaryOccupation = lazy(() => import("@/pages/PlanetaryOccupation"));
@@ -318,6 +319,7 @@ function RouterContent() {
       <Route path="/research-lab" component={ResearchLab} />
       <Route path="/knowledge-library" component={KnowledgeLibrary} />
       <Route path="/research-analytics" component={ResearchAnalyticsDashboard} />
+      <Route path="/config-explorer" component={ConfigExplorer} />
       <Route path="/ogame-compendium" component={OgameCompendium} />
       <Route path="/leaderboard" component={Leaderboard} />
       <Route path="/assets-gallery" component={GameAssetsGallery} />
