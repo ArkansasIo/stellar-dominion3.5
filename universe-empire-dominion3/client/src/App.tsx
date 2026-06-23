@@ -67,6 +67,7 @@ const BiomeCodex = lazy(() => import("@/pages/BiomeCodex"));
 const BiomeDetail = lazy(() => import("@/pages/BiomeDetail"));
 const Diagnostics = lazy(() => import("@/pages/Diagnostics"));
 const StoryMode = lazy(() => import("@/pages/StoryMode"));
+const Preludes = lazy(() => import("@/pages/Preludes"));
 const SeasonPass = lazy(() => import("@/pages/SeasonPass"));
 const BattlePass = lazy(() => import("@/pages/BattlePass"));
 const CivilizationSystems = lazy(() => import("@/pages/CivilizationSystems"));
@@ -112,6 +113,8 @@ const GovernmentBuildingsPage = lazy(() => import("@/pages/GovernmentBuildingsPa
 const GovernmentProgressionPage = lazy(() => import("@/pages/GovernmentProgressionPage"));
 const SaveSlotsPage = lazy(() => import("@/pages/SaveSlotsPage"));
 const RealmPickerPage = lazy(() => import("@/pages/RealmPickerPage"));
+const PatchNotes = lazy(() => import("@/pages/PatchNotes"));
+const NewsFeed = lazy(() => import("@/pages/NewsFeed"));
 
 function LoadingSplash() {
   const stars = useMemo(() => Array.from({ length: 60 }).map((_, i) => ({
@@ -330,6 +333,7 @@ function RouterContent() {
       <Route path="/biome/:id" component={BiomeDetail} />
       <Route path="/diagnostics" component={Diagnostics} />
       <Route path="/story-mode" component={StoryMode} />
+      <Route path="/preludes" component={Preludes} />
       <Route path="/season-pass" component={SeasonPass} />
       <Route path="/battle-pass" component={BattlePass} />
       <Route path="/civilization-systems" component={CivilizationSystems} />
@@ -372,6 +376,8 @@ function RouterContent() {
       <Route path="/admin" component={Admin} />
       <Route path="/admin/database" component={DatabaseAdmin} />
       <Route path="/server-console" component={ServerConsole} />
+      <Route path="/patch-notes" component={PatchNotes} />
+      <Route path="/news-feed" component={NewsFeed} />
       <Route component={NotFound} />
     </Switch>
   );

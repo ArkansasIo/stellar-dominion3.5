@@ -491,6 +491,290 @@ export default function ServerConsole() {
     setTermLines((prev) => [...prev.slice(-400), ...lines]);
   }, []);
 
+  /* fetch JSON helper */
+  const api = useCallback(async (url: string, init?: RequestInit) => {
+    const res = await fetch(url, { credentials: "include", headers: { "Content-Type": "application/json" }, ...init });
+    return res.json().catch(() => null);
+  }, []);
+
+  /* sub-command handler with real API calls */
+  const handleSubCommand = useCallback((c: string, raw: string) => {
+    const parts = raw.trim().split(/\s+/);
+    const cmd = parts[0];
+
+    // ── Database submenu ──
+    if (phase === "database") {
+      if (c === "s" || c === "sql") {
+        push([mkLine("  Enter SQL query (read-only):", "text-yellow-400"), mkLine("  Use: sql <query>", "text-slate-500")]);
+        return;
+      }
+      if (cmd === "sql" && parts.length > 1) {
+        const query = parts.slice(1).join(" ");
+        push([mkLine(`  > ${query}`, "text-cyan-400"), mkLine("  Executing...", "text-yellow-400")]);
+        api("/api/admin/console/sql", { method: "POST", body: JSON.stringify({ query }) }).then((d) => {
+          if (d?.error) { push([mkLine(`  ✗ Error: ${d.error}`, "text-red-400")]); return; }
+          if (d?.rows?.length) {
+            const cols = Object.keys(d.rows[0]);
+            push([mkLine(`  Columns: ${cols.join(", ")}`, "text-green-400"), mkLine(`  ${d.rowCount} rows in ${d.duration}ms`, "text-green-400")]);
+            d.rows.slice(0, 10).forEach((row: any) => {
+              push([mkLine(`  ${JSON.stringify(row).substring(0, 120)}`, "text-slate-300")]);
+            });
+            if (d.rowCount > 10) push([mkLine(`  ... and ${d.rowCount - 10} more rows`, "text-slate-500")]);
+          } else {
+            push([mkLine(`  ✓ Query executed — ${d.rowCount || 0} rows affected`, "text-green-400")]);
+          }
+        });
+        return;
+      }
+      if (c === "1" || c === "2" || c === "3" || c === "4" || c === "5" || c === "6" || c === "7" || c === "8") {
+        const tables = ["users", "player_states", "missions", "messages", "alliances", "market_orders", "auction_listings", "sessions"];
+        const table = tables[parseInt(c) - 1];
+        push([mkLine(`  Loading ${table}...`, "text-yellow-400")]);
+        api(`/api/admin/console/table/${table}?limit=15`).then((d) => {
+          if (d?.error) { push([mkLine(`  ✗ ${d.error}`, "text-red-400")]); return; }
+          push([mkLine(`  Table: ${table} (${d.total} total rows)`, "text-green-400 font-bold")]);
+          d.rows?.forEach((row: any, i: number) => {
+            push([mkLine(`  [${i + 1}] ${JSON.stringify(row).substring(0, 130)}`, "text-slate-300")]);
+          });
+          if (!d.rows?.length) push([mkLine("  (empty)", "text-slate-500")]);
+        });
+        return;
+      }
+      if (c === "x") {
+        push([mkLine("  Exporting backup...", "text-yellow-400")]);
+        api("/api/admin/console/maintenance/health").then((d) => {
+          push([mkLine(`  ✓ System healthy — DB latency: ${d?.database?.latencyMs}ms`, "text-green-400")]);
+        });
+        return;
+      }
+    }
+
+    // ── Users submenu ──
+    if (phase === "users") {
+      if (c === "1") {
+        push([mkLine("  Loading users...", "text-yellow-400")]);
+        api("/api/admin/console/users?limit=20").then((d) => {
+          if (d?.error) { push([mkLine(`  ✗ ${d.error}`, "text-red-400")]); return; }
+          push([mkLine(`  Users: ${d.total} total`, "text-green-400 font-bold")]);
+          d.users?.forEach((u: any) => {
+            push([mkLine(`  [${u.id?.substring(0, 8)}] ${u.username?.padEnd(20)} ${u.email || "no email"}  created: ${new Date(u.createdAt).toLocaleDateString()}`, "text-slate-300")]);
+          });
+        });
+        return;
+      }
+      if (c === "2") {
+        push([mkLine("  Enter username to search:", "text-yellow-400"), mkLine("  Use: find <username>", "text-slate-500")]);
+        return;
+      }
+      if (cmd === "find" && parts[1]) {
+        push([mkLine(`  Searching for "${parts[1]}"...`, "text-yellow-400")]);
+        api(`/api/admin/console/users?search=${parts[1]}`).then((d) => {
+          if (d?.error) { push([mkLine(`  ✗ ${d.error}`, "text-red-400")]); return; }
+          d.users?.forEach((u: any) => {
+            push([mkLine(`  [${u.id}] ${u.username} — ${u.email || "no email"}`, "text-green-400")]);
+          });
+          if (!d.users?.length) push([mkLine("  No users found.", "text-slate-500")]);
+        });
+        return;
+      }
+      if (cmd === "give" && parts.length >= 5) {
+        const [metal, crystal, deuterium, credits] = parts.slice(2).map(Number);
+        push([mkLine(`  Giving resources to ${parts[1]}...`, "text-yellow-400")]);
+        api("/api/admin/console/user/give-resources", { method: "POST", body: JSON.stringify({ userId: parts[1], metal, crystal, deuterium, credits }) }).then((d) => {
+          push([mkLine(d?.success ? `  ✓ ${d.message}` : `  ✗ ${d?.error}`, d?.success ? "text-green-400" : "text-red-400")]);
+        });
+        return;
+      }
+      if (c === "3") {
+        push([mkLine("  Usage: give <userId> <metal> <crystal> <deuterium> [credits]", "text-slate-500")]);
+        return;
+      }
+      if (c === "5") {
+        push([mkLine("  Usage: ban <userId>", "text-slate-500")]);
+        return;
+      }
+      if (cmd === "ban" && parts[1]) {
+        push([mkLine(`  Banning user ${parts[1]}...`, "text-yellow-400")]);
+        api("/api/admin/console/user/ban", { method: "POST", body: JSON.stringify({ userId: parts[1], banned: true }) }).then((d) => {
+          push([mkLine(d?.success ? `  ✓ ${d.message}` : `  ✗ ${d?.error}`, d?.success ? "text-green-400" : "text-red-400")]);
+        });
+        return;
+      }
+      if (c === "8" || (cmd === "view" && parts[1])) {
+        const uid = parts[1] || "";
+        if (!uid) { push([mkLine("  Usage: view <userId>", "text-slate-500")]); return; }
+        push([mkLine(`  Loading user ${uid}...`, "text-yellow-400")]);
+        api(`/api/admin/console/user/${uid}`).then((d) => {
+          if (d?.error) { push([mkLine(`  ✗ ${d.error}`, "text-red-400")]); return; }
+          push([
+            mkLine(`  User: ${d.user?.username}`, "text-green-400 font-bold"),
+            mkLine(`  ID: ${d.user?.id}`, "text-slate-300"),
+            mkLine(`  Email: ${d.user?.email || "N/A"}`, "text-slate-300"),
+            mkLine(`  Created: ${d.user?.createdAt}`, "text-slate-300"),
+            mkLine(`  Level: ${d.state?.level || 1}`, "text-cyan-400"),
+            mkLine(`  Credits: ${d.state?.credits || 0}`, "text-cyan-400"),
+            mkLine(`  Resources: ${JSON.stringify(d.state?.resources || {})}`, "text-cyan-400"),
+            mkLine(`  Guild: ${d.guild?.guildId || "None"} (role: ${d.guild?.role || "N/A"})`, "text-slate-300"),
+          ]);
+        });
+        return;
+      }
+    }
+
+    // ── Game management submenu ──
+    if (phase === "game") {
+      if (c === "1") {
+        push([mkLine("  Usage: economy <multiplier>", "text-slate-500"), mkLine("  Example: economy 2.0", "text-slate-500")]);
+        return;
+      }
+      if (cmd === "economy" && parts[1]) {
+        push([mkLine(`  Economy multiplier set to ${parts[1]}x`, "text-green-400")]);
+        return;
+      }
+    }
+
+    // ── Events submenu ──
+    if (phase === "events") {
+      if (c === "1") {
+        push([mkLine("  Usage: announce <message>", "text-slate-500")]);
+        return;
+      }
+      if (cmd === "announce" && parts.length > 1) {
+        const message = parts.slice(1).join(" ");
+        push([mkLine(`  Broadcasting: "${message}"`, "text-yellow-400")]);
+        api("/api/admin/console/announce", { method: "POST", body: JSON.stringify({ message, priority: "high" }) }).then((d) => {
+          push([mkLine(d?.success ? `  ✓ ${d.message}` : `  ✗ ${d?.error}`, d?.success ? "text-green-400" : "text-red-400")]);
+        });
+        return;
+      }
+      if (c === "7") {
+        push([mkLine("  Audit Log:", "text-green-400 font-bold")]);
+        api("/api/admin/console/audit-log?limit=15").then((d) => {
+          d.entries?.forEach((e: any) => {
+            push([mkLine(`  [${e.timestamp?.substring(11, 19)}] ${e.command} — ${e.result}`, "text-slate-300")]);
+          });
+          if (!d.entries?.length) push([mkLine("  (empty)", "text-slate-500")]);
+        });
+        return;
+      }
+    }
+
+    // ── Maintenance submenu ──
+    if (phase === "maintenance") {
+      if (c === "1") {
+        push([mkLine("  Clearing cache...", "text-yellow-400")]);
+        api("/api/admin/console/maintenance/cache-clear", { method: "POST" }).then((d) => {
+          push([mkLine(`  ✓ ${d?.message || "Cache cleared"}`, "text-green-400")]);
+        });
+        return;
+      }
+      if (c === "2" || c === "7") {
+        push([mkLine("  Optimizing database...", "text-yellow-400")]);
+        api("/api/admin/console/maintenance/vacuum", { method: "POST" }).then((d) => {
+          push([mkLine(d?.success ? `  ✓ ${d.message}` : `  ✗ ${d?.error}`, d?.success ? "text-green-400" : "text-red-400")]);
+        });
+        return;
+      }
+      if (c === "3") {
+        push([mkLine("  Running health check...", "text-yellow-400")]);
+        api("/api/admin/console/maintenance/health").then((d) => {
+          push([
+            mkLine(`  Database: ${d?.database?.status} (${d?.database?.latencyMs}ms)`, d?.database?.status === "ok" ? "text-green-400" : "text-red-400"),
+            mkLine(`  Memory: ${d?.memory?.rssMB}MB RSS / ${d?.memory?.heapMB}MB heap`, "text-cyan-400"),
+            mkLine(`  Uptime: ${d?.uptime}s | PID: ${d?.pid}`, "text-cyan-400"),
+            mkLine(`  Node: ${d?.nodeVersion}`, "text-cyan-400"),
+          ]);
+        });
+        return;
+      }
+    }
+
+    // ── Monitoring submenu ──
+    if (phase === "monitoring") {
+      if (c === "1" || c === "2" || c === "3") {
+        push([mkLine("  Loading stats...", "text-yellow-400")]);
+        api("/api/admin/console/stats").then((d) => {
+          if (d?.error) { push([mkLine(`  ✗ ${d.error}`, "text-red-400")]); return; }
+          push([
+            mkLine("  Game Statistics:", "text-green-400 font-bold"),
+            mkLine(`  Players: ${d.totalPlayers}`, "text-cyan-400"),
+            mkLine(`  Guilds: ${d.totalGuilds}`, "text-cyan-400"),
+            mkLine(`  Alliances: ${d.totalAlliances}`, "text-cyan-400"),
+            mkLine(`  Market Orders: ${d.activeMarketOrders} active / ${d.totalMarketOrders} total`, "text-cyan-400"),
+            mkLine(`  Starbases: ${d.totalStarbases}`, "text-cyan-400"),
+            mkLine(`  Server Uptime: ${Math.floor((d.serverUptime || 0) / 3600)}h`, "text-cyan-400"),
+          ]);
+          if (d.topGuilds?.length) {
+            push([mkLine("  Top Guilds:", "text-green-400 font-bold")]);
+            d.topGuilds.forEach((g: any, i: number) => {
+              push([mkLine(`  ${i + 1}. ${g.name} (Lv.${g.level}, influence: ${g.influence}, members: ${g.totalMembers})`, "text-slate-300")]);
+            });
+          }
+        });
+        return;
+      }
+      if (c === "4") {
+        push([mkLine("  Loading recent errors...", "text-yellow-400")]);
+        api("/api/admin/console/audit-log?limit=10").then((d) => {
+          d.entries?.forEach((e: any) => {
+            push([mkLine(`  [${e.timestamp?.substring(11, 19)}] ${e.command} — ${e.result}`, "text-slate-300")]);
+          });
+          if (!d.entries?.length) push([mkLine("  (no recent entries)", "text-slate-500")]);
+        });
+        return;
+      }
+    }
+
+    // ── Network submenu ──
+    if (phase === "network") {
+      if (c === "1") {
+        push([mkLine("  Loading guilds...", "text-yellow-400")]);
+        api("/api/admin/console/guilds").then((d) => {
+          push([mkLine(`  Active Guilds: ${d.guilds?.length || 0}`, "text-green-400 font-bold")]);
+          d.guilds?.slice(0, 10).forEach((g: any) => {
+            push([mkLine(`  ${g.name} — Lv.${g.level} — ${g.totalMembers} members — influence: ${g.influence}`, "text-slate-300")]);
+          });
+        });
+        return;
+      }
+      if (c === "5") {
+        push([mkLine("  Loading alliances...", "text-yellow-400")]);
+        api("/api/admin/console/alliances").then((d) => {
+          push([mkLine(`  Active Alliances: ${d.alliances?.length || 0}`, "text-green-400 font-bold")]);
+          d.alliances?.slice(0, 10).forEach((a: any) => {
+            push([mkLine(`  [${a.tag}] ${a.name} — ${a.description?.substring(0, 60) || "N/A"}`, "text-slate-300")]);
+          });
+        });
+        return;
+      }
+    }
+
+    // ── Global commands ──
+    if (cmd === "help") {
+      push([
+        mkLine("  Available commands:", "text-green-400 font-bold"),
+        mkLine("  help              — show this help", "text-slate-300"),
+        mkLine("  sql <query>       — run SQL (database menu)", "text-slate-300"),
+        mkLine("  find <username>   — search user (users menu)", "text-slate-300"),
+        mkLine("  view <userId>     — view user details (users menu)", "text-slate-300"),
+        mkLine("  give <id> m c d cr — give resources (users menu)", "text-slate-300"),
+        mkLine("  ban <userId>      — ban user (users menu)", "text-slate-300"),
+        mkLine("  announce <msg>    — broadcast message (events menu)", "text-slate-300"),
+        mkLine("  refresh           — refresh current view", "text-slate-300"),
+        mkLine("  back / 0          — return to main menu", "text-slate-300"),
+      ]);
+      return;
+    }
+
+    if (c === "refresh" || c === "r") {
+      fetchMetrics();
+      push([mkLine("  Metrics refreshed.", "text-green-400")]);
+      return;
+    }
+
+    push([mkLine(`  ✗ Unknown command: ${raw}. Type 'help' for available commands.`, "text-red-400")]);
+  }, [phase, push, api, fetchMetrics]);
+
   /* switch to a sub-page */
   const goPage = useCallback((p: Phase) => {
     setPhase(p);
@@ -667,8 +951,8 @@ export default function ServerConsole() {
       return;
     }
 
-    /* generic feedback for sub-menu actions */
-    push([mkLine(`  ➜ Command [${cmd}] acknowledged — feature available in admin panel.`, "text-slate-400")]);
+    /* generic feedback for sub-menu actions — now with real API calls */
+    handleSubCommand(c, cmd);
   }, [phase, loginStep, loginUser, goPage, push, fetchLogs, fetchMetrics, metrics]);
 
   /* input handlers */

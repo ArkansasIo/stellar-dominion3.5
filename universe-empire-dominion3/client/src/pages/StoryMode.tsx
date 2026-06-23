@@ -8,12 +8,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BookOpen, CheckCircle2, Compass, Zap } from "lucide-react";
+import { BookOpen, CheckCircle2, Compass, Zap, Lock, Unlock, Rocket } from "lucide-react";
 import { Link } from "wouter";
 import { createHabitatConditionProfile } from "@/lib/environmentSystems";
+import { STORY_ACTS } from "@shared/config/liveOpsContentConfig";
+import { getUnlocksForAct, ACT_PRELUDES } from "@shared/config/preludesConfig";
 
 interface StoryCampaignData {
   currentAct: number;
+  completedActs: number;
   storyProgress: number;
   totalXpEarned: number;
   actDefinitions: Array<{ act: number; title: string; synopsis: string }>;
@@ -37,6 +40,12 @@ interface StoryMission {
   difficulty: number;
   isCompleted: boolean;
 }
+
+const ALL_ACTS = STORY_ACTS;
+
+const ACT_SUBTITLES: Record<number, string> = Object.fromEntries(
+  ACT_PRELUDES.map((p) => [p.act, p.subtitle])
+);
 
 export default function StoryMode() {
   const { toast } = useToast();
@@ -89,6 +98,8 @@ export default function StoryMode() {
     },
   });
 
+  const currentAct = campaign?.currentAct || 1;
+
   const difficultyColors: Record<number, string> = {
     1: "bg-green-600",
     2: "bg-blue-600",
@@ -122,6 +133,12 @@ export default function StoryMode() {
   const selectedActCompletionRate = selectedActTotal > 0 ? Math.round((selectedActCompleted / selectedActTotal) * 100) : 0;
   const totalMainCompleted = allMissions.filter((mission) => mission.missionType === "main" && mission.isCompleted).length;
   const totalSideCompleted = allMissions.filter((mission) => mission.missionType === "side" && mission.isCompleted).length;
+
+  const selectedActUnlocks = getUnlocksForAct(selectedAct);
+  const isActUnlocked = selectedAct <= currentAct;
+  const selectedActProgress = actProgressByAct[selectedAct] || { total: 0, completed: 0 };
+  const isActComplete = selectedActProgress.total > 0 && selectedActProgress.completed === selectedActProgress.total;
+
   const storyThreatProfiles = [
     createHabitatConditionProfile({
       kind: "planet",
@@ -165,8 +182,11 @@ export default function StoryMode() {
             <BookOpen className="w-8 h-8 text-primary" />
             Story Mode
           </h1>
-          <p className="text-muted-foreground">Play through 12 acts, 5 chapters per act, and 50 missions per act including side directives.</p>
+          <p className="text-muted-foreground">Play through 12 acts, 5 chapters per act, and 50 missions per act. Complete each act to unlock new game features.</p>
           <div className="mt-3 flex flex-wrap gap-2">
+            <Link href="/preludes">
+              <Button variant="outline" size="sm">Read Preludes</Button>
+            </Link>
             <Link href="/season-pass">
               <Button variant="outline" size="sm">Open Season Pass</Button>
             </Link>
@@ -183,7 +203,7 @@ export default function StoryMode() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-slate-600">Act {campaign?.currentAct || 1} of {campaign?.actDefinitions?.length || 12}</span>
+              <span className="text-slate-600">Act {currentAct} of 12</span>
               <div className="w-64 h-2 bg-slate-200 rounded">
                 <div
                   className="h-full bg-primary rounded transition-all"
@@ -201,6 +221,7 @@ export default function StoryMode() {
           </CardContent>
         </Card>
 
+        {/* Story Hazard Integration */}
         <Card className="bg-white border-slate-200">
           <CardHeader>
             <CardTitle className="text-slate-900">Story Hazard Integration</CardTitle>
@@ -222,135 +243,216 @@ export default function StoryMode() {
           </CardContent>
         </Card>
 
-        {/* Acts Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {(campaign?.actDefinitions || []).map((actDef) => (
-            (() => {
+        {/* All 12 Acts Grid */}
+        <div>
+          <h2 className="text-2xl font-bold text-slate-900 mb-4">Campaign Acts</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {ALL_ACTS.map((actDef) => {
               const actProgress = actProgressByAct[actDef.act] || { total: 0, completed: 0 };
-              const isActComplete = actProgress.total > 0 && actProgress.completed === actProgress.total;
+              const actIsComplete = actProgress.total > 0 && actProgress.completed === actProgress.total;
+              const actIsUnlocked = actDef.act <= currentAct;
+              const actUnlocks = getUnlocksForAct(actDef.act);
+              const isCurrentAct = actDef.act === currentAct;
+
               return (
-            <Card
-              key={actDef.act}
-              onClick={() => setSelectedAct(actDef.act)}
-              className={`bg-white border-slate-200 cursor-pointer transition-all ${
-                selectedAct === actDef.act ? "ring-2 ring-primary" : "hover:border-primary"
-              }`}
-              data-testid={`act-card-${actDef.act}`}
-            >
-              <CardHeader>
-                <CardTitle className="text-slate-900">Act {actDef.act}: {actDef.title}</CardTitle>
-                <CardDescription>{actDef.synopsis}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <Badge className={difficultyColors[Math.min(actDef.act, 6)]}>
-                    Difficulty {Math.min(10, actDef.act + 2)}
-                  </Badge>
-                  <Badge variant="outline" className={isActComplete ? "border-green-300 text-green-700" : "border-slate-300 text-slate-600"}>
-                    {actProgress.completed}/{actProgress.total || 0}
-                  </Badge>
-                </div>
-                <div className="mt-2 text-xs text-slate-600">
-                  {isActComplete ? "Act Complete" : "In Progress"}
-                </div>
-              </CardContent>
-            </Card>
-              );
-            })()
-          ))}
-        </div>
-
-        {/* Selected Act Missions */}
-        <div className="mt-8">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
-              <h2 className="text-2xl font-bold text-slate-900">Act {selectedAct} Missions</h2>
-              <Tabs value={missionType} onValueChange={(value) => setMissionType(value as "all" | "main" | "side")}>
-                <TabsList>
-                  <TabsTrigger value="all">All</TabsTrigger>
-                  <TabsTrigger value="main">Main</TabsTrigger>
-                  <TabsTrigger value="side">Side</TabsTrigger>
-                </TabsList>
-              </Tabs>
-            </div>
-            <Card className="bg-white border-slate-200 mb-4">
-              <CardContent className="p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-                <div>
-                  <div className="text-sm font-semibold text-slate-900 flex items-center gap-2">
-                    <Compass className="w-4 h-4 text-primary" /> Next Recommended Mission
-                  </div>
-                  {nextRecommendedMission ? (
-                    <div className="text-sm text-slate-600">
-                      {nextRecommendedMission.title} - Chapter {nextRecommendedMission.chapter} - {nextRecommendedMission.missionType}
-                    </div>
-                  ) : (
-                    <div className="text-sm text-green-700">All missions in this act are completed.</div>
-                  )}
-                </div>
-                <Badge variant="outline" className="w-fit">
-                  {selectedActCompleted}/{selectedActTotal} Completed
-                </Badge>
-              </CardContent>
-            </Card>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
-              <Card className="bg-white border-slate-200">
-                <CardContent className="pt-4">
-                  <div className="text-xs uppercase text-slate-500">Selected Act Completion</div>
-                  <div className="text-2xl font-bold text-slate-900">{selectedActCompletionRate}%</div>
-                </CardContent>
-              </Card>
-              <Card className="bg-white border-slate-200">
-                <CardContent className="pt-4">
-                  <div className="text-xs uppercase text-slate-500">Main Missions Completed</div>
-                  <div className="text-2xl font-bold text-blue-700">{totalMainCompleted}</div>
-                </CardContent>
-              </Card>
-              <Card className="bg-white border-slate-200">
-                <CardContent className="pt-4">
-                  <div className="text-xs uppercase text-slate-500">Side Missions Completed</div>
-                  <div className="text-2xl font-bold text-purple-700">{totalSideCompleted}</div>
-                </CardContent>
-              </Card>
-            </div>
-
-            <div className="grid gap-4">
-              {missions.map((mission: any) => (
-                <Card key={mission.id} className="bg-white border-slate-200">
-                  <CardHeader>
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-slate-900">{mission.title}</CardTitle>
-                        <CardDescription>{mission.description}</CardDescription>
-                      </div>
-                      <div className="flex gap-2">
-                        <Badge variant="outline" className="text-primary">{mission.rewardXp} XP</Badge>
-                        <Badge className={mission.missionType === "main" ? "bg-blue-100 text-blue-800" : "bg-purple-100 text-purple-800"}>{mission.missionType}</Badge>
+                <Card
+                  key={actDef.act}
+                  onClick={() => setSelectedAct(actDef.act)}
+                  className={`bg-white border-slate-200 cursor-pointer transition-all relative ${
+                    selectedAct === actDef.act ? "ring-2 ring-primary" : "hover:border-primary"
+                  } ${!actIsUnlocked ? "opacity-75" : ""}`}
+                  data-testid={`act-card-${actDef.act}`}
+                >
+                  <CardHeader className="pb-2">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <CardTitle className="text-slate-900 text-base">
+                            Act {actDef.act}: {actDef.title}
+                          </CardTitle>
+                          {!actIsUnlocked && <Lock className="w-3.5 h-3.5 text-slate-400" />}
+                          {actIsComplete && <CheckCircle2 className="w-3.5 h-3.5 text-green-600" />}
+                          {isCurrentAct && !actIsComplete && <Rocket className="w-3.5 h-3.5 text-primary" />}
+                        </div>
+                        <CardDescription className="text-xs">{actDef.synopsis}</CardDescription>
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-3">
-                    <p className="text-sm text-slate-600">
-                      NPC: <span className="text-primary">{mission.npcName}</span>
-                    </p>
-                    <p className="text-sm text-slate-600">Difficulty: {mission.difficulty} - Chapter {mission.chapter}</p>
-                    <Button
-                      data-testid={`button-complete-mission-${mission.id}`}
-                      className="w-full"
-                      variant={mission.isCompleted ? "secondary" : "default"}
-                      disabled={mission.isCompleted || completeMissionMutation.isPending}
-                      onClick={() => completeMissionMutation.mutate(mission.id)}
-                    >
-                      {mission.isCompleted ? (
-                        <span className="inline-flex items-center gap-2"><CheckCircle2 className="w-4 h-4" /> Completed</span>
-                      ) : (
-                        <span className="inline-flex items-center gap-2"><Zap className="w-4 h-4" /> Complete Mission</span>
-                      )}
-                    </Button>
+                  <CardContent className="pt-0">
+                    <div className="flex items-center justify-between mb-2">
+                      <Badge className={difficultyColors[Math.min(actDef.act, 6)]}>
+                        Difficulty {Math.min(10, actDef.act + 2)}
+                      </Badge>
+                      <Badge variant="outline" className={actIsComplete ? "border-green-300 text-green-700" : "border-slate-300 text-slate-600"}>
+                        {actProgress.completed}/{actProgress.total || 0}
+                      </Badge>
+                    </div>
+                    <div className="text-xs text-slate-500">
+                      {actIsComplete ? "Act Complete" : isCurrentAct ? "Current Act" : actIsUnlocked ? "Available" : "Locked"}
+                    </div>
+                    {actUnlocks.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        {actUnlocks.slice(0, 3).map((unlock) => (
+                          <Badge key={unlock.href} variant="outline" className="text-[10px] px-1.5 py-0">
+                            {actIsUnlocked ? <Unlock className="w-2.5 h-2.5 mr-0.5 inline" /> : <Lock className="w-2.5 h-2.5 mr-0.5 inline" />}
+                            {unlock.label}
+                          </Badge>
+                        ))}
+                        {actUnlocks.length > 3 && (
+                          <Badge variant="outline" className="text-[10px] px-1.5 py-0">+{actUnlocks.length - 3}</Badge>
+                        )}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
-              ))}
-            </div>
+              );
+            })}
           </div>
+        </div>
+
+        {/* Selected Act Detail */}
+        <div className="mt-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+            <div>
+              <h2 className="text-2xl font-bold text-slate-900">Act {selectedAct}: {ALL_ACTS.find((a) => a.act === selectedAct)?.title}</h2>
+              {ACT_SUBTITLES[selectedAct] && (
+                <p className="text-sm text-slate-500">{ACT_SUBTITLES[selectedAct]}</p>
+              )}
+            </div>
+            <Tabs value={missionType} onValueChange={(value) => setMissionType(value as "all" | "main" | "side")}>
+              <TabsList>
+                <TabsTrigger value="all">All</TabsTrigger>
+                <TabsTrigger value="main">Main</TabsTrigger>
+                <TabsTrigger value="side">Side</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+
+          {/* Feature Unlocks Panel */}
+          {selectedActUnlocks.length > 0 && (
+            <Card className={`mb-4 ${isActUnlocked ? "bg-green-50 border-green-200" : "bg-slate-50 border-slate-200"}`}>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center gap-2">
+                  {isActUnlocked ? (
+                    <Unlock className="w-4 h-4 text-green-600" />
+                  ) : (
+                    <Lock className="w-4 h-4 text-slate-400" />
+                  )}
+                  <span className={isActUnlocked ? "text-green-900" : "text-slate-700"}>
+                    Features {isActUnlocked ? "Unlocked" : "Locked"} by Act {selectedAct}
+                  </span>
+                </CardTitle>
+                <CardDescription className={isActUnlocked ? "text-green-700" : "text-slate-500"}>
+                  {isActUnlocked
+                    ? "These game features are now available. Visit them from the sidebar navigation."
+                    : `Complete Act ${selectedAct - 1 > 0 ? selectedAct - 1 : ""} ${selectedAct > 1 ? "and all prior acts" : ""} to unlock these features.`}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                  {selectedActUnlocks.map((unlock) => (
+                    <Link key={unlock.href} href={isActUnlocked ? unlock.href : "#"}>
+                      <div className={`rounded-lg border p-3 text-sm transition-all ${
+                        isActUnlocked
+                          ? "border-green-200 bg-white hover:border-green-400 hover:shadow-sm cursor-pointer"
+                          : "border-slate-200 bg-slate-100 opacity-60 cursor-not-allowed"
+                      }`}>
+                        <div className="font-semibold text-slate-900 flex items-center gap-1.5">
+                          {isActUnlocked ? (
+                            <CheckCircle2 className="w-3.5 h-3.5 text-green-600" />
+                          ) : (
+                            <Lock className="w-3.5 h-3.5 text-slate-400" />
+                          )}
+                          {unlock.label}
+                        </div>
+                        <p className="text-xs text-slate-500 mt-0.5">{unlock.description}</p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          <Card className="bg-white border-slate-200 mb-4">
+            <CardContent className="p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+              <div>
+                <div className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+                  <Compass className="w-4 h-4 text-primary" /> Next Recommended Mission
+                </div>
+                {nextRecommendedMission ? (
+                  <div className="text-sm text-slate-600">
+                    {nextRecommendedMission.title} - Chapter {nextRecommendedMission.chapter} - {nextRecommendedMission.missionType}
+                  </div>
+                ) : (
+                  <div className="text-sm text-green-700">All missions in this act are completed.</div>
+                )}
+              </div>
+              <Badge variant="outline" className="w-fit">
+                {selectedActCompleted}/{selectedActTotal} Completed
+              </Badge>
+            </CardContent>
+          </Card>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+            <Card className="bg-white border-slate-200">
+              <CardContent className="pt-4">
+                <div className="text-xs uppercase text-slate-500">Selected Act Completion</div>
+                <div className="text-2xl font-bold text-slate-900">{selectedActCompletionRate}%</div>
+              </CardContent>
+            </Card>
+            <Card className="bg-white border-slate-200">
+              <CardContent className="pt-4">
+                <div className="text-xs uppercase text-slate-500">Main Missions Completed</div>
+                <div className="text-2xl font-bold text-blue-700">{totalMainCompleted}</div>
+              </CardContent>
+            </Card>
+            <Card className="bg-white border-slate-200">
+              <CardContent className="pt-4">
+                <div className="text-xs uppercase text-slate-500">Side Missions Completed</div>
+                <div className="text-2xl font-bold text-purple-700">{totalSideCompleted}</div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="grid gap-4">
+            {missions.map((mission: any) => (
+              <Card key={mission.id} className="bg-white border-slate-200">
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <CardTitle className="text-slate-900">{mission.title}</CardTitle>
+                      <CardDescription>{mission.description}</CardDescription>
+                    </div>
+                    <div className="flex gap-2">
+                      <Badge variant="outline" className="text-primary">{mission.rewardXp} XP</Badge>
+                      <Badge className={mission.missionType === "main" ? "bg-blue-100 text-blue-800" : "bg-purple-100 text-purple-800"}>{mission.missionType}</Badge>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <p className="text-sm text-slate-600">
+                    NPC: <span className="text-primary">{mission.npcName}</span>
+                  </p>
+                  <p className="text-sm text-slate-600">Difficulty: {mission.difficulty} - Chapter {mission.chapter}</p>
+                  <Button
+                    data-testid={`button-complete-mission-${mission.id}`}
+                    className="w-full"
+                    variant={mission.isCompleted ? "secondary" : "default"}
+                    disabled={mission.isCompleted || completeMissionMutation.isPending}
+                    onClick={() => completeMissionMutation.mutate(mission.id)}
+                  >
+                    {mission.isCompleted ? (
+                      <span className="inline-flex items-center gap-2"><CheckCircle2 className="w-4 h-4" /> Completed</span>
+                    ) : (
+                      <span className="inline-flex items-center gap-2"><Zap className="w-4 h-4" /> Complete Mission</span>
+                    )}
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
 
         <Card className="bg-white border-slate-200">
           <CardHeader>
@@ -366,8 +468,8 @@ export default function StoryMode() {
               <div>Use side missions for bonus XP and support resource acceleration.</div>
             </div>
             <div className="rounded border border-slate-200 bg-slate-50 p-3">
-              <div className="font-semibold text-slate-900">Act Readiness</div>
-              <div>Keep mission completion above 70% before pushing into higher-difficulty acts.</div>
+              <div className="font-semibold text-slate-900">Feature Unlocks</div>
+              <div>Each act unlocks new game features. Complete acts to expand your capabilities.</div>
             </div>
           </CardContent>
         </Card>

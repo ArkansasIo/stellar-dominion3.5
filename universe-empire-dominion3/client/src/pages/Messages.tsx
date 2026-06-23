@@ -553,6 +553,8 @@ export default function Messages() {
   const pendingTrades = incomingTrades.filter((trade: TradeOffer) => trade.status === "pending").length;
   const acceptedTrades = tradeHistory.filter((trade: TradeOffer) => trade.status === "accepted").length;
   const sentTransmissions = sent.length;
+  const cancelledTrades = tradeHistory.filter((trade: TradeOffer) => trade.status === "cancelled").length;
+  const outgoingPending = outgoingTrades.filter((trade: TradeOffer) => trade.status === "pending").length;
 
   return (
     <GameLayout>
@@ -569,10 +571,11 @@ export default function Messages() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           <Card className="bg-white border-slate-200"><CardContent className="p-4"><div className="text-xs uppercase text-slate-500">Unread Messages</div><div className="text-2xl font-orbitron font-bold text-blue-700">{unreadMessages}</div></CardContent></Card>
-          <Card className="bg-white border-slate-200"><CardContent className="p-4"><div className="text-xs uppercase text-slate-500">Pending Trades</div><div className="text-2xl font-orbitron font-bold text-amber-700">{pendingTrades}</div></CardContent></Card>
-          <Card className="bg-white border-slate-200"><CardContent className="p-4"><div className="text-xs uppercase text-slate-500">Accepted Trades</div><div className="text-2xl font-orbitron font-bold text-emerald-700">{acceptedTrades}</div></CardContent></Card>
+          <Card className="bg-white border-slate-200"><CardContent className="p-4"><div className="text-xs uppercase text-slate-500">Incoming Trades</div><div className="text-2xl font-orbitron font-bold text-amber-700">{pendingTrades}</div></CardContent></Card>
+          <Card className="bg-white border-slate-200"><CardContent className="p-4"><div className="text-xs uppercase text-slate-500">Outgoing Pending</div><div className="text-2xl font-orbitron font-bold text-blue-600">{outgoingPending}</div></CardContent></Card>
+          <Card className="bg-white border-slate-200"><CardContent className="p-4"><div className="text-xs uppercase text-slate-500">Completed Trades</div><div className="text-2xl font-orbitron font-bold text-emerald-700">{acceptedTrades}</div></CardContent></Card>
           <Card className="bg-white border-slate-200"><CardContent className="p-4"><div className="text-xs uppercase text-slate-500">Sent Messages</div><div className="text-2xl font-orbitron font-bold text-purple-700">{sentTransmissions}</div></CardContent></Card>
         </div>
 
@@ -586,6 +589,63 @@ export default function Messages() {
             <div className="rounded border border-indigo-200 bg-white/70 p-3">Use concise compose subjects to speed archive searches during conflict windows.</div>
           </CardContent>
         </Card>
+
+        {/* Trade Activity Feed */}
+        {(pendingTrades > 0 || outgoingPending > 0) && (
+          <Card className="bg-amber-50 border-amber-200">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base text-amber-900 flex items-center gap-2">
+                <ArrowRightLeft className="w-4 h-4" />
+                Active Trade Activity
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {incomingTrades.filter((t: TradeOffer) => t.status === "pending").slice(0, 3).map((trade: TradeOffer) => (
+                <div key={trade.id} className="flex items-center justify-between p-3 bg-white rounded-lg border border-amber-200">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center">
+                      <ArrowRightLeft className="w-4 h-4 text-amber-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-slate-900">Trade from {trade.senderName}</p>
+                      <p className="text-xs text-slate-500">
+                        Offers: {trade.offerMetal > 0 && `${trade.offerMetal.toLocaleString()} Metal`}
+                        {trade.offerCrystal > 0 && ` ${trade.offerCrystal.toLocaleString()} Crystal`}
+                        {trade.offerDeuterium > 0 && ` ${trade.offerDeuterium.toLocaleString()} Deuterium`}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button size="sm" onClick={() => acceptTrade.mutate(trade.id)} disabled={acceptTrade.isPending}>
+                      <Check className="w-3 h-3 mr-1" /> Accept
+                    </Button>
+                    <Button size="sm" variant="destructive" onClick={() => declineTrade.mutate(trade.id)} disabled={declineTrade.isPending}>
+                      <X className="w-3 h-3 mr-1" /> Decline
+                    </Button>
+                  </div>
+                </div>
+              ))}
+              {outgoingTrades.filter((t: TradeOffer) => t.status === "pending").slice(0, 2).map((trade: TradeOffer) => (
+                <div key={trade.id} className="flex items-center justify-between p-3 bg-white rounded-lg border border-blue-200">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                      <Send className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-slate-900">Trade to {trade.receiverName}</p>
+                      <p className="text-xs text-slate-500">
+                        Awaiting response since {new Date(trade.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                  <Button size="sm" variant="outline" onClick={() => cancelTrade.mutate(trade.id)} disabled={cancelTrade.isPending}>
+                    <X className="w-3 h-3 mr-1" /> Cancel
+                  </Button>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
 
         <Tabs value={mainTab} onValueChange={(value) => setMainTab(value as MessagesMainTab)} className="w-full">
           <TabsList className="bg-white border border-slate-200">

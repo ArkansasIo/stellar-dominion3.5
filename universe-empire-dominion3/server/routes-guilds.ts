@@ -3,7 +3,7 @@ import { and, desc, eq, sql } from "drizzle-orm";
 import { isAuthenticated } from "./basicAuth";
 import { db } from "./db";
 import { storage } from "./storage";
-import { guildMembers, guilds, users } from "../shared/schema";
+import { guildMembers, guilds, users, playerStates } from "../shared/schema";
 
 type GuildChatMessage = {
   id: string;
@@ -310,6 +310,174 @@ export function registerGuildRoutes(app: Express) {
     } catch (error) {
       console.error("Failed to post guild chat message:", error);
       res.status(500).json({ message: "Failed to post guild chat message" });
+    }
+  });
+
+  app.post("/api/guilds/:guildId/treasury", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const userId = getUserId(req);
+      const { guildId } = req.params;
+      const { amount = 0 } = req.body || {};
+
+      const membership = await getMembershipForUser(userId);
+      if (!membership || membership.guildId !== guildId) {
+        return res.status(403).json({ message: "You must be a member of this guild" });
+      }
+
+      const playerState = await db.query.playerStates.findFirst({
+        where: eq(playerStates.userId, userId),
+      });
+
+      if (!playerState) {
+        return res.status(404).json({ message: "Player state not found" });
+      }
+
+      const resources = playerState.resources as any;
+      const credits = Number(amount) || 0;
+
+      if (credits <= 0) {
+        return res.status(400).json({ error: "Amount must be positive" });
+      }
+
+      if ((resources.credits || 0) < credits) {
+        return res.status(400).json({ error: "Insufficient credits" });
+      }
+
+      const newResources = {
+        ...resources,
+        credits: (resources.credits || 0) - credits,
+      };
+
+      await db.update(playerStates).set({ resources: newResources, updatedAt: new Date() }).where(eq(playerStates.userId, userId));
+
+      const [guild] = await db.select().from(guilds).where(eq(guilds.id, guildId)).limit(1);
+      if (!guild) return res.status(404).json({ message: "Guild not found" });
+
+      await db.update(guilds).set({
+        treasury: (guild.treasury || 0) + credits,
+        influence: (guild.influence || 0) + credits,
+        updatedAt: new Date(),
+      }).where(eq(guilds.id, guildId));
+
+      await db.update(guildMembers).set({
+        contributedCurrency: (membership.contributedCurrency || 0) + credits,
+      }).where(eq(guildMembers.id, membership.id));
+
+      res.json({ success: true, message: "Credits contributed to guild treasury" });
+    } catch (error) {
+      console.error("Failed to contribute to treasury:", error);
+      res.status(500).json({ message: "Failed to contribute to treasury" });
+    }
+  });
+
+  app.post("/api/guilds/:guildId/settings", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const userId = getUserId(req);
+      const { guildId } = req.params;
+      const membership = await getMembershipForUser(userId);
+
+      if (!membership || membership.guildId !== guildId || membership.role !== "leader") {
+        return res.status(403).json({ message: "Only the guild leader can update settings" });
+      }
+
+      const [guild] = await db.select().from(guilds).where(eq(guilds.id, guildId)).limit(1);
+      if (!guild) return res.status(404).json({ message: "Guild not found" });
+
+      const updates: any = { updatedAt: new Date() };
+      if (req.body?.description !== undefined) updates.description = String(req.body.description).trim();
+      if (req.body?.isRecruiting !== undefined) updates.isRecruiting = Boolean(req.body.isRecruiting);
+      if (req.body?.maxMembers !== undefined) updates.maxMembers = Math.max(5, Math.min(50, Number(req.body.maxMembers) || 20));
+      if (req.body?.name !== undefined) {
+        const newName = String(req.body.name).trim();
+        if (newName.length >= 3 && newName !== guild.name) {
+          const [existing] = await db.select({ id: guilds.id }).from(guilds).where(sql`lower(${guilds.name}) = lower(${newName})`).limit(1);
+          if (existing) return res.status(409).json({ message: "Guild name already exists" });
+          updates.name = newName;
+        }
+      }
+
+      await db.update(guilds).set(updates).where(eq(guilds.id, guildId));
+      res.json({ success: true, message: "Guild settings updated" });
+    } catch (error) {
+      console.error("Failed to update guild settings:", error);
+      res.status(500).json({ message: "Failed to update guild settings" });
+    }
+  });
+
+  app.post("/api/guilds/:guildId/kick/:playerId", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const userId = getUserId(req);
+      const { guildId, playerId } = req.params;
+      const membership = await getMembershipForUser(userId);
+
+      if (!membership || membership.guildId !== guildId) {
+        return res.status(403).json({ message: "Guild membership required" });
+      }
+
+      const [guild] = await db.select().from(guilds).where(eq(guilds.id, guildId)).limit(1);
+      if (!guild) return res.status(404).json({ message: "Guild not found" });
+
+      const canKick = membership.role === "leader" || membership.role === "officer";
+      if (!canKick) return res.status(403).json({ message: "Leader or officer rank required" });
+      if (playerId === guild.leaderId) return res.status(400).json({ message: "Cannot kick the guild leader" });
+
+      const targetMembership = await db.select().from(guildMembers).where(and(eq(guildMembers.guildId, guildId), eq(guildMembers.playerId, playerId))).limit(1);
+      if (targetMembership.length === 0) return res.status(404).json({ message: "Player not in this guild" });
+
+      await db.delete(guildMembers).where(and(eq(guildMembers.guildId, guildId), eq(guildMembers.playerId, playerId)));
+      await db.update(guilds).set({ totalMembers: Math.max(0, (guild.totalMembers || 1) - 1), updatedAt: new Date() }).where(eq(guilds.id, guildId));
+
+      res.json({ success: true, message: "Player kicked from guild" });
+    } catch (error) {
+      console.error("Failed to kick player:", error);
+      res.status(500).json({ message: "Failed to kick player" });
+    }
+  });
+
+  app.post("/api/guilds/:guildId/promote/:playerId", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const userId = getUserId(req);
+      const { guildId, playerId } = req.params;
+      const membership = await getMembershipForUser(userId);
+
+      if (!membership || membership.guildId !== guildId || membership.role !== "leader") {
+        return res.status(403).json({ message: "Only the guild leader can promote members" });
+      }
+
+      const targetMembership = await db.select().from(guildMembers).where(and(eq(guildMembers.guildId, guildId), eq(guildMembers.playerId, playerId))).limit(1);
+      if (targetMembership.length === 0) return res.status(404).json({ message: "Player not in this guild" });
+
+      const newRole = targetMembership[0].role === "member" ? "officer" : "member";
+      await db.update(guildMembers).set({ role: newRole }).where(eq(guildMembers.id, targetMembership[0].id));
+
+      res.json({ success: true, message: `Player promoted to ${newRole}`, role: newRole });
+    } catch (error) {
+      console.error("Failed to promote player:", error);
+      res.status(500).json({ message: "Failed to promote player" });
+    }
+  });
+
+  app.get("/api/guilds/:guildId/leaderboard", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const { guildId } = req.params;
+      const members = await db
+        .select({
+          id: guildMembers.id,
+          playerId: guildMembers.playerId,
+          role: guildMembers.role,
+          contributedCurrency: guildMembers.contributedCurrency,
+          contributedResearch: guildMembers.contributedResearch,
+          playerName: users.username,
+        })
+        .from(guildMembers)
+        .innerJoin(users, eq(guildMembers.playerId, users.id))
+        .where(eq(guildMembers.guildId, guildId));
+
+      const sorted = members.sort((a, b) => (b.contributedCurrency || 0) - (a.contributedCurrency || 0));
+      res.json({ members: sorted.map((m, i) => ({ ...m, rank: i + 1 })) });
+    } catch (error) {
+      console.error("Failed to load guild leaderboard:", error);
+      res.status(500).json({ message: "Failed to load guild leaderboard" });
     }
   });
 }

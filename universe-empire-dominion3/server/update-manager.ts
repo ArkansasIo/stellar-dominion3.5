@@ -7,6 +7,10 @@ import path from 'path';
 import crypto from 'crypto';
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const execAsync = promisify(exec);
 
@@ -431,7 +435,14 @@ export class UpdateManager {
   }
 }
 
-// Export singleton instance
-export const updateManager = UpdateManager.getInstance();
+// Export singleton instance (lazy to avoid crashes at import time)
+let _updateManager: UpdateManager | null = null;
+export function getUpdateManager(): UpdateManager {
+  if (!_updateManager) _updateManager = UpdateManager.getInstance();
+  return _updateManager;
+}
+export const updateManager = new Proxy({} as UpdateManager, {
+  get: (_t, prop) => (getUpdateManager() as any)[prop],
+});
 
 // Made with Bob

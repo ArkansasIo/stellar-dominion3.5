@@ -12,7 +12,7 @@
   "scripts": {
     "dev:client": "vite dev --port 5001",
     "dev:server": "tsx server/index.ts",
-    "dev": "tsx script/dev.ts",
+    "dev": "tsx server/index.ts",
     "build": "tsx script/build.ts",
     "start": "node dist/index.cjs",
     "check": "tsc",
