@@ -7,7 +7,7 @@ import crypto from "crypto";
 import bcrypt from "bcrypt";
 import { pool } from "./db";
 import { db } from "./db";
-import { adminUsers, users, playerProfiles, type User } from "../shared/schema";
+import { adminUsers, users, type User } from "../shared/schema";
 import { eq, ilike, or } from "drizzle-orm";
 import { getRolePermissions, normalizeAdminRole } from "./adminPermissions";
 import { requireAdminIp, logAdminActivity } from "./middleware/adminIpCheck";
