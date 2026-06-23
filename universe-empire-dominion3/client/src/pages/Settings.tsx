@@ -435,22 +435,23 @@ export default function Settings() {
       }
       lastPlayerOptionsKeyRef.current = nextPlayerOptionsKey;
 
-      setNotifications(playerOptions.notifications);
+      setNotifications(playerOptions.notifications || {});
+      const display = playerOptions.display || {};
       setDisplaySettings({
-         darkMode: playerOptions.display.themePreset !== "og-white",
-         themePreset: playerOptions.display.themePreset || "og-white",
-         compactView: playerOptions.display.compactView,
-         showAnimations: playerOptions.display.showAnimations,
-         showResourceRates: playerOptions.display.showResourceRates,
-         language: playerOptions.display.language,
-         timeFormat: playerOptions.display.timeFormat,
-         numberFormat: playerOptions.display.numberFormat,
-         deviceProfile: playerOptions.display.deviceProfile,
-         mobileOptimized: playerOptions.display.mobileOptimized,
-         touchControls: playerOptions.display.touchControls,
-         touchTargetSize: playerOptions.display.touchTargetSize,
-         browserWidth: playerOptions.display.browserWidth,
-         stickyMobileBars: playerOptions.display.stickyMobileBars,
+         darkMode: display.themePreset !== "og-white",
+         themePreset: display.themePreset || "og-white",
+         compactView: display.compactView,
+         showAnimations: display.showAnimations,
+         showResourceRates: display.showResourceRates,
+         language: display.language,
+         timeFormat: display.timeFormat,
+         numberFormat: display.numberFormat,
+         deviceProfile: display.deviceProfile,
+         mobileOptimized: display.mobileOptimized,
+         touchControls: display.touchControls,
+         touchTargetSize: display.touchTargetSize,
+         browserWidth: display.browserWidth,
+         stickyMobileBars: display.stickyMobileBars,
       });
       setSoundSettings(playerOptions.sound);
       setPrivacySettings(playerOptions.privacy);
