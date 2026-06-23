@@ -61,7 +61,6 @@ const apiLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { message: "Too many requests, please try again later" },
-  keyGenerator: (req) => req.ip || req.socket.remoteAddress || "unknown",
 });
 
 const authLimiter = rateLimit({
@@ -70,7 +69,6 @@ const authLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { message: "Too many auth attempts, please try again later" },
-  keyGenerator: (req) => req.ip || req.socket.remoteAddress || "unknown",
 });
 
 app.use("/api/auth", authLimiter);
