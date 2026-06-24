@@ -3,6 +3,7 @@ import { db } from "./db";
 import { playerStates, moonBases } from "../shared/schema";
 import { eq } from "drizzle-orm";
 import { storage } from "./storage";
+import { isAuthenticated } from "./basicAuth";
 import {
   ENHANCED_MOON_TYPES,
   calculateMoonSubStats,
