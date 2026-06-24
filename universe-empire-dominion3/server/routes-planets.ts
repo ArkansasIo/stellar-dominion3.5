@@ -1311,4 +1311,22 @@ export function registerPlanetRoutes(app: Express) {
       res.status(500).json({ error: "Failed to fortify occupied planet" });
     }
   });
+
+  // Rename planet
+  app.patch("/api/planets/:planetId/rename", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.id || "dev-user";
+      const { planetId } = req.params;
+      const { name } = req.body;
+      if (!name || typeof name !== "string" || name.trim().length === 0) {
+        return res.status(400).json({ error: "Name is required" });
+      }
+      const trimmed = name.trim().slice(0, 64);
+      await db.update(playerStates).set({ planetName: trimmed, updatedAt: new Date() }).where(eq(playerStates.userId, userId));
+      res.json({ success: true, name: trimmed });
+    } catch (error) {
+      console.error("Error renaming planet:", error);
+      res.status(500).json({ error: "Failed to rename planet" });
+    }
+  });
 }

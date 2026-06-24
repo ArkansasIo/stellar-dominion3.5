@@ -12,6 +12,7 @@ import {
   type AnomalyRarity,
 } from "../shared/config/dimensionalAnomaliesConfig";
 import { isAuthenticated } from "./basicAuth";
+import { gateTokensService } from "./services/gateTokensService";
 
 function getUserId(req: Request): string {
   return req.session?.userId as string;
@@ -151,6 +152,21 @@ export function registerDimensionalAnomalyRoutes(app: Express) {
         });
       }
 
+      // Consume anomaly gate token
+      const tokenResult = await gateTokensService.consumeToken(
+        userId,
+        'anomaly',
+        'anomaly_entry',
+        { anomalyId, anomalyName: anomalyDef.name }
+      );
+
+      if (!tokenResult.success) {
+        return res.status(400).json({
+          message: tokenResult.error || "Failed to consume token",
+          error: tokenResult.error,
+        });
+      }
+
       // Simulate exploration rewards
       const rewards = anomalyDef.rewards.filter((r) => Math.random() < r.chance);
       const totalRewards = rewards.reduce((acc, r) => {
@@ -180,6 +196,13 @@ export function registerDimensionalAnomalyRoutes(app: Express) {
         .where(eq(dimensionalAnomalies.id, existing.id))
         .returning();
 
+      // Award token reward on completion
+      const tokenReward = await gateTokensService.awardTokensFromCompletion(
+        userId,
+        'anomaly',
+        { anomalyId, anomalyName: anomalyDef.name, explorationCount: updated.explorationCount }
+      );
+
       res.json({
         success: true,
         record: updated,
@@ -189,6 +212,10 @@ export function registerDimensionalAnomalyRoutes(app: Express) {
           dangerLevel: anomalyDef.dangerLevel,
           lore: anomalyDef.lore,
         },
+        tokenReward: tokenReward.awarded ? {
+          tokenType: tokenReward.tokenType,
+          quantity: tokenReward.quantity,
+        } : null,
       });
     } catch (error) {
       console.error("Failed to explore anomaly:", error);

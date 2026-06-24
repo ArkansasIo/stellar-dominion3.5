@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import GameLayout from "@/components/layout/GameLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -79,6 +79,17 @@ export default function MoonsPage() {
     mutationFn: (moonId: string) => fetchJson(`/api/moons/${moonId}/upgrade`, { method: "POST" }),
     onSuccess: () => { toast({ title: "Moon upgraded!" }); queryClient.invalidateQueries({ queryKey: ["moons"] }); },
     onError: (e: Error) => { toast({ title: "Failed", description: e.message, variant: "destructive" }); },
+  });
+
+  const [moonRenaming, setMoonRenaming] = useState(false);
+  const [moonNewName, setMoonNewName] = useState("");
+  const moonRenameRef = useRef<HTMLInputElement>(null);
+
+  const renameMoonMutation = useMutation({
+    mutationFn: async ({ moonId, name }: { moonId: string; name: string }) =>
+      fetchJson(`/api/moons/${moonId}/rename`, { method: "PATCH", body: JSON.stringify({ name }), headers: { "Content-Type": "application/json" } }),
+    onSuccess: () => { toast({ title: "Moon Renamed" }); queryClient.invalidateQueries({ queryKey: ["moons"] }); setMoonRenaming(false); },
+    onError: (e: Error) => { toast({ title: "Rename Failed", description: e.message, variant: "destructive" }); },
   });
 
   const buildBaseMutation = useMutation({
@@ -898,7 +909,22 @@ export default function MoonsPage() {
                       <span className="text-3xl">{selectedMoon.icon || "🌙"}</span>
                       <div>
                         <CardTitle className="text-white text-xl flex items-center gap-2">
-                          {selectedMoon.name}
+                          {moonRenaming ? (
+                            <div className="flex items-center gap-2">
+                              <input ref={moonRenameRef} type="text" value={moonNewName}
+                                onChange={e => setMoonNewName(e.target.value)}
+                                onKeyDown={e => { if (e.key === "Enter") renameMoonMutation.mutate({ moonId: selectedMoon.id, name: moonNewName }); if (e.key === "Escape") setMoonRenaming(false); }}
+                                className="text-xl bg-slate-800 border border-slate-600 rounded px-2 py-1 text-white w-48" autoFocus />
+                              <Button size="sm" className="h-7 text-xs" onClick={() => renameMoonMutation.mutate({ moonId: selectedMoon.id, name: moonNewName })} disabled={renameMoonMutation.isPending}>Save</Button>
+                              <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setMoonRenaming(false)}>Cancel</Button>
+                            </div>
+                          ) : (
+                            <span>{selectedMoon.name}</span>
+                          )}
+                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-slate-400 hover:text-white"
+                            onClick={() => { setMoonNewName(selectedMoon.name); setMoonRenaming(true); setTimeout(() => moonRenameRef.current?.focus(), 50); }}>
+                            ✏️
+                          </Button>
                           {selectedMoon.rarity && (
                             <Badge className={`text-xs capitalize ${RARITY_COLORS[selectedMoon.rarity] || RARITY_COLORS.common}`}>
                               {selectedMoon.rarity}

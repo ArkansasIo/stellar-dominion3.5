@@ -14,7 +14,7 @@ import {
   Building2, Users, Shield, ArrowLeft, Flag, Rocket, Factory
 } from "lucide-react";
 import { Link } from "wouter";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { createHabitatConditionProfile } from "@/lib/environmentSystems";
 import { createPlanetDossier } from "@/lib/planetDossier";
 
@@ -176,6 +176,29 @@ export default function PlanetDetail() {
     },
   });
 
+  const [renaming, setRenaming] = useState(false);
+  const [newName, setNewName] = useState("");
+  const renameRef = useRef<HTMLInputElement>(null);
+
+  const renameMutation = useMutation({
+    mutationFn: async (name: string) => {
+      const res = await fetch(`/api/planets/${planetId}/rename`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+        credentials: "include",
+      });
+      if (!res.ok) { const err = await res.json(); throw new Error(err.error || "Rename failed"); }
+      return res.json();
+    },
+    onSuccess: (data) => {
+      toast({ title: "Planet Renamed", description: `Now known as ${data.name}` });
+      queryClient.invalidateQueries({ queryKey: ["planet", planetId] });
+      setRenaming(false);
+    },
+    onError: (e: Error) => { toast({ title: "Rename Failed", description: e.message, variant: "destructive" }); },
+  });
+
   const defenseQuery = useQuery<PlanetDefenseResponse>({
     queryKey: ["planet-defense", planetId],
     queryFn: async () => {
@@ -284,7 +307,28 @@ export default function PlanetDetail() {
             </Link>
             <div>
               <div className="flex items-center gap-3">
-                <h2 className="text-3xl font-orbitron font-bold text-slate-900">{planet.name}</h2>
+                {renaming ? (
+                  <div className="flex items-center gap-2">
+                    <input
+                      ref={renameRef}
+                      type="text"
+                      value={newName}
+                      onChange={e => setNewName(e.target.value)}
+                      onKeyDown={e => { if (e.key === "Enter") renameMutation.mutate(newName); if (e.key === "Escape") setRenaming(false); }}
+                      className="text-3xl font-orbitron font-bold bg-slate-100 border border-slate-300 rounded px-2 py-1 w-64"
+                      autoFocus
+                    />
+                    <Button size="sm" onClick={() => renameMutation.mutate(newName)} disabled={renameMutation.isPending}>
+                      Save
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={() => setRenaming(false)}>Cancel</Button>
+                  </div>
+                ) : (
+                  <h2 className="text-3xl font-orbitron font-bold text-slate-900">{planet.name}</h2>
+                )}
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => { setNewName(planet.name); setRenaming(true); setTimeout(() => renameRef.current?.focus(), 50); }}>
+                  ✏️
+                </Button>
                 <Badge className={classColors[planet.class] || "bg-slate-100"}>
                   Class {planet.class}
                 </Badge>

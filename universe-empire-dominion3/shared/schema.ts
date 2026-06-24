@@ -2337,6 +2337,34 @@ export type DimensionalAnomalyRecord = typeof dimensionalAnomalies.$inferSelect;
 export const insertDimensionalAnomalySchema = createInsertSchema(dimensionalAnomalies).omit({ id: true, createdAt: true, updatedAt: true });
 export type InsertDimensionalAnomaly = z.infer<typeof insertDimensionalAnomalySchema>;
 
+// Gate Tokens - consumable items for accessing anomalies, raids, and explorations
+export const gateTokens = pgTable("gate_tokens", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  tokenType: varchar("token_type").notNull(), // 'anomaly', 'raid', 'exploration'
+  quantity: integer("quantity").notNull().default(0),
+  lastUpdated: timestamp("last_updated").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type GateTokenRecord = typeof gateTokens.$inferSelect;
+export const insertGateTokenSchema = createInsertSchema(gateTokens).omit({ id: true, createdAt: true, lastUpdated: true });
+export type InsertGateToken = z.infer<typeof insertGateTokenSchema>;
+
+// Gate Token History - log of token acquisitions and consumptions
+export const gateTokenHistory = pgTable("gate_token_history", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  tokenType: varchar("token_type").notNull(),
+  action: varchar("action").notNull(), // 'earned', 'purchased', 'consumed'
+  quantity: integer("quantity").notNull(),
+  source: varchar("source"), // 'reward', 'purchase', 'anomaly_entry', 'raid_entry', 'exploration_entry'
+  metadata: jsonb("metadata"), // additional context (anomalyId, raidId, etc)
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type GateTokenHistoryRecord = typeof gateTokenHistory.$inferSelect;
+
 // Resource Refineries - player refinery buildings and production tracking
 export const playerRefineries = pgTable("player_refineries", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -2381,3 +2409,74 @@ export const espionageScans = pgTable("espionage_scans", {
 });
 
 export type EspionageScan = typeof espionageScans.$inferSelect;
+
+// XP History - tracks individual XP awards for display
+export const xpHistory = pgTable("xp_history", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  amount: integer("amount").notNull(),
+  source: varchar("source").notNull(), // XpSource type
+  category: varchar("category"), // pageXpConfig category
+  page: varchar("page"),
+  subPage: varchar("sub_page"),
+  action: varchar("action"),
+  label: varchar("label"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type XpHistoryEntry = typeof xpHistory.$inferSelect;
+export type InsertXpHistoryEntry = typeof xpHistory.$inferInsert;
+
+// Provider Connections - third-party integrations
+export const providerConnections = pgTable("provider_connections", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  provider: varchar("provider").notNull(), // "wallet" | "metamask" | "discord" | "twitter" | "api_key" | "web3"
+  label: varchar("label").notNull(),
+  status: varchar("status").notNull().default("active"), // "active" | "inactive" | "expired"
+  accessToken: text("access_token"),
+  refreshToken: text("refresh_token"),
+  metadata: jsonb("metadata").default({}),
+  lastUsedAt: timestamp("last_used_at").defaultNow(),
+  expiresAt: timestamp("expires_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type ProviderConnection = typeof providerConnections.$inferSelect;
+export type InsertProviderConnection = typeof providerConnections.$inferInsert;
+
+// Scan Cooldowns - 24h search/scan tracking
+export const scanCooldowns = pgTable("scan_cooldowns", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  scanType: varchar("scan_type").notNull(), // "galaxy_scan" | "planet_search" | "moon_search" | "deep_probe"
+  targetId: varchar("target_id"),
+  targetCoordinates: varchar("target_coordinates"),
+  result: jsonb("result"),
+  cooldownUntil: timestamp("cooldown_until").notNull(),
+  scansRemaining: integer("scans_remaining").default(1),
+  maxScans: integer("max_scans").default(1),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type ScanCooldown = typeof scanCooldowns.$inferSelect;
+export type InsertScanCooldown = typeof scanCooldowns.$inferInsert;
+
+// Planet Vault Items - planet-level storage
+export const planetVaultItems = pgTable("planet_vault_items", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  planetId: varchar("planet_id"),
+  vaultType: varchar("vault_type").notNull().default("resource"), // "resource" | "item" | "artifact" | "currency"
+  itemType: varchar("item_type").notNull(),
+  itemName: varchar("item_name").notNull(),
+  quantity: integer("quantity").notNull().default(1),
+  rarity: varchar("rarity").default("common"),
+  metadata: jsonb("metadata").default({}),
+  depositedAt: timestamp("deposited_at").defaultNow(),
+  expiresAt: timestamp("expires_at"),
+});
+
+export type PlanetVaultItem = typeof planetVaultItems.$inferSelect;
+export type InsertPlanetVaultItem = typeof planetVaultItems.$inferInsert;

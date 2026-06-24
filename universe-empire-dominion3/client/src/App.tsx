@@ -105,6 +105,9 @@ const BlueprintCharges = lazy(() => import("@/pages/BlueprintCharges"));
 const HighCommand = lazy(() => import("@/pages/HighCommand"));
 const Smithy = lazy(() => import("@/pages/Smithy"));
 const BankVault = lazy(() => import("@/pages/BankVault"));
+const ConnectProvider = lazy(() => import("@/pages/ConnectProvider"));
+const UniverseScan = lazy(() => import("@/pages/UniverseScan"));
+const PlanetVault = lazy(() => import("@/pages/PlanetVault"));
 const MoonsPage = lazy(() => import("@/pages/MoonsPage"));
 const SporeDrive = lazy(() => import("@/pages/SporeDrive"));
 const ResourceTradingPage = lazy(() => import("@/pages/ResourceTradingPage"));
@@ -124,6 +127,7 @@ const SeasonHub = lazy(() => import("@/pages/SeasonHub"));
 const Diplomacy = lazy(() => import("@/pages/Diplomacy"));
 const SeasonServerPicker = lazy(() => import("@/pages/SeasonServerPicker"));
 const Account = lazy(() => import("@/pages/Account"));
+const RealmsPage = lazy(() => import("@/pages/RealmsPage"));
 
 function LoadingSplash() {
   const stars = useMemo(() => Array.from({ length: 60 }).map((_, i) => ({
@@ -266,6 +270,7 @@ function RouterContent() {
         <Route path="/forums" component={Forums} />
         <Route path="/terms" component={Terms} />
         <Route path="/privacy" component={Privacy} />
+        <Route path="/realms" component={RealmsPage} />
         <Route component={Auth} />
       </Switch>
     );
@@ -283,6 +288,7 @@ function RouterContent() {
           <Route path="/forums" component={Forums} />
           <Route path="/terms" component={Terms} />
           <Route path="/privacy" component={Privacy} />
+          <Route path="/realms" component={RealmsPage} />
           <Route component={RealmPickerPage} />
         </Switch>
       );
@@ -299,6 +305,7 @@ function RouterContent() {
           <Route path="/forums" component={Forums} />
           <Route path="/terms" component={Terms} />
           <Route path="/privacy" component={Privacy} />
+          <Route path="/realms" component={RealmsPage} />
           <Route component={SeasonServerPicker} />
         </Switch>
       );
@@ -315,6 +322,7 @@ function RouterContent() {
           <Route path="/forums" component={Forums} />
           <Route path="/terms" component={Terms} />
           <Route path="/privacy" component={Privacy} />
+          <Route path="/realms" component={RealmsPage} />
           <Route component={SaveSlotsPage} />
         </Switch>
       );
@@ -330,6 +338,7 @@ function RouterContent() {
         <Route path="/forums" component={Forums} />
         <Route path="/terms" component={Terms} />
         <Route path="/privacy" component={Privacy} />
+        <Route path="/realms" component={RealmsPage} />
         <Route component={AccountSetup} />
       </Switch>
     );
@@ -344,6 +353,7 @@ function RouterContent() {
       <Route path="/forums" component={Forums} />
       <Route path="/terms" component={Terms} />
       <Route path="/privacy" component={Privacy} />
+      <Route path="/realms" component={RealmsPage} />
       <Route path="/resources" component={Resources} />
       <Route path="/power-grid" component={PowerGrid} />
       <Route path="/facilities" component={Facilities} />
@@ -420,6 +430,9 @@ function RouterContent() {
       <Route path="/high-command" component={HighCommand} />
       <Route path="/smithy" component={Smithy} />
       <Route path="/bank-vault" component={BankVault} />
+      <Route path="/connect" component={ConnectProvider} />
+      <Route path="/universe-scan" component={UniverseScan} />
+      <Route path="/planet-vault" component={PlanetVault} />
       <Route path="/moons" component={MoonsPage} />
       <Route path="/spore-drive" component={SporeDrive} />
       <Route path="/resource-trading" component={ResourceTradingPage} />

@@ -14,6 +14,7 @@ import {
   Package, ScrollText, Crosshair, Radar,
 } from "lucide-react";
 import { useState } from "react";
+import { TokensDisplay } from "@/components/gate-tokens/TokensDisplay";
 
 const RARITY_COLORS: Record<string, string> = {
   common: "text-gray-400 border-gray-500/30",
@@ -340,6 +341,9 @@ export default function DimensionalAnomaliesPage() {
   return (
     <GameLayout title="Dimensional Anomalies" subtitle="Discover and explore 90 dimensional gates">
       <div className="space-y-6">
+        {/* Gate Tokens Display */}
+        <TokensDisplay />
+
         {/* Main Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-5">

@@ -22,7 +22,7 @@ import {
   ShoppingCart, Sword, Anchor, Eye, HandshakeIcon, Wind,
   Search, Heart, Cpu, Play, Plus, Activity
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useGame } from "@/lib/gameContext";
 import { Input } from "@/components/ui/input";
@@ -560,6 +560,25 @@ export default function Stations() {
     onError: (err: any) => {
       toast({ title: "Upgrade Failed", description: err.message, variant: "destructive" });
     },
+  });
+
+  const [stationRenaming, setStationRenaming] = useState<string | null>(null);
+  const [stationNewName, setStationNewName] = useState("");
+  const stationRenameRef = useRef<HTMLInputElement>(null);
+
+  const renameStationMutation = useMutation({
+    mutationFn: async ({ stationId, name }: { stationId: string; name: string }) => {
+      const res = await fetch(`/api/orbital-stations/${stationId}/rename`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+        credentials: "include",
+      });
+      if (!res.ok) { const err = await res.json(); throw new Error(err.error || "Rename failed"); }
+      return res.json();
+    },
+    onSuccess: (data) => { toast({ title: "Station Renamed", description: `Now known as ${data.name}` }); queryClient.invalidateQueries({ queryKey: ["orbital-stations-status"] }); setStationRenaming(null); },
+    onError: (e: Error) => { toast({ title: "Rename Failed", description: e.message, variant: "destructive" }); },
   });
 
   const deploySatelliteMutation = useMutation({
@@ -1174,7 +1193,23 @@ export default function Stations() {
                           <div className="flex items-start justify-between">
                             <div>
                               <div className="text-xl font-bold text-white flex items-center gap-2">
-                                <span>🛸</span> {s.name}
+                                <span>🛸</span>
+                                {stationRenaming === s.id ? (
+                                  <div className="flex items-center gap-2">
+                                    <input ref={stationRenameRef} type="text" value={stationNewName}
+                                      onChange={e => setStationNewName(e.target.value)}
+                                      onKeyDown={e => { if (e.key === "Enter") renameStationMutation.mutate({ stationId: s.id, name: stationNewName }); if (e.key === "Escape") setStationRenaming(null); }}
+                                      className="text-lg bg-slate-800 border border-slate-600 rounded px-2 py-0.5 text-white w-40" autoFocus />
+                                    <Button size="sm" className="h-6 text-xs" onClick={() => renameStationMutation.mutate({ stationId: s.id, name: stationNewName })} disabled={renameStationMutation.isPending}>Save</Button>
+                                    <Button size="sm" variant="ghost" className="h-6 text-xs" onClick={() => setStationRenaming(null)}>Cancel</Button>
+                                  </div>
+                                ) : (
+                                  <span>{s.name}</span>
+                                )}
+                                <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-slate-400 hover:text-white"
+                                  onClick={() => { setStationNewName(s.name); setStationRenaming(s.id); setTimeout(() => stationRenameRef.current?.focus(), 50); }}>
+                                  ✏️
+                                </Button>
                               </div>
                               <div className="text-xs text-slate-400 mt-0.5">
                                 Platform Type: <span className="font-semibold text-blue-400 capitalize">{s.platformType.replace("_", " ")}</span> · Coords: ({s.x}, {s.y})
