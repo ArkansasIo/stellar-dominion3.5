@@ -102,7 +102,7 @@ export default function Overview() {
               <p className="text-xs text-slate-400">Commander: {commander}</p>
             </div>
             <div className="text-right shrink-0">
-              <div className="text-[10px] text-slate-500 uppercase">Server Time</div>
+              <div className="text-[10px] text-[var(--sd-text-secondary)] uppercase">Server Time</div>
               <div className="text-sm font-mono text-slate-300">{new Date().toLocaleTimeString()}</div>
             </div>
           </CardContent>
@@ -122,7 +122,7 @@ export default function Overview() {
               <CardContent className="p-2 flex items-center gap-2">
                 <Icon className={cn("w-4 h-4 shrink-0", color)} />
                 <div className="min-w-0">
-                  <div className="text-[10px] text-slate-500 truncate">{label}</div>
+                  <div className="text-[10px] text-[var(--sd-text-secondary)] truncate">{label}</div>
                   <div className="text-sm font-bold text-white font-mono">{val.toLocaleString()}</div>
                   <div className={cn("text-[10px] font-mono", rate >= 0 ? "text-emerald-400" : "text-red-400")}>{rate >= 0 ? "+" : ""}{rate.toLocaleString()}/h</div>
                 </div>
@@ -142,7 +142,7 @@ export default function Overview() {
               <CardContent className="p-3">
                 <div className="flex items-center gap-2 mb-1"><Icon className={cn("w-4 h-4", color)} /><span className="text-xs text-slate-400">{label}</span></div>
                 <div className="text-xl font-bold text-white">{value}</div>
-                <div className="text-[11px] text-slate-500">{sub}</div>
+                <div className="text-[11px] text-[var(--sd-text-secondary)]">{sub}</div>
               </CardContent>
             </Card>
           ))}
@@ -152,7 +152,7 @@ export default function Overview() {
           <CardHeader className="pb-1"><CardTitle className="text-sm flex items-center gap-2"><Factory className="w-4 h-4 text-orange-400" /> Construction Queue</CardTitle></CardHeader>
           <CardContent>
             {queue.length === 0 ? (
-              <div className="text-center py-3 text-slate-500"><Clock className="w-5 h-5 mx-auto mb-1 opacity-30" /><p className="text-xs">No active construction</p></div>
+              <div className="text-center py-3 text-[var(--sd-text-secondary)]"><Clock className="w-5 h-5 mx-auto mb-1 opacity-30" /><p className="text-xs">No active construction</p></div>
             ) : (
               <div className="flex gap-2 overflow-x-auto pb-1">
                 {buildQ.map((item, i) => { const t = Math.max(0, Math.floor((item.endTime - Date.now()) / 1000)); return (<div key={`b-${i}`} className="shrink-0 w-40 bg-slate-800/50 p-2 rounded border border-orange-500/20"><div className="flex justify-between text-[11px] mb-0.5"><span className="text-white truncate">{item.name}</span><span className="text-orange-400 font-mono">{t}s</span></div><Progress value={Math.max(0, 100 - (t / 10) * 100)} className="h-1" /></div>); })}
@@ -169,11 +169,11 @@ export default function Overview() {
             <CardContent className="p-0">
               <ScrollArea className="h-[200px] px-4">
                 <div className="space-y-1.5 pb-3">
-                  {events.length === 0 ? <div className="text-center py-5 text-slate-500"><Bell className="w-5 h-5 mx-auto mb-1 opacity-30" /><p className="text-xs">No events</p></div> : events.map(ev => (
+                  {events.length === 0 ? <div className="text-center py-5 text-[var(--sd-text-secondary)]"><Bell className="w-5 h-5 mx-auto mb-1 opacity-30" /><p className="text-xs">No events</p></div> : events.map(ev => (
                     <div key={ev.id} className="flex gap-2 items-start p-1.5 bg-slate-800/30 rounded border border-slate-700/30">
                       <div className="mt-0.5 shrink-0">{ev.type === "success" && <CheckCircle className="w-3 h-3 text-emerald-400" />}{ev.type === "warning" && <AlertTriangle className="w-3 h-3 text-amber-400" />}{ev.type === "danger" && <AlertCircle className="w-3 h-3 text-red-400" />}{ev.type === "info" && <Info className="w-3 h-3 text-blue-400" />}</div>
                       <div className="flex-1 min-w-0"><div className="text-[11px] font-medium text-white truncate">{ev.title}</div><div className="text-[10px] text-slate-400 truncate">{ev.description}</div></div>
-                      <span className="text-[9px] text-slate-500 shrink-0">{new Date(ev.timestamp).toLocaleTimeString()}</span>
+                      <span className="text-[9px] text-[var(--sd-text-secondary)] shrink-0">{new Date(ev.timestamp).toLocaleTimeString()}</span>
                     </div>
                   ))}
                 </div>
@@ -207,8 +207,8 @@ export default function Overview() {
           <Card className="border-slate-700/50">
             <CardHeader className="pb-1"><CardTitle className="text-sm flex items-center gap-2"><Trophy className="w-4 h-4 text-amber-400" /> Pass Progress</CardTitle></CardHeader>
             <CardContent className="space-y-2.5">
-              <div><div className="flex justify-between text-[11px] mb-0.5"><span className="text-slate-400">Season Pass</span><span className="text-white font-mono">Tier {seasonProg?.state.currentTier || 1}</span></div><Progress value={Math.min(100, (seasonProg?.state.completionRatio || 0) * 100)} className="h-1.5" /><div className="text-[10px] text-slate-500">{seasonProg?.state.xpIntoTier || 0}/{seasonProg?.state.xpForNextTier || 1} XP</div></div>
-              <div><div className="flex justify-between text-[11px] mb-0.5"><span className="text-slate-400">Battle Pass</span><span className="text-white font-mono">Tier {battleProg?.state.currentTier || 1}</span></div><Progress value={Math.min(100, (battleProg?.state.completionRatio || 0) * 100)} className="h-1.5" /><div className="text-[10px] text-slate-500">{battleProg?.state.xpIntoTier || 0}/{battleProg?.state.xpForNextTier || 1} XP</div></div>
+              <div><div className="flex justify-between text-[11px] mb-0.5"><span className="text-slate-400">Season Pass</span><span className="text-white font-mono">Tier {seasonProg?.state.currentTier || 1}</span></div><Progress value={Math.min(100, (seasonProg?.state.completionRatio || 0) * 100)} className="h-1.5" /><div className="text-[10px] text-[var(--sd-text-secondary)]">{seasonProg?.state.xpIntoTier || 0}/{seasonProg?.state.xpForNextTier || 1} XP</div></div>
+              <div><div className="flex justify-between text-[11px] mb-0.5"><span className="text-slate-400">Battle Pass</span><span className="text-white font-mono">Tier {battleProg?.state.currentTier || 1}</span></div><Progress value={Math.min(100, (battleProg?.state.completionRatio || 0) * 100)} className="h-1.5" /><div className="text-[10px] text-[var(--sd-text-secondary)]">{battleProg?.state.xpIntoTier || 0}/{battleProg?.state.xpForNextTier || 1} XP</div></div>
               <Separator className="bg-slate-700/50" />
               <div className="grid grid-cols-2 gap-1.5">
                 <Button size="sm" variant="outline" className="border-slate-700/50 text-slate-400 h-6 text-[10px]" disabled={seasonMut.isPending} onClick={() => seasonMut.mutate(1200)}>+1 Season Tier</Button>
@@ -225,8 +225,8 @@ export default function Overview() {
             <CardHeader className="pb-1"><CardTitle className="text-sm flex items-center gap-2"><Users className="w-4 h-4 text-cyan-400" /> Civilization</CardTitle></CardHeader>
             <CardContent className="space-y-2">
               <div className="grid grid-cols-2 gap-1.5">
-                <div className="bg-slate-800/50 p-1.5 rounded border border-slate-700/30"><div className="text-[9px] text-slate-500">Population</div><div className="text-xs font-bold text-white">{(popSnap?.snapshot.population.current || 0).toLocaleString()}<span className="text-slate-500 font-normal"> / {(popSnap?.snapshot.population.capacity || 0).toLocaleString()}</span></div></div>
-                <div className="bg-slate-800/50 p-1.5 rounded border border-slate-700/30"><div className="text-[9px] text-slate-500">Growth</div><div className="text-xs font-bold text-emerald-400">+{(popSnap?.snapshot.population.estimatedGrowthPerHour || 0).toLocaleString()}/h</div></div>
+                <div className="bg-slate-800/50 p-1.5 rounded border border-slate-700/30"><div className="text-[9px] text-[var(--sd-text-secondary)]">Population</div><div className="text-xs font-bold text-white">{(popSnap?.snapshot.population.current || 0).toLocaleString()}<span className="text-[var(--sd-text-secondary)] font-normal"> / {(popSnap?.snapshot.population.capacity || 0).toLocaleString()}</span></div></div>
+                <div className="bg-slate-800/50 p-1.5 rounded border border-slate-700/30"><div className="text-[9px] text-[var(--sd-text-secondary)]">Growth</div><div className="text-xs font-bold text-emerald-400">+{(popSnap?.snapshot.population.estimatedGrowthPerHour || 0).toLocaleString()}/h</div></div>
               </div>
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-[11px]"><span className="text-slate-400">Food</span><Badge variant="outline" className={cn("text-[9px]", pressureColor(popSnap?.snapshot.food.pressure || "stable"))}>{(popSnap?.snapshot.food.pressure || "stable").toUpperCase()}</Badge></div>
@@ -259,11 +259,11 @@ export default function Overview() {
             <CardContent className="p-3 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Shield className="w-5 h-5 text-blue-400" />
-                <div><div className="text-[9px] text-slate-500">Alliance</div><div className="text-sm font-bold text-white">[{alliance.tag}] {alliance.name}</div></div>
+                <div><div className="text-[9px] text-[var(--sd-text-secondary)]">Alliance</div><div className="text-sm font-bold text-white">[{alliance.tag}] {alliance.name}</div></div>
               </div>
               <div className="flex items-center gap-4">
-                <div className="text-center"><div className="text-[9px] text-slate-500">Members</div><div className="text-sm font-bold text-white">{alliance.members?.length || 0}</div></div>
-                <div className="text-center"><div className="text-[9px] text-slate-500">Points</div><div className="text-sm font-bold text-white">{(alliance.members?.reduce((a: number, m: any) => a + m.points, 0) || 0).toLocaleString()}</div></div>
+                <div className="text-center"><div className="text-[9px] text-[var(--sd-text-secondary)]">Members</div><div className="text-sm font-bold text-white">{alliance.members?.length || 0}</div></div>
+                <div className="text-center"><div className="text-[9px] text-[var(--sd-text-secondary)]">Points</div><div className="text-sm font-bold text-white">{(alliance.members?.reduce((a: number, m: any) => a + m.points, 0) || 0).toLocaleString()}</div></div>
                 <Link href="/alliance"><Button variant="outline" size="sm" className="border-slate-700/50 text-slate-400 h-7 text-[10px]">View</Button></Link>
               </div>
             </CardContent>

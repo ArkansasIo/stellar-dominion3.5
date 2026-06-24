@@ -146,11 +146,11 @@ function EntryCard({ entry }: { entry: KnowledgeCatalogEntry }) {
   );
 
   return (
-    <Card className="border-slate-200 bg-white shadow-sm">
+    <Card className="border-[var(--sd-panel-border)] bg-[var(--sd-panel-top)] shadow-sm">
       <CardHeader className="pb-3">
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div>
-            <CardTitle className="font-orbitron text-lg text-slate-900">{entry.name}</CardTitle>
+            <CardTitle className="font-orbitron text-lg text-[var(--sd-text-primary)]">{entry.name}</CardTitle>
             <CardDescription className="mt-1">
               {entry.libraryCode} • {entry.class} / {entry.subClass}
             </CardDescription>
@@ -169,28 +169,28 @@ function EntryCard({ entry }: { entry: KnowledgeCatalogEntry }) {
           <Badge variant="secondary">{entry.subType}</Badge>
         </div>
 
-        <p className="text-sm text-slate-600">{entry.summary}</p>
+        <p className="text-sm text-[var(--sd-text-secondary)]">{entry.summary}</p>
 
         <div className="grid grid-cols-2 gap-3 text-sm">
-          <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-            <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Capacity</div>
-            <div className="mt-2 text-slate-900">Jobs {entry.jobCapacity} • Units {entry.unitCapacity}</div>
+          <div className="rounded-lg border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-3">
+            <div className="text-xs uppercase tracking-[0.2em] text-[var(--sd-text-secondary)]">Capacity</div>
+            <div className="mt-2 text-[var(--sd-text-primary)]">Jobs {entry.jobCapacity} • Units {entry.unitCapacity}</div>
           </div>
-          <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-            <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Level Band</div>
-            <div className="mt-2 text-slate-900">
+          <div className="rounded-lg border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-3">
+            <div className="text-xs uppercase tracking-[0.2em] text-[var(--sd-text-secondary)]">Level Band</div>
+            <div className="mt-2 text-[var(--sd-text-primary)]">
               {entry.minLevel}-{entry.maxLevel}
             </div>
           </div>
         </div>
 
         <div className="space-y-2">
-          <div className="flex items-center justify-between text-xs text-slate-500">
+          <div className="flex items-center justify-between text-xs text-[var(--sd-text-secondary)]">
             <span>Focus</span>
             <span>{entry.focusScore}%</span>
           </div>
           <Progress value={entry.focusScore} className="h-2" />
-          <div className="flex items-center justify-between text-xs text-slate-500">
+          <div className="flex items-center justify-between text-xs text-[var(--sd-text-secondary)]">
             <span>Readiness</span>
             <span>{entry.readinessScore}%</span>
           </div>
@@ -213,7 +213,7 @@ function EntryCard({ entry }: { entry: KnowledgeCatalogEntry }) {
         </div>
 
         <div className="space-y-2">
-          <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Functions</div>
+          <div className="text-xs uppercase tracking-[0.2em] text-[var(--sd-text-secondary)]">Functions</div>
           <div className="flex flex-wrap gap-2">
             {entry.functions.slice(0, 3).map((item) => (
               <Badge key={item} variant="secondary" className="whitespace-normal text-left">
@@ -224,8 +224,8 @@ function EntryCard({ entry }: { entry: KnowledgeCatalogEntry }) {
         </div>
 
         <div className="space-y-2">
-          <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Effects</div>
-          <div className="text-sm text-slate-600">{getKnowledgeEffectSummary(entry)}</div>
+          <div className="text-xs uppercase tracking-[0.2em] text-[var(--sd-text-secondary)]">Effects</div>
+          <div className="text-sm text-[var(--sd-text-secondary)]">{getKnowledgeEffectSummary(entry)}</div>
         </div>
       </CardContent>
     </Card>
@@ -234,11 +234,11 @@ function EntryCard({ entry }: { entry: KnowledgeCatalogEntry }) {
 
 function JobCard({ job }: { job: KnowledgeJobRole }) {
   return (
-    <Card className="border-slate-200 bg-white shadow-sm">
+    <Card className="border-[var(--sd-panel-border)] bg-[var(--sd-panel-top)] shadow-sm">
       <CardHeader className="pb-3">
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div>
-            <CardTitle className="font-orbitron text-lg text-slate-900">{job.name}</CardTitle>
+            <CardTitle className="font-orbitron text-lg text-[var(--sd-text-primary)]">{job.name}</CardTitle>
             <CardDescription className="mt-1">
               {job.category} • {job.subCategory} • {job.class}
             </CardDescription>
@@ -247,19 +247,19 @@ function JobCard({ job }: { job: KnowledgeJobRole }) {
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        <p className="text-sm text-slate-600">{job.summary}</p>
+        <p className="text-sm text-[var(--sd-text-secondary)]">{job.summary}</p>
         <div className="grid grid-cols-3 gap-3 text-sm">
-          <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-            <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Minimum</div>
-            <div className="mt-2 text-slate-900">{job.staffing.minimum}</div>
+          <div className="rounded-lg border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-3">
+            <div className="text-xs uppercase tracking-[0.2em] text-[var(--sd-text-secondary)]">Minimum</div>
+            <div className="mt-2 text-[var(--sd-text-primary)]">{job.staffing.minimum}</div>
           </div>
-          <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-            <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Optimal</div>
-            <div className="mt-2 text-slate-900">{job.staffing.optimal}</div>
+          <div className="rounded-lg border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-3">
+            <div className="text-xs uppercase tracking-[0.2em] text-[var(--sd-text-secondary)]">Optimal</div>
+            <div className="mt-2 text-[var(--sd-text-primary)]">{job.staffing.optimal}</div>
           </div>
-          <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-            <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Maximum</div>
-            <div className="mt-2 text-slate-900">{job.staffing.maximum}</div>
+          <div className="rounded-lg border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-3">
+            <div className="text-xs uppercase tracking-[0.2em] text-[var(--sd-text-secondary)]">Maximum</div>
+            <div className="mt-2 text-[var(--sd-text-primary)]">{job.staffing.maximum}</div>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -268,7 +268,7 @@ function JobCard({ job }: { job: KnowledgeJobRole }) {
           <Badge className="bg-amber-100 text-amber-900">Security +{job.bonuses.security}%</Badge>
           <Badge className="bg-indigo-100 text-indigo-900">Quality +{job.bonuses.discovery}%</Badge>
         </div>
-        <div className="text-xs text-slate-500">
+        <div className="text-xs text-[var(--sd-text-secondary)]">
           Supports {job.supportedCategories.length} category bands and {job.supportedSubCategories.length} sub-discipline bands.
         </div>
       </CardContent>
@@ -278,11 +278,11 @@ function JobCard({ job }: { job: KnowledgeJobRole }) {
 
 function UnitCard({ unit }: { unit: KnowledgeSupportUnit }) {
   return (
-    <Card className="border-slate-200 bg-white shadow-sm">
+    <Card className="border-[var(--sd-panel-border)] bg-[var(--sd-panel-top)] shadow-sm">
       <CardHeader className="pb-3">
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div>
-            <CardTitle className="font-orbitron text-lg text-slate-900">{unit.name}</CardTitle>
+            <CardTitle className="font-orbitron text-lg text-[var(--sd-text-primary)]">{unit.name}</CardTitle>
             <CardDescription className="mt-1">
               {unit.category} • {unit.class} • Tier {unit.tier}
             </CardDescription>
@@ -291,28 +291,28 @@ function UnitCard({ unit }: { unit: KnowledgeSupportUnit }) {
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        <p className="text-sm text-slate-600">{unit.summary}</p>
+        <p className="text-sm text-[var(--sd-text-secondary)]">{unit.summary}</p>
         <div className="grid grid-cols-3 gap-3 text-sm">
-          <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-            <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Crew</div>
-            <div className="mt-2 text-slate-900">{unit.crew}</div>
+          <div className="rounded-lg border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-3">
+            <div className="text-xs uppercase tracking-[0.2em] text-[var(--sd-text-secondary)]">Crew</div>
+            <div className="mt-2 text-[var(--sd-text-primary)]">{unit.crew}</div>
           </div>
-          <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-            <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Command</div>
-            <div className="mt-2 text-slate-900">{unit.commandSlots}</div>
+          <div className="rounded-lg border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-3">
+            <div className="text-xs uppercase tracking-[0.2em] text-[var(--sd-text-secondary)]">Command</div>
+            <div className="mt-2 text-[var(--sd-text-primary)]">{unit.commandSlots}</div>
           </div>
-          <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-            <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Capacity</div>
-            <div className="mt-2 text-slate-900">{unit.assignmentCapacity}</div>
+          <div className="rounded-lg border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-3">
+            <div className="text-xs uppercase tracking-[0.2em] text-[var(--sd-text-secondary)]">Capacity</div>
+            <div className="mt-2 text-[var(--sd-text-primary)]">{unit.assignmentCapacity}</div>
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-3 text-sm text-slate-600">
-          <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+        <div className="grid grid-cols-2 gap-3 text-sm text-[var(--sd-text-secondary)]">
+          <div className="rounded-lg border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-3">
             <div>Analysis {unit.stats.analysis}</div>
             <div>Engineering {unit.stats.engineering}</div>
             <div>Coordination {unit.stats.coordination}</div>
           </div>
-          <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+          <div className="rounded-lg border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-3">
             <div>Logistics {unit.stats.logistics}</div>
             <div>Security {unit.stats.security}</div>
             <div>{unit.subUnitType}</div>
@@ -402,34 +402,34 @@ export default function KnowledgeLibrary() {
         </div>
         <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
           <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
-            <Card className="border-slate-200 bg-white shadow-sm">
+            <Card className="border-[var(--sd-panel-border)] bg-[var(--sd-panel-top)] shadow-sm">
               <CardContent className="p-4">
-                <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Research</div>
-                <div className="mt-2 text-3xl font-orbitron font-bold text-slate-900">
+                <div className="text-xs uppercase tracking-[0.2em] text-[var(--sd-text-secondary)]">Research</div>
+                <div className="mt-2 text-3xl font-orbitron font-bold text-[var(--sd-text-primary)]">
                   {KNOWLEDGE_OPERATIONS_META.researchPrograms}
                 </div>
               </CardContent>
             </Card>
-            <Card className="border-slate-200 bg-white shadow-sm">
+            <Card className="border-[var(--sd-panel-border)] bg-[var(--sd-panel-top)] shadow-sm">
               <CardContent className="p-4">
-                <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Technology</div>
-                <div className="mt-2 text-3xl font-orbitron font-bold text-slate-900">
+                <div className="text-xs uppercase tracking-[0.2em] text-[var(--sd-text-secondary)]">Technology</div>
+                <div className="mt-2 text-3xl font-orbitron font-bold text-[var(--sd-text-primary)]">
                   {KNOWLEDGE_OPERATIONS_META.technologySystems}
                 </div>
               </CardContent>
             </Card>
-            <Card className="border-slate-200 bg-white shadow-sm">
+            <Card className="border-[var(--sd-panel-border)] bg-[var(--sd-panel-top)] shadow-sm">
               <CardContent className="p-4">
-                <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Jobs</div>
-                <div className="mt-2 text-3xl font-orbitron font-bold text-slate-900">
+                <div className="text-xs uppercase tracking-[0.2em] text-[var(--sd-text-secondary)]">Jobs</div>
+                <div className="mt-2 text-3xl font-orbitron font-bold text-[var(--sd-text-primary)]">
                   {KNOWLEDGE_OPERATIONS_META.researchJobs + KNOWLEDGE_OPERATIONS_META.technologyJobs}
                 </div>
               </CardContent>
             </Card>
-            <Card className="border-slate-200 bg-white shadow-sm">
+            <Card className="border-[var(--sd-panel-border)] bg-[var(--sd-panel-top)] shadow-sm">
               <CardContent className="p-4">
-                <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Units</div>
-                <div className="mt-2 text-3xl font-orbitron font-bold text-slate-900">
+                <div className="text-xs uppercase tracking-[0.2em] text-[var(--sd-text-secondary)]">Units</div>
+                <div className="mt-2 text-3xl font-orbitron font-bold text-[var(--sd-text-primary)]">
                   {KNOWLEDGE_OPERATIONS_META.supportUnits}
                 </div>
               </CardContent>
@@ -437,9 +437,9 @@ export default function KnowledgeLibrary() {
           </div>
         </div>
 
-        <Card className="border-slate-200 bg-white shadow-sm">
+        <Card className="border-[var(--sd-panel-border)] bg-[var(--sd-panel-top)] shadow-sm">
           <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 font-orbitron text-slate-900">
+            <CardTitle className="flex items-center gap-2 font-orbitron text-[var(--sd-text-primary)]">
               <Workflow className="h-5 w-5 text-primary" />
               Knowledge Bridge
             </CardTitle>
@@ -449,25 +449,25 @@ export default function KnowledgeLibrary() {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid gap-4 md:grid-cols-4">
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Active Research</div>
-                <div className="mt-2 text-3xl font-orbitron font-bold text-slate-900">{activeResearchCount}</div>
-                <div className="text-sm text-slate-500">Queue items feeding the hub right now</div>
+              <div className="rounded-xl border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-4">
+                <div className="text-xs uppercase tracking-[0.2em] text-[var(--sd-text-secondary)]">Active Research</div>
+                <div className="mt-2 text-3xl font-orbitron font-bold text-[var(--sd-text-primary)]">{activeResearchCount}</div>
+                <div className="text-sm text-[var(--sd-text-secondary)]">Queue items feeding the hub right now</div>
               </div>
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Completed Tech</div>
-                <div className="mt-2 text-3xl font-orbitron font-bold text-slate-900">{completedTechCount}</div>
-                <div className="text-sm text-slate-500">Unlocked technologies tracked from the library</div>
+              <div className="rounded-xl border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-4">
+                <div className="text-xs uppercase tracking-[0.2em] text-[var(--sd-text-secondary)]">Completed Tech</div>
+                <div className="mt-2 text-3xl font-orbitron font-bold text-[var(--sd-text-primary)]">{completedTechCount}</div>
+                <div className="text-sm text-[var(--sd-text-secondary)]">Unlocked technologies tracked from the library</div>
               </div>
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Available Now</div>
-                <div className="mt-2 text-3xl font-orbitron font-bold text-slate-900">{availableTechCount}</div>
-                <div className="text-sm text-slate-500">Research options with prerequisites satisfied</div>
+              <div className="rounded-xl border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-4">
+                <div className="text-xs uppercase tracking-[0.2em] text-[var(--sd-text-secondary)]">Available Now</div>
+                <div className="mt-2 text-3xl font-orbitron font-bold text-[var(--sd-text-primary)]">{availableTechCount}</div>
+                <div className="text-sm text-[var(--sd-text-secondary)]">Research options with prerequisites satisfied</div>
               </div>
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Mastery Tracks</div>
-                <div className="mt-2 text-3xl font-orbitron font-bold text-slate-900">{masteryTracksCovered}</div>
-                <div className="text-sm text-slate-500">Category bands with full staffing and unit support</div>
+              <div className="rounded-xl border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-4">
+                <div className="text-xs uppercase tracking-[0.2em] text-[var(--sd-text-secondary)]">Mastery Tracks</div>
+                <div className="mt-2 text-3xl font-orbitron font-bold text-[var(--sd-text-primary)]">{masteryTracksCovered}</div>
+                <div className="text-sm text-[var(--sd-text-secondary)]">Category bands with full staffing and unit support</div>
               </div>
             </div>
 
@@ -477,8 +477,8 @@ export default function KnowledgeLibrary() {
                   <FlaskConical className="h-4 w-4" />
                   Research Hub Tie-In
                 </div>
-                <div className="mt-3 text-xl font-orbitron text-slate-900">Move from doctrine to active projects</div>
-                <p className="mt-2 text-sm text-slate-600">
+                <div className="mt-3 text-xl font-orbitron text-[var(--sd-text-primary)]">Move from doctrine to active projects</div>
+                <p className="mt-2 text-sm text-[var(--sd-text-secondary)]">
                   Use the Knowledge Library to identify category fit, then jump into the Research Hub to start or queue the most relevant program paths.
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2 text-xs">
@@ -505,8 +505,8 @@ export default function KnowledgeLibrary() {
                   <GraduationCap className="h-4 w-4" />
                   Technology Tree Tie-In
                 </div>
-                <div className="mt-3 text-xl font-orbitron text-slate-900">Turn category study into prerequisite routing</div>
-                <p className="mt-2 text-sm text-slate-600">
+                <div className="mt-3 text-xl font-orbitron text-[var(--sd-text-primary)]">Turn category study into prerequisite routing</div>
+                <p className="mt-2 text-sm text-[var(--sd-text-secondary)]">
                   After using the library to compare class tiers and synergies, route into the Technology Tree to see live unlock states, missing requirements, and next research branches.
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2 text-xs">
@@ -523,19 +523,19 @@ export default function KnowledgeLibrary() {
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
-                <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.18em] text-slate-700">
+              <div className="rounded-2xl border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-5">
+                <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.18em] text-[var(--sd-text-secondary)]">
                   <Sparkles className="h-4 w-4" />
                   Cross-Discipline Synergy
                 </div>
                 <div className="mt-4 space-y-3">
                   {topSynergyCategories.map((category) => (
-                    <div key={category.id} className="rounded-xl border border-white bg-white p-3">
+                    <div key={category.id} className="rounded-xl border border-white bg-[var(--sd-panel-top)] p-3">
                       <div className="flex items-center justify-between gap-2">
-                        <div className="font-semibold text-slate-900">{category.name}</div>
+                        <div className="font-semibold text-[var(--sd-text-primary)]">{category.name}</div>
                         <Badge variant="outline">{category.totalCoverage}</Badge>
                       </div>
-                      <div className="mt-2 text-xs text-slate-500">
+                      <div className="mt-2 text-xs text-[var(--sd-text-secondary)]">
                         Jobs {category.jobCoverage} • Units {category.unitCoverage} • Research {category.researchCount} • Technology {category.technologyCount}
                       </div>
                     </div>
@@ -546,10 +546,10 @@ export default function KnowledgeLibrary() {
           </CardContent>
         </Card>
 
-        <Card className="border-slate-200 bg-white shadow-sm">
+        <Card className="border-[var(--sd-panel-border)] bg-[var(--sd-panel-top)] shadow-sm">
           <CardContent className="grid gap-4 p-4 lg:grid-cols-[1.3fr_0.8fr_0.8fr]">
             <div className="space-y-2">
-              <label className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-slate-500">
+              <label className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-[var(--sd-text-secondary)]">
                 <Search className="h-4 w-4" />
                 Search
               </label>
@@ -561,7 +561,7 @@ export default function KnowledgeLibrary() {
             </div>
 
             <div className="space-y-2">
-              <label className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-slate-500">
+              <label className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-[var(--sd-text-secondary)]">
                 <Filter className="h-4 w-4" />
                 Category
               </label>
@@ -581,7 +581,7 @@ export default function KnowledgeLibrary() {
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-1">
               <div className="space-y-2">
-                <label className="text-xs uppercase tracking-[0.2em] text-slate-500">Job Domain</label>
+                <label className="text-xs uppercase tracking-[0.2em] text-[var(--sd-text-secondary)]">Job Domain</label>
                 <select
                   value={jobDomainFilter}
                   onChange={(event) => setJobDomainFilter(event.target.value)}
@@ -593,7 +593,7 @@ export default function KnowledgeLibrary() {
                 </select>
               </div>
               <div className="space-y-2">
-                <label className="text-xs uppercase tracking-[0.2em] text-slate-500">Unit Domain</label>
+                <label className="text-xs uppercase tracking-[0.2em] text-[var(--sd-text-secondary)]">Unit Domain</label>
                 <select
                   value={unitDomainFilter}
                   onChange={(event) => setUnitDomainFilter(event.target.value)}
@@ -609,7 +609,7 @@ export default function KnowledgeLibrary() {
         </Card>
 
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid h-auto w-full grid-cols-2 gap-2 border border-slate-200 bg-white p-2 shadow-sm md:grid-cols-5">
+          <TabsList className="grid h-auto w-full grid-cols-2 gap-2 border border-[var(--sd-panel-border)] bg-[var(--sd-panel-top)] p-2 shadow-sm md:grid-cols-5">
             <TabsTrigger value="overview" className="font-orbitron">
               <Sparkles className="mr-2 h-4 w-4" />
               Overview
@@ -634,41 +634,41 @@ export default function KnowledgeLibrary() {
 
           <TabsContent value="overview" className="mt-6 space-y-6">
             <div className="grid gap-4 lg:grid-cols-3">
-              <Card className="border-slate-200 bg-white shadow-sm lg:col-span-2">
+              <Card className="border-[var(--sd-panel-border)] bg-[var(--sd-panel-top)] shadow-sm lg:col-span-2">
                 <CardHeader>
-                  <CardTitle className="font-orbitron text-slate-900">Research to Technology Workflow</CardTitle>
+                  <CardTitle className="font-orbitron text-[var(--sd-text-primary)]">Research to Technology Workflow</CardTitle>
                   <CardDescription>
                     Study mastery tracks here, launch active work from the Research Hub, and validate dependencies through the Technology Tree.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="grid gap-4 md:grid-cols-3">
-                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+                  <div className="rounded-xl border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-4">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-[var(--sd-text-primary)]">
                       <BookOpen className="h-4 w-4 text-primary" />
                       Library
                     </div>
-                    <p className="mt-2 text-sm text-slate-600">Compare mastery tracks, class tiers, staffing layers, and cross-discipline coverage.</p>
+                    <p className="mt-2 text-sm text-[var(--sd-text-secondary)]">Compare mastery tracks, class tiers, staffing layers, and cross-discipline coverage.</p>
                   </div>
-                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+                  <div className="rounded-xl border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-4">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-[var(--sd-text-primary)]">
                       <Beaker className="h-4 w-4 text-emerald-600" />
                       Research Hub
                     </div>
-                    <p className="mt-2 text-sm text-slate-600">Convert those insights into queued projects, live research priorities, and lab execution.</p>
+                    <p className="mt-2 text-sm text-[var(--sd-text-secondary)]">Convert those insights into queued projects, live research priorities, and lab execution.</p>
                   </div>
-                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+                  <div className="rounded-xl border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-4">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-[var(--sd-text-primary)]">
                       <GraduationCap className="h-4 w-4 text-blue-600" />
                       Technology Tree
                     </div>
-                    <p className="mt-2 text-sm text-slate-600">Check prerequisites, unlocked branches, and the next best chain for long-term progression.</p>
+                    <p className="mt-2 text-sm text-[var(--sd-text-secondary)]">Check prerequisites, unlocked branches, and the next best chain for long-term progression.</p>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="border-slate-200 bg-white shadow-sm">
+              <Card className="border-[var(--sd-panel-border)] bg-[var(--sd-panel-top)] shadow-sm">
                 <CardHeader>
-                  <CardTitle className="font-orbitron text-slate-900">Quick Routes</CardTitle>
+                  <CardTitle className="font-orbitron text-[var(--sd-text-primary)]">Quick Routes</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <Link href="/research">
@@ -694,30 +694,30 @@ export default function KnowledgeLibrary() {
             </div>
 
             <div className="grid gap-4 xl:grid-cols-3">
-              <Card className="border-slate-200 bg-white shadow-sm xl:col-span-2">
+              <Card className="border-[var(--sd-panel-border)] bg-[var(--sd-panel-top)] shadow-sm xl:col-span-2">
                 <CardHeader>
-                  <CardTitle className="font-orbitron text-slate-900">Category Coverage</CardTitle>
+                  <CardTitle className="font-orbitron text-[var(--sd-text-primary)]">Category Coverage</CardTitle>
                   <CardDescription>
                     Every research and technology branch now has generated programs, staffing coverage, and specialist support.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                   {categoryCoverage.map((category) => (
-                    <div key={category.id} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                    <div key={category.id} className="rounded-xl border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-4">
                       <div className="flex items-start justify-between gap-2">
                         <div>
-                          <div className="font-semibold text-slate-900">{category.name}</div>
-                          <div className="mt-1 text-xs text-slate-500">{category.description}</div>
+                          <div className="font-semibold text-[var(--sd-text-primary)]">{category.name}</div>
+                          <div className="mt-1 text-xs text-[var(--sd-text-secondary)]">{category.description}</div>
                         </div>
                         <Badge variant="outline">{category.totalCoverage}</Badge>
                       </div>
                       <div className="mt-4 space-y-2">
-                        <div className="flex items-center justify-between text-xs text-slate-500">
+                        <div className="flex items-center justify-between text-xs text-[var(--sd-text-secondary)]">
                           <span>Research</span>
                           <span>{category.researchCount}</span>
                         </div>
                         <Progress value={(category.researchCount / 20) * 100} className="h-2" />
-                        <div className="flex items-center justify-between text-xs text-slate-500">
+                        <div className="flex items-center justify-between text-xs text-[var(--sd-text-secondary)]">
                           <span>Technology</span>
                           <span>{category.technologyCount}</span>
                         </div>
@@ -733,46 +733,46 @@ export default function KnowledgeLibrary() {
               </Card>
 
               <div className="space-y-4">
-                <Card className="border-slate-200 bg-white shadow-sm">
+                <Card className="border-[var(--sd-panel-border)] bg-[var(--sd-panel-top)] shadow-sm">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2 font-orbitron text-slate-900">
+                    <CardTitle className="flex items-center gap-2 font-orbitron text-[var(--sd-text-primary)]">
                       <Atom className="h-5 w-5 text-primary" />
                       Research Logic
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-3 text-sm text-slate-600">
+                  <CardContent className="space-y-3 text-sm text-[var(--sd-text-secondary)]">
                     <p>{highlightResearch?.mechanics.primaryLoop}</p>
                     <p>{highlightResearch?.mechanics.activeFunction}</p>
-                    <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                    <div className="rounded-lg border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-3">
                       {highlightResearch?.mechanics.gameplayEffect}
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card className="border-slate-200 bg-white shadow-sm">
+                <Card className="border-[var(--sd-panel-border)] bg-[var(--sd-panel-top)] shadow-sm">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2 font-orbitron text-slate-900">
+                    <CardTitle className="flex items-center gap-2 font-orbitron text-[var(--sd-text-primary)]">
                       <Wrench className="h-5 w-5 text-primary" />
                       Technology Logic
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-3 text-sm text-slate-600">
+                  <CardContent className="space-y-3 text-sm text-[var(--sd-text-secondary)]">
                     <p>{highlightTechnology?.mechanics.primaryLoop}</p>
                     <p>{highlightTechnology?.mechanics.activeFunction}</p>
-                    <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                    <div className="rounded-lg border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-3">
                       {highlightTechnology?.mechanics.gameplayEffect}
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card className="border-slate-200 bg-white shadow-sm">
+                <Card className="border-[var(--sd-panel-border)] bg-[var(--sd-panel-top)] shadow-sm">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2 font-orbitron text-slate-900">
+                    <CardTitle className="flex items-center gap-2 font-orbitron text-[var(--sd-text-primary)]">
                       <ShieldCheck className="h-5 w-5 text-primary" />
                       Workforce Stack
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-3 text-sm text-slate-600">
+                  <CardContent className="space-y-3 text-sm text-[var(--sd-text-secondary)]">
                     <p>{highlightJob?.summary}</p>
                     <p>{highlightUnit?.summary}</p>
                     <div className="flex flex-wrap gap-2">
@@ -793,7 +793,7 @@ export default function KnowledgeLibrary() {
           </TabsContent>
 
           <TabsContent value="research" className="mt-6 space-y-4">
-            <div className="flex items-center justify-between text-sm text-slate-500">
+            <div className="flex items-center justify-between text-sm text-[var(--sd-text-secondary)]">
               <span>Showing {Math.min(filteredResearch.length, MAX_VISIBLE_ENTRIES)} of {filteredResearch.length} filtered research programs.</span>
               <span>Total catalog: {RESEARCH_PROGRAM_LIBRARY_240.length}</span>
             </div>
@@ -805,7 +805,7 @@ export default function KnowledgeLibrary() {
           </TabsContent>
 
           <TabsContent value="technology" className="mt-6 space-y-4">
-            <div className="flex items-center justify-between text-sm text-slate-500">
+            <div className="flex items-center justify-between text-sm text-[var(--sd-text-secondary)]">
               <span>Showing {Math.min(filteredTechnology.length, MAX_VISIBLE_ENTRIES)} of {filteredTechnology.length} filtered technology systems.</span>
               <span>Total catalog: {TECHNOLOGY_SYSTEM_LIBRARY_240.length}</span>
             </div>
@@ -817,7 +817,7 @@ export default function KnowledgeLibrary() {
           </TabsContent>
 
           <TabsContent value="jobs" className="mt-6 space-y-4">
-            <div className="flex items-center justify-between text-sm text-slate-500">
+            <div className="flex items-center justify-between text-sm text-[var(--sd-text-secondary)]">
               <span>Showing {filteredJobs.length} staffing roles.</span>
               <span>Total job systems: {ALL_KNOWLEDGE_JOBS.length}</span>
             </div>
@@ -829,7 +829,7 @@ export default function KnowledgeLibrary() {
           </TabsContent>
 
           <TabsContent value="units" className="mt-6 space-y-4">
-            <div className="flex items-center justify-between text-sm text-slate-500">
+            <div className="flex items-center justify-between text-sm text-[var(--sd-text-secondary)]">
               <span>Showing {filteredUnits.length} specialist support units.</span>
               <span>Total support units: {KNOWLEDGE_SUPPORT_UNITS.length}</span>
             </div>

@@ -122,7 +122,7 @@ function BldgCard({ b, lv, res, up }: { b: BD; lv: number; res: any; up: (i: str
         <p className="text-xs text-slate-400">{b.prod}</p>
         <div className="flex items-center gap-1.5 text-xs text-slate-400">
           <span>{c.metal.toLocaleString()}</span><span>•</span><span>{c.crystal.toLocaleString()}</span><span>•</span><span>{c.deuterium.toLocaleString()}</span>
-          <span className="ml-auto text-slate-500">{fmt(t)}</span>
+          <span className="ml-auto text-[var(--sd-text-secondary)]">{fmt(t)}</span>
         </div>
         <Button size="sm" className="w-full font-orbitron text-xs" disabled={!ok} onClick={() => up(b.id, b.name, t*1000)}>
           <ArrowUpCircle className="w-3 h-3 mr-1" /> Upgrade
@@ -152,18 +152,18 @@ function ShipCard({ s, res, build }: { s: SD; res: any; build: (unitId: string, 
               <span className="text-sm font-semibold text-slate-200">{s.name}</span>
               <Badge variant="outline" className="text-[10px] px-1 py-0 border-slate-600 text-slate-400">T{s.tier}</Badge>
             </div>
-            <div className="text-xs text-slate-500">{s.counter}</div>
+            <div className="text-xs text-[var(--sd-text-secondary)]">{s.counter}</div>
           </div>
         </div>
         <div className="grid grid-cols-6 gap-1 text-[10px]">
           {[["ATK", s.atk, "text-red-400"], ["DEF", s.def, "text-blue-400"], ["SHD", s.shd, "text-cyan-400"], ["Hull", s.hull, "text-amber-400"], ["Spd", `${(s.spd/1000).toFixed(0)}k`, "text-green-400"], ["Crg", s.cargo.toLocaleString(), "text-purple-400"]].map(([l,v,c2]) => (
             <div key={l as string} className="bg-slate-800/50 rounded p-1 text-center">
-              <div className="text-slate-500">{l}</div>
+              <div className="text-[var(--sd-text-secondary)]">{l}</div>
               <div className={cn("font-mono", c2 as string)}>{v}</div>
             </div>
           ))}
         </div>
-        <div className="text-xs text-slate-500">
+        <div className="text-xs text-[var(--sd-text-secondary)]">
           {tm.toLocaleString()} M • {tc.toLocaleString()} C • {td.toLocaleString()} D • {fmt(tt)}
         </div>
         <div className="flex items-center gap-2">
@@ -195,7 +195,7 @@ function DefCard({ d, lv, res, up }: { d: DD; lv: number; res: any; up: (i: stri
           <Badge variant="outline" className="text-xs border-slate-600 text-slate-400">Lv.{lv}</Badge>
         </div>
         <p className="text-xs text-slate-400">{d.desc}</p>
-        <div className="text-xs text-slate-500">{c.metal.toLocaleString()} M • {c.crystal.toLocaleString()} C • {c.deuterium.toLocaleString()} D • {fmt(d.time)}</div>
+        <div className="text-xs text-[var(--sd-text-secondary)]">{c.metal.toLocaleString()} M • {c.crystal.toLocaleString()} C • {c.deuterium.toLocaleString()} D • {fmt(d.time)}</div>
         <Button size="sm" className="w-full font-orbitron text-xs" disabled={!ok} onClick={() => up(d.id, d.name, d.time*1000)}>
           <ArrowUpCircle className="w-3 h-3 mr-1" /> Build
         </Button>
@@ -222,11 +222,11 @@ function TechCard({ t, lv, res, research }: { t: RD; lv: number; res: any; resea
           {full && <Badge variant="outline" className="text-xs border-emerald-600 text-emerald-400">MAX</Badge>}
         </div>
         <div className="bg-slate-800/50 rounded p-2 space-y-1 text-xs">
-          <div className="flex justify-between"><span className="text-slate-500">Current:</span><span className="text-slate-300">{t.eff}</span></div>
-          {!full && <div className="flex justify-between"><span className="text-slate-500">Next:</span><span className="text-emerald-400">{t.next}</span></div>}
+          <div className="flex justify-between"><span className="text-[var(--sd-text-secondary)]">Current:</span><span className="text-slate-300">{t.eff}</span></div>
+          {!full && <div className="flex justify-between"><span className="text-[var(--sd-text-secondary)]">Next:</span><span className="text-emerald-400">{t.next}</span></div>}
         </div>
         {t.prereq && <div className="text-xs text-amber-400 flex items-center gap-1"><Lock className="w-3 h-3" /> Requires: {t.prereq}</div>}
-        <div className="text-xs text-slate-500">{c.metal.toLocaleString()} M • {c.crystal.toLocaleString()} C • {c.deuterium.toLocaleString()} D • {fmt(tm)}</div>
+        <div className="text-xs text-[var(--sd-text-secondary)]">{c.metal.toLocaleString()} M • {c.crystal.toLocaleString()} C • {c.deuterium.toLocaleString()} D • {fmt(tm)}</div>
         <Button size="sm" className="w-full font-orbitron text-xs" disabled={!ok||full} onClick={() => research(t.id, t.name, tm*1000)}>
           {full ? "Completed" : <><FlaskConical className="w-3 h-3 mr-1" /> Research</>}
         </Button>
@@ -249,7 +249,7 @@ function OrbCard({ o, res, up }: { o: typeof ORBITALS[0]; res: any; up: (i: stri
             <div className="text-xs text-purple-400">{o.eff}</div>
           </div>
         </div>
-        <div className="text-xs text-slate-500">{o.cost.metal.toLocaleString()} M • {o.cost.crystal.toLocaleString()} C • {o.cost.deuterium.toLocaleString()} D • {fmt(o.time)}</div>
+        <div className="text-xs text-[var(--sd-text-secondary)]">{o.cost.metal.toLocaleString()} M • {o.cost.crystal.toLocaleString()} C • {o.cost.deuterium.toLocaleString()} D • {fmt(o.time)}</div>
         <Button size="sm" className="w-full font-orbitron text-xs" disabled={!ok} onClick={() => up(o.id, o.name, o.time*1000)}>
           <ArrowUpCircle className="w-3 h-3 mr-1" /> Construct
         </Button>
@@ -311,7 +311,7 @@ export default function Facilities() {
           {[["Metal", resources.metal, "text-amber-400"], ["Crystal", resources.crystal, "text-blue-400"], ["Deuterium", resources.deuterium, "text-cyan-400"], ["Energy", resources.energy, "text-yellow-400"], ["Dark Matter", resources.darkmatter, "text-purple-400"]].map(([l,v,c]) => (
             <Card key={l as string} className="bg-slate-900/60 border-slate-700/50">
               <CardContent className="p-3">
-                <div className="text-xs text-slate-500 uppercase">{l}</div>
+                <div className="text-xs text-[var(--sd-text-secondary)] uppercase">{l}</div>
                 <div className={cn("text-lg font-mono", c as string)}>{(v as number).toLocaleString()}</div>
               </CardContent>
             </Card>
@@ -392,7 +392,7 @@ export default function Facilities() {
                 <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
                   {[["Total Power","1,250","text-red-400"],["Coverage","85%","text-amber-400"],["Structures","12","text-blue-400"]].map(([l,v,c]) => (
                     <div key={l as string} className="bg-slate-800/50 rounded p-2 text-center">
-                      <div className="text-slate-500">{l}</div>
+                      <div className="text-[var(--sd-text-secondary)]">{l}</div>
                       <div className={cn("font-mono text-lg", c as string)}>{v}</div>
                     </div>
                   ))}
@@ -417,7 +417,7 @@ export default function Facilities() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {[["Population","12,450","text-emerald-400"],["Happiness","72%","text-amber-400"],["Buildings",String(totLvl),"text-blue-400"],["Defense","1,250","text-red-400"]].map(([l,v,c]) => (
                     <div key={l as string} className="bg-slate-800/50 rounded p-3 text-center">
-                      <div className="text-xs text-slate-500">{l}</div>
+                      <div className="text-xs text-[var(--sd-text-secondary)]">{l}</div>
                       <div className={cn("text-lg font-mono", c as string)}>{v}</div>
                     </div>
                   ))}
@@ -502,7 +502,7 @@ export default function Facilities() {
               {[["Total Buildings",totLvl,"text-amber-400"],["Total Ships",totUnits,"text-blue-400"],["Research Levels",Object.values(research).reduce((a,b)=>a+b,0),"text-green-400"],["Total Defense","1,250","text-red-400"]].map(([l,v,c]) => (
                 <Card key={l as string} className="bg-slate-900/60 border-slate-700/50">
                   <CardContent className="p-3 text-center">
-                    <div className="text-xs text-slate-500">{l}</div>
+                    <div className="text-xs text-[var(--sd-text-secondary)]">{l}</div>
                     <div className={cn("text-2xl font-mono", c as string)}>{typeof v==="number"?v.toLocaleString():v}</div>
                   </CardContent>
                 </Card>
@@ -531,7 +531,7 @@ export default function Facilities() {
                         )}>{e.type}</Badge>
                         <div className="flex-1 min-w-0">
                           <div className="text-xs text-slate-200 truncate">{e.name}</div>
-                          <div className="text-[10px] text-slate-500">{e.date}</div>
+                          <div className="text-[10px] text-[var(--sd-text-secondary)]">{e.date}</div>
                         </div>
                         <div className="text-[10px] text-slate-400 shrink-0">{e.cost}</div>
                       </div>

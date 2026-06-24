@@ -374,13 +374,13 @@ export default function Colonies() {
             </div>
             <div>
               <div className="text-xs text-slate-500 uppercase mb-1">Selected</div>
-              <div className="border border-slate-200 rounded px-3 py-2 text-sm bg-slate-50 truncate">
+              <div className="border border-slate-200 rounded px-3 py-2 text-sm bg-[var(--sd-panel-bottom)] truncate">
                 {selectedColony?.name || "No colony selected"}
               </div>
             </div>
             <div>
               <div className="text-xs text-slate-500 uppercase mb-1">Global Profile</div>
-              <div className="border border-slate-200 rounded px-3 py-2 text-sm bg-slate-50">
+              <div className="border border-slate-200 rounded px-3 py-2 text-sm bg-[var(--sd-panel-bottom)]">
                 {globalProfile ? globalProfile : "Not set"}
               </div>
             </div>
@@ -454,7 +454,7 @@ export default function Colonies() {
                         <img
                           src={getPlanetImagePath(colony.class)}
                           alt={colony.name}
-                          className="w-12 h-12 rounded object-cover border border-slate-200 bg-slate-100"
+                          className="w-12 h-12 rounded object-cover border border-slate-200 bg-[var(--sd-panel-bottom)]"
                           onError={(event) => {
                             event.currentTarget.onerror = null;
                             event.currentTarget.src = TEMP_THEME_IMAGE;
@@ -466,7 +466,7 @@ export default function Colonies() {
                         </div>
                       </div>
                       <div className="flex flex-col items-end gap-1">
-                        <Badge className={classColors[colony.class] || "bg-slate-100 text-slate-900"}>{colony.class}</Badge>
+                        <Badge className={classColors[colony.class] || "bg-[var(--sd-panel-bottom)] text-slate-900"}>{colony.class}</Badge>
                         <Badge className={statusBadgeClasses(colony.planetStatus.condition)}>{colony.planetStatus.condition}</Badge>
                       </div>
                     </div>
@@ -510,14 +510,14 @@ export default function Colonies() {
           <TabsContent value="available" className="mt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {emptySlots.map((slot) => (
-                <Card key={slot.id} className="border-slate-200 bg-slate-50">
+                <Card key={slot.id} className="border-slate-200 bg-[var(--sd-panel-bottom)]">
                   <CardContent className="p-4 space-y-3">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
                         <img
                           src={getPlanetImagePath(slot.class)}
                           alt={slot.name}
-                          className="w-12 h-12 rounded object-cover border border-slate-200 bg-slate-100"
+                          className="w-12 h-12 rounded object-cover border border-slate-200 bg-[var(--sd-panel-bottom)]"
                           onError={(event) => {
                             event.currentTarget.onerror = null;
                             event.currentTarget.src = TEMP_THEME_IMAGE;
@@ -528,7 +528,7 @@ export default function Colonies() {
                           <div className="text-xs text-slate-500 font-mono">{slot.coordinates}</div>
                         </div>
                       </div>
-                      <Badge variant="secondary" className={classColors[slot.class] || "bg-slate-100 text-slate-900"}>{slot.class}</Badge>
+                      <Badge variant="secondary" className={classColors[slot.class] || "bg-[var(--sd-panel-bottom)] text-slate-900"}>{slot.class}</Badge>
                     </div>
 
                     <div className="space-y-2 text-xs">
@@ -573,7 +573,7 @@ export default function Colonies() {
                       <img
                         src={getPlanetImagePath(selectedColony.class)}
                         alt={selectedColony.name}
-                        className="w-8 h-8 rounded object-cover border border-slate-200 bg-slate-100"
+                        className="w-8 h-8 rounded object-cover border border-slate-200 bg-[var(--sd-panel-bottom)]"
                         onError={(event) => {
                           event.currentTarget.onerror = null;
                           event.currentTarget.src = TEMP_THEME_IMAGE;
@@ -582,7 +582,7 @@ export default function Colonies() {
                       <span>{selectedColony.name}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge className={classColors[selectedColony.class] || "bg-slate-100 text-slate-900"}>{selectedColony.class}</Badge>
+                      <Badge className={classColors[selectedColony.class] || "bg-[var(--sd-panel-bottom)] text-slate-900"}>{selectedColony.class}</Badge>
                       <Badge className={statusBadgeClasses(selectedColony.planetStatus.condition)}>{selectedColony.planetStatus.condition}</Badge>
                     </div>
                   </CardTitle>
@@ -590,7 +590,7 @@ export default function Colonies() {
                 <CardContent className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-4">
-                      <div className="bg-slate-50 p-4 rounded border border-slate-200">
+                      <div className="bg-[var(--sd-panel-bottom)] p-4 rounded border border-slate-200">
                         <div className="text-sm font-bold mb-2 text-slate-700">Planet Status</div>
                         <div className="grid grid-cols-2 gap-3 text-sm">
                           <div className="flex justify-between"><span className="text-slate-600">Stability</span><span className="font-bold">{selectedColony.planetStatus.stability}%</span></div>
@@ -606,7 +606,7 @@ export default function Colonies() {
                         </div>
                       </div>
 
-                      <div className="bg-slate-50 p-4 rounded border border-slate-200">
+                      <div className="bg-[var(--sd-panel-bottom)] p-4 rounded border border-slate-200">
                         <div className="text-sm font-bold mb-3 text-slate-700">Sub Stats and Information</div>
                         <div className="grid grid-cols-2 gap-2 text-sm">
                           <div className="bg-white rounded border border-slate-200 px-2 py-1 flex justify-between"><span>Mining</span><span className="font-bold">{selectedColony.subStats.miningRate}</span></div>
@@ -620,7 +620,7 @@ export default function Colonies() {
                     </div>
 
                     <div className="space-y-4">
-                      <div className="bg-slate-50 p-4 rounded border border-slate-200">
+                      <div className="bg-[var(--sd-panel-bottom)] p-4 rounded border border-slate-200">
                         <div className="text-sm font-bold mb-2 text-slate-700">Moon & Sol System Overview</div>
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between"><span className="text-slate-600">System</span><span className="font-bold">{selectedColony.solarOverview.galaxy}:{selectedColony.solarOverview.sector}:{selectedColony.solarOverview.system}</span></div>
@@ -631,7 +631,7 @@ export default function Colonies() {
                         </div>
                       </div>
 
-                      <div className="bg-slate-50 p-4 rounded border border-slate-200">
+                      <div className="bg-[var(--sd-panel-bottom)] p-4 rounded border border-slate-200">
                         <div className="text-sm font-bold mb-3 text-slate-700">System Bodies (Orbits + Moons)</div>
                         <div className="max-h-64 overflow-y-auto space-y-2">
                           {systemBodies.map((body) => (
@@ -708,7 +708,7 @@ export default function Colonies() {
                   </div>
 
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <div className="bg-slate-50 p-4 rounded border border-slate-200">
+                    <div className="bg-[var(--sd-panel-bottom)] p-4 rounded border border-slate-200">
                       <div className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-3">
                         <TrendingUp className="w-4 h-4 text-emerald-600" /> Growth and Sustainability
                       </div>
@@ -732,7 +732,7 @@ export default function Colonies() {
                       </div>
                     </div>
 
-                    <div className="bg-slate-50 p-4 rounded border border-slate-200">
+                    <div className="bg-[var(--sd-panel-bottom)] p-4 rounded border border-slate-200">
                       <div className="text-sm font-bold text-slate-700 mb-3 flex items-center gap-2">
                         <Map className="w-4 h-4 text-blue-600" /> Colonies System Control Summary
                       </div>

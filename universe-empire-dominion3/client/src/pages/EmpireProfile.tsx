@@ -216,7 +216,7 @@ function AttributeCard({
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className={cn("p-2 rounded-lg bg-slate-100", attr.color)}>
+            <div className={cn("p-2 rounded-lg bg-[var(--sd-panel-bottom)]", attr.color)}>
               <IconComponent className="w-5 h-5" />
             </div>
             <div>
@@ -462,19 +462,19 @@ export default function EmpireProfilePage() {
                 </div>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="text-center p-3 rounded-lg bg-white/50 border border-amber-200">
-                  <div className="text-2xl font-bold text-primary">{overallLevel}</div>
-                  <div className="text-xs text-muted-foreground">Overall Level</div>
-                </div>
-                <div className="text-center p-3 rounded-lg bg-white/50 border border-amber-200">
-                  <div className="text-2xl font-bold text-amber-500">{(profile.powerRating || 0).toLocaleString()}</div>
-                  <div className="text-xs text-muted-foreground">Power Rating</div>
-                </div>
-                <div className="text-center p-3 rounded-lg bg-white/50 border border-amber-200">
-                  <div className="text-2xl font-bold text-emerald-500">{(profile.availablePoints || 0).toLocaleString()}</div>
-                  <div className="text-xs text-muted-foreground">Available Points</div>
-                </div>
-                <div className="text-center p-3 rounded-lg bg-white/50 border border-amber-200">
+            <div className="text-center p-3 rounded-lg bg-[var(--sd-panel-bottom)] border border-amber-200">
+                   <div className="text-2xl font-bold text-primary">{overallLevel}</div>
+                   <div className="text-xs text-muted-foreground">Overall Level</div>
+                 </div>
+                 <div className="text-center p-3 rounded-lg bg-[var(--sd-panel-bottom)] border border-amber-200">
+                   <div className="text-2xl font-bold text-amber-500">{(profile.powerRating || 0).toLocaleString()}</div>
+                   <div className="text-xs text-muted-foreground">Power Rating</div>
+                 </div>
+                 <div className="text-center p-3 rounded-lg bg-[var(--sd-panel-bottom)] border border-amber-200">
+                   <div className="text-2xl font-bold text-emerald-500">{(profile.availablePoints || 0).toLocaleString()}</div>
+                   <div className="text-xs text-muted-foreground">Available Points</div>
+                 </div>
+                 <div className="text-center p-3 rounded-lg bg-[var(--sd-panel-bottom)] border border-amber-200">
                   <div className="text-2xl font-bold text-slate-400">{(profile.totalPointsEarned || 0).toLocaleString()}</div>
                   <div className="text-xs text-muted-foreground">Total Earned</div>
                 </div>
@@ -549,7 +549,7 @@ export default function EmpireProfilePage() {
                     const IconComponent = ICON_MAP[attr.icon] || Swords;
                     const rank = getAttributeRank(level);
                     return (
-                      <div key={attr.id} className="flex items-center gap-3 p-4 rounded-lg bg-slate-50 border border-slate-200">
+                       <div key={attr.id} className="flex items-center gap-3 p-4 rounded-lg bg-[var(--sd-panel-bottom)] border sd-border">
                         <div className={cn("p-2 rounded-lg", attr.color)}>
                           <IconComponent className="w-5 h-5" />
                         </div>
@@ -603,17 +603,17 @@ export default function EmpireProfilePage() {
                 <Separator />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
-                    <div className="text-xs text-slate-600 uppercase tracking-wider mb-2">Strongest Attribute</div>
-                    <div className="text-lg font-bold text-slate-900">
+                  <div className="bg-[var(--sd-panel-bottom)] rounded-lg p-4 border sd-border">
+                     <div className="text-xs sd-text-secondary uppercase tracking-wider mb-2">Strongest Attribute</div>
+                     <div className="text-lg font-bold sd-text">
                       {powerDistribution.length > 0
                         ? powerDistribution.reduce((max, attr) => attr.level > max.level ? attr : max).name
                         : "None"}
                     </div>
                   </div>
-                  <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
-                    <div className="text-xs text-slate-600 uppercase tracking-wider mb-2">Weakest Attribute</div>
-                    <div className="text-lg font-bold text-slate-900">
+                   <div className="bg-[var(--sd-panel-bottom)] rounded-lg p-4 border sd-border">
+                     <div className="text-xs sd-text-secondary uppercase tracking-wider mb-2">Weakest Attribute</div>
+                     <div className="text-lg font-bold sd-text">
                       {powerDistribution.length > 0
                         ? powerDistribution.reduce((min, attr) => attr.level < min.level ? attr : min).name
                         : "None"}
@@ -638,37 +638,37 @@ export default function EmpireProfilePage() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
-                  <h3 className="text-sm font-bold text-slate-800 mb-3">Attribute System Overview</h3>
-                  <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 space-y-3 text-xs text-slate-600">
+                   <h3 className="text-sm font-bold sd-text mb-3">Attribute System Overview</h3>
+                   <div className="bg-[var(--sd-panel-bottom)] rounded-lg p-4 border sd-border space-y-3 text-xs sd-text-secondary">
                     <p>Your empire has 9 core attributes that define its capabilities and strategic focus. Each attribute can be upgraded using attribute points earned through gameplay. Higher levels provide permanent bonuses and unlock new capabilities.</p>
                     <p>Attribute points are earned through various activities including completing missions, winning battles, discovering anomalies, and progressing through the game. Points can be allocated freely, but consider synergies between attributes for optimal empire development.</p>
                   </div>
                 </div>
 
                 <div>
-                  <h3 className="text-sm font-bold text-slate-800 mb-3">Attribute Details & Game Logic</h3>
+                   <h3 className="text-sm font-bold sd-text mb-3">Attribute Details & Game Logic</h3>
                   <div className="space-y-3">
                     {attributes.map((attr) => {
                       const info = ATTRIBUTE_DESCRIPTIONS[attr.id];
                       if (!info) return null;
                       const IconComponent = ICON_MAP[attr.icon] || Swords;
                       return (
-                        <div key={attr.id} className="bg-slate-50 rounded-lg p-4 border border-slate-200">
-                          <div className="flex items-start gap-3 mb-3">
-                            <div className={cn("p-2 rounded-lg", attr.color)}>
-                              <IconComponent className="w-5 h-5" />
-                            </div>
-                            <div className="flex-1">
-                              <div className="font-semibold text-slate-900">{attr.name}</div>
-                              <div className="text-xs text-slate-600 mt-1">{info.description}</div>
+                         <div key={attr.id} className="bg-[var(--sd-panel-bottom)] rounded-lg p-4 border sd-border">
+                           <div className="flex items-start gap-3 mb-3">
+                             <div className={cn("p-2 rounded-lg", attr.color)}>
+                               <IconComponent className="w-5 h-5" />
+                             </div>
+                             <div className="flex-1">
+                               <div className="font-semibold sd-text">{attr.name}</div>
+                               <div className="text-xs sd-text-secondary mt-1">{info.description}</div>
                             </div>
                           </div>
                           <div className="space-y-2">
                             <div>
-                              <div className="text-xs font-bold text-slate-700 mb-1">Benefits:</div>
-                              <ul className="space-y-1">
-                                {info.benefits.map((benefit, i) => (
-                                  <li key={i} className="text-xs text-slate-600 flex items-start gap-2">
+                               <div className="text-xs font-bold sd-text mb-1">Benefits:</div>
+                               <ul className="space-y-1">
+                                 {info.benefits.map((benefit, i) => (
+                                   <li key={i} className="text-xs sd-text-secondary flex items-start gap-2">
                                     <Zap className="w-3 h-3 text-amber-500 mt-0.5 flex-shrink-0" />
                                     <span>{benefit}</span>
                                   </li>
@@ -676,7 +676,7 @@ export default function EmpireProfilePage() {
                               </ul>
                             </div>
                             <div>
-                              <div className="text-xs font-bold text-slate-700 mb-1">Synergistic Attributes:</div>
+                               <div className="text-xs font-bold sd-text mb-1">Synergistic Attributes:</div>
                               <div className="flex flex-wrap gap-1">
                                 {info.synergies.map((synergy) => (
                                   <Badge key={synergy} variant="outline" className="text-[10px]">
@@ -693,25 +693,25 @@ export default function EmpireProfilePage() {
                 </div>
 
                 <div>
-                  <h3 className="text-sm font-bold text-slate-800 mb-3">Progression & Tier System</h3>
-                  <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 space-y-3 text-xs text-slate-600">
-                    <div>
-                      <div className="font-bold text-slate-700 mb-1">Tier Progression</div>
+                   <h3 className="text-sm font-bold sd-text mb-3">Progression & Tier System</h3>
+                   <div className="bg-[var(--sd-panel-bottom)] rounded-lg p-4 border sd-border space-y-3 text-xs sd-text-secondary">
+                     <div>
+                       <div className="font-bold sd-text mb-1">Tier Progression</div>
                       <p>Your empire's overall level determines its tier, ranging from "Rising Empire" to "Universal Sovereign". Each tier represents significant power and influence in the galaxy.</p>
                     </div>
                     <div>
-                      <div className="font-bold text-slate-700 mb-1">Attribute Ranks</div>
+                       <div className="font-bold sd-text mb-1">Attribute Ranks</div>
                       <p>Individual attributes have ranks: Novice (1-9), Common (10-19), Uncommon (20-29), Rare (30-39), Epic (40-49), and Legendary (50+). Higher ranks unlock special bonuses and prestige.</p>
                     </div>
                     <div>
-                      <div className="font-bold text-slate-700 mb-1">Power Rating</div>
+                       <div className="font-bold sd-text mb-1">Power Rating</div>
                       <p>Power rating is a composite score representing your empire's overall strength. It's calculated based on all attribute levels, facilities, fleet power, and other factors. Higher power ratings improve your ranking on leaderboards.</p>
                     </div>
                   </div>
                 </div>
 
                 <div>
-                  <h3 className="text-sm font-bold text-slate-800 mb-3">Strategic Recommendations</h3>
+                   <h3 className="text-sm font-bold sd-text mb-3">Strategic Recommendations</h3>
                   <div className="bg-blue-50 rounded-lg p-4 border border-blue-200 space-y-2 text-xs text-blue-700">
                     <p><strong>Early Game:</strong> Focus on Economy and Industry to establish a strong resource base. This provides the foundation for all other development.</p>
                     <p><strong>Mid Game:</strong> Balance Military and Research to expand your capabilities. Military ensures protection while Research unlocks advanced technologies.</p>

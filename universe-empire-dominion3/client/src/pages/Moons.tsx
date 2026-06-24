@@ -114,8 +114,8 @@ export default function Moons() {
     return (
       <div className="container mx-auto p-6">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-700 rounded w-1/4"></div>
-          <div className="h-64 bg-gray-700 rounded"></div>
+          <div className="h-8 bg-[var(--sd-panel-bottom)] rounded w-1/4"></div>
+          <div className="h-64 bg-[var(--sd-panel-bottom)] rounded"></div>
         </div>
       </div>
     );
@@ -126,7 +126,7 @@ export default function Moons() {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-purple-400">Moon Bases</h1>
-        <p className="text-gray-400">Manage your moon installations</p>
+        <p className="text-[var(--sd-text-secondary)]">Manage your moon installations</p>
       </div>
 
       {/* Moon List */}
@@ -145,7 +145,7 @@ export default function Moons() {
               <CardTitle className="text-lg">{moon.name}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-sm text-gray-400">Size: {moon.size} km</div>
+              <div className="text-sm text-[var(--sd-text-secondary)]">Size: {moon.size} km</div>
               <div className="text-sm">
                 Buildings: {moon.buildings?.length || 0}
               </div>
@@ -153,7 +153,7 @@ export default function Moons() {
           </Card>
         ))}
         {moons.length === 0 && (
-          <div className="col-span-4 text-center text-gray-500 py-8">
+          <div className="col-span-4 text-center text-[var(--sd-text-secondary)] py-8">
             No moons discovered
           </div>
         )}
@@ -176,7 +176,7 @@ export default function Moons() {
                   return (
                     <div
                       key={building.id}
-                      className="border rounded-lg p-4"
+                      className="border-[var(--sd-panel-border)] rounded-lg p-4"
                     >
                       <div className="font-medium">{building.name}</div>
                       {existing ? (
@@ -184,7 +184,7 @@ export default function Moons() {
                           Level {existing.level}
                         </div>
                       ) : (
-                        <div className="text-gray-500">Not built</div>
+                        <div className="text-[var(--sd-text-secondary)]">Not built</div>
                       )}
                       {existing ? (
                         <Button
@@ -220,7 +220,7 @@ export default function Moons() {
                   {selectedMoon.defenses.map((defense) => (
                     <div
                       key={defense.id}
-                      className="border rounded-lg p-3"
+                      className="border-[var(--sd-panel-border)] rounded-lg p-3"
                     >
                       <div className="font-medium">{defense.name}</div>
                       <div className="text-xl font-bold">
@@ -230,7 +230,7 @@ export default function Moons() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center text-gray-500 py-4">
+                <div className="text-center text-[var(--sd-text-secondary)] py-4">
                   No defenses deployed
                 </div>
               )}
@@ -248,7 +248,7 @@ export default function Moons() {
                   {selectedMoon.ships.map((ship) => (
                     <div
                       key={ship.id}
-                      className="border rounded-lg p-3"
+                      className="border-[var(--sd-panel-border)] rounded-lg p-3"
                     >
                       <div className="font-medium">{ship.name}</div>
                       <div className="text-xl font-bold">
@@ -258,7 +258,7 @@ export default function Moons() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center text-gray-500 py-4">
+                <div className="text-center text-[var(--sd-text-secondary)] py-4">
                   No ships stationed
                 </div>
               )}

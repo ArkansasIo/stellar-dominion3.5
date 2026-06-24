@@ -114,10 +114,10 @@ export default function EmpireCommandCenter() {
       <div className="space-y-6" data-testid="empire-command-center-page">
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-orbitron font-bold text-slate-900 flex items-center gap-2">
+            <h1 className="text-3xl font-orbitron font-bold sd-text flex items-center gap-2">
               <Crown className="w-8 h-8 text-amber-500" /> Empire Command Center
             </h1>
-            <p className="text-slate-600">Unified overview for colonies, orbital command, megastructures, and construction-yard operations.</p>
+            <p className="sd-text-secondary">Unified overview for colonies, orbital command, megastructures, and construction-yard operations.</p>
           </div>
           <div className="flex flex-wrap gap-2">
             <Badge variant="outline">Planets: {planetsQuery.data?.planets?.length || 0}</Badge>
@@ -127,24 +127,24 @@ export default function EmpireCommandCenter() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card><CardContent className="p-4"><div className="text-xs text-slate-500 uppercase">Total Buildings</div><div className="text-2xl font-orbitron font-bold">{num(totalBuildings)}</div></CardContent></Card>
-          <Card><CardContent className="p-4"><div className="text-xs text-slate-500 uppercase">Research Levels</div><div className="text-2xl font-orbitron font-bold text-emerald-700">{num(totalResearch)}</div></CardContent></Card>
-          <Card><CardContent className="p-4"><div className="text-xs text-slate-500 uppercase">Orbital Structures</div><div className="text-2xl font-orbitron font-bold text-indigo-700">{num(totalOrbitalStructures)}</div></CardContent></Card>
-          <Card><CardContent className="p-4"><div className="text-xs text-slate-500 uppercase">Megastructures</div><div className="text-2xl font-orbitron font-bold text-rose-700">{megastructuresQuery.data?.structures?.length || 0}</div></CardContent></Card>
+          <Card><CardContent className="p-4"><div className="text-xs sd-text-secondary uppercase">Total Buildings</div><div className="text-2xl font-orbitron font-bold">{num(totalBuildings)}</div></CardContent></Card>
+          <Card><CardContent className="p-4"><div className="text-xs sd-text-secondary uppercase">Research Levels</div><div className="text-2xl font-orbitron font-bold text-emerald-700">{num(totalResearch)}</div></CardContent></Card>
+          <Card><CardContent className="p-4"><div className="text-xs sd-text-secondary uppercase">Orbital Structures</div><div className="text-2xl font-orbitron font-bold text-indigo-700">{num(totalOrbitalStructures)}</div></CardContent></Card>
+          <Card><CardContent className="p-4"><div className="text-xs sd-text-secondary uppercase">Megastructures</div><div className="text-2xl font-orbitron font-bold text-rose-700">{megastructuresQuery.data?.structures?.length || 0}</div></CardContent></Card>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card><CardContent className="p-4"><div className="text-xs text-slate-500 uppercase">Unread Command Reports</div><div className="text-2xl font-orbitron font-bold text-amber-700">{unreadMessages}</div></CardContent></Card>
-          <Card><CardContent className="p-4"><div className="text-xs text-slate-500 uppercase">Defense Readiness</div><div className="text-2xl font-orbitron font-bold text-emerald-700">{defenseScore}</div></CardContent></Card>
-          <Card><CardContent className="p-4"><div className="text-xs text-slate-500 uppercase">Strategic Posture</div><div className="text-2xl font-orbitron font-bold text-indigo-700">{activeMissions.length > 3 ? "Aggressive" : "Balanced"}</div></CardContent></Card>
+          <Card><CardContent className="p-4"><div className="text-xs sd-text-secondary uppercase">Unread Command Reports</div><div className="text-2xl font-orbitron font-bold text-amber-700">{unreadMessages}</div></CardContent></Card>
+          <Card><CardContent className="p-4"><div className="text-xs sd-text-secondary uppercase">Defense Readiness</div><div className="text-2xl font-orbitron font-bold text-emerald-700">{defenseScore}</div></CardContent></Card>
+          <Card><CardContent className="p-4"><div className="text-xs sd-text-secondary uppercase">Strategic Posture</div><div className="text-2xl font-orbitron font-bold text-indigo-700">{activeMissions.length > 3 ? "Aggressive" : "Balanced"}</div></CardContent></Card>
         </div>
 
         <Card>
           <CardHeader><CardTitle className="text-base">Command Doctrine</CardTitle></CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm text-slate-600">
-            <div className="rounded border border-slate-200 bg-slate-50 p-3">Maintain colony growth and orbital upgrades in parallel for steady macro scaling.</div>
-            <div className="rounded border border-slate-200 bg-slate-50 p-3">Keep defense systems above baseline before committing high-value fleet missions.</div>
-            <div className="rounded border border-slate-200 bg-slate-50 p-3">Use megastructures as long-cycle multipliers, not short-term resource fixes.</div>
+          <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm sd-text-secondary">
+            <div className="rounded sd-border bg-[var(--sd-panel-bottom)] p-3">Maintain colony growth and orbital upgrades in parallel for steady macro scaling.</div>
+            <div className="rounded sd-border bg-[var(--sd-panel-bottom)] p-3">Keep defense systems above baseline before committing high-value fleet missions.</div>
+            <div className="rounded sd-border bg-[var(--sd-panel-bottom)] p-3">Use megastructures as long-cycle multipliers, not short-term resource fixes.</div>
           </CardContent>
         </Card>
 
@@ -161,7 +161,7 @@ export default function EmpireCommandCenter() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Card>
                 <CardHeader><CardTitle className="text-base flex items-center gap-2"><Users className="w-4 h-4" /> Empire Identity</CardTitle></CardHeader>
-                <CardContent className="space-y-2 text-sm text-slate-700">
+                <CardContent className="space-y-2 text-sm sd-text">
                   <div>Commander: <span className="font-semibold">{commander.name}</span></div>
                   <div>Government: <span className="font-semibold">{government.type}</span></div>
                   <div>Alliance: <span className="font-semibold">{alliance?.name || "Independent"}</span></div>
@@ -199,7 +199,7 @@ export default function EmpireCommandCenter() {
                       <Badge variant={planet.colonized ? "default" : "outline"}>{planet.colonized ? "Colonized" : "Unclaimed"}</Badge>
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-2 text-sm text-slate-700">
+                <CardContent className="space-y-2 text-sm sd-text">
                     <div>Coordinates: <span className="font-mono">[{planet.coordinates}]</span></div>
                     <div>Type/Class: <span className="font-semibold">{planet.type || "Unknown"} / {planet.class || "-"}</span></div>
                     <div>Population: <span className="font-semibold">{num(planet.population)}</span></div>
@@ -218,25 +218,25 @@ export default function EmpireCommandCenter() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               <Card>
                 <CardHeader><CardTitle className="text-base flex items-center gap-2"><Moon className="w-4 h-4" /> Moon Base</CardTitle></CardHeader>
-                <CardContent className="space-y-2 text-sm">
-                  <div>Name: <span className="font-semibold">{subPlanesQuery.data?.moon?.name || "Moon Base"}</span></div>
-                  <div>Level: <span className="font-semibold">{subPlanesQuery.data?.moon?.level || 0}</span></div>
-                  <div>Stability: <span className="font-semibold">{subPlanesQuery.data?.moon?.stability || 0}%</span></div>
-                  <div>Modules: <span className="font-semibold">{subPlanesQuery.data?.moon?.structures?.length || 0}</span></div>
+                <CardContent className="space-y-2 text-sm sd-text">
+                    <div>Name: <span className="font-semibold">{subPlanesQuery.data?.moon?.name || "Moon Base"}</span></div>
+                    <div>Level: <span className="font-semibold">{subPlanesQuery.data?.moon?.level || 0}</span></div>
+                    <div>Stability: <span className="font-semibold">{subPlanesQuery.data?.moon?.stability || 0}%</span></div>
+                    <div>Modules: <span className="font-semibold">{subPlanesQuery.data?.moon?.structures?.length || 0}</span></div>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader><CardTitle className="text-base flex items-center gap-2"><Orbit className="w-4 h-4" /> Space Station</CardTitle></CardHeader>
-                <CardContent className="space-y-2 text-sm">
-                  <div>Name: <span className="font-semibold">{subPlanesQuery.data?.station?.name || "Space Station"}</span></div>
-                  <div>Level: <span className="font-semibold">{subPlanesQuery.data?.station?.level || 0}</span></div>
-                  <div>Integrity: <span className="font-semibold">{subPlanesQuery.data?.station?.integrity || 0}%</span></div>
-                  <div>Modules: <span className="font-semibold">{subPlanesQuery.data?.station?.modules?.length || 0}</span></div>
+                <CardContent className="space-y-2 text-sm sd-text">
+                    <div>Name: <span className="font-semibold">{subPlanesQuery.data?.station?.name || "Space Station"}</span></div>
+                    <div>Level: <span className="font-semibold">{subPlanesQuery.data?.station?.level || 0}</span></div>
+                    <div>Integrity: <span className="font-semibold">{subPlanesQuery.data?.station?.integrity || 0}%</span></div>
+                    <div>Modules: <span className="font-semibold">{subPlanesQuery.data?.station?.modules?.length || 0}</span></div>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader><CardTitle className="text-base flex items-center gap-2"><Star className="w-4 h-4" /> Starbase Hub</CardTitle></CardHeader>
-                <CardContent className="space-y-2 text-sm">
+                <CardContent className="space-y-2 text-sm sd-text">
                   <div>Defense Rating: <span className="font-semibold">{subPlanesQuery.data?.commandSummary?.defenseRating || 0}</span></div>
                   <div>Logistics Rating: <span className="font-semibold">{subPlanesQuery.data?.commandSummary?.logisticsRating || 0}</span></div>
                   <div>Production Bonus: <span className="font-semibold">+{subPlanesQuery.data?.commandSummary?.productionBonus || 0}%</span></div>

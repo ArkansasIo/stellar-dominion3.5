@@ -108,7 +108,7 @@ const WARSHIP_SKILL_TREES = {
     name: "Stealth Operations",
     icon: Eye,
     description: "Covert operations and surprise attack tactics",
-    color: "text-slate-600",
+    color: "text-[var(--sd-text-secondary)]",
     skills: [
       { id: "s1", name: "Cloaking Device", tier: 1, description: "Ships become invisible to enemies", maxLevel: 3, currentLevel: 0, prerequisites: [] },
       { id: "s2", name: "Silent Running", tier: 1, description: "Reduces signature by 40%", maxLevel: 3, currentLevel: 0, prerequisites: [] },
@@ -171,7 +171,7 @@ const WARSHIP_TECH_BRANCHES = {
 };
 
 const RARITY_COLORS: { [key: string]: string } = {
-  common: "bg-slate-100 text-slate-900",
+  common: "bg-[var(--sd-panel-bottom)] text-[var(--sd-text-primary)]",
   rare: "bg-blue-100 text-blue-900",
   epic: "bg-purple-100 text-purple-900",
   legendary: "bg-orange-100 text-orange-900",
@@ -181,7 +181,7 @@ const RARITY_COLORS: { [key: string]: string } = {
 const FACILITY_TYPE_COLORS: { [key: string]: string } = {
   resource: "bg-amber-100 text-amber-900",
   energy: "bg-yellow-100 text-yellow-900",
-  storage: "bg-slate-100 text-slate-900",
+  storage: "bg-[var(--sd-panel-bottom)] text-[var(--sd-text-primary)]",
   military: "bg-red-100 text-red-900",
   research: "bg-blue-100 text-blue-900",
   civilian: "bg-green-100 text-green-900",
@@ -211,7 +211,7 @@ export default function TechTree() {
     drive: "bg-cyan-100 text-cyan-900",
     weapon: "bg-rose-100 text-rose-900",
     shield: "bg-indigo-100 text-indigo-900",
-    armor: "bg-slate-100 text-slate-900",
+    armor: "bg-[var(--sd-panel-bottom)] text-[var(--sd-text-primary)]",
     energy: "bg-yellow-100 text-yellow-900",
     computer: "bg-blue-100 text-blue-900",
     esp: "bg-purple-100 text-purple-900",
@@ -251,13 +251,13 @@ export default function TechTree() {
         </div>
 
         {/* Search Bar */}
-        <div className="bg-white border border-slate-200 p-4 rounded-lg shadow-sm">
+        <div className="bg-[var(--sd-panel-top)] border border-[var(--sd-panel-border)] p-4 rounded-lg shadow-sm">
           <div className="flex gap-2">
-            <Search className="w-5 h-5 text-slate-400 self-center" />
+            <Search className="w-5 h-5 text-[var(--sd-text-secondary)] self-center" />
             <Input
               type="text"
               placeholder="Search buildings, ships, research, or facilities..."
-              className="bg-white border-slate-200 text-slate-900 placeholder-slate-400"
+              className="bg-[var(--sd-panel-top)] border-[var(--sd-panel-border)] text-[var(--sd-text-primary)] placeholder-slate-400"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               data-testid="search-tech-tree"
@@ -266,46 +266,46 @@ export default function TechTree() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="bg-white border-slate-200">
+          <Card className="bg-[var(--sd-panel-top)] border-[var(--sd-panel-border)]">
             <CardContent className="pt-6">
-              <div className="text-xs uppercase text-slate-500">Catalog Entries</div>
-              <div className="text-2xl font-bold text-slate-900">{totalEntries}</div>
+              <div className="text-xs uppercase text-[var(--sd-text-secondary)]">Catalog Entries</div>
+              <div className="text-2xl font-bold text-[var(--sd-text-primary)]">{totalEntries}</div>
             </CardContent>
           </Card>
-          <Card className="bg-white border-slate-200">
+          <Card className="bg-[var(--sd-panel-top)] border-[var(--sd-panel-border)]">
             <CardContent className="pt-6">
-              <div className="text-xs uppercase text-slate-500">Building Blueprints</div>
+              <div className="text-xs uppercase text-[var(--sd-text-secondary)]">Building Blueprints</div>
               <div className="text-2xl font-bold text-amber-700">{OGAME_BUILDINGS.length}</div>
             </CardContent>
           </Card>
-          <Card className="bg-white border-slate-200">
+          <Card className="bg-[var(--sd-panel-top)] border-[var(--sd-panel-border)]">
             <CardContent className="pt-6">
-              <div className="text-xs uppercase text-slate-500">Ship Blueprints</div>
+              <div className="text-xs uppercase text-[var(--sd-text-secondary)]">Ship Blueprints</div>
               <div className="text-2xl font-bold text-green-700">{OGAME_SHIPS.length}</div>
             </CardContent>
           </Card>
-          <Card className="bg-white border-slate-200">
+          <Card className="bg-[var(--sd-panel-top)] border-[var(--sd-panel-border)]">
             <CardContent className="pt-6">
-              <div className="text-xs uppercase text-slate-500">Search Hits (Active Tab)</div>
+              <div className="text-xs uppercase text-[var(--sd-text-secondary)]">Search Hits (Active Tab)</div>
               <div className="text-2xl font-bold text-blue-700">{searchHits}</div>
             </CardContent>
           </Card>
         </div>
 
-        <Card className="bg-white border-slate-200">
+        <Card className="bg-[var(--sd-panel-top)] border-[var(--sd-panel-border)]">
           <CardHeader>
             <CardTitle className="text-base">Encyclopedia Usage Guide</CardTitle>
           </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm text-slate-600">
-            <div className="rounded border border-slate-200 bg-slate-50 p-3">Use tab filters first, then narrow by search term for fast blueprint discovery.</div>
-            <div className="rounded border border-slate-200 bg-slate-50 p-3">Compare resource cost columns to identify cheapest progression branches.</div>
-            <div className="rounded border border-slate-200 bg-slate-50 p-3">Cross-reference facilities and progression tabs before committing upgrade routes.</div>
+          <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm text-[var(--sd-text-secondary)]">
+            <div className="rounded border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-3">Use tab filters first, then narrow by search term for fast blueprint discovery.</div>
+            <div className="rounded border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-3">Compare resource cost columns to identify cheapest progression branches.</div>
+            <div className="rounded border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-3">Cross-reference facilities and progression tabs before committing upgrade routes.</div>
           </CardContent>
         </Card>
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-7 bg-white border border-slate-200 h-14 shadow-sm overflow-x-auto">
+          <TabsList className="grid w-full grid-cols-7 bg-[var(--sd-panel-top)] border border-[var(--sd-panel-border)] h-14 shadow-sm overflow-x-auto">
             <TabsTrigger value="buildings" className="font-orbitron text-xs flex items-center gap-1 data-[state=active]:bg-primary/10 data-[state=active]:text-primary">
               <Building className="w-4 h-4" />
               <span className="hidden sm:inline">Buildings</span>
@@ -338,15 +338,15 @@ export default function TechTree() {
 
           {/* Buildings Tab */}
           <TabsContent value="buildings" className="mt-6">
-            <div className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
+            <div className="bg-[var(--sd-panel-top)] border border-[var(--sd-panel-border)] rounded-lg overflow-hidden shadow-sm">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-slate-50 border-slate-200 hover:bg-slate-50">
-                    <TableHead className="text-slate-700 font-bold">Name</TableHead>
-                    <TableHead className="text-slate-700 font-bold">Category</TableHead>
-                    <TableHead className="text-slate-700 font-bold">Metal</TableHead>
-                    <TableHead className="text-slate-700 font-bold">Crystal</TableHead>
-                    <TableHead className="text-slate-700 font-bold">Deuterium</TableHead>
+                  <TableRow className="bg-[var(--sd-panel-bottom)] border-[var(--sd-panel-border)] hover:bg-[var(--sd-panel-bottom)]">
+                    <TableHead className="text-[var(--sd-text-secondary)] font-bold">Name</TableHead>
+                    <TableHead className="text-[var(--sd-text-secondary)] font-bold">Category</TableHead>
+                    <TableHead className="text-[var(--sd-text-secondary)] font-bold">Metal</TableHead>
+                    <TableHead className="text-[var(--sd-text-secondary)] font-bold">Crystal</TableHead>
+                    <TableHead className="text-[var(--sd-text-secondary)] font-bold">Deuterium</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -360,13 +360,13 @@ export default function TechTree() {
                     filterBySearch(OGAME_BUILDINGS).map(building => (
                       <TableRow
                         key={building.id}
-                        className="border-slate-100 hover:bg-slate-50 transition-colors cursor-pointer"
+                        className="border-slate-100 hover:bg-[var(--sd-panel-bottom)] transition-colors cursor-pointer"
                         onClick={() => setSelectedItem(building.id)}
                         data-testid={`building-row-${building.id}`}
                       >
-                        <TableCell className="font-semibold text-slate-900">{building.name}</TableCell>
+                        <TableCell className="font-semibold text-[var(--sd-text-primary)]">{building.name}</TableCell>
                         <TableCell>
-                          <Badge className={categoryColors[building.category] || "bg-slate-100"}>
+                          <Badge className={categoryColors[building.category] || "bg-[var(--sd-panel-bottom)]"}>
                             {building.category}
                           </Badge>
                         </TableCell>
@@ -383,15 +383,15 @@ export default function TechTree() {
 
           {/* Ships Tab */}
           <TabsContent value="ships" className="mt-6">
-            <div className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
+            <div className="bg-[var(--sd-panel-top)] border border-[var(--sd-panel-border)] rounded-lg overflow-hidden shadow-sm">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-slate-50 border-slate-200 hover:bg-slate-50">
-                    <TableHead className="text-slate-700 font-bold">Ship Name</TableHead>
-                    <TableHead className="text-slate-700 font-bold">Class</TableHead>
-                    <TableHead className="text-slate-700 font-bold">Metal</TableHead>
-                    <TableHead className="text-slate-700 font-bold">Crystal</TableHead>
-                    <TableHead className="text-slate-700 font-bold">Deuterium</TableHead>
+                  <TableRow className="bg-[var(--sd-panel-bottom)] border-[var(--sd-panel-border)] hover:bg-[var(--sd-panel-bottom)]">
+                    <TableHead className="text-[var(--sd-text-secondary)] font-bold">Ship Name</TableHead>
+                    <TableHead className="text-[var(--sd-text-secondary)] font-bold">Class</TableHead>
+                    <TableHead className="text-[var(--sd-text-secondary)] font-bold">Metal</TableHead>
+                    <TableHead className="text-[var(--sd-text-secondary)] font-bold">Crystal</TableHead>
+                    <TableHead className="text-[var(--sd-text-secondary)] font-bold">Deuterium</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -405,13 +405,13 @@ export default function TechTree() {
                     filterBySearch(OGAME_SHIPS).map(ship => (
                       <TableRow
                         key={ship.id}
-                        className="border-slate-100 hover:bg-slate-50 transition-colors cursor-pointer"
+                        className="border-slate-100 hover:bg-[var(--sd-panel-bottom)] transition-colors cursor-pointer"
                         onClick={() => setSelectedItem(ship.id)}
                         data-testid={`ship-row-${ship.id}`}
                       >
-                        <TableCell className="font-semibold text-slate-900">{ship.name}</TableCell>
+                        <TableCell className="font-semibold text-[var(--sd-text-primary)]">{ship.name}</TableCell>
                         <TableCell>
-                          <Badge className={categoryColors[ship.class] || "bg-slate-100"}>
+                          <Badge className={categoryColors[ship.class] || "bg-[var(--sd-panel-bottom)]"}>
                             {ship.class}
                           </Badge>
                         </TableCell>
@@ -428,15 +428,15 @@ export default function TechTree() {
 
           {/* Research Tab */}
           <TabsContent value="research" className="mt-6">
-            <div className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
+            <div className="bg-[var(--sd-panel-top)] border border-[var(--sd-panel-border)] rounded-lg overflow-hidden shadow-sm">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-slate-50 border-slate-200 hover:bg-slate-50">
-                    <TableHead className="text-slate-700 font-bold">Technology</TableHead>
-                    <TableHead className="text-slate-700 font-bold">Field</TableHead>
-                    <TableHead className="text-slate-700 font-bold">Metal</TableHead>
-                    <TableHead className="text-slate-700 font-bold">Crystal</TableHead>
-                    <TableHead className="text-slate-700 font-bold">Deuterium</TableHead>
+                  <TableRow className="bg-[var(--sd-panel-bottom)] border-[var(--sd-panel-border)] hover:bg-[var(--sd-panel-bottom)]">
+                    <TableHead className="text-[var(--sd-text-secondary)] font-bold">Technology</TableHead>
+                    <TableHead className="text-[var(--sd-text-secondary)] font-bold">Field</TableHead>
+                    <TableHead className="text-[var(--sd-text-secondary)] font-bold">Metal</TableHead>
+                    <TableHead className="text-[var(--sd-text-secondary)] font-bold">Crystal</TableHead>
+                    <TableHead className="text-[var(--sd-text-secondary)] font-bold">Deuterium</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -450,13 +450,13 @@ export default function TechTree() {
                     filterBySearch(OGAME_RESEARCH).map(research => (
                       <TableRow
                         key={research.id}
-                        className="border-slate-100 hover:bg-slate-50 transition-colors cursor-pointer"
+                        className="border-slate-100 hover:bg-[var(--sd-panel-bottom)] transition-colors cursor-pointer"
                         onClick={() => setSelectedItem(research.id)}
                         data-testid={`research-row-${research.id}`}
                       >
-                        <TableCell className="font-semibold text-slate-900">{research.name}</TableCell>
+                        <TableCell className="font-semibold text-[var(--sd-text-primary)]">{research.name}</TableCell>
                         <TableCell>
-                          <Badge className={categoryColors[research.field] || "bg-slate-100"}>
+                          <Badge className={categoryColors[research.field] || "bg-[var(--sd-panel-bottom)]"}>
                             {research.field}
                           </Badge>
                         </TableCell>
@@ -478,7 +478,7 @@ export default function TechTree() {
                 {Object.entries(FACILITY_TYPES).map(([key, type]) => {
                   const Icon = type.icon;
                   return (
-                    <Card key={key} className="bg-white border-slate-200 hover:shadow-lg transition-shadow">
+                    <Card key={key} className="bg-[var(--sd-panel-top)] border-[var(--sd-panel-border)] hover:shadow-lg transition-shadow">
                       <CardHeader className="pb-3">
                         <div className="flex items-center justify-between">
                           <CardTitle className="font-orbitron text-lg flex items-center gap-2">
@@ -494,10 +494,10 @@ export default function TechTree() {
                       <CardContent>
                         <div className="space-y-2">
                           <div className="flex items-center justify-between text-xs">
-                            <span className="text-slate-600">Rarity Distribution:</span>
+                            <span className="text-[var(--sd-text-secondary)]">Rarity Distribution:</span>
                           </div>
                           <div className="flex gap-1">
-                            <Badge className="bg-slate-100 text-slate-900 text-xs">Common</Badge>
+                            <Badge className="bg-[var(--sd-panel-bottom)] text-[var(--sd-text-primary)] text-xs">Common</Badge>
                             <Badge className="bg-blue-100 text-blue-900 text-xs">Rare</Badge>
                             <Badge className="bg-purple-100 text-purple-900 text-xs">Epic</Badge>
                             <Badge className="bg-orange-100 text-orange-900 text-xs">Legendary</Badge>
@@ -516,7 +516,7 @@ export default function TechTree() {
           <TabsContent value="progression" className="mt-6">
             <div className="space-y-6">
               {/* Tier System */}
-              <Card className="bg-white border-slate-200">
+              <Card className="bg-[var(--sd-panel-top)] border-[var(--sd-panel-border)]">
                 <CardHeader>
                   <CardTitle className="font-orbitron flex items-center gap-2">
                     <TrendingUp className="w-5 h-5" />
@@ -546,7 +546,7 @@ export default function TechTree() {
               </Card>
 
               {/* Empire Leveling */}
-              <Card className="bg-white border-slate-200">
+              <Card className="bg-[var(--sd-panel-top)] border-[var(--sd-panel-border)]">
                 <CardHeader>
                   <CardTitle className="font-orbitron flex items-center gap-2">
                     <Coins className="w-5 h-5" />
@@ -566,7 +566,7 @@ export default function TechTree() {
                       { level: 250, name: "Legendary Empire", bonus: "3x" },
                       { level: 999, name: "Infinite Dominion", bonus: "10x" },
                     ].map((milestone) => (
-                      <Card key={milestone.level} className="bg-slate-50 border-slate-100">
+                      <Card key={milestone.level} className="bg-[var(--sd-panel-bottom)] border-slate-100">
                         <CardContent className="pt-4">
                           <div className="text-center space-y-2">
                             <p className="font-bold text-primary text-lg">Level {milestone.level}</p>
@@ -581,7 +581,7 @@ export default function TechTree() {
               </Card>
 
               {/* Combat Formations */}
-              <Card className="bg-white border-slate-200">
+              <Card className="bg-[var(--sd-panel-top)] border-[var(--sd-panel-border)]">
                 <CardHeader>
                   <CardTitle className="font-orbitron flex items-center gap-2">
                     <Sword className="w-5 h-5" />
@@ -595,16 +595,16 @@ export default function TechTree() {
                   <div className="overflow-x-auto">
                     <Table>
                       <TableHeader>
-                        <TableRow className="bg-slate-50">
-                          <TableHead className="text-slate-700 font-bold">Formation</TableHead>
-                          <TableHead className="text-slate-700 font-bold">Flange Bonus</TableHead>
-                          <TableHead className="text-slate-700 font-bold">Offense</TableHead>
-                          <TableHead className="text-slate-700 font-bold">Defense</TableHead>
+                        <TableRow className="bg-[var(--sd-panel-bottom)]">
+                          <TableHead className="text-[var(--sd-text-secondary)] font-bold">Formation</TableHead>
+                          <TableHead className="text-[var(--sd-text-secondary)] font-bold">Flange Bonus</TableHead>
+                          <TableHead className="text-[var(--sd-text-secondary)] font-bold">Offense</TableHead>
+                          <TableHead className="text-[var(--sd-text-secondary)] font-bold">Defense</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {COMBAT_FORMATIONS.map((formation) => (
-                          <TableRow key={formation.name} className="border-slate-100 hover:bg-slate-50">
+                          <TableRow key={formation.name} className="border-slate-100 hover:bg-[var(--sd-panel-bottom)]">
                             <TableCell className="font-semibold">{formation.name}</TableCell>
                             <TableCell>
                               <Badge className="bg-orange-100 text-orange-900 font-bold">
@@ -630,7 +630,7 @@ export default function TechTree() {
               </Card>
 
               {/* Currency System */}
-              <Card className="bg-white border-slate-200">
+              <Card className="bg-[var(--sd-panel-top)] border-[var(--sd-panel-border)]">
                 <CardHeader>
                   <CardTitle className="font-orbitron flex items-center gap-2">
                     <Coins className="w-5 h-5" />
@@ -642,25 +642,25 @@ export default function TechTree() {
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Card className="bg-slate-50 border-slate-100">
+                    <Card className="bg-[var(--sd-panel-bottom)] border-slate-100">
                       <CardContent className="pt-4 text-center space-y-2">
-                        <p className="text-2xl font-bold text-slate-700">🪙</p>
+                        <p className="text-2xl font-bold text-[var(--sd-text-secondary)]">🪙</p>
                         <p className="font-bold font-rajdhani">Silver</p>
-                        <p className="text-xs text-slate-600">Basic currency for small trades and upgrades</p>
+                        <p className="text-xs text-[var(--sd-text-secondary)]">Basic currency for small trades and upgrades</p>
                       </CardContent>
                     </Card>
                     <Card className="bg-yellow-50 border-yellow-100">
                       <CardContent className="pt-4 text-center space-y-2">
                         <p className="text-2xl font-bold text-yellow-700">⭐</p>
                         <p className="font-bold font-rajdhani">Gold</p>
-                        <p className="text-xs text-slate-600">Premium currency for valuable transactions</p>
+                        <p className="text-xs text-[var(--sd-text-secondary)]">Premium currency for valuable transactions</p>
                       </CardContent>
                     </Card>
                     <Card className="bg-purple-50 border-purple-100">
                       <CardContent className="pt-4 text-center space-y-2">
                         <p className="text-2xl font-bold text-purple-700">💎</p>
                         <p className="font-bold font-rajdhani">Platinum</p>
-                        <p className="text-xs text-slate-600">Ultra-rare currency for exclusive items</p>
+                        <p className="text-xs text-[var(--sd-text-secondary)]">Ultra-rare currency for exclusive items</p>
                       </CardContent>
                     </Card>
                   </div>
@@ -706,7 +706,7 @@ export default function TechTree() {
 
               {/* Selected Skill Tree */}
               {selectedSkillTree && (
-                <Card className="bg-white border-slate-200">
+                <Card className="bg-[var(--sd-panel-top)] border-[var(--sd-panel-border)]">
                   <CardHeader>
                     <div className="flex items-center gap-3">
                       {(() => {
@@ -723,14 +723,14 @@ export default function TechTree() {
                   <CardContent>
                     <div className="space-y-4">
                       {WARSHIP_SKILL_TREES[selectedSkillTree as keyof typeof WARSHIP_SKILL_TREES].skills.map((skill) => (
-                        <div key={skill.id} className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                        <div key={skill.id} className="bg-[var(--sd-panel-bottom)] rounded-lg p-4 border border-[var(--sd-panel-border)]">
                           <div className="flex items-start justify-between mb-2">
                             <div className="flex-1">
                               <div className="flex items-center gap-2">
-                                <span className="font-bold text-slate-900">{skill.name}</span>
+                                <span className="font-bold text-[var(--sd-text-primary)]">{skill.name}</span>
                                 <Badge variant="outline" className="text-xs">Tier {skill.tier}</Badge>
                               </div>
-                              <p className="text-xs text-slate-600 mt-1">{skill.description}</p>
+                              <p className="text-xs text-[var(--sd-text-secondary)] mt-1">{skill.description}</p>
                             </div>
                             <div className="text-right">
                               <div className="text-sm font-mono font-bold text-primary">Lv. {skill.currentLevel}/{skill.maxLevel}</div>
@@ -738,7 +738,7 @@ export default function TechTree() {
                           </div>
                           <Progress value={(skill.currentLevel / skill.maxLevel) * 100} className="h-2" />
                           {skill.prerequisites.length > 0 && (
-                            <div className="mt-2 text-xs text-slate-500">
+                            <div className="mt-2 text-xs text-[var(--sd-text-secondary)]">
                               Requires: {skill.prerequisites.join(", ")}
                             </div>
                           )}
@@ -788,7 +788,7 @@ export default function TechTree() {
 
               {/* Selected Tech Branch */}
               {selectedTechBranch && (
-                <Card className="bg-white border-slate-200">
+                <Card className="bg-[var(--sd-panel-top)] border-[var(--sd-panel-border)]">
                   <CardHeader>
                     <div className="flex items-center gap-3">
                       {(() => {
@@ -805,14 +805,14 @@ export default function TechTree() {
                   <CardContent>
                     <div className="space-y-4">
                       {WARSHIP_TECH_BRANCHES[selectedTechBranch as keyof typeof WARSHIP_TECH_BRANCHES].technologies.map((tech) => (
-                        <div key={tech.id} className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                        <div key={tech.id} className="bg-[var(--sd-panel-bottom)] rounded-lg p-4 border border-[var(--sd-panel-border)]">
                           <div className="flex items-start justify-between mb-3">
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-1">
-                                <span className="font-bold text-slate-900">{tech.name}</span>
+                                <span className="font-bold text-[var(--sd-text-primary)]">{tech.name}</span>
                                 <Badge className="bg-blue-100 text-blue-900">Level {tech.level}</Badge>
                               </div>
-                              <p className="text-xs text-slate-600">{tech.description}</p>
+                              <p className="text-xs text-[var(--sd-text-secondary)]">{tech.description}</p>
                             </div>
                           </div>
                           <div className="flex items-center justify-between">
@@ -822,7 +822,7 @@ export default function TechTree() {
                               <span className="text-green-600 font-mono">🧪 {tech.cost.deuterium}</span>
                             </div>
                             {tech.prerequisites.length > 0 && (
-                              <div className="text-xs text-slate-500">
+                              <div className="text-xs text-[var(--sd-text-secondary)]">
                                 Requires: {tech.prerequisites.join(", ")}
                               </div>
                             )}
