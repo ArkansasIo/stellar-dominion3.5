@@ -275,7 +275,7 @@ const CollapsibleMenu = ({
           onClick={() => setIsOpen(!isOpen)}
           data-testid={`button-menu-toggle-${title.toLowerCase().replace(/\s+/g, '-')}`}
           className={cn(
-            "sd-sidebar-toggle flex w-12 items-center justify-center border-l border-slate-200/70 transition-colors duration-200",
+              "sd-sidebar-toggle flex w-12 items-center justify-center border-l sd-border transition-colors duration-200",
             touchMode && "min-h-[50px]",
             hasActiveChild ? "bg-primary/5 text-primary" : "hover:bg-slate-100 text-slate-500"
           )}
@@ -725,7 +725,7 @@ const ResourceDisplay = ({ icon: Icon, label, value, colorClass }: { icon: any, 
   const safeValue = Number.isFinite(value) ? value : 0;
 
   return (
-    <div className="sd-resource-chip flex shrink-0 items-center gap-2 rounded border border-slate-200 bg-white px-2.5 py-2 shadow-sm min-w-[112px] sm:min-w-[124px]" data-resource={label.toLowerCase()}>
+      <div className="sd-resource-chip sd-card flex shrink-0 items-center gap-2 rounded border px-2.5 py-2 shadow-sm min-w-[112px] sm:min-w-[124px]" data-resource={label.toLowerCase()}>
       <div className={cn("rounded-full bg-slate-100 p-1.5", colorClass)}>
         <Icon className="w-3.5 h-3.5" />
       </div>
@@ -790,11 +790,11 @@ function GameSidebar({
   return (
     <>
       <div className="sd-sidebar-console p-4">
-        <div className="relative overflow-hidden rounded border border-slate-200 text-center">
+        <div className="relative overflow-hidden rounded border sd-border text-center">
           <div className="absolute inset-0 bg-cover bg-center opacity-20" style={{ backgroundImage: `url(${sidebarBackdropImage})` }} />
           <div className="absolute inset-0 bg-gradient-to-br from-slate-900/10 via-white/80 to-white/95" />
           <div className="relative p-3">
-            <div className="mx-auto mb-2 h-14 w-14 overflow-hidden rounded-full border-2 border-primary bg-white shadow-sm">
+            <div className="mx-auto mb-2 h-14 w-14 overflow-hidden rounded-full border-2 border-primary sd-card shadow-sm">
               <img
                 src={sidebarPlanetImage}
                 alt={planetName || "Planet"}
@@ -810,7 +810,7 @@ function GameSidebar({
             </div>
             <h3 className="font-orbitron text-sm font-bold text-slate-900">{planetName}</h3>
             <p className="text-xs text-muted-foreground">[{coordinates}]</p>
-            <div className="sd-sidebar-status-pill mt-2 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500">
+            <div className="sd-sidebar-status-pill sd-badge mt-2 inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.2em]">
               <span>OGameX Assets</span>
               <span className="text-primary">Linked</span>
             </div>
@@ -878,7 +878,7 @@ function GameSidebar({
         )}
       </nav>
 
-      <div className="p-4 border-t border-slate-200">
+        <div className="p-4 border-t sd-border">
         <button
           onClick={logout}
           className={cn(
@@ -1174,7 +1174,7 @@ export default function GameLayout({ children, title, subtitle }: { children: Re
       
       {/* Top Bar - Resources */}
       <header className={cn(
-        "sd-topbar relative z-20 border-b border-slate-200 bg-white/88 shadow-sm backdrop-blur-md",
+        "sd-topbar sd-topbar relative z-20 border-b shadow-sm backdrop-blur-md",
         isMobile && displayPreferences.stickyMobileBars && "sticky top-0",
       )}>
         <div className={cn(
@@ -1365,7 +1365,7 @@ export default function GameLayout({ children, title, subtitle }: { children: Re
 
       <div className="flex flex-1 relative z-10 overflow-hidden">
         {/* Sidebar Navigation */}
-        <aside className="sd-sidebar-shell hidden w-[17rem] border-r border-slate-200 bg-white/84 backdrop-blur-md md:flex md:w-[18rem] md:flex-col md:overflow-y-auto md:scrollbar-hide xl:w-[19rem]">
+        <aside className="sd-sidebar-shell sd-sidebar-shell hidden w-[17rem] border-r backdrop-blur-md md:flex md:w-[18rem] md:flex-col md:overflow-y-auto md:scrollbar-hide xl:w-[19rem]">
           <GameSidebar
             location={location}
             empireName={empireName}
@@ -1691,7 +1691,7 @@ export default function GameLayout({ children, title, subtitle }: { children: Re
         </main>
       </div>
 
-      <footer className="sd-footer-shell relative z-10 border-t border-slate-200 bg-white/88 px-4 py-2 backdrop-blur-md sm:px-6 flex flex-col gap-1 sm:h-10 sm:flex-row sm:items-center sm:justify-between text-[11px] text-slate-500 font-mono" data-testid="footer-build-info">
+      <footer className="sd-footer-shell sd-footer-shell relative z-10 border-t px-4 py-2 backdrop-blur-md sm:px-6 flex flex-col gap-1 sm:h-10 sm:flex-row sm:items-center sm:justify-between text-[11px] font-mono" data-testid="footer-build-info">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <img src="/assets/stellar-dominion-logo.svg" alt={`${BUILD_INFO.appName}™`} className="h-6 w-6 inline-block" />
           <span className="font-bold text-slate-800 tracking-wide">{BUILD_INFO.appName}™</span>
