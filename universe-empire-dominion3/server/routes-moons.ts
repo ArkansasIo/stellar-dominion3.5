@@ -516,6 +516,28 @@ export function registerMoonRoutes(app: Express) {
       res.status(500).json({ error: "Failed to generate moon" });
     }
   });
+
+  // Rename moon
+  app.patch("/api/moons/:moonId/rename", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user?.id || "dev-user";
+      const { moonId } = req.params;
+      const { name } = req.body;
+      if (!name || typeof name !== "string" || name.trim().length === 0) {
+        return res.status(400).json({ error: "Name is required" });
+      }
+      const trimmed = name.trim().slice(0, 64);
+      const moon = await storage.getMoonBaseById(moonId);
+      if (!moon || moon.playerId !== userId) {
+        return res.status(404).json({ error: "Moon not found" });
+      }
+      await storage.updateMoonBase(moonId, { moonName: trimmed, name: trimmed, updatedAt: new Date() });
+      res.json({ success: true, name: trimmed });
+    } catch (error) {
+      console.error("Error renaming moon:", error);
+      res.status(500).json({ error: "Failed to rename moon" });
+    }
+  });
 }
 
 /**

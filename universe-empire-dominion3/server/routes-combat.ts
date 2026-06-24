@@ -4,6 +4,7 @@ import { battles, playerStates, users } from "../shared/schema";
 import { desc, eq, inArray, or } from "drizzle-orm";
 import { simulateBattle, calculateVictoryResources } from "./combatEngine";
 import { isAuthenticated as authenticateRequest } from "./basicAuth";
+import PlayerXpService from "./services/playerXpService";
 import type { Request, Response } from "express";
 import {
   BATTLE_SYSTEM_PROFILES,
@@ -305,6 +306,14 @@ export function registerCombatRoutes(app: Router) {
           })
           .returning();
 
+        // Award combat XP
+        const attackerXpResult = await PlayerXpService.awardXp(userId, 50, "combat", {
+          category: "combat", page: "combat", action: "attack", label: "Combat Victory",
+        });
+        const defenderXpResult = await PlayerXpService.awardXp(targetId, 20, "combat", {
+          category: "combat", page: "combat", action: "attack", label: "Combat Participation",
+        });
+
         res.json({
           success: true,
           winner: "attacker",
@@ -317,6 +326,7 @@ export function registerCombatRoutes(app: Router) {
           plunder,
           newAttackerUnits,
           newAttackerResources,
+          xpAwarded: { attacker: attackerXpResult, defender: defenderXpResult },
         });
       } else {
         // Defender wins - attacker units destroyed
@@ -358,6 +368,14 @@ export function registerCombatRoutes(app: Router) {
           })
           .returning();
 
+        // Award combat XP
+        const attackerXpResult = await PlayerXpService.awardXp(userId, 15, "combat", {
+          category: "combat", page: "combat", action: "attack", label: "Combat Participation",
+        });
+        const defenderXpResult = await PlayerXpService.awardXp(targetId, 40, "combat", {
+          category: "combat", page: "combat", action: "defend", label: "Combat Defense Victory",
+        });
+
         res.json({
           success: true,
           winner: "defender",
@@ -369,6 +387,7 @@ export function registerCombatRoutes(app: Router) {
           activeEffects: COMBAT_EFFECT_LIBRARY.slice(2, 6),
           plunder: { metal: 0, crystal: 0, deuterium: 0 },
           newAttackerUnits,
+          xpAwarded: { attacker: attackerXpResult, defender: defenderXpResult },
         });
       }
     } catch (error) {

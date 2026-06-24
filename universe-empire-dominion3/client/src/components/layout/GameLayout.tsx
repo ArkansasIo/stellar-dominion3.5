@@ -781,13 +781,10 @@ function GameSidebar({
   onNavigate?: () => void;
   touchMode: boolean;
 }) {
-  const { commander } = useGame();
+  const { commander, empireLevel, empireExperience, empireMaxXp } = useGame();
   const sidebarPlanetImage = PLANET_ASSETS.TERRESTRIAL.EARTH_LIKE.path;
   const sidebarBackdropImage = OGAMEX_FEATURED_ASSETS.BACKGROUND.path;
   const fallbackPlanetImage = "/theme-temp.png";
-  const playerLevel = commander?.starRating || 1;
-  const playerXp = commander?.starExperience || 0;
-  const playerMaxXp = commander?.starMaxExperience || 1000;
 
   return (
     <>
@@ -822,9 +819,9 @@ function GameSidebar({
 
       <div className="px-3 pb-2">
         <SidebarXpWidget
-          level={playerLevel}
-          currentXp={playerXp}
-          maxXp={playerMaxXp}
+          level={empireLevel}
+          currentXp={empireExperience}
+          maxXp={empireMaxXp}
           name={empireName}
           title={commander?.name || "Commander"}
         />

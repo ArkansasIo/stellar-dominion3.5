@@ -105,6 +105,9 @@ const BlueprintCharges = lazy(() => import("@/pages/BlueprintCharges"));
 const HighCommand = lazy(() => import("@/pages/HighCommand"));
 const Smithy = lazy(() => import("@/pages/Smithy"));
 const BankVault = lazy(() => import("@/pages/BankVault"));
+const ConnectProvider = lazy(() => import("@/pages/ConnectProvider"));
+const UniverseScan = lazy(() => import("@/pages/UniverseScan"));
+const PlanetVault = lazy(() => import("@/pages/PlanetVault"));
 const MoonsPage = lazy(() => import("@/pages/MoonsPage"));
 const SporeDrive = lazy(() => import("@/pages/SporeDrive"));
 const ResourceTradingPage = lazy(() => import("@/pages/ResourceTradingPage"));
@@ -427,6 +430,9 @@ function RouterContent() {
       <Route path="/high-command" component={HighCommand} />
       <Route path="/smithy" component={Smithy} />
       <Route path="/bank-vault" component={BankVault} />
+      <Route path="/connect" component={ConnectProvider} />
+      <Route path="/universe-scan" component={UniverseScan} />
+      <Route path="/planet-vault" component={PlanetVault} />
       <Route path="/moons" component={MoonsPage} />
       <Route path="/spore-drive" component={SporeDrive} />
       <Route path="/resource-trading" component={ResourceTradingPage} />

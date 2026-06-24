@@ -42,6 +42,9 @@ import { registerOGameFleetRoutes } from "./routes-ogame-fleet";
 import { registerOGameOutlawRoutes } from "./routes-ogame-outlaw";
 import { registerOGameVacationRoutes } from "./routes-ogame-vacation";
 import { registerOGameExpeditionRoutes } from "./routes-ogame-expedition";
+import connectProviderRouter from "./routes-connect-provider";
+import universeScanRouter from "./routes-universe-scan";
+import planetVaultRouter from "./routes-planet-vault";
 
 const runtimeNodeEnv = process.env.NODE_ENV ?? "production";
 
@@ -219,6 +222,7 @@ import { registerUnitTaxonomyRoutes } from "./routes-unit-taxonomy";
 import { registerConstructorYardRoutes } from "./routes-constructor-yard";
 import turnSystemRoutes from "./routes-turnsystem";
 import researchXPRoutes from "./routes-researchxp";
+import playerXpRoutes from "./routes-player-xp";
 import recommendationsRoutes from "./routes-recommendations";
 import multiplayerBonusesRoutes from "./routes-multiplayerbonuses";
 import customLabRoutes from "./routes-customlabs";
@@ -340,6 +344,9 @@ import { eq, ilike, or } from "drizzle-orm";
   registerOGameOutlawRoutes(app);
   registerOGameVacationRoutes(app);
   registerOGameExpeditionRoutes(app);
+  app.use(connectProviderRouter);
+  app.use(universeScanRouter);
+  app.use(planetVaultRouter);
   app.use('/api/season', seasonRoutes);
   const viewerRoot = path.resolve(process.cwd(), "threejs_galaxy_viewer_project");
   app.get("/api/viewer/status", (_req, res) => {
@@ -353,6 +360,7 @@ import { eq, ilike, or } from "drizzle-orm";
   app.use("/viewer-3d", express.static(viewerRoot));
   app.use(turnSystemRoutes);
   app.use(researchXPRoutes);
+  app.use(playerXpRoutes);
   app.use(recommendationsRoutes);
   app.use('/api/alliances', multiplayerBonusesRoutes);
   app.use('/api/labs', customLabRoutes);

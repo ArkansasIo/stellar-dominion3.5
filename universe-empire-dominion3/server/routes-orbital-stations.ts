@@ -296,4 +296,26 @@ export function registerOrbitalStationRoutes(app: Express) {
     }));
     res.json({ success: true, scores });
   });
+
+  // Rename orbital station
+  app.patch("/api/orbital-stations/:stationId/rename", async (req: any, res) => {
+    try {
+      const userId = req.user?.id || "dev-user";
+      const { stationId } = req.params;
+      const { name } = req.body;
+      if (!name || typeof name !== "string" || name.trim().length === 0) {
+        return res.status(400).json({ error: "Name is required" });
+      }
+      const trimmed = name.trim().slice(0, 64);
+      const state = await getState(userId);
+      const idx = state.stations.findIndex((s: any) => s.id === stationId);
+      if (idx === -1) return res.status(404).json({ error: "Station not found" });
+      state.stations[idx].name = trimmed;
+      await setState(userId, state);
+      res.json({ success: true, name: trimmed });
+    } catch (error) {
+      console.error("Error renaming orbital station:", error);
+      res.status(500).json({ error: "Failed to rename station" });
+    }
+  });
 }

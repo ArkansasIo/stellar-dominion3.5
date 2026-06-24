@@ -43,6 +43,8 @@ import { Megastructure, createMegastructure } from '@shared/config/megastructure
 import { blink } from './blink';
 import { calculateResourceProduction } from './resourceMath';
 import { ORBITAL_BUILDINGS } from './stationData';
+import { emitXpGain } from "@/components/XpWidget";
+import { awardXp as awardXpUtil } from './xpUtils';
 
 async function apiRequest(method: string, url: string, data?: any) {
   const headers: Record<string, string> = data ? { 'Content-Type': 'application/json' } : {};
@@ -386,6 +388,10 @@ interface GameState {
   login: () => void;
   logout: () => void;
   isLoading: boolean;
+  empireLevel: number;
+  empireExperience: number;
+  empireMaxXp: number;
+  awardXp: (source: string, amount: number, options?: { category?: string; page?: string; subPage?: string; action?: string; label?: string }) => Promise<any>;
   toggleAdmin: () => void;
   updateBuilding: (building: keyof Buildings | string, name: string, time?: number) => Promise<void>;
   upgradeRefinerySystem: (systemId: string, name: string, cost: { metal: number; crystal: number; deuterium: number }, time?: number) => Promise<boolean>;
@@ -636,6 +642,9 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isActualAdmin, setIsActualAdmin] = useState(false);
   const [adminRole, setAdminRole] = useState<string | null>(null);
+  const [empireLevel, setEmpireLevel] = useState(1);
+  const [empireExperience, setEmpireExperience] = useState(0);
+  const [empireMaxXp, setEmpireMaxXp] = useState(1000);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [needsSetup, setNeedsSetup] = useState(false);
   const [onboardingStep, setOnboardingStep] = useState(0);
@@ -693,6 +702,43 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     enabled: !!authUser,
     staleTime: 30000,
   });
+
+  const { data: xpData, refetch: refetchXp } = useQuery({
+    queryKey: ['/api/player/xp'],
+    queryFn: () => apiRequest('GET', '/api/player/xp'),
+    enabled: !!authUser,
+    staleTime: 10000,
+  });
+
+  const awardXpMutation = useMutation({
+    mutationFn: (payload: { source: string; amount: number; options?: Record<string, string> }) =>
+      apiRequest('POST', '/api/player/xp/award', {
+        amount: payload.amount,
+        source: payload.source,
+        ...payload.options,
+      }),
+    onSuccess: (data) => {
+      if (data?.level) {
+        setEmpireLevel(data.level);
+        setEmpireExperience(data.currentXp);
+        setEmpireMaxXp(data.maxXp);
+      }
+      refetchXp();
+    },
+  });
+
+  const awardXp = (source: string, amount: number, options?: Record<string, string>) => {
+    emitXpGain(amount, source as any);
+    return awardXpMutation.mutateAsync({ source, amount, options });
+  };
+
+  useEffect(() => {
+    if (xpData?.level) {
+      setEmpireLevel(xpData.level);
+      setEmpireExperience(xpData.currentXp);
+      setEmpireMaxXp(xpData.maxXp);
+    }
+  }, [xpData]);
 
   useEffect(() => {
     if (!authUser?.id) return;
@@ -844,6 +890,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     mutationFn: () => apiRequest('POST', '/api/game/collect-resources'),
     onSuccess: (data) => {
       setResources(normalizeResources(data.resources, resources));
+      awardXpUtil(5, "mining", { category: "resource", action: "collect" }).catch(() => {});
     }
   });
 
@@ -1385,6 +1432,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         }]);
         
         addEvent("Build Started", `Construction of ${name} started`, "success");
+        awardXpUtil(15, "construction", { category: "construction", action: "upgrade", label: name }).catch(() => {});
       } else {
         setCurrentTurns(prev => prev + turnCost);
         addEvent("Build Failed", response.error || "Failed to start construction", "danger");
@@ -1405,17 +1453,18 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 
      startResearchMutation.mutate(tech);
 
-     setQueue(prev => [...prev, {
-        id: tech,
-        name: name,
-        startTime: now,
-        endTime: now + adjustedTime,
-        type: "research",
-        itemId: tech
-      }]);
-  };
+      setQueue(prev => [...prev, {
+         id: tech,
+         name: name,
+         startTime: now,
+         endTime: now + adjustedTime,
+         type: "research",
+         itemId: tech
+       }]);
+      awardXpUtil(20, "research", { category: "research", action: "start", label: name }).catch(() => {});
+   };
 
-  const buildUnit = async (unitId: string, amount: number, name: string, time: number = 2000) => {
+   const buildUnit = async (unitId: string, amount: number, name: string, time: number = 2000) => {
     const turnCost = amount; // 1 turn per unit
     if (!await spendTurns(turnCost)) return;
     
@@ -1444,6 +1493,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         }]);
         
         addEvent("Ships Constructed", `${amount}x ${name} built successfully`, "success");
+        awardXpUtil(15 * amount, "crafting", { category: "fleet", action: "build", label: name }).catch(() => {});
       } else {
         setCurrentTurns(prev => prev + turnCost);
         addEvent("Build Failed", response.error || "Failed to build ships", "danger");
@@ -1930,6 +1980,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       setGovernment(newGovernment);
       setPlanetName(nextHomeWorldName);
       setNeedsSetup(false);
+      awardXpUtil(100, "achievement", { category: "achievement", action: "setup", label: "Empire Founded" }).catch(() => {});
     } catch (error) {
       console.error("Failed to complete setup:", error);
       throw error;
@@ -1989,6 +2040,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
      };
 
      createMissionMutation.mutate(backendMission);
+     awardXpUtil(25, "fleet", { category: "fleet", action: "send", label: missionData.type }).catch(() => {});
      
      setUnits(prev => {
         const newUnits = {...prev};
@@ -2027,6 +2079,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
        body,
        type: "player"
      });
+     awardXpUtil(3, "social", { category: "social", action: "send", page: "messages" }).catch(() => {});
      addEvent("Message Sent", `Communique dispatched to ${to}.`, "success");
   };
 
@@ -2272,10 +2325,14 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
        selectedRealm: realmData?.selectedRealm || null,
        spendTurns,
        switchRealm,
-       processMissions,
-       completeResearch: completeResearchMutation.mutate,
-       processQueue: processQueueMutation.mutate
-    }}>
+        empireLevel,
+        empireExperience,
+        empireMaxXp,
+        awardXp,
+        processMissions,
+        completeResearch: completeResearchMutation.mutate,
+        processQueue: processQueueMutation.mutate
+     }}>
       {children}
     </GameContext.Provider>
   );

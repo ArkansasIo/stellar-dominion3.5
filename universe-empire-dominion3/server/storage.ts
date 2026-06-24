@@ -167,7 +167,18 @@ import {
   type InsertWeeklyMissionProgress,
   type PathOfAscension,
   type InsertPathOfAscension,
-  adminUsers
+  type XpHistoryEntry,
+  type InsertXpHistoryEntry,
+  type ProviderConnection,
+  type InsertProviderConnection,
+  type ScanCooldown,
+  type InsertScanCooldown,
+  type PlanetVaultItem,
+  type InsertPlanetVaultItem,
+  xpHistory,
+  providerConnections,
+  scanCooldowns,
+  planetVaultItems
 } from "@shared/schema";
 import { db } from "./db/index";
 import { eq, and, or, desc, asc, sql, inArray } from "drizzle-orm";
@@ -500,6 +511,28 @@ export interface IStorage {
   getAscensionProgress(userId: string): Promise<PathOfAscension | undefined>;
   createAscensionProgress(data: InsertPathOfAscension): Promise<PathOfAscension>;
   updateAscensionProgress(userId: string, updates: Partial<PathOfAscension>): Promise<PathOfAscension>;
+
+  // XP history operations
+  addXpHistory(entry: InsertXpHistoryEntry): Promise<XpHistoryEntry>;
+  getRecentXpHistory(userId: string, limit?: number): Promise<XpHistoryEntry[]>;
+  getXpBreakdown(userId: string): Promise<Array<{ source: string; totalXp: number; count: number }>>;
+
+  // Provider connection operations
+  getProviderConnections(userId: string): Promise<ProviderConnection[]>;
+  createProviderConnection(entry: InsertProviderConnection): Promise<ProviderConnection>;
+  updateProviderConnection(id: string, updates: Partial<ProviderConnection>): Promise<ProviderConnection>;
+  deleteProviderConnection(id: string): Promise<void>;
+
+  // Scan cooldown operations
+  getScanCooldowns(userId: string, scanType?: string): Promise<ScanCooldown[]>;
+  createScanCooldown(entry: InsertScanCooldown): Promise<ScanCooldown>;
+  getActiveScanCooldown(userId: string, scanType: string, targetId?: string): Promise<ScanCooldown | undefined>;
+
+  // Planet vault operations
+  getPlanetVaultItems(userId: string, planetId?: string, vaultType?: string): Promise<PlanetVaultItem[]>;
+  addPlanetVaultItem(entry: InsertPlanetVaultItem): Promise<PlanetVaultItem>;
+  removePlanetVaultItem(id: string): Promise<void>;
+  updatePlanetVaultItemQuantity(id: string, quantity: number): Promise<PlanetVaultItem>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -652,6 +685,112 @@ export class DatabaseStorage implements IStorage {
       empireLevel: Math.min(newLevel, empireConfig.maxLevel),
       empireExperience: empireExp - totalExp
     });
+  }
+
+  // XP history operations
+  async addXpHistory(entry: InsertXpHistoryEntry): Promise<XpHistoryEntry> {
+    const [record] = await db.insert(xpHistory).values(entry).returning();
+    return record;
+  }
+
+  async getRecentXpHistory(userId: string, limit: number = 20): Promise<XpHistoryEntry[]> {
+    return db.select().from(xpHistory)
+      .where(eq(xpHistory.userId, userId))
+      .orderBy(desc(xpHistory.createdAt))
+      .limit(limit);
+  }
+
+  async getXpBreakdown(userId: string): Promise<Array<{ source: string; totalXp: number; count: number }>> {
+    const result = await db
+      .select({
+        source: xpHistory.source,
+        totalXp: sql<number>`sum(${xpHistory.amount})`,
+        count: sql<number>`count(*)`,
+      })
+      .from(xpHistory)
+      .where(eq(xpHistory.userId, userId))
+      .groupBy(xpHistory.source)
+      .orderBy(desc(sql`sum(${xpHistory.amount})`));
+    return result as Array<{ source: string; totalXp: number; count: number }>;
+  }
+
+  // Provider connection operations
+  async getProviderConnections(userId: string): Promise<ProviderConnection[]> {
+    return db.select().from(providerConnections)
+      .where(eq(providerConnections.userId, userId))
+      .orderBy(desc(providerConnections.createdAt));
+  }
+
+  async createProviderConnection(entry: InsertProviderConnection): Promise<ProviderConnection> {
+    const [record] = await db.insert(providerConnections).values(entry).returning();
+    return record;
+  }
+
+  async updateProviderConnection(id: string, updates: Partial<ProviderConnection>): Promise<ProviderConnection> {
+    const [record] = await db.update(providerConnections)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(providerConnections.id, id))
+      .returning();
+    return record;
+  }
+
+  async deleteProviderConnection(id: string): Promise<void> {
+    await db.delete(providerConnections).where(eq(providerConnections.id, id));
+  }
+
+  // Scan cooldown operations
+  async getScanCooldowns(userId: string, scanType?: string): Promise<ScanCooldown[]> {
+    const conditions = [eq(scanCooldowns.userId, userId)];
+    if (scanType) conditions.push(eq(scanCooldowns.scanType, scanType));
+    return db.select().from(scanCooldowns)
+      .where(and(...conditions))
+      .orderBy(desc(scanCooldowns.createdAt));
+  }
+
+  async createScanCooldown(entry: InsertScanCooldown): Promise<ScanCooldown> {
+    const [record] = await db.insert(scanCooldowns).values(entry).returning();
+    return record;
+  }
+
+  async getActiveScanCooldown(userId: string, scanType: string, targetId?: string): Promise<ScanCooldown | undefined> {
+    const conditions = [
+      eq(scanCooldowns.userId, userId),
+      eq(scanCooldowns.scanType, scanType),
+    ];
+    if (targetId) conditions.push(eq(scanCooldowns.targetId, targetId));
+    conditions.push(sql`${scanCooldowns.cooldownUntil} > NOW()`);
+    const [record] = await db.select().from(scanCooldowns)
+      .where(and(...conditions))
+      .orderBy(desc(scanCooldowns.createdAt))
+      .limit(1);
+    return record;
+  }
+
+  // Planet vault operations
+  async getPlanetVaultItems(userId: string, planetId?: string, vaultType?: string): Promise<PlanetVaultItem[]> {
+    const conditions = [eq(planetVaultItems.userId, userId)];
+    if (planetId) conditions.push(eq(planetVaultItems.planetId, planetId));
+    if (vaultType) conditions.push(eq(planetVaultItems.vaultType, vaultType));
+    return db.select().from(planetVaultItems)
+      .where(and(...conditions))
+      .orderBy(desc(planetVaultItems.depositedAt));
+  }
+
+  async addPlanetVaultItem(entry: InsertPlanetVaultItem): Promise<PlanetVaultItem> {
+    const [record] = await db.insert(planetVaultItems).values(entry).returning();
+    return record;
+  }
+
+  async removePlanetVaultItem(id: string): Promise<void> {
+    await db.delete(planetVaultItems).where(eq(planetVaultItems.id, id));
+  }
+
+  async updatePlanetVaultItemQuantity(id: string, quantity: number): Promise<PlanetVaultItem> {
+    const [record] = await db.update(planetVaultItems)
+      .set({ quantity })
+      .where(eq(planetVaultItems.id, id))
+      .returning();
+    return record;
   }
 
   // Currency operations  
