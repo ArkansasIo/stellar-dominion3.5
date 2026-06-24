@@ -182,13 +182,22 @@ export function getSession() {
     sessionStore = new MemoryStore({ checkPeriod: 86400000 });
     logger.warn("AUTH", "Using in-memory session store (no DATABASE_URL in development)");
   } else {
-    const PgSession = connectPgSimple(session);
-    sessionStore = new PgSession({
-      pool,
-      tableName: "user_sessions",
-      createTableIfMissing: true,
-    });
-    logger.info("AUTH", "Using PostgreSQL session store");
+    try {
+      const PgSession = connectPgSimple(session);
+      sessionStore = new PgSession({
+        pool,
+        tableName: "user_sessions",
+        createTableIfMissing: true,
+      });
+      logger.info("AUTH", "Using PostgreSQL session store");
+    } catch (sessionError: any) {
+      // Suppress "index already exists" errors - table is usable anyway
+      if (sessionError.code === '42P07' || sessionError.message?.includes('already exists')) {
+        logger.warn("AUTH", "Session table/index already exists, continuing...");
+      } else {
+        throw sessionError;
+      }
+    }
   }
   
   return session({
