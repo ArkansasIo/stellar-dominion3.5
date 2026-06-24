@@ -10,7 +10,7 @@ import {
   calculateStationDefenseScore, calculateStationOffenseScore,
   calculateStationProduction, calculateGlobalOrbitalBonuses, processStationTick,
 } from "../shared/config/orbitalStationsSystem";
-import type { OrbitalStationsState, OrbitalStation, OrbitalPlatformType, SatelliteType, DefenseSystemType, OffenseSystemType, ShieldSystemType } from "../shared/config/orbitalStationsSystem";
+import type { OrbitalStationsState, OrbitalStation, OrbitalPlatformType, SatelliteType, DefenseSystemType, OffenseSystemType, ShieldSystemType, InfrastructureDeployment } from "../shared/config/orbitalStationsSystem";
 
 import { db } from "./db";
 import { playerStates } from "../shared/schema";
@@ -220,6 +220,67 @@ export function registerOrbitalStationRoutes(app: Express) {
     }
     await setState(userId, state);
     res.json({ success: true, stations: state.stations });
+  });
+
+  // Get infrastructure deployments
+  app.get("/api/orbital-stations/infrastructure", async (req: any, res) => {
+    const userId = req.user?.id || "dev-user";
+    const state = await getState(userId);
+    const infrastructure = state.infrastructure || [];
+    const summary = infrastructure.reduce((acc, dep) => {
+      acc.totalDeployed += dep.count;
+      if (!acc.byCategory[dep.category]) acc.byCategory[dep.category] = 0;
+      acc.byCategory[dep.category] += dep.count;
+      return acc;
+    }, { totalDeployed: 0, byCategory: {} as Record<string, number> });
+    res.json({ success: true, infrastructure, summary });
+  });
+
+  // Deploy infrastructure station
+  app.post("/api/orbital-stations/infrastructure/deploy", async (req: any, res) => {
+    const userId = req.user?.id || "dev-user";
+    const { stationId, name, category, subCategory, stationClass } = req.body;
+    if (!stationId || !category) return res.status(400).json({ message: "Missing stationId or category" });
+    const state = await getState(userId);
+    if (!state.infrastructure) state.infrastructure = [];
+    const existing = state.infrastructure.find(d => d.stationId === stationId);
+    if (existing) {
+      existing.count += 1;
+      existing.level = Math.min(999, existing.level + 1);
+    } else {
+      state.infrastructure.push({
+        id: `infra-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        stationId,
+        name: name || stationId,
+        category,
+        subCategory: subCategory || "",
+        tier: 1,
+        level: 1,
+        class: stationClass || "common",
+        count: 1,
+        deployedAt: Date.now(),
+        isOnline: true,
+      });
+    }
+    await setState(userId, state);
+    const infra = state.infrastructure.find(d => d.stationId === stationId);
+    res.json({ success: true, deployment: infra });
+  });
+
+  // Upgrade infrastructure station
+  app.post("/api/orbital-stations/infrastructure/upgrade", async (req: any, res) => {
+    const userId = req.user?.id || "dev-user";
+    const { stationId } = req.body;
+    if (!stationId) return res.status(400).json({ message: "Missing stationId" });
+    const state = await getState(userId);
+    if (!state.infrastructure) state.infrastructure = [];
+    const deployment = state.infrastructure.find(d => d.stationId === stationId);
+    if (!deployment) return res.status(404).json({ message: "Infrastructure not found" });
+    if (deployment.tier >= 99) return res.status(400).json({ message: "Max tier reached" });
+    deployment.tier += 1;
+    deployment.level += 1;
+    await setState(userId, state);
+    res.json({ success: true, deployment });
   });
 
   // Get station scores

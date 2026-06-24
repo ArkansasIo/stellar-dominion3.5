@@ -4,9 +4,15 @@
  * @tag #research #analytics #ui #dashboard
  */
 
-import React, { useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import React, { useMemo, useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import GameLayout from "@/components/layout/GameLayout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+import { Zap, Target, TrendingUp, Award, Compass, BarChart3, Rocket } from "lucide-react";
 import "./ResearchAnalyticsDashboard.css";
 
 type ResearchTechDetail = {
@@ -47,6 +53,39 @@ type XpStatsResponse = {
   nextLevelXP?: number;
 };
 
+type XpNextLevelInfo = {
+  currentLevel: number;
+  nextLevel: number;
+  currentLevelXP: number;
+  nextLevelXPNeeded: number;
+  xpUntilNextLevel: number;
+  percentToNextLevel: string;
+};
+
+type XpConfigResponse = {
+  xpConfig: any;
+  xpLevelConfig: any;
+  discoveryTypes: Record<string, string>;
+};
+
+type StrategyAnalysis = {
+  strengths?: string[];
+  weaknesses?: string[];
+  recommendations?: string[];
+  overallScore?: number;
+};
+
+type ResearchPath = {
+  steps?: { techId: string; name: string; prerequisites: string[] }[];
+  totalSteps?: number;
+  estimatedTurns?: number;
+};
+
+type OptimalQueue = {
+  orderedTechIds?: string[];
+  estimatedTotalTurns?: number;
+};
+
 async function fetchJson<T>(url: string): Promise<T> {
   const response = await fetch(url, { credentials: "include" });
   const payload = await response.json().catch(() => null);
@@ -68,6 +107,15 @@ interface ResearchStats {
 }
 
 export const ResearchAnalyticsDashboard: React.FC = () => {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+  const [goalTechId, setGoalTechId] = useState("");
+  const [queueTechIds, setQueueTechIds] = useState("");
+  const [levelToCheck, setLevelToCheck] = useState("1");
+  const [completeTechId, setCompleteTechId] = useState("");
+  const [completeTier, setCompleteTier] = useState("Basic");
+  const [completeClass, setCompleteClass] = useState("Military");
+  const [completeTurns, setCompleteTurns] = useState("10");
   const { data: xpStats, isLoading: xpLoading } = useQuery<XpStatsResponse>({
     queryKey: ["research-xp-stats"],
     queryFn: () => fetchJson<XpStatsResponse>("/api/research/xp/stats"),
@@ -100,6 +148,96 @@ export const ResearchAnalyticsDashboard: React.FC = () => {
   const { data: progress } = useQuery<PlayerResearchProgress>({
     queryKey: ["research-player-progress"],
     queryFn: () => fetchJson<PlayerResearchProgress>("/api/research/player/progress"),
+  });
+
+  const { data: xpConfig } = useQuery<XpConfigResponse>({
+    queryKey: ["research-xp-config"],
+    queryFn: () => fetchJson<XpConfigResponse>("/api/research/xp/config"),
+  });
+
+  const { data: nextLevelInfo } = useQuery<XpNextLevelInfo>({
+    queryKey: ["research-xp-next-level"],
+    queryFn: () => fetchJson<XpNextLevelInfo>("/api/research/xp/next-level-info"),
+    enabled: !!xpStats,
+  });
+
+  const { data: levelRewards } = useQuery<any>({
+    queryKey: ["research-xp-level-rewards", levelToCheck],
+    queryFn: () => fetchJson<any>(`/api/research/xp/level-rewards/${levelToCheck}`),
+    enabled: !!levelToCheck,
+  });
+
+  const { data: strategyAnalysis } = useQuery<StrategyAnalysis>({
+    queryKey: ["research-strategy"],
+    queryFn: () => fetchJson<StrategyAnalysis>("/api/research/recommendations/strategy"),
+  });
+
+  const completeResearchMutation = useMutation({
+    mutationFn: async () => {
+      const res = await fetch("/api/research/xp/complete-research", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          techId: completeTechId,
+          techTier: completeTier,
+          techClass: completeClass,
+          baseTurns: parseInt(completeTurns) || 10,
+        }),
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null);
+        throw new Error(errData?.error || "Failed to complete research");
+      }
+      return res.json();
+    },
+    onSuccess: (data) => {
+      toast({ title: "Research Complete", description: `Earned ${data.xpGained || 0} XP. Discovery: ${data.discovery ? "Yes!" : "No"}` });
+      queryClient.invalidateQueries({ queryKey: ["research-xp-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["research-discoveries"] });
+      setCompleteTechId("");
+    },
+    onError: (err: any) => {
+      toast({ title: "Research Failed", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const researchPathMutation = useMutation({
+    mutationFn: async (goalTechId: string) => {
+      const res = await fetch("/api/research/recommendations/path", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ goalTechId }),
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Failed to get research path");
+      return res.json();
+    },
+    onSuccess: (data) => {
+      toast({ title: "Research Path Calculated", description: `${data.totalSteps || 0} steps, ~${data.estimatedTurns || 0} turns` });
+    },
+    onError: (err: any) => {
+      toast({ title: "Path Calculation Failed", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const optimizeQueueMutation = useMutation({
+    mutationFn: async (techIds: string[]) => {
+      const res = await fetch("/api/research/recommendations/optimize-queue", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ techIds }),
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Failed to optimize queue");
+      return res.json();
+    },
+    onSuccess: (data) => {
+      toast({ title: "Queue Optimized", description: `${data.orderedTechIds?.length || 0} techs ordered, ~${data.estimatedTotalTurns || 0} total turns` });
+    },
+    onError: (err: any) => {
+      toast({ title: "Optimization Failed", description: err.message, variant: "destructive" });
+    },
   });
 
   const researchedTechIds = progress?.researchedTechs || [];
@@ -195,7 +333,7 @@ export const ResearchAnalyticsDashboard: React.FC = () => {
   if (xpLoading || !analytics) {
     return (
       <GameLayout>
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 text-slate-600 shadow-sm">
+        <div className="rounded-2xl border border-[var(--sd-panel-border)] bg-[var(--sd-panel-top)] p-6 text-[var(--sd-text-secondary)] shadow-sm">
           Loading analytics...
         </div>
       </GameLayout>
@@ -251,14 +389,17 @@ export const ResearchAnalyticsDashboard: React.FC = () => {
 
         <div className="progress-section">
           <div className="progress-header">
-            <span>Level {currentLevel} Progress</span>
-            <span className="progress-text">{levelProgress.toFixed(1)}%</span>
+            <span>Level {nextLevelInfo?.currentLevel || currentLevel} → {nextLevelInfo?.nextLevel || currentLevel + 1}</span>
+            <span className="progress-text">{nextLevelInfo?.percentToNextLevel || levelProgress.toFixed(1)}%</span>
           </div>
           <div className="progress-bar">
-            <div className="progress-fill" style={{ width: `${levelProgress}%` }} />
+            <div className="progress-fill" style={{ width: `${parseFloat(nextLevelInfo?.percentToNextLevel || String(levelProgress))}%` }} />
           </div>
           <div className="progress-footer">
-            {currentLevelXP} / {nextLevelXP} XP
+            {nextLevelInfo?.currentLevelXP || currentLevelXP} / {nextLevelInfo?.nextLevelXPNeeded || nextLevelXP} XP
+            {nextLevelInfo?.xpUntilNextLevel !== undefined && (
+              <span className="ml-2 text-xs opacity-70">({nextLevelInfo.xpUntilNextLevel} XP remaining)</span>
+            )}
           </div>
         </div>
 
@@ -327,6 +468,178 @@ export const ResearchAnalyticsDashboard: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Research XP Tools */}
+        <div className="analytics-grid" style={{ gap: "16px", marginTop: "20px" }}>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Rocket className="w-4 h-4" /> Complete Research
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Input placeholder="Tech ID" value={completeTechId} onChange={(e) => setCompleteTechId(e.target.value)} />
+              <div className="grid grid-cols-3 gap-2">
+                <select value={completeTier} onChange={(e) => setCompleteTier(e.target.value)} className="border rounded p-1.5 text-sm">
+                  <option>Basic</option><option>Standard</option><option>Advanced</option><option>Military</option>
+                </select>
+                <select value={completeClass} onChange={(e) => setCompleteClass(e.target.value)} className="border rounded p-1.5 text-sm">
+                  <option>Military</option><option>Civilian</option><option>Science</option><option>Engineering</option>
+                </select>
+                <Input type="number" placeholder="Turns" value={completeTurns} onChange={(e) => setCompleteTurns(e.target.value)} />
+              </div>
+              <Button onClick={() => completeResearchMutation.mutate()} disabled={!completeTechId || completeResearchMutation.isPending} className="w-full">
+                <Zap className="w-4 h-4 mr-2" /> Complete & Earn XP
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Award className="w-4 h-4" /> Level Rewards
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex gap-2">
+                <Input type="number" placeholder="Level" value={levelToCheck} onChange={(e) => setLevelToCheck(e.target.value)} className="flex-1" />
+                <Button variant="outline" onClick={() => queryClient.invalidateQueries({ queryKey: ["research-xp-level-rewards"] })}>
+                  Check
+                </Button>
+              </div>
+              {levelRewards?.rewards && (
+                <div className="text-sm space-y-1">
+                  {levelRewards.rewards.bonusXP && <div>Bonus XP: <strong>{levelRewards.rewards.bonusXP}</strong></div>}
+                  {levelRewards.rewards.title && <div>Title: <strong>{levelRewards.rewards.title}</strong></div>}
+                  {levelRewards.rewards.unlock && <div>Unlock: <strong>{levelRewards.rewards.unlock}</strong></div>}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Compass className="w-4 h-4" /> Research Path
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex gap-2">
+                <Input placeholder="Goal Tech ID" value={goalTechId} onChange={(e) => setGoalTechId(e.target.value)} className="flex-1" />
+                <Button variant="outline" onClick={() => goalTechId && researchPathMutation.mutate(goalTechId)} disabled={!goalTechId || researchPathMutation.isPending}>
+                  Calculate
+                </Button>
+              </div>
+              {researchPathMutation.data && (
+                <div className="text-sm space-y-1">
+                  <div>Steps: <strong>{researchPathMutation.data.totalSteps || 0}</strong></div>
+                  <div>Est. Turns: <strong>{researchPathMutation.data.estimatedTurns || 0}</strong></div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Target className="w-4 h-4" /> Optimize Queue
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Input placeholder="Tech IDs (comma separated)" value={queueTechIds} onChange={(e) => setQueueTechIds(e.target.value)} />
+              <Button onClick={() => {
+                const ids = queueTechIds.split(",").map(s => s.trim()).filter(Boolean);
+                if (ids.length > 0) optimizeQueueMutation.mutate(ids);
+              }} disabled={!queueTechIds || optimizeQueueMutation.isPending} className="w-full">
+                <BarChart3 className="w-4 h-4 mr-2" /> Optimize Order
+              </Button>
+              {optimizeQueueMutation.data && (
+                <div className="text-sm space-y-1">
+                  <div>Optimal Order: <strong>{optimizeQueueMutation.data.orderedTechIds?.join(", ") || "N/A"}</strong></div>
+                  <div>Total Turns: <strong>{optimizeQueueMutation.data.estimatedTotalTurns || 0}</strong></div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Strategy Analysis */}
+        {strategyAnalysis && (
+          <div className="analytics-grid" style={{ gap: "16px", marginTop: "20px" }}>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <TrendingUp className="w-4 h-4" /> Strategy Analysis
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {strategyAnalysis.overallScore !== undefined && (
+                  <div className="text-center p-3 bg-slate-50 rounded">
+                    <div className="text-2xl font-bold">{strategyAnalysis.overallScore}</div>
+                    <div className="text-xs text-slate-500">Overall Score</div>
+                  </div>
+                )}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+                  <div>
+                    <div className="font-semibold text-green-700 mb-1">Strengths</div>
+                    {(strategyAnalysis.strengths || []).map((s, i) => (
+                      <div key={i} className="text-xs p-1.5 bg-green-50 rounded mb-1">{s}</div>
+                    ))}
+                  </div>
+                  <div>
+                    <div className="font-semibold text-red-700 mb-1">Weaknesses</div>
+                    {(strategyAnalysis.weaknesses || []).map((w, i) => (
+                      <div key={i} className="text-xs p-1.5 bg-red-50 rounded mb-1">{w}</div>
+                    ))}
+                  </div>
+                  <div>
+                    <div className="font-semibold text-blue-700 mb-1">Recommendations</div>
+                    {(strategyAnalysis.recommendations || []).map((r, i) => (
+                      <div key={i} className="text-xs p-1.5 bg-blue-50 rounded mb-1">{r}</div>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* XP Config Info */}
+        {xpConfig && (
+          <div className="analytics-grid" style={{ gap: "16px", marginTop: "20px" }}>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Zap className="w-4 h-4" /> XP Configuration
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                  {xpConfig.xpLevelConfig && (
+                    <>
+                      <div className="p-2 bg-slate-50 rounded">
+                        <div className="text-xs text-slate-500">Max Level</div>
+                        <div className="font-bold">{xpConfig.xpLevelConfig.MAX_LEVEL || "N/A"}</div>
+                      </div>
+                      <div className="p-2 bg-slate-50 rounded">
+                        <div className="text-xs text-slate-500">Base XP</div>
+                        <div className="font-bold">{xpConfig.xpLevelConfig.BASE_XP || "N/A"}</div>
+                      </div>
+                      <div className="p-2 bg-slate-50 rounded">
+                        <div className="text-xs text-slate-500">Growth Rate</div>
+                        <div className="font-bold">{xpConfig.xpLevelConfig.GROWTH_RATE || "N/A"}</div>
+                      </div>
+                    </>
+                  )}
+                  <div className="p-2 bg-slate-50 rounded">
+                    <div className="text-xs text-slate-500">Discovery Types</div>
+                    <div className="font-bold">{Object.keys(xpConfig.discoveryTypes || {}).length}</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         <div className="insights-section">
           <h3>Insights</h3>
