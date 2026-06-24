@@ -186,7 +186,7 @@ export function getSession() {
     sessionStore = new PgSession({
       pool,
       tableName: "user_sessions",
-      createTableIfMissing: true,
+      createTableIfMissing: false,
     });
     logger.info("AUTH", "Using PostgreSQL session store");
   }
@@ -198,7 +198,7 @@ export function getSession() {
   return session({
     name: 'connect.sid',
     secret: sessionSecret || crypto.randomBytes(32).toString("hex"),
-    store: sessionStore as session.Store,
+    store: sessionStore,
     resave: false,
     saveUninitialized: false,
     cookie: {
