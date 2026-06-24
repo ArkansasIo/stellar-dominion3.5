@@ -176,34 +176,29 @@ export function getSession() {
     }
   }
   
-  let sessionStore: session.Store;
+  let sessionStore: session.Store | undefined;
   if (isDevelopment && !process.env.DATABASE_URL) {
     const MemoryStore = require("memorystore")(session);
     sessionStore = new MemoryStore({ checkPeriod: 86400000 });
     logger.warn("AUTH", "Using in-memory session store (no DATABASE_URL in development)");
   } else {
-    try {
-      const PgSession = connectPgSimple(session);
-      sessionStore = new PgSession({
-        pool,
-        tableName: "user_sessions",
-        createTableIfMissing: true,
-      });
-      logger.info("AUTH", "Using PostgreSQL session store");
-    } catch (sessionError: any) {
-      // Suppress "index already exists" errors - table is usable anyway
-      if (sessionError.code === '42P07' || sessionError.message?.includes('already exists')) {
-        logger.warn("AUTH", "Session table/index already exists, continuing...");
-      } else {
-        throw sessionError;
-      }
-    }
+    const PgSession = connectPgSimple(session);
+    sessionStore = new PgSession({
+      pool,
+      tableName: "user_sessions",
+      createTableIfMissing: true,
+    });
+    logger.info("AUTH", "Using PostgreSQL session store");
+  }
+  
+  if (!sessionStore) {
+    throw new Error("Failed to initialize session store");
   }
   
   return session({
     name: 'connect.sid',
     secret: sessionSecret || crypto.randomBytes(32).toString("hex"),
-    store: sessionStore,
+    store: sessionStore as session.Store,
     resave: false,
     saveUninitialized: false,
     cookie: {
