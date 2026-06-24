@@ -2225,6 +2225,34 @@ export type DimensionalAnomalyRecord = typeof dimensionalAnomalies.$inferSelect;
 export const insertDimensionalAnomalySchema = createInsertSchema(dimensionalAnomalies).omit({ id: true, createdAt: true, updatedAt: true });
 export type InsertDimensionalAnomaly = z.infer<typeof insertDimensionalAnomalySchema>;
 
+// Gate Tokens - consumable items for accessing anomalies, raids, and explorations
+export const gateTokens = pgTable("gate_tokens", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  tokenType: varchar("token_type").notNull(), // 'anomaly', 'raid', 'exploration'
+  quantity: integer("quantity").notNull().default(0),
+  lastUpdated: timestamp("last_updated").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type GateTokenRecord = typeof gateTokens.$inferSelect;
+export const insertGateTokenSchema = createInsertSchema(gateTokens).omit({ id: true, createdAt: true, lastUpdated: true });
+export type InsertGateToken = z.infer<typeof insertGateTokenSchema>;
+
+// Gate Token History - log of token acquisitions and consumptions
+export const gateTokenHistory = pgTable("gate_token_history", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  tokenType: varchar("token_type").notNull(),
+  action: varchar("action").notNull(), // 'earned', 'purchased', 'consumed'
+  quantity: integer("quantity").notNull(),
+  source: varchar("source"), // 'reward', 'purchase', 'anomaly_entry', 'raid_entry', 'exploration_entry'
+  metadata: jsonb("metadata"), // additional context (anomalyId, raidId, etc)
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type GateTokenHistoryRecord = typeof gateTokenHistory.$inferSelect;
+
 // Resource Refineries - player refinery buildings and production tracking
 export const playerRefineries = pgTable("player_refineries", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),

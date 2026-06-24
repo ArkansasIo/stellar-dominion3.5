@@ -229,6 +229,7 @@ import { registerPhpMyAdminRoutes } from "./routes-phpmyadmin";
 import { registerMoonRoutes } from "./routes-moons";
 import { registerSporeDriveRoutes } from "./routes-spore-drive";
 import { registerWeeklyMissionRoutes } from "./routes-weekly-missions";
+import { registerGateTokenRoutes } from "./routes-gate-tokens";
 import { db, pool } from "./db";
 import { adminUsers, users } from "../shared/schema";
 import { eq, ilike, or } from "drizzle-orm";
@@ -311,6 +312,7 @@ import { eq, ilike, or } from "drizzle-orm";
   registerMoonRoutes(app);
   registerSporeDriveRoutes(app);
   registerWeeklyMissionRoutes(app);
+  registerGateTokenRoutes(app);
   try {
     const updateManager = UpdateManager.getInstance();
     updateManager.setupRoutes(app);
