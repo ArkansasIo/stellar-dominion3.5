@@ -34,6 +34,14 @@ import { registerMissingApiRoutes } from "./routes-missing-api";
 import { UpdateManager } from "./update-manager";
 import { registerNewsRoutes } from "./routes-news";
 import { registerAdminConsoleRoutes } from "./routes-admin-console";
+import { registerOGameDebrisRoutes } from "./routes-ogame-debris";
+import { registerOGameACSRoutes } from "./routes-ogame-acs";
+import { registerOGamePhalanxRoutes } from "./routes-ogame-phalanx";
+import { registerOGameJumpGateRoutes } from "./routes-ogame-jumpgate";
+import { registerOGameFleetRoutes } from "./routes-ogame-fleet";
+import { registerOGameOutlawRoutes } from "./routes-ogame-outlaw";
+import { registerOGameVacationRoutes } from "./routes-ogame-vacation";
+import { registerOGameExpeditionRoutes } from "./routes-ogame-expedition";
 
 const runtimeNodeEnv = process.env.NODE_ENV ?? "production";
 
@@ -324,6 +332,14 @@ import { eq, ilike, or } from "drizzle-orm";
   registerNewsRoutes(app);
   registerAdminConsoleRoutes(app);
   registerOGameCombatRoutes(app);
+  registerOGameDebrisRoutes(app);
+  registerOGameACSRoutes(app);
+  registerOGamePhalanxRoutes(app);
+  registerOGameJumpGateRoutes(app);
+  registerOGameFleetRoutes(app);
+  registerOGameOutlawRoutes(app);
+  registerOGameVacationRoutes(app);
+  registerOGameExpeditionRoutes(app);
   app.use('/api/season', seasonRoutes);
   const viewerRoot = path.resolve(process.cwd(), "threejs_galaxy_viewer_project");
   app.get("/api/viewer/status", (_req, res) => {

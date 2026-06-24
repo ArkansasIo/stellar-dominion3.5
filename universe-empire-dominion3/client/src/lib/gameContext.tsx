@@ -1081,7 +1081,10 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       setCurrentTurns((state as any).currentTurns || 0);
     }
     
-    setNeedsSetup(Boolean((state as any).setupComplete === false));
+    if ((state as any).setupComplete === false) {
+      setNeedsSetup(true);
+      setOnboardingStep(3);
+    }
     setIsInitialized(true);
   }, [authUser, serverGameState, gameStateLoading, isInitialized, turnData]);
 

@@ -124,6 +124,7 @@ const SeasonHub = lazy(() => import("@/pages/SeasonHub"));
 const Diplomacy = lazy(() => import("@/pages/Diplomacy"));
 const SeasonServerPicker = lazy(() => import("@/pages/SeasonServerPicker"));
 const Account = lazy(() => import("@/pages/Account"));
+const RealmsPage = lazy(() => import("@/pages/RealmsPage"));
 
 function LoadingSplash() {
   const stars = useMemo(() => Array.from({ length: 60 }).map((_, i) => ({
@@ -266,6 +267,7 @@ function RouterContent() {
         <Route path="/forums" component={Forums} />
         <Route path="/terms" component={Terms} />
         <Route path="/privacy" component={Privacy} />
+        <Route path="/realms" component={RealmsPage} />
         <Route component={Auth} />
       </Switch>
     );
@@ -283,6 +285,7 @@ function RouterContent() {
           <Route path="/forums" component={Forums} />
           <Route path="/terms" component={Terms} />
           <Route path="/privacy" component={Privacy} />
+          <Route path="/realms" component={RealmsPage} />
           <Route component={RealmPickerPage} />
         </Switch>
       );
@@ -299,6 +302,7 @@ function RouterContent() {
           <Route path="/forums" component={Forums} />
           <Route path="/terms" component={Terms} />
           <Route path="/privacy" component={Privacy} />
+          <Route path="/realms" component={RealmsPage} />
           <Route component={SeasonServerPicker} />
         </Switch>
       );
@@ -315,6 +319,7 @@ function RouterContent() {
           <Route path="/forums" component={Forums} />
           <Route path="/terms" component={Terms} />
           <Route path="/privacy" component={Privacy} />
+          <Route path="/realms" component={RealmsPage} />
           <Route component={SaveSlotsPage} />
         </Switch>
       );
@@ -330,6 +335,7 @@ function RouterContent() {
         <Route path="/forums" component={Forums} />
         <Route path="/terms" component={Terms} />
         <Route path="/privacy" component={Privacy} />
+        <Route path="/realms" component={RealmsPage} />
         <Route component={AccountSetup} />
       </Switch>
     );
@@ -344,6 +350,7 @@ function RouterContent() {
       <Route path="/forums" component={Forums} />
       <Route path="/terms" component={Terms} />
       <Route path="/privacy" component={Privacy} />
+      <Route path="/realms" component={RealmsPage} />
       <Route path="/resources" component={Resources} />
       <Route path="/power-grid" component={PowerGrid} />
       <Route path="/facilities" component={Facilities} />
