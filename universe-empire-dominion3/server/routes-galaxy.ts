@@ -7,6 +7,13 @@ import { isAuthenticated } from "./basicAuth";
 
 type SystemObjectType = "planet" | "asteroid" | "nebula" | "blackhole" | "station" | "empty";
 
+interface MoonDetail {
+  name: string;
+  type: string;
+  size: string;
+  habitable: boolean;
+}
+
 interface SystemPosition {
   position: number;
   type: SystemObjectType;
@@ -15,8 +22,16 @@ interface SystemPosition {
   alliance?: string;
   debris?: { metal: number; crystal: number };
   moon?: boolean;
+  moonDetails?: MoonDetail;
   class?: string;
-  activity?: number; // minutes since last activity (undefined = no activity data)
+  planetType?: string;
+  temperature?: number;
+  resources?: string[];
+  habitable?: boolean;
+  gravity?: number;
+  atmosphere?: string;
+  activity?: number;
+  stations?: { name: string; level: number; type: string }[];
 }
 
 interface GeneratedSystem {
@@ -39,7 +54,7 @@ type ScanReport = {
 // ---------------------------------------------------------------------------
 
 /** Maximum orbital positions displayed in a system (matches the client table). */
-const MAX_SYSTEM_POSITIONS = 15;
+const MAX_SYSTEM_POSITIONS = 45;
 
 /** FNV-1a 32-bit hash of an arbitrary string. */
 function fnv1a(str: string): number {
@@ -125,6 +140,73 @@ function pickPlanetClass(r: number): string {
   return "K";
 }
 
+/** Planet type distribution for detailed classification. */
+const PLANET_TYPE_THRESHOLDS: Array<[string, number]> = [
+  ["rocky", 0.30],
+  ["gas_giant", 0.42],
+  ["ice_giant", 0.50],
+  ["desert", 0.62],
+  ["ocean", 0.70],
+  ["volcanic", 0.78],
+  ["frozen", 0.88],
+  ["terran", 0.93],
+  ["barren", 0.97],
+  ["toxic", 1.00],
+];
+
+function pickPlanetType(r: number): string {
+  for (const [type, threshold] of PLANET_TYPE_THRESHOLDS) {
+    if (r < threshold) return type;
+  }
+  return "rocky";
+}
+
+/** Moon type distribution. */
+const MOON_TYPE_THRESHOLDS: Array<[string, number]> = [
+  ["rocky", 0.35],
+  ["icy", 0.55],
+  ["volcanic", 0.65],
+  ["ice-rock", 0.80],
+  ["gas-moon", 0.88],
+  ["metallic", 0.95],
+  ["captured", 1.00],
+];
+
+function pickMoonType(r: number): string {
+  for (const [type, threshold] of MOON_TYPE_THRESHOLDS) {
+    if (r < threshold) return type;
+  }
+  return "rocky";
+}
+
+/** Resources by planet type. */
+const PLANET_RESOURCES: Record<string, string[]> = {
+  rocky: ["metal", "crystal"],
+  gas_giant: ["deuterium", "helium"],
+  ice_giant: ["water", "deuterium"],
+  desert: ["metal", "crystal", "energy"],
+  ocean: ["water", "food", "deuterium"],
+  volcanic: ["metal", "energy", "crystal"],
+  frozen: ["water", "deuterium", "crystal"],
+  terran: ["food", "water", "metal", "crystal"],
+  barren: ["metal"],
+  toxic: ["crystal", "exotic"],
+};
+
+/** Atmosphere types by planet type. */
+const PLANET_ATMOSPHERE: Record<string, string> = {
+  rocky: "thin nitrogen-CO2",
+  gas_giant: "dense hydrogen-helium",
+  ice_giant: "methane-ammonia",
+  desert: "thin CO2-argon",
+  ocean: "nitrogen-oxygen (breathable)",
+  volcanic: "sulfur dioxide toxic",
+  frozen: "thin nitrogen-methane",
+  terran: "nitrogen-oxygen (breathable)",
+  barren: "negligible",
+  toxic: "corrosive mixed gases",
+};
+
 /**
  * Generate a full star system using NMS-style deterministic seeding.
  * The star type and planet count are derived from the system seed; planets
@@ -145,8 +227,8 @@ function generateSystem(
   const starName = generateName(fnv1a(`${baseKey}:star-name`));
   const systemName = generateName(fnv1a(`${baseKey}:sys-name`));
 
-  // Planet count: 2-9 planets per system (NMS-style)
-  const planetCount = Math.floor(seededAt(sysHash, 1) * 8) + 2;
+  // Planet count: 15-45 planets per system
+  const planetCount = Math.floor(seededAt(sysHash, 1) * 31) + 15;
 
   const positions: SystemPosition[] = [];
 
@@ -155,15 +237,44 @@ function generateSystem(
     const pos = i + 1;
     const planetHash = fnv1a(`${baseKey}:planet-${pos}`);
     const planetClass = pickPlanetClass(seededAt(planetHash, 0));
+    const pType = pickPlanetType(seededAt(planetHash, 5));
     const hasMoon = seededAt(planetHash, 1) < 0.42;
     const planetName = generateName(fnv1a(`${baseKey}:pname-${pos}`));
+    const temperature = Math.floor(seededAt(planetHash, 6) * 380) + 80;
+    const resources = PLANET_RESOURCES[pType] || ["metal"];
+    const atmosphere = PLANET_ATMOSPHERE[pType] || "none";
+    const habitable = pType === "terran" || pType === "ocean" || (pType === "rocky" && temperature >= 240 && temperature <= 340);
+    const gravity = Number((seededAt(planetHash, 7) * 3.5 + 0.2).toFixed(2));
+
+    const moonDetails: MoonDetail | undefined = hasMoon ? {
+      name: generateName(fnv1a(`${baseKey}:moon-${pos}`)),
+      type: pickMoonType(seededAt(planetHash, 8)),
+      size: seededAt(planetHash, 9) > 0.7 ? "large" : seededAt(planetHash, 9) > 0.3 ? "medium" : "small",
+      habitable: seededAt(planetHash, 10) > 0.85,
+    } : undefined;
+
+    // Some planets have orbital stations
+    const hasStation = seededAt(planetHash, 11) > 0.88;
+    const stations = hasStation ? [{
+      name: `${planetName} Orbital`,
+      level: Math.floor(seededAt(planetHash, 12) * 20) + 1,
+      type: seededAt(planetHash, 13) > 0.6 ? "defense" : seededAt(planetHash, 13) > 0.3 ? "trade" : "research",
+    }] : [];
 
     positions.push({
       position: pos,
       type: "planet",
       name: planetName,
       moon: hasMoon,
+      moonDetails,
       class: planetClass,
+      planetType: pType,
+      temperature,
+      resources,
+      habitable,
+      gravity,
+      atmosphere,
+      stations,
     });
   }
 
