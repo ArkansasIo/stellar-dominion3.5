@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { OGAMEX_FEATURED_ASSETS, PLANET_ASSETS } from "@shared/config";
 import { BUILD_INFO, getDisplayVersion, getPatchLabel, getFooterBuildString } from "@shared/config/buildConfig";
 import { Button } from "@/components/ui/button";
-import { SceneLayer, resolveShellScenePreset } from "@/components/views3d";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -544,7 +543,6 @@ const systemItems: NavItem[] = [
   { href: "/assets-gallery", icon: Image, label: "Assets Gallery", description: "Browse game assets, including the new OGameX asset pack." },
   { href: "/news-feed", icon: Newspaper, label: "News Feed", description: "Read the latest galactic news, updates, and announcements." },
   { href: "/patch-notes", icon: ScrollText, label: "Patch Notes", description: "View update history, bug fixes, and new feature changelogs." },
-  { href: "/threejs-viewer", icon: Orbit, label: "3D Galaxy Viewer", description: "Explore the galaxy in interactive 3D visualization." },
   { href: "/settings", icon: Settings, label: "Settings", description: "Update configuration, preferences, and account options." },
   { href: "/forums", icon: ScrollText, label: "Forums", description: "Open community discussions and support channels." },
   { href: "/about", icon: BookOpen, label: "About", description: "Read project background and game overview information." },
@@ -931,7 +929,6 @@ export default function GameLayout({ children, title, subtitle }: { children: Re
       : activePageContext?.section === "System"
         ? OGAMEX_FEATURED_ASSETS.DEFENSE.path
         : OGAMEX_FEATURED_ASSETS.BACKGROUND.path;
-  const scenePreset = resolveShellScenePreset(activePageContext?.section);
 
   const { data: turnData, isLoading: turnsLoading } = useQuery({
     queryKey: ['/api/turns'],
@@ -1174,11 +1171,6 @@ export default function GameLayout({ children, title, subtitle }: { children: Re
       touchMode && "touch-manipulation",
       !displayPreferences.showAnimations && "motion-reduce",
     )}>
-      <SceneLayer
-        preset={scenePreset}
-        backdropImage={contextBackdropImage}
-        animate={displayPreferences.showAnimations}
-      />
       
       {/* Top Bar - Resources */}
       <header className={cn(
