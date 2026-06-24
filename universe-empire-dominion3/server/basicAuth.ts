@@ -186,7 +186,7 @@ export function getSession() {
     sessionStore = new PgSession({
       pool,
       tableName: "user_sessions",
-      createTableIfMissing: true,
+      createTableIfMissing: false,
     });
     logger.info("AUTH", "Using PostgreSQL session store");
   }
