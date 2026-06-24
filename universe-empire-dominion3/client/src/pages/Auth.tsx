@@ -15,9 +15,8 @@ import {
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { MENU_ASSETS } from "@shared/config";
+import { BUILD_INFO, getDisplayVersion } from "@shared/config/buildConfig";
 
-const GAME_VERSION = "Alpha 1.5.0";
-const UNIVERSE_ID = "Nexus-Alpha";
 const TEMP_THEME_IMAGE = "/theme-temp.png";
 
 const NINE_REALMS = [
@@ -49,7 +48,6 @@ type RealmDetailModalProps = { realm: RealmItem | null; open: boolean; onClose: 
 type PublicHealthCheck = { status: "ok" | "warning" | "critical"; value: number; threshold: number; message: string; lastChecked: number };
 type PublicHealthResponse = { success: boolean; status: "healthy" | "degraded" | "unhealthy"; score: number; timestamp: number; checks?: Record<string, PublicHealthCheck>; message?: string };
 
-function getBuildChannel() { return import.meta.env.MODE === "production" ? "Production" : "Development"; }
 function getHealthBadgeClass(s: PublicHealthResponse["status"]) {
   if (s === "healthy") return "border-emerald-300 bg-emerald-50 text-emerald-700";
   if (s === "degraded") return "border-amber-300 bg-amber-50 text-amber-700";
@@ -162,7 +160,7 @@ export default function Auth() {
   const [copied, setCopied] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
-  const buildChannel = getBuildChannel();
+  const buildChannel = BUILD_INFO.buildChannel;
 
   const { data: healthData } = useQuery<PublicHealthResponse>({
     queryKey: ["/api/status/health", "landing"],
@@ -230,7 +228,7 @@ export default function Auth() {
               </Badge>
             )}
             <Badge variant="outline" className="border-slate-600 text-slate-400 bg-slate-800/50 text-[11px] font-bold tracking-widest uppercase px-3 py-1">
-              {GAME_VERSION}
+              {getDisplayVersion()}
             </Badge>
           </div>
         </div>
@@ -460,7 +458,7 @@ export default function Auth() {
             <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
               <CardContent className="p-5">
                 <div className="text-xs uppercase tracking-[0.24em] text-slate-400 mb-3">Universe Node</div>
-                <div className="flex items-center gap-2"><Gauge className="h-4 w-4 text-blue-400" /><div className="font-semibold text-white">{UNIVERSE_ID}</div></div>
+                <div className="flex items-center gap-2"><Gauge className="h-4 w-4 text-blue-400" /><div className="font-semibold text-white">{BUILD_INFO.universeId}</div></div>
               </CardContent>
             </Card>
             <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
@@ -495,24 +493,26 @@ export default function Auth() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <Rocket className="w-5 h-5 text-cyan-400" />
-              <span className="font-orbitron font-bold text-sm text-white tracking-wide">universe-empire-dominion</span>
-              <span className="text-xs text-slate-500">v{GAME_VERSION}</span>
+              <span className="font-orbitron font-bold text-sm text-white tracking-wide">{BUILD_INFO.appName}</span>
+              <span className="text-xs text-slate-500">{getDisplayVersion()}</span>
               <span className="text-xs text-slate-600">•</span>
-              <span className="text-xs text-slate-500">{buildChannel}</span>
+              <span className="text-xs text-slate-500">{BUILD_INFO.buildName}</span>
               <span className="text-xs text-slate-600">•</span>
-              <span className="text-xs text-slate-500">Universe {UNIVERSE_ID}</span>
+              <span className="text-xs text-slate-500">{BUILD_INFO.buildChannel}</span>
+              <span className="text-xs text-slate-600">•</span>
+              <span className="text-xs text-slate-500">Universe {BUILD_INFO.universeId}</span>
             </div>
             <div className="flex items-center gap-6 text-xs text-slate-400">
               <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
               <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
               <Link href="/forums" className="hover:text-white transition-colors">Forums</Link>
-              <a href="https://github.com/ArkansasIo/stellar-dominion3" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-cyan-400 hover:text-cyan-300 transition-colors">
-                <Github className="w-3.5 h-3.5" /> stellar-dominion3
+              <a href={BUILD_INFO.githubUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-cyan-400 hover:text-cyan-300 transition-colors">
+                <Github className="w-3.5 h-3.5" /> {BUILD_INFO.devAlias}
               </a>
               <span className="text-slate-600">•</span>
-              <span>Developer: Stephen</span>
+              <span>Developer: {BUILD_INFO.devName}</span>
               <span className="text-slate-600">•</span>
-              <a href="https://github.com/ArkansasIo" target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:text-cyan-300 transition-colors font-semibold" data-testid="link-auth-footer-publisher">ArkansasIo</a>
+              <a href={BUILD_INFO.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:text-cyan-300 transition-colors font-semibold" data-testid="link-auth-footer-publisher">{BUILD_INFO.devAlias}</a>
             </div>
           </div>
         </div>

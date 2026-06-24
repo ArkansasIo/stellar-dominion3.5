@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { OGAMEX_FEATURED_ASSETS, PLANET_ASSETS } from "@shared/config";
+import { BUILD_INFO, getDisplayVersion, getPatchLabel, getFooterBuildString } from "@shared/config/buildConfig";
 import { Button } from "@/components/ui/button";
 import { SceneLayer, resolveShellScenePreset } from "@/components/views3d";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -919,9 +920,9 @@ export default function GameLayout({ children, title, subtitle }: { children: Re
   const [hasCoarsePointer, setHasCoarsePointer] = useState(false);
   const [showPageCommandDeck, setShowPageCommandDeck] = useState(false);
   const [showPatchNotes, setShowPatchNotes] = useState(false);
-  const appVersion = import.meta.env.VITE_APP_VERSION || "Alpha 1.5.0";
-  const buildId = import.meta.env.VITE_BUILD_ID || "dev";
-  const buildTime = import.meta.env.VITE_BUILD_TIME || "local";
+  const appVersion = getDisplayVersion();
+  const buildId = BUILD_INFO.gitCommit;
+  const buildTime = BUILD_INFO.buildDate;
   const activePageContext = getActivePageContext(location, isAdmin);
   const contextBackdropImage = activePageContext?.section === "Research"
     ? OGAMEX_FEATURED_ASSETS.RESEARCH.path
@@ -981,7 +982,6 @@ export default function GameLayout({ children, title, subtitle }: { children: Re
   });
 
   const displayedManifest = updateInfo?.manifest ?? patchManifest;
-  const displayedPatchVersion = displayedManifest?.version ?? appVersion;
   const patchNotes = displayedManifest?.changelog?.length
     ? displayedManifest.changelog
     : [
@@ -1701,30 +1701,34 @@ export default function GameLayout({ children, title, subtitle }: { children: Re
 
       <footer className="sd-footer-shell relative z-10 border-t border-slate-200 bg-white/88 px-4 py-2 backdrop-blur-md sm:px-6 flex flex-col gap-1 sm:h-10 sm:flex-row sm:items-center sm:justify-between text-[11px] text-slate-500 font-mono" data-testid="footer-build-info">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-          <img src="/assets/stellar-dominion-logo.svg" alt="Stellar Dominion™" className="h-6 w-6 inline-block" />
-          <span className="font-bold text-slate-800 tracking-wide">Stellar Dominion™</span>
+          <img src="/assets/stellar-dominion-logo.svg" alt={`${BUILD_INFO.appName}™`} className="h-6 w-6 inline-block" />
+          <span className="font-bold text-slate-800 tracking-wide">{BUILD_INFO.appName}™</span>
           <span className="text-slate-400">|</span>
-          <span className="text-[10px]">&copy; 2025-2026 Stephen</span>
+          <span className="text-[10px]">&copy; {BUILD_INFO.copyright}</span>
           <span className="text-slate-400">|</span>
-          <span className="text-[10px]">Licensed under MIT</span>
+          <span className="text-[10px]">Licensed under {BUILD_INFO.license}</span>
           <span className="text-slate-400 hidden sm:inline">|</span>
-          <span className="text-[10px] hidden sm:inline">ArkansasIo™</span>
+          <span className="text-[10px] hidden sm:inline">{BUILD_INFO.devAlias}™</span>
+          <span className="text-slate-400 hidden sm:inline">|</span>
+          <span className="text-[10px] hidden sm:inline">{BUILD_INFO.studioName}</span>
         </div>
         <div className="flex flex-wrap items-center gap-4">
+          <span className="font-semibold text-slate-700">{BUILD_INFO.buildName}</span>
           <span>Version: {appVersion}</span>
           <Link href="/patch-notes">
             <span
               className="font-semibold text-cyan-700 hover:text-cyan-900 hover:underline cursor-pointer"
               data-testid="button-footer-patch-info"
             >
-              Patch: {displayedPatchVersion}
+              Patch: {getPatchLabel()}
             </span>
           </Link>
           <span className={updateInfo?.available ? "font-semibold text-amber-700" : "text-emerald-700"}>
             Update: {updateStatusLabel}
           </span>
-          <span>Build: {buildId}</span>
-          <span>Time: {buildTime}</span>
+          <span>Build: #{BUILD_INFO.buildNumber}</span>
+          <span>{buildTime}</span>
+          <span className="hidden sm:inline text-slate-400">[{buildId}]</span>
         </div>
       </footer>
 
@@ -1740,14 +1744,14 @@ export default function GameLayout({ children, title, subtitle }: { children: Re
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-4">
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
               <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Installed</div>
               <div className="mt-1 font-orbitron text-sm font-bold text-slate-900">{appVersion}</div>
             </div>
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
               <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Latest Patch</div>
-              <div className="mt-1 font-orbitron text-sm font-bold text-cyan-700">{displayedPatchVersion}</div>
+              <div className="mt-1 font-orbitron text-sm font-bold text-cyan-700">{getPatchLabel()}</div>
             </div>
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
               <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Status</div>
@@ -1755,6 +1759,25 @@ export default function GameLayout({ children, title, subtitle }: { children: Re
                 {updateStatusLabel}
               </div>
             </div>
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Build</div>
+              <div className="mt-1 font-orbitron text-sm font-bold text-violet-700">#{BUILD_INFO.buildNumber}</div>
+              <div className="text-[10px] text-slate-400">{BUILD_INFO.gitBranch} • {BUILD_INFO.gitCommit}</div>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-2 text-[10px] text-slate-400">
+            <span>Engine: {BUILD_INFO.engineVersion}</span>
+            <span>•</span>
+            <span>Protocol: {BUILD_INFO.protocolVersion}</span>
+            <span>•</span>
+            <span>API: {BUILD_INFO.apiVersion}</span>
+            <span>•</span>
+            <span>Channel: {BUILD_INFO.buildChannel}</span>
+            <span>•</span>
+            <span>Dev: {BUILD_INFO.devName}</span>
+            <span>•</span>
+            <span>{BUILD_INFO.studioName}</span>
           </div>
 
           {displayedManifest?.releaseDate && (
