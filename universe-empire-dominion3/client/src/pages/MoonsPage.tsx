@@ -44,13 +44,13 @@ const MOON_BIOME_ICONS: Record<string, typeof Mountain> = {
 };
 
 const RARITY_COLORS: Record<string, string> = {
-  common: "bg-slate-100 text-slate-700 border-slate-300",
-  uncommon: "bg-green-100 text-green-700 border-green-300",
-  rare: "bg-blue-100 text-blue-700 border-blue-300",
-  epic: "bg-purple-100 text-purple-700 border-purple-300",
-  legendary: "bg-amber-100 text-amber-800 border-amber-400",
-  mythic: "bg-rose-100 text-rose-800 border-rose-400",
-  ascended: "bg-cyan-100 text-cyan-800 border-cyan-400",
+  common: "bg-slate-700 text-slate-300 border-slate-600",
+  uncommon: "bg-green-900/50 text-green-300 border-green-700",
+  rare: "bg-blue-900/50 text-blue-300 border-blue-700",
+  epic: "bg-purple-900/50 text-purple-300 border-purple-700",
+  legendary: "bg-amber-900/50 text-amber-300 border-amber-600",
+  mythic: "bg-rose-900/50 text-rose-300 border-rose-600",
+  ascended: "bg-cyan-900/50 text-cyan-300 border-cyan-600",
 };
 
 export default function MoonsPage() {
@@ -114,10 +114,10 @@ export default function MoonsPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className="bg-white rounded-lg border border-slate-200 p-3 text-center cursor-help">
-              <Orbit className="w-4 h-4 text-slate-500 mx-auto mb-1" />
-              <div className="text-xs text-slate-500">Tier</div>
-              <div className="font-bold text-slate-900">{moon.tier || 1}</div>
+            <div className="bg-slate-800 rounded-lg border border-slate-700 p-3 text-center cursor-help">
+              <Orbit className="w-4 h-4 text-slate-400 mx-auto mb-1" />
+              <div className="text-xs text-slate-400">Tier</div>
+              <div className="font-bold text-white">{moon.tier || 1}</div>
             </div>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="w-56 p-2 space-y-1">
@@ -128,10 +128,10 @@ export default function MoonsPage() {
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className="bg-white rounded-lg border border-slate-200 p-3 text-center cursor-help">
-              <ArrowUp className="w-4 h-4 text-blue-500 mx-auto mb-1" />
-              <div className="text-xs text-slate-500">Level</div>
-              <div className="font-bold text-slate-900">{moon.level || 1}</div>
+            <div className="bg-slate-800 rounded-lg border border-slate-700 p-3 text-center cursor-help">
+              <ArrowUp className="w-4 h-4 text-blue-400 mx-auto mb-1" />
+              <div className="text-xs text-slate-400">Level</div>
+              <div className="font-bold text-white">{moon.level || 1}</div>
             </div>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="w-56 p-2 space-y-1">
@@ -142,10 +142,10 @@ export default function MoonsPage() {
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className="bg-white rounded-lg border border-slate-200 p-3 text-center cursor-help">
-              <Star className="w-4 h-4 text-amber-500 mx-auto mb-1" />
-              <div className="text-xs text-slate-500">Mass</div>
-              <div className="font-bold text-slate-900">{moon.stats?.mass?.toFixed(2) || "—"}</div>
+            <div className="bg-slate-800 rounded-lg border border-slate-700 p-3 text-center cursor-help">
+              <Star className="w-4 h-4 text-amber-400 mx-auto mb-1" />
+              <div className="text-xs text-slate-400">Mass</div>
+              <div className="font-bold text-white">{moon.stats?.mass?.toFixed(2) || "—"}</div>
             </div>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="w-56 p-2 space-y-1">
@@ -156,10 +156,10 @@ export default function MoonsPage() {
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className="bg-white rounded-lg border border-slate-200 p-3 text-center cursor-help">
-              <Wind className="w-4 h-4 text-green-500 mx-auto mb-1" />
-              <div className="text-xs text-slate-500">Gravity</div>
-              <div className="font-bold text-slate-900">{moon.stats?.gravity?.toFixed(2) || "—"} m/s²</div>
+            <div className="bg-slate-800 rounded-lg border border-slate-700 p-3 text-center cursor-help">
+              <Wind className="w-4 h-4 text-green-400 mx-auto mb-1" />
+              <div className="text-xs text-slate-400">Gravity</div>
+              <div className="font-bold text-white">{moon.stats?.gravity?.toFixed(2) || "—"} m/s²</div>
             </div>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="w-56 p-2 space-y-1">
@@ -171,31 +171,31 @@ export default function MoonsPage() {
       </div>
 
       {moon.stats && (
-        <div className="bg-slate-50 rounded-lg border border-slate-200 p-3">
-          <h4 className="text-xs font-bold text-slate-600 mb-2 flex items-center gap-1">
+        <div className="bg-slate-800/50 rounded-lg border border-slate-700 p-3">
+          <h4 className="text-xs font-bold text-slate-300 mb-2 flex items-center gap-1">
             <BarChart3 className="w-3 h-3" /> Orbital Mechanics
           </h4>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-            <div><span className="text-slate-500">Orbit Radius:</span> <span className="font-medium">{(moon.stats.orbitRadius / 1000).toFixed(0)}k km</span></div>
-            <div><span className="text-slate-500">Period:</span> <span className="font-medium">{moon.stats.orbitPeriod?.toFixed(1) || "—"} days</span></div>
-            <div><span className="text-slate-500">Stability:</span> <span className="font-medium">{moon.stats.stability?.toFixed(0) || "—"}%</span></div>
-            <div><span className="text-slate-500">Energy Output:</span> <span className="font-medium">{moon.stats.energyOutput?.toFixed(0) || "—"}</span></div>
+            <div><span className="text-slate-400">Orbit Radius:</span> <span className="font-medium text-white">{(moon.stats.orbitRadius / 1000).toFixed(0)}k km</span></div>
+            <div><span className="text-slate-400">Period:</span> <span className="font-medium text-white">{moon.stats.orbitPeriod?.toFixed(1) || "—"} days</span></div>
+            <div><span className="text-slate-400">Stability:</span> <span className="font-medium text-white">{moon.stats.stability?.toFixed(0) || "—"}%</span></div>
+            <div><span className="text-slate-400">Energy Output:</span> <span className="font-medium text-white">{moon.stats.energyOutput?.toFixed(0) || "—"}</span></div>
           </div>
         </div>
       )}
 
       {moon.resources && (
-        <div className="bg-white rounded-lg border border-slate-200 p-3">
-          <h4 className="text-xs font-bold text-slate-600 mb-2 flex items-center gap-1">
+        <div className="bg-slate-800 rounded-lg border border-slate-700 p-3">
+          <h4 className="text-xs font-bold text-slate-300 mb-2 flex items-center gap-1">
             <Pickaxe className="w-3 h-3" /> Available Resources
           </h4>
           <div className="grid grid-cols-3 gap-3">
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="text-center p-2 bg-amber-50 rounded border border-amber-200 cursor-help">
-                  <Box className="w-4 h-4 text-amber-600 mx-auto mb-0.5" />
-                  <div className="text-xs text-amber-600">Metal</div>
-                  <div className="font-bold text-sm text-amber-900">{moon.resources.metal?.toLocaleString() || 0}</div>
+                <div className="text-center p-2 bg-amber-900/20 rounded border border-amber-800/50 cursor-help">
+                  <Box className="w-4 h-4 text-amber-400 mx-auto mb-0.5" />
+                  <div className="text-xs text-amber-400">Metal</div>
+                  <div className="font-bold text-sm text-amber-300">{moon.resources.metal?.toLocaleString() || 0}</div>
                 </div>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="w-52 p-2 space-y-1">
@@ -207,10 +207,10 @@ export default function MoonsPage() {
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="text-center p-2 bg-blue-50 rounded border border-blue-200 cursor-help">
-                  <Gem className="w-4 h-4 text-blue-600 mx-auto mb-0.5" />
-                  <div className="text-xs text-blue-600">Crystal</div>
-                  <div className="font-bold text-sm text-blue-900">{moon.resources.crystal?.toLocaleString() || 0}</div>
+                <div className="text-center p-2 bg-blue-900/20 rounded border border-blue-800/50 cursor-help">
+                  <Gem className="w-4 h-4 text-blue-400 mx-auto mb-0.5" />
+                  <div className="text-xs text-blue-400">Crystal</div>
+                  <div className="font-bold text-sm text-blue-300">{moon.resources.crystal?.toLocaleString() || 0}</div>
                 </div>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="w-52 p-2 space-y-1">
@@ -222,10 +222,10 @@ export default function MoonsPage() {
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="text-center p-2 bg-green-50 rounded border border-green-200 cursor-help">
-                  <Database className="w-4 h-4 text-green-600 mx-auto mb-0.5" />
-                  <div className="text-xs text-green-600">Deuterium</div>
-                  <div className="font-bold text-sm text-green-900">{moon.resources.deuterium?.toLocaleString() || 0}</div>
+                <div className="text-center p-2 bg-green-900/20 rounded border border-green-800/50 cursor-help">
+                  <Database className="w-4 h-4 text-green-400 mx-auto mb-0.5" />
+                  <div className="text-xs text-green-400">Deuterium</div>
+                  <div className="font-bold text-sm text-green-300">{moon.resources.deuterium?.toLocaleString() || 0}</div>
                 </div>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="w-52 p-2 space-y-1">
@@ -240,16 +240,16 @@ export default function MoonsPage() {
       )}
 
       {moon.subStats && (
-        <div className="bg-white rounded-lg border border-slate-200 p-3">
-          <h4 className="text-xs font-bold text-slate-600 mb-2 flex items-center gap-1">
+        <div className="bg-slate-800 rounded-lg border border-slate-700 p-3">
+          <h4 className="text-xs font-bold text-slate-300 mb-2 flex items-center gap-1">
             <Zap className="w-3 h-3" /> Production Modifiers
           </h4>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="flex justify-between p-1.5 bg-slate-50 rounded cursor-help">
-                  <span className="text-slate-500">Metal Bonus:</span>
-                  <span className="font-medium text-amber-700">+{moon.subStats.metalBonus || 0}%</span>
+                <div className="flex justify-between p-1.5 bg-slate-700/50 rounded cursor-help">
+                  <span className="text-slate-400">Metal Bonus:</span>
+                  <span className="font-medium text-amber-400">+{moon.subStats.metalBonus || 0}%</span>
                 </div>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="w-56 p-2">
@@ -259,9 +259,9 @@ export default function MoonsPage() {
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="flex justify-between p-1.5 bg-slate-50 rounded cursor-help">
-                  <span className="text-slate-500">Crystal Bonus:</span>
-                  <span className="font-medium text-blue-700">+{moon.subStats.crystalBonus || 0}%</span>
+                <div className="flex justify-between p-1.5 bg-slate-700/50 rounded cursor-help">
+                  <span className="text-slate-400">Crystal Bonus:</span>
+                  <span className="font-medium text-blue-400">+{moon.subStats.crystalBonus || 0}%</span>
                 </div>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="w-56 p-2">
@@ -271,9 +271,9 @@ export default function MoonsPage() {
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="flex justify-between p-1.5 bg-slate-50 rounded cursor-help">
-                  <span className="text-slate-500">Energy Bonus:</span>
-                  <span className="font-medium text-yellow-700">+{moon.subStats.energyBonus || 0}%</span>
+                <div className="flex justify-between p-1.5 bg-slate-700/50 rounded cursor-help">
+                  <span className="text-slate-400">Energy Bonus:</span>
+                  <span className="font-medium text-yellow-400">+{moon.subStats.energyBonus || 0}%</span>
                 </div>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="w-56 p-2">
@@ -283,9 +283,9 @@ export default function MoonsPage() {
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="flex justify-between p-1.5 bg-slate-50 rounded cursor-help">
-                  <span className="text-slate-500">Mining Speed:</span>
-                  <span className="font-medium">×{moon.subStats.miningSpeed?.toFixed(1) || "1.0"}</span>
+                <div className="flex justify-between p-1.5 bg-slate-700/50 rounded cursor-help">
+                  <span className="text-slate-400">Mining Speed:</span>
+                  <span className="font-medium text-white">×{moon.subStats.miningSpeed?.toFixed(1) || "1.0"}</span>
                 </div>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="w-56 p-2">
@@ -302,8 +302,8 @@ export default function MoonsPage() {
   const renderMoonDetails = (moon: any) => (
     <div className="space-y-4">
       {moon.type && (
-        <div className="bg-slate-50 rounded-lg border border-slate-200 p-3">
-          <h4 className="text-xs font-bold text-slate-600 mb-2">Classification</h4>
+        <div className="bg-slate-800 rounded-lg border border-slate-700 p-3">
+          <h4 className="text-xs font-bold text-slate-300 mb-2">Classification</h4>
           <div className="flex flex-wrap gap-1.5 mb-2">
             <Tooltip>
               <TooltipTrigger asChild>
@@ -356,52 +356,52 @@ export default function MoonsPage() {
               </Tooltip>
             )}
           </div>
-          {moon.description && <p className="text-xs text-slate-600">{moon.description}</p>}
+          {moon.description && <p className="text-xs text-slate-400">{moon.description}</p>}
           {moon.lore && <p className="text-xs text-slate-500 italic mt-1">{moon.lore}</p>}
         </div>
       )}
 
       {moon.attributes && (
-        <div className="bg-white rounded-lg border border-slate-200 p-3">
-          <h4 className="text-xs font-bold text-slate-600 mb-2 flex items-center gap-1">
+        <div className="bg-slate-800/50 rounded-lg border border-slate-700 p-3">
+          <h4 className="text-xs font-bold text-slate-300 mb-2 flex items-center gap-1">
             <Thermometer className="w-3 h-3" /> Physical Attributes
           </h4>
           <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="flex justify-between cursor-help"><span className="text-slate-500">Diameter:</span><span className="font-medium">{moon.attributes.diameter?.toLocaleString() || "—"} km</span></div>
+                <div className="flex justify-between cursor-help"><span className="text-slate-400">Diameter:</span><span className="font-medium text-white">{moon.attributes.diameter?.toLocaleString() || "—"} km</span></div>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="w-56 p-2"><div className="text-[11px] text-slate-300">Equatorial diameter. Larger moons have more surface area for bases and can support larger populations.</div></TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="flex justify-between cursor-help"><span className="text-slate-500">Mass:</span><span className="font-medium">{moon.attributes.mass || "—"} Earths</span></div>
+                <div className="flex justify-between cursor-help"><span className="text-slate-400">Mass:</span><span className="font-medium text-white">{moon.attributes.mass || "—"} Earths</span></div>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="w-56 p-2"><div className="text-[11px] text-slate-300">Relative mass compared to Earth. Higher mass increases gravity and resource density but also colonization costs.</div></TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="flex justify-between cursor-help"><span className="text-slate-500">Gravity:</span><span className="font-medium">{moon.attributes.gravity || "—"} m/s²</span></div>
+                <div className="flex justify-between cursor-help"><span className="text-slate-400">Gravity:</span><span className="font-medium text-white">{moon.attributes.gravity || "—"} m/s²</span></div>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="w-56 p-2"><div className="text-[11px] text-slate-300">Surface gravity. Affects ship landing costs, troop deployment, and construction efficiency. Lower gravity reduces launch costs.</div></TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="flex justify-between cursor-help"><span className="text-slate-500">Escape Velocity:</span><span className="font-medium">{moon.attributes.escapeVelocity || "—"} km/s</span></div>
+                <div className="flex justify-between cursor-help"><span className="text-slate-400">Escape Velocity:</span><span className="font-medium text-white">{moon.attributes.escapeVelocity || "—"} km/s</span></div>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="w-56 p-2"><div className="text-[11px] text-slate-300">Speed required to break orbit. Lower escape velocity means cheaper cargo launches and faster shuttle turnaround.</div></TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="flex justify-between cursor-help"><span className="text-slate-500">Orbital Period:</span><span className="font-medium">{moon.attributes.orbitalPeriod || "—"} days</span></div>
+                <div className="flex justify-between cursor-help"><span className="text-slate-400">Orbital Period:</span><span className="font-medium text-white">{moon.attributes.orbitalPeriod || "—"} days</span></div>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="w-56 p-2"><div className="text-[11px] text-slate-300">Time to complete one orbit around its parent planet. Shorter periods mean more frequent launch windows.</div></TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
                 <div className="flex justify-between cursor-help">
-                  <span className="text-slate-500">Temperature:</span>
-                  <span className="font-medium">
+                  <span className="text-slate-400">Temperature:</span>
+                  <span className="font-medium text-white">
                     {moon.attributes.surfaceTemperature
                       ? `${moon.attributes.surfaceTemperature.min}~${moon.attributes.surfaceTemperature.max}°C`
                       : "—"}
@@ -412,13 +412,13 @@ export default function MoonsPage() {
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="flex justify-between cursor-help"><span className="text-slate-500">Atm. Pressure:</span><span className="font-medium">{moon.attributes.atmosphericPressure || 0} kPa</span></div>
+                <div className="flex justify-between cursor-help"><span className="text-slate-400">Atm. Pressure:</span><span className="font-medium text-white">{moon.attributes.atmosphericPressure || 0} kPa</span></div>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="w-56 p-2"><div className="text-[11px] text-slate-300">Atmospheric pressure at surface level. Higher pressure reduces radiation exposure but increases structural stress on buildings.</div></TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="flex justify-between cursor-help"><span className="text-slate-500">Mag. Field:</span><span className="font-medium">{moon.attributes.magneticField || 0}%</span></div>
+                <div className="flex justify-between cursor-help"><span className="text-slate-400">Mag. Field:</span><span className="font-medium text-white">{moon.attributes.magneticField || 0}%</span></div>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="w-56 p-2"><div className="text-[11px] text-slate-300">Magnetic field strength. Protects against cosmic radiation and solar flares. Higher values reduce radiation damage to crew and equipment.</div></TooltipContent>
             </Tooltip>
@@ -427,16 +427,16 @@ export default function MoonsPage() {
       )}
 
       {moon.attributes?.resourceRichness && (
-        <div className="bg-white rounded-lg border border-slate-200 p-3">
-          <h4 className="text-xs font-bold text-slate-600 mb-2 flex items-center gap-1">
+        <div className="bg-slate-800/50 rounded-lg border border-slate-700 p-3">
+          <h4 className="text-xs font-bold text-slate-300 mb-2 flex items-center gap-1">
             <Pickaxe className="w-3 h-3" /> Resource Richness
           </h4>
           <div className="grid grid-cols-3 gap-2 text-xs">
             {Object.entries(moon.attributes.resourceRichness).map(([k, v]: [string, any]) => (
-              <div key={k} className="text-center p-2 bg-slate-50 rounded border border-slate-200">
-                <div className="text-slate-500 capitalize mb-0.5">{k.replace(/([A-Z])/g, " $1").trim()}</div>
+              <div key={k} className="text-center p-2 bg-slate-700/50 rounded border border-slate-600">
+                <div className="text-slate-400 capitalize mb-0.5">{k.replace(/([A-Z])/g, " $1").trim()}</div>
                 <Progress value={v} className="h-1.5 mb-0.5" />
-                <div className="font-medium text-slate-700">{v}%</div>
+                <div className="font-medium text-white">{v}%</div>
               </div>
             ))}
           </div>
@@ -444,18 +444,18 @@ export default function MoonsPage() {
       )}
 
       {moon.details && (
-        <div className="bg-white rounded-lg border border-slate-200 p-3">
-          <h4 className="text-xs font-bold text-slate-600 mb-2 flex items-center gap-1">
+        <div className="bg-slate-800/50 rounded-lg border border-slate-700 p-3">
+          <h4 className="text-xs font-bold text-slate-300 mb-2 flex items-center gap-1">
             <Building2 className="w-3 h-3" /> Colony Information
           </h4>
           <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
-            <div className="flex justify-between"><span className="text-slate-500">Population:</span><span className="font-medium">{moon.details.population?.toLocaleString() || "—"}</span></div>
-            <div className="flex justify-between"><span className="text-slate-500">Capacity:</span><span className="font-medium">{moon.details.populationCapacity?.toLocaleString() || "—"}</span></div>
-            <div className="flex justify-between"><span className="text-slate-500">Stage:</span><span className="font-medium capitalize">{moon.details.developmentStage || "undeveloped"}</span></div>
-            <div className="flex justify-between"><span className="text-slate-500">GDP:</span><span className="font-medium">{moon.details.gdp?.toLocaleString() || "—"}</span></div>
-            <div className="flex justify-between"><span className="text-slate-500">Defense:</span><span className="font-medium">{moon.details.defenseRating || 0}</span></div>
-            <div className="flex justify-between"><span className="text-slate-500">Shield:</span><span className="font-medium capitalize">{moon.details.shieldStatus || "offline"}</span></div>
-            <div className="flex justify-between col-span-2"><span className="text-slate-500">Strategic Value:</span><span className="font-medium">{moon.details.strategicValue || 0}/100</span></div>
+            <div className="flex justify-between"><span className="text-slate-400">Population:</span><span className="font-medium text-white">{moon.details.population?.toLocaleString() || "—"}</span></div>
+            <div className="flex justify-between"><span className="text-slate-400">Capacity:</span><span className="font-medium text-white">{moon.details.populationCapacity?.toLocaleString() || "—"}</span></div>
+            <div className="flex justify-between"><span className="text-slate-400">Stage:</span><span className="font-medium capitalize text-white">{moon.details.developmentStage || "undeveloped"}</span></div>
+            <div className="flex justify-between"><span className="text-slate-400">GDP:</span><span className="font-medium text-white">{moon.details.gdp?.toLocaleString() || "—"}</span></div>
+            <div className="flex justify-between"><span className="text-slate-400">Defense:</span><span className="font-medium text-white">{moon.details.defenseRating || 0}</span></div>
+            <div className="flex justify-between"><span className="text-slate-400">Shield:</span><span className="font-medium capitalize text-white">{moon.details.shieldStatus || "offline"}</span></div>
+            <div className="flex justify-between col-span-2"><span className="text-slate-400">Strategic Value:</span><span className="font-medium text-white">{moon.details.strategicValue || 0}/100</span></div>
           </div>
         </div>
       )}
@@ -466,23 +466,23 @@ export default function MoonsPage() {
     <div className="space-y-4">
       {moon.status && (
         <>
-          <div className="bg-slate-50 rounded-lg border border-slate-200 p-3">
-            <h4 className="text-xs font-bold text-slate-600 mb-2 flex items-center gap-1">
+          <div className="bg-slate-800 rounded-lg border border-slate-700 p-3">
+            <h4 className="text-xs font-bold text-slate-300 mb-2 flex items-center gap-1">
               <Activity className="w-3 h-3" /> Condition & Stability
             </h4>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {moon.status.condition && (
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className="text-center p-2 bg-white rounded border border-slate-200 cursor-help">
+                    <div className="text-center p-2 bg-slate-800/50 rounded border border-slate-700 cursor-help">
                       <div className="text-2xl mb-1">
                         {(() => {
                           const Icon = MOON_CONDITION_ICONS[moon.status.condition] || Activity;
-                          return <Icon className="w-5 h-5 mx-auto text-slate-600" />;
+                          return <Icon className="w-5 h-5 mx-auto text-slate-400" />;
                         })()}
                       </div>
-                      <div className="text-xs text-slate-500">Condition</div>
-                      <div className="font-bold text-sm text-slate-900 capitalize">{moon.status.condition.replace(/-/g, " ")}</div>
+                      <div className="text-xs text-slate-400">Condition</div>
+                      <div className="font-bold text-sm text-white capitalize">{moon.status.condition.replace(/-/g, " ")}</div>
                     </div>
                   </TooltipTrigger>
                   <TooltipContent side="bottom" className="w-60 p-2 space-y-1">
@@ -501,10 +501,10 @@ export default function MoonsPage() {
               )}
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="text-center p-2 bg-white rounded border border-slate-200 cursor-help">
-                    <Shield className="w-5 h-5 text-green-600 mx-auto mb-1" />
-                    <div className="text-xs text-slate-500">Stability</div>
-                    <div className="font-bold text-sm text-green-700">{moon.status.stability || 0}%</div>
+                  <div className="text-center p-2 bg-slate-800/50 rounded border border-slate-700 cursor-help">
+                    <Shield className="w-5 h-5 text-green-400 mx-auto mb-1" />
+                    <div className="text-xs text-slate-400">Stability</div>
+                    <div className="font-bold text-sm text-green-400">{moon.status.stability || 0}%</div>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent side="bottom" className="w-60 p-2">
@@ -514,10 +514,10 @@ export default function MoonsPage() {
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="text-center p-2 bg-white rounded border border-slate-200 cursor-help">
-                    <Heart className="w-5 h-5 text-rose-600 mx-auto mb-1" />
-                    <div className="text-xs text-slate-500">Health</div>
-                    <div className="font-bold text-sm text-rose-700">{moon.status.health || 0}%</div>
+                  <div className="text-center p-2 bg-slate-800/50 rounded border border-slate-700 cursor-help">
+                    <Heart className="w-5 h-5 text-rose-400 mx-auto mb-1" />
+                    <div className="text-xs text-slate-400">Health</div>
+                    <div className="font-bold text-sm text-rose-400">{moon.status.health || 0}%</div>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent side="bottom" className="w-60 p-2">
@@ -528,43 +528,43 @@ export default function MoonsPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg border border-slate-200 p-3">
-            <h4 className="text-xs font-bold text-slate-600 mb-2 flex items-center gap-1">
+          <div className="bg-slate-800/50 rounded-lg border border-slate-700 p-3">
+            <h4 className="text-xs font-bold text-slate-300 mb-2 flex items-center gap-1">
               <Radio className="w-3 h-3" /> Connectivity
             </h4>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center gap-1.5 p-1.5 bg-slate-50 rounded cursor-help">
-                    <div className={`w-2 h-2 rounded-full ${moon.status.isInhabited ? "bg-green-500" : "bg-slate-300"}`} />
-                    <span>Inhabited</span>
+                  <div className="flex items-center gap-1.5 p-1.5 bg-slate-700/50 rounded cursor-help">
+                    <div className={`w-2 h-2 rounded-full ${moon.status.isInhabited ? "bg-green-500" : "bg-slate-600"}`} />
+                    <span className="text-white">Inhabited</span>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent side="bottom" className="w-56 p-2"><div className="text-[11px] text-slate-300">Crew or colonists present on the moon. Enables manual operations and local production.</div></TooltipContent>
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center gap-1.5 p-1.5 bg-slate-50 rounded cursor-help">
-                    <div className={`w-2 h-2 rounded-full ${moon.status.isColonized ? "bg-green-500" : "bg-slate-300"}`} />
-                    <span>Colonized</span>
+                  <div className="flex items-center gap-1.5 p-1.5 bg-slate-700/50 rounded cursor-help">
+                    <div className={`w-2 h-2 rounded-full ${moon.status.isColonized ? "bg-green-500" : "bg-slate-600"}`} />
+                    <span className="text-white">Colonized</span>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent side="bottom" className="w-56 p-2"><div className="text-[11px] text-slate-300">Formally claimed and settled. Colonized moons can have bases built and contribute to empire resource income.</div></TooltipContent>
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center gap-1.5 p-1.5 bg-slate-50 rounded cursor-help">
-                    <div className={`w-2 h-2 rounded-full ${moon.status.isDeveloped ? "bg-green-500" : "bg-slate-300"}`} />
-                    <span>Developed</span>
+                  <div className="flex items-center gap-1.5 p-1.5 bg-slate-700/50 rounded cursor-help">
+                    <div className={`w-2 h-2 rounded-full ${moon.status.isDeveloped ? "bg-green-500" : "bg-slate-600"}`} />
+                    <span className="text-white">Developed</span>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent side="bottom" className="w-56 p-2"><div className="text-[11px] text-slate-300">Full infrastructure established. Developed moons have running water, power grids, medical facilities, and automated mining.</div></TooltipContent>
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center gap-1.5 p-1.5 bg-slate-50 rounded cursor-help">
+                  <div className="flex items-center gap-1.5 p-1.5 bg-slate-700/50 rounded cursor-help">
                     <div className={`w-2 h-2 rounded-full ${moon.status.supplyLinesStatus === "optimal" ? "bg-green-500" : moon.status.supplyLinesStatus === "degraded" ? "bg-amber-500" : "bg-red-500"}`} />
-                    <span>Supply: {moon.status.supplyLinesStatus || "optimal"}</span>
+                    <span className="text-white">Supply: {moon.status.supplyLinesStatus || "optimal"}</span>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent side="bottom" className="w-56 p-2">
@@ -581,17 +581,17 @@ export default function MoonsPage() {
           </div>
 
           {moon.status.activeEvents?.length > 0 && (
-            <div className="bg-amber-50 rounded-lg border border-amber-200 p-3">
-              <h4 className="text-xs font-bold text-amber-700 mb-2 flex items-center gap-1">
+            <div className="bg-amber-900/20 rounded-lg border border-amber-800/50 p-3">
+              <h4 className="text-xs font-bold text-amber-400 mb-2 flex items-center gap-1">
                 <AlertTriangle className="w-3 h-3" /> Active Events
               </h4>
               <div className="space-y-1.5">
                 {moon.status.activeEvents.map((evt: any, i: number) => (
-                  <div key={i} className="flex items-start gap-2 text-xs p-1.5 bg-white rounded border border-amber-200">
-                    <AlertTriangle className={`w-3 h-3 mt-0.5 ${evt.severity === "critical" ? "text-red-500" : evt.severity === "major" ? "text-amber-500" : "text-yellow-500"}`} />
+                  <div key={i} className="flex items-start gap-2 text-xs p-1.5 bg-slate-800 rounded border border-amber-800/50">
+                    <AlertTriangle className={`w-3 h-3 mt-0.5 ${evt.severity === "critical" ? "text-red-400" : evt.severity === "major" ? "text-amber-400" : "text-yellow-400"}`} />
                     <div className="flex-1">
-                      <div className="font-medium text-amber-900">{evt.type}</div>
-                      <div className="text-amber-700">{evt.description}</div>
+                      <div className="font-medium text-amber-300">{evt.type}</div>
+                      <div className="text-amber-400/80">{evt.description}</div>
                       <div className="text-amber-500">{evt.duration} min remaining</div>
                     </div>
                   </div>
@@ -601,13 +601,13 @@ export default function MoonsPage() {
           )}
 
           {moon.status.alerts?.length > 0 && (
-            <div className="bg-red-50 rounded-lg border border-red-200 p-3">
-              <h4 className="text-xs font-bold text-red-700 mb-2">Alerts</h4>
+            <div className="bg-red-900/20 rounded-lg border border-red-800/50 p-3">
+              <h4 className="text-xs font-bold text-red-400 mb-2">Alerts</h4>
               <div className="space-y-1">
                 {moon.status.alerts.map((alert: any, i: number) => (
                   <div key={i} className="flex items-center gap-1.5 text-xs">
-                    <AlertTriangle className={`w-3 h-3 ${alert.level === "critical" ? "text-red-500" : alert.level === "danger" ? "text-orange-500" : "text-amber-500"}`} />
-                    <span className="text-red-800">{alert.message}</span>
+                    <AlertTriangle className={`w-3 h-3 ${alert.level === "critical" ? "text-red-400" : alert.level === "danger" ? "text-orange-400" : "text-amber-400"}`} />
+                    <span className="text-red-300">{alert.message}</span>
                   </div>
                 ))}
               </div>
@@ -629,46 +629,46 @@ export default function MoonsPage() {
     <div className="space-y-4">
       {moon.base ? (
         <>
-          <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-lg border border-indigo-200 p-3">
+          <div className="bg-gradient-to-br from-indigo-900/40 to-purple-900/40 rounded-lg border border-indigo-800/50 p-3">
             <div className="flex items-center justify-between mb-2">
               <div>
-                <h4 className="font-bold text-indigo-900 flex items-center gap-1.5">
+                <h4 className="font-bold text-indigo-300 flex items-center gap-1.5">
                   <Building2 className="w-4 h-4" /> {moon.base.name || "Base"}
                 </h4>
-                <p className="text-xs text-indigo-600 capitalize">{moon.base.class} · {moon.base.type.replace(/-/g, " ")}</p>
+                <p className="text-xs text-indigo-400 capitalize">{moon.base.class} · {moon.base.type.replace(/-/g, " ")}</p>
               </div>
-              <Badge className="bg-indigo-100 text-indigo-800 border-indigo-300">Lv.{moon.base.level}</Badge>
+              <Badge className="bg-indigo-900/60 text-indigo-300 border-indigo-700">Lv.{moon.base.level}</Badge>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs mt-2">
-              <div className="text-center p-1.5 bg-white/80 rounded">
-                <Users className="w-3 h-3 text-slate-500 mx-auto mb-0.5" />
-                <div className="font-medium">{moon.base.population?.toLocaleString() || "—"}</div>
+              <div className="text-center p-1.5 bg-slate-800/80 rounded">
+                <Users className="w-3 h-3 text-slate-400 mx-auto mb-0.5" />
+                <div className="font-medium text-white">{moon.base.population?.toLocaleString() || "—"}</div>
                 <div className="text-slate-400">Population</div>
               </div>
-              <div className="text-center p-1.5 bg-white/80 rounded">
-                <Shield className="w-3 h-3 text-red-500 mx-auto mb-0.5" />
-                <div className="font-medium">{moon.base.defense || 0}</div>
+              <div className="text-center p-1.5 bg-slate-800/80 rounded">
+                <Shield className="w-3 h-3 text-red-400 mx-auto mb-0.5" />
+                <div className="font-medium text-white">{moon.base.defense || 0}</div>
                 <div className="text-slate-400">Defense</div>
               </div>
-              <div className="text-center p-1.5 bg-white/80 rounded">
-                <Zap className="w-3 h-3 text-amber-500 mx-auto mb-0.5" />
-                <div className="font-medium">{moon.base.production || 0}</div>
+              <div className="text-center p-1.5 bg-slate-800/80 rounded">
+                <Zap className="w-3 h-3 text-amber-400 mx-auto mb-0.5" />
+                <div className="font-medium text-white">{moon.base.production || 0}</div>
                 <div className="text-slate-400">Production</div>
               </div>
-              <div className="text-center p-1.5 bg-white/80 rounded">
-                <FlaskConical className="w-3 h-3 text-purple-500 mx-auto mb-0.5" />
-                <div className="font-medium">{moon.base.research || 0}</div>
+              <div className="text-center p-1.5 bg-slate-800/80 rounded">
+                <FlaskConical className="w-3 h-3 text-purple-400 mx-auto mb-0.5" />
+                <div className="font-medium text-white">{moon.base.research || 0}</div>
                 <div className="text-slate-400">Research</div>
               </div>
             </div>
             {moon.base.garrison?.length > 0 && (
-              <div className="mt-2 p-2 bg-white/80 rounded border border-indigo-200">
-                <h5 className="text-xs font-bold text-indigo-700 mb-1 flex items-center gap-1">
+              <div className="mt-2 p-2 bg-slate-800/80 rounded border border-indigo-800/50">
+                <h5 className="text-xs font-bold text-indigo-400 mb-1 flex items-center gap-1">
                   <Swords className="w-3 h-3" /> Garrison
                 </h5>
                 <div className="flex flex-wrap gap-1">
                   {moon.base.garrison.map((g: any, i: number) => (
-                    <Badge key={i} variant="outline" className="text-xs">
+                    <Badge key={i} variant="outline" className="text-xs text-white border-slate-600">
                       {g.unitType}: {g.quantity}
                     </Badge>
                   ))}
@@ -677,11 +677,11 @@ export default function MoonsPage() {
             )}
           </div>
 
-          <div className="bg-white rounded-lg border border-slate-200 p-3">
-            <h4 className="text-xs font-bold text-slate-600 mb-2">Storage Capacity</h4>
+          <div className="bg-slate-800/50 rounded-lg border border-slate-700 p-3">
+            <h4 className="text-xs font-bold text-slate-300 mb-2">Storage Capacity</h4>
             <div className="grid grid-cols-3 gap-2 text-xs">
-              <div className="text-center p-2 bg-amber-50 rounded border border-amber-200">
-                <div className="font-bold text-amber-700">{moon.base.storage?.toLocaleString() || "—"}</div>
+              <div className="text-center p-2 bg-amber-900/20 rounded border border-amber-800/50">
+                <div className="font-bold text-amber-300">{moon.base.storage?.toLocaleString() || "—"}</div>
                 <div className="text-amber-500">Total Storage</div>
               </div>
             </div>
@@ -691,8 +691,8 @@ export default function MoonsPage() {
         <>
           {moon.details?.currentOwner ? (
             <div className="space-y-3">
-              <div className="text-center py-4 text-slate-500">
-                <Building2 className="w-8 h-8 mx-auto mb-2 text-slate-300" />
+              <div className="text-center py-4 text-slate-400">
+                <Building2 className="w-8 h-8 mx-auto mb-2 text-slate-500" />
                 <p className="text-sm">No base constructed on this moon.</p>
               </div>
               {!showBuildBase ? (
@@ -701,7 +701,7 @@ export default function MoonsPage() {
                 </Button>
               ) : (
                 <div className="space-y-2">
-                  <h4 className="text-xs font-bold text-slate-600">Select Base Type</h4>
+                  <h4 className="text-xs font-bold text-slate-300">Select Base Type</h4>
                   <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
                     {(Object.entries(MOON_BASE_TYPES) as [MoonBaseType, MoonBaseTypeConfig][]).map(([type, config]) => (
                       <Tooltip key={type}>
@@ -710,12 +710,12 @@ export default function MoonsPage() {
                             onClick={() => setBuildBaseType(type)}
                             className={`p-2 rounded-lg border-2 text-left transition-all text-xs w-full ${
                               buildBaseType === type
-                                ? "border-indigo-400 bg-indigo-50"
-                                : "border-slate-200 hover:border-slate-300 bg-white"
+                                ? "border-indigo-500 bg-indigo-900/30"
+                                : "border-slate-700 hover:border-slate-600 bg-slate-800"
                             }`}
                           >
-                            <div className="font-medium text-slate-900">{config.name}</div>
-                            <div className="text-slate-500 mt-0.5">{config.description}</div>
+                            <div className="font-medium text-white">{config.name}</div>
+                            <div className="text-slate-400 mt-0.5">{config.description}</div>
                             <div className="flex items-center gap-1 mt-1 text-slate-400">
                               <Shield className="w-3 h-3" /> {config.baseDefense}
                               <Zap className="w-3 h-3 ml-1" /> {config.baseProduction}
@@ -767,8 +767,8 @@ export default function MoonsPage() {
               )}
             </div>
           ) : (
-            <div className="text-center py-4 text-slate-500">
-              <Building2 className="w-8 h-8 mx-auto mb-2 text-slate-300" />
+            <div className="text-center py-4 text-slate-400">
+              <Building2 className="w-8 h-8 mx-auto mb-2 text-slate-500" />
               <p className="text-sm">Colonize this moon first to build a base.</p>
             </div>
           )}

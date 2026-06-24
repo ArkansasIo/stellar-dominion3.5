@@ -11,7 +11,7 @@ const router = Router();
  */
 router.get("/balance", requireAuth, async (req: Request, res: Response) => {
   try {
-    const userId = (req as any).userId;
+    const userId = req.session?.userId as string;
     const balances = await gateTokensService.getAllTokenBalances(userId);
     res.json({ success: true, balances });
   } catch (error) {
@@ -26,7 +26,7 @@ router.get("/balance", requireAuth, async (req: Request, res: Response) => {
  */
 router.get("/:tokenType", requireAuth, async (req: Request, res: Response) => {
   try {
-    const userId = (req as any).userId;
+    const userId = req.session?.userId as string;
     const { tokenType } = req.params;
 
     if (!isValidTokenType(tokenType)) {
@@ -47,7 +47,7 @@ router.get("/:tokenType", requireAuth, async (req: Request, res: Response) => {
  */
 router.post("/consume", requireAuth, async (req: Request, res: Response) => {
   try {
-    const userId = (req as any).userId;
+    const userId = req.session?.userId as string;
     const { tokenType, source, metadata } = req.body;
 
     if (!isValidTokenType(tokenType)) {
@@ -78,7 +78,7 @@ router.post("/consume", requireAuth, async (req: Request, res: Response) => {
  */
 router.post("/purchase", requireAuth, async (req: Request, res: Response) => {
   try {
-    const userId = (req as any).userId;
+    const userId = req.session?.userId as string;
     const { tokenType, quantity } = req.body;
 
     if (!isValidTokenType(tokenType)) {
@@ -108,7 +108,7 @@ router.post("/purchase", requireAuth, async (req: Request, res: Response) => {
  */
 router.get("/history", requireAuth, async (req: Request, res: Response) => {
   try {
-    const userId = (req as any).userId;
+    const userId = req.session?.userId as string;
     const limit = Math.min(parseInt(req.query.limit as string) || 50, 100);
     const offset = parseInt(req.query.offset as string) || 0;
 

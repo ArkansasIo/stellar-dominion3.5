@@ -52,13 +52,13 @@ const STARBASE_COLORS: Record<StarbaseType, string> = {
 };
 
 const STARBASE_BG: Record<StarbaseType, string> = {
-  mining: "bg-amber-50 border-amber-200",
-  refining: "bg-cyan-50 border-cyan-200",
-  shipyard: "bg-green-50 border-green-200",
-  research: "bg-purple-50 border-purple-200",
-  trade: "bg-yellow-50 border-yellow-200",
-  defense: "bg-red-50 border-red-200",
-  command: "bg-indigo-50 border-indigo-200",
+  mining: "bg-amber-900/20 border-amber-800/40",
+  refining: "bg-cyan-900/20 border-cyan-800/40",
+  shipyard: "bg-green-900/20 border-green-800/40",
+  research: "bg-purple-900/20 border-purple-800/40",
+  trade: "bg-yellow-900/20 border-yellow-800/40",
+  defense: "bg-red-900/20 border-red-800/40",
+  command: "bg-indigo-900/20 border-indigo-800/40",
 };
 
 export default function Starbases() {
@@ -103,18 +103,18 @@ export default function Starbases() {
     offense: Crosshair, support: Wrench, utility: Cpu,
   };
   const MODULE_COLORS: Record<string, string> = {
-    production: "bg-amber-100 text-amber-700 border-amber-300",
-    storage: "bg-blue-100 text-blue-700 border-blue-300",
-    defense: "bg-green-100 text-green-700 border-green-300",
-    offense: "bg-red-100 text-red-700 border-red-300",
-    support: "bg-purple-100 text-purple-700 border-purple-300",
-    utility: "bg-cyan-100 text-cyan-700 border-cyan-300",
+    production: "bg-amber-900/30 text-amber-300 border-amber-800/50",
+    storage: "bg-blue-900/30 text-blue-300 border-blue-800/50",
+    defense: "bg-green-900/30 text-green-300 border-green-800/50",
+    offense: "bg-red-900/30 text-red-300 border-red-800/50",
+    support: "bg-purple-900/30 text-purple-300 border-purple-800/50",
+    utility: "bg-cyan-900/30 text-cyan-300 border-cyan-800/50",
   };
   const TIER_COLORS: Record<string, string> = {
-    standard: "bg-slate-100 text-slate-700",
-    advanced: "bg-blue-100 text-blue-700",
-    elite: "bg-purple-100 text-purple-700",
-    legendary: "bg-amber-100 text-amber-800",
+    standard: "bg-slate-700 text-slate-300",
+    advanced: "bg-blue-900/50 text-blue-300",
+    elite: "bg-purple-900/50 text-purple-300",
+    legendary: "bg-amber-900/50 text-amber-300",
   };
 
   const filteredModules = selectedModCategory === "all"
@@ -184,10 +184,10 @@ export default function Starbases() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-orbitron font-bold text-slate-900 flex items-center gap-2">
+            <h1 className="text-2xl font-orbitron font-bold text-white flex items-center gap-2">
               <HardDrive className="w-7 h-7 text-primary" /> Starbase Infrastructure
             </h1>
-            <p className="text-sm text-slate-500 mt-1">Build and manage your interstellar starbase network</p>
+            <p className="text-sm text-slate-400 mt-1">Build and manage your interstellar starbase network</p>
           </div>
           <Button onClick={() => setShowBuildMenu(true)} className="gap-2">
             <Plus className="w-4 h-4" /> Construct Starbase
@@ -196,43 +196,43 @@ export default function Starbases() {
 
         {/* Overview Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
+          <Card className="bg-gradient-to-br from-blue-900/40 to-indigo-900/40 border-blue-800/50">
             <CardContent className="p-4">
-              <div className="text-xs text-slate-500 mb-1">Total Starbases</div>
-              <div className="text-2xl font-bold text-slate-900">{starbases.length}</div>
+              <div className="text-xs text-slate-400 mb-1">Total Starbases</div>
+              <div className="text-2xl font-bold text-white">{starbases.length}</div>
             </CardContent>
           </Card>
-          <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+          <Card className="bg-gradient-to-br from-green-900/40 to-emerald-900/40 border-green-800/50">
             <CardContent className="p-4">
-              <div className="text-xs text-slate-500 mb-1">Active</div>
-              <div className="text-2xl font-bold text-green-600">{activeCount}</div>
+              <div className="text-xs text-slate-400 mb-1">Active</div>
+              <div className="text-2xl font-bold text-green-400">{activeCount}</div>
             </CardContent>
           </Card>
-          <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200">
+          <Card className="bg-gradient-to-br from-amber-900/40 to-orange-900/40 border-amber-800/50">
             <CardContent className="p-4">
-              <div className="text-xs text-slate-500 mb-1">Metal/hr</div>
-              <div className="text-2xl font-bold text-amber-600">{totalProduction.metal.toLocaleString()}</div>
+              <div className="text-xs text-slate-400 mb-1">Metal/hr</div>
+              <div className="text-2xl font-bold text-amber-400">{totalProduction.metal.toLocaleString()}</div>
             </CardContent>
           </Card>
-          <Card className="bg-gradient-to-br from-purple-50 to-violet-50 border-purple-200">
+          <Card className="bg-gradient-to-br from-purple-900/40 to-violet-900/40 border-purple-800/50">
             <CardContent className="p-4">
-              <div className="text-xs text-slate-500 mb-1">Crystal/hr</div>
-              <div className="text-2xl font-bold text-purple-600">{totalProduction.crystal.toLocaleString()}</div>
+              <div className="text-xs text-slate-400 mb-1">Crystal/hr</div>
+              <div className="text-2xl font-bold text-purple-400">{totalProduction.crystal.toLocaleString()}</div>
             </CardContent>
           </Card>
         </div>
 
         {/* Build Menu */}
         {showBuildMenu && (
-          <Card className="border-2 border-primary/30 bg-gradient-to-br from-slate-50 to-white">
+          <Card className="border-2 border-primary/30 bg-gradient-to-br from-slate-800 to-slate-900">
             <CardHeader>
-              <CardTitle className="flex items-center justify-between">
+              <CardTitle className="flex items-center justify-between text-white">
                 <span className="flex items-center gap-2"><Plus className="w-5 h-5" /> Construct New Starbase</span>
                 <Button variant="ghost" size="sm" onClick={() => { setShowBuildMenu(false); setBuildType(null); }}>
                   <X className="w-4 h-4" />
                 </Button>
               </CardTitle>
-              <CardDescription>Choose a starbase type and name your installation</CardDescription>
+              <CardDescription className="text-slate-400">Choose a starbase type and name your installation</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
@@ -247,14 +247,14 @@ export default function Starbases() {
                           onClick={() => setBuildType(type.id)}
                           className={cn(
                             "p-3 rounded-xl border-2 text-left transition-all",
-                            isSelected ? "border-primary bg-primary/5 shadow-md" : "border-slate-200 hover:border-slate-300 bg-white"
+                            isSelected ? "border-primary bg-primary/10 shadow-md" : "border-slate-700 hover:border-slate-600 bg-slate-800"
                           )}
                         >
                           <div className={cn("w-10 h-10 rounded-lg bg-gradient-to-br flex items-center justify-center text-white mb-2", STARBASE_COLORS[type.id as StarbaseType])}>
                             <Icon className="w-5 h-5" />
                           </div>
-                          <div className="font-medium text-sm text-slate-900">{type.name}</div>
-                          <div className="text-xs text-slate-500 mt-0.5 line-clamp-2">{type.description?.substring(0, 60)}...</div>
+                          <div className="font-medium text-sm text-white">{type.name}</div>
+                          <div className="text-xs text-slate-400 mt-0.5 line-clamp-2">{type.description?.substring(0, 60)}...</div>
                         </button>
                       </TooltipTrigger>
                       <TooltipContent side="right" className="w-72 p-3 space-y-2">
@@ -286,12 +286,12 @@ export default function Starbases() {
               {buildType && (
                 <div className="flex items-end gap-3 pt-2">
                   <div className="flex-1 space-y-1">
-                    <label className="text-sm font-medium text-slate-700">Starbase Name</label>
+                    <label className="text-sm font-medium text-slate-300">Starbase Name</label>
                     <Input
                       value={buildName}
                       onChange={(e) => setBuildName(e.target.value)}
                       placeholder={`My ${buildType} Station`}
-                      className="bg-white"
+                      className="bg-slate-800 border-slate-600 text-white"
                     />
                   </div>
                   <Button onClick={() => buildMutation.mutate()} disabled={buildMutation.isPending}>
@@ -310,11 +310,11 @@ export default function Starbases() {
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
           </div>
         ) : starbases.length === 0 ? (
-          <Card className="py-12">
+          <Card className="py-12 bg-slate-900/80 border-slate-700">
             <CardContent className="text-center">
-              <HardDrive className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-              <h3 className="text-lg font-medium text-slate-700">No Starbases</h3>
-              <p className="text-sm text-slate-500 mt-1">Construct your first starbase to begin building your infrastructure.</p>
+              <HardDrive className="w-12 h-12 text-slate-500 mx-auto mb-3" />
+              <h3 className="text-lg font-medium text-white">No Starbases</h3>
+              <p className="text-sm text-slate-400 mt-1">Construct your first starbase to begin building your infrastructure.</p>
               <Button className="mt-4" onClick={() => setShowBuildMenu(true)}>
                 <Plus className="w-4 h-4 mr-2" /> Build First Starbase
               </Button>
@@ -351,7 +351,7 @@ export default function Starbases() {
                               <Input
                                 value={editName}
                                 onChange={(e) => setEditName(e.target.value)}
-                                className="h-7 text-sm w-40"
+                                className="h-7 text-sm w-40 bg-slate-800 border-slate-600 text-white"
                                 onClick={(e) => e.stopPropagation()}
                                 onKeyDown={(e) => {
                                   if (e.key === "Enter") renameMutation.mutate({ id: sb.id, name: editName });
@@ -364,15 +364,15 @@ export default function Starbases() {
                               </Button>
                             </div>
                           ) : (
-                            <div className="font-orbitron font-bold text-slate-900 text-sm flex items-center gap-1">
+                            <div className="font-orbitron font-bold text-white text-sm flex items-center gap-1">
                               {sb.name}
-                              <button className="text-slate-400 hover:text-slate-600" onClick={(e) => { e.stopPropagation(); setEditingId(sb.id); setEditName(sb.name); }}>
+                              <button className="text-slate-500 hover:text-slate-300" onClick={(e) => { e.stopPropagation(); setEditingId(sb.id); setEditName(sb.name); }}>
                                 <Edit3 className="w-3 h-3" />
                               </button>
                             </div>
                           )}
-                          <div className="text-xs text-slate-500">
-                            <Badge variant="outline" className="text-xs mr-1">Lv.{sb.level}</Badge>
+                          <div className="text-xs text-slate-400">
+                            <Badge variant="outline" className="text-xs mr-1 text-slate-300 border-slate-600">Lv.{sb.level}</Badge>
                             {sb.typeInfo?.name || sb.starbaseType}
                           </div>
                         </div>
@@ -384,7 +384,7 @@ export default function Starbases() {
 
                     {/* Level Progress */}
                     <div className="mb-3">
-                      <div className="flex justify-between text-xs text-slate-500 mb-1">
+                      <div className="flex justify-between text-xs text-slate-400 mb-1">
                         <span>Level {sb.level}</span>
                         <span>{sb.typeInfo?.maxLevel || 50}</span>
                       </div>
@@ -393,22 +393,22 @@ export default function Starbases() {
 
                     {/* Stats Grid */}
                     <div className="grid grid-cols-3 gap-2 text-xs mb-3">
-                      <div className="bg-white/80 rounded p-1.5 text-center">
-                        <div className="text-amber-600 font-bold">{sb.metalProductionRate.toLocaleString()}</div>
+                      <div className="bg-slate-800/80 rounded p-1.5 text-center">
+                        <div className="text-amber-400 font-bold">{sb.metalProductionRate.toLocaleString()}</div>
                         <div className="text-slate-400">Metal/hr</div>
                       </div>
-                      <div className="bg-white/80 rounded p-1.5 text-center">
-                        <div className="text-cyan-600 font-bold">{sb.crystalProductionRate.toLocaleString()}</div>
+                      <div className="bg-slate-800/80 rounded p-1.5 text-center">
+                        <div className="text-cyan-400 font-bold">{sb.crystalProductionRate.toLocaleString()}</div>
                         <div className="text-slate-400">Crystal/hr</div>
                       </div>
-                      <div className="bg-white/80 rounded p-1.5 text-center">
-                        <div className="text-blue-600 font-bold">{sb.deuteriumProductionRate.toLocaleString()}</div>
+                      <div className="bg-slate-800/80 rounded p-1.5 text-center">
+                        <div className="text-blue-400 font-bold">{sb.deuteriumProductionRate.toLocaleString()}</div>
                         <div className="text-slate-400">Deut/hr</div>
                       </div>
                     </div>
 
                     {/* Defense & Hangar */}
-                    <div className="flex items-center justify-between text-xs text-slate-500 mb-3">
+                    <div className="flex items-center justify-between text-xs text-slate-400 mb-3">
                       <span className="flex items-center gap-1"><Swords className="w-3 h-3" /> Defense: {sb.defenseLevel}</span>
                       <span className="flex items-center gap-1"><Package className="w-3 h-3" /> Hangar: {sb.hangarSlots}</span>
                       {sb.researchSlots > 0 && <span className="flex items-center gap-1"><FlaskConical className="w-3 h-3" /> Lab: {sb.researchSlots}</span>}
@@ -455,75 +455,75 @@ export default function Starbases() {
 
         {/* Selected Starbase Detail */}
         {selectedStarbase && (
-          <Card className="border-2 border-primary/20">
+          <Card className="border-2 border-primary/20 bg-slate-900/80">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-white">
                 {(() => {
                   const Icon = STARBASE_ICONS[selectedStarbase.starbaseType as StarbaseType] || Rocket;
                   return <Icon className="w-5 h-5" />;
                 })()}
                 {selectedStarbase.name} — {selectedStarbase.typeInfo?.name}
               </CardTitle>
-              <CardDescription>Starbase Command Interface</CardDescription>
+              <CardDescription className="text-slate-400">Starbase Command Interface</CardDescription>
             </CardHeader>
             <CardContent>
               <Tabs defaultValue="overview">
-                <TabsList>
-                  <TabsTrigger value="overview"><BarChart3 className="w-3 h-3 mr-1" /> Overview</TabsTrigger>
-                  <TabsTrigger value="modules"><Wrench className="w-3 h-3 mr-1" /> Modules</TabsTrigger>
-                  <TabsTrigger value="defense"><Shield className="w-3 h-3 mr-1" /> Defense</TabsTrigger>
+                <TabsList className="bg-slate-800 border-slate-600">
+                  <TabsTrigger value="overview" className="text-xs data-[state=active]:bg-slate-700"><BarChart3 className="w-3 h-3 mr-1" /> Overview</TabsTrigger>
+                  <TabsTrigger value="modules" className="text-xs data-[state=active]:bg-slate-700"><Wrench className="w-3 h-3 mr-1" /> Modules</TabsTrigger>
+                  <TabsTrigger value="defense" className="text-xs data-[state=active]:bg-slate-700"><Shield className="w-3 h-3 mr-1" /> Defense</TabsTrigger>
                 </TabsList>
                 <TabsContent value="overview" className="space-y-4 mt-4">
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="bg-slate-50 rounded-lg p-3">
-                      <div className="text-xs text-slate-500">Level</div>
-                      <div className="text-xl font-bold text-slate-900">{selectedStarbase.level} / {selectedStarbase.typeInfo?.maxLevel}</div>
+                    <div className="bg-slate-800 rounded-lg p-3 border border-slate-700">
+                      <div className="text-xs text-slate-400">Level</div>
+                      <div className="text-xl font-bold text-white">{selectedStarbase.level} / {selectedStarbase.typeInfo?.maxLevel}</div>
                     </div>
-                    <div className="bg-slate-50 rounded-lg p-3">
-                      <div className="text-xs text-slate-500">Defense Rating</div>
-                      <div className="text-xl font-bold text-red-600">{selectedStarbase.defenseLevel}</div>
+                    <div className="bg-slate-800 rounded-lg p-3 border border-slate-700">
+                      <div className="text-xs text-slate-400">Defense Rating</div>
+                      <div className="text-xl font-bold text-red-400">{selectedStarbase.defenseLevel}</div>
                     </div>
-                    <div className="bg-slate-50 rounded-lg p-3">
-                      <div className="text-xs text-slate-500">Hangar Slots</div>
-                      <div className="text-xl font-bold text-green-600">{selectedStarbase.hangarSlots}</div>
+                    <div className="bg-slate-800 rounded-lg p-3 border border-slate-700">
+                      <div className="text-xs text-slate-400">Hangar Slots</div>
+                      <div className="text-xl font-bold text-green-400">{selectedStarbase.hangarSlots}</div>
                     </div>
-                    <div className="bg-slate-50 rounded-lg p-3">
-                      <div className="text-xs text-slate-500">Research Slots</div>
-                      <div className="text-xl font-bold text-purple-600">{selectedStarbase.researchSlots}</div>
-                    </div>
-                  </div>
-                  <Separator />
-                  <div>
-                    <h4 className="font-medium text-slate-700 mb-2">Resource Storage</h4>
-                    <div className="grid grid-cols-3 gap-3">
-                      <div className="bg-amber-50 rounded-lg p-3 border border-amber-200">
-                        <div className="text-xs text-amber-600">Metal Capacity</div>
-                        <div className="font-bold text-amber-700">{selectedStarbase.metalStorage.toLocaleString()}</div>
-                      </div>
-                      <div className="bg-cyan-50 rounded-lg p-3 border border-cyan-200">
-                        <div className="text-xs text-cyan-600">Crystal Capacity</div>
-                        <div className="font-bold text-cyan-700">{selectedStarbase.crystalStorage.toLocaleString()}</div>
-                      </div>
-                      <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
-                        <div className="text-xs text-blue-600">Deuterium Capacity</div>
-                        <div className="font-bold text-blue-700">{selectedStarbase.deuteriumStorage.toLocaleString()}</div>
-                      </div>
+                    <div className="bg-slate-800 rounded-lg p-3 border border-slate-700">
+                      <div className="text-xs text-slate-400">Research Slots</div>
+                      <div className="text-xl font-bold text-purple-400">{selectedStarbase.researchSlots}</div>
                     </div>
                   </div>
+                  <Separator className="bg-slate-700" />
                   <div>
-                    <h4 className="font-medium text-slate-700 mb-2">Production Rates (per hour)</h4>
+                    <h4 className="font-medium text-slate-300 mb-2">Resource Storage</h4>
                     <div className="grid grid-cols-3 gap-3">
-                      <div className="bg-amber-50 rounded-lg p-3 border border-amber-200">
-                        <div className="text-xs text-amber-600">Metal</div>
-                        <div className="font-bold text-amber-700">+{selectedStarbase.metalProductionRate.toLocaleString()}/hr</div>
+                      <div className="bg-amber-900/20 rounded-lg p-3 border border-amber-800/50">
+                        <div className="text-xs text-amber-400">Metal Capacity</div>
+                        <div className="font-bold text-amber-300">{selectedStarbase.metalStorage.toLocaleString()}</div>
                       </div>
-                      <div className="bg-cyan-50 rounded-lg p-3 border border-cyan-200">
-                        <div className="text-xs text-cyan-600">Crystal</div>
-                        <div className="font-bold text-cyan-700">+{selectedStarbase.crystalProductionRate.toLocaleString()}/hr</div>
+                      <div className="bg-cyan-900/20 rounded-lg p-3 border border-cyan-800/50">
+                        <div className="text-xs text-cyan-400">Crystal Capacity</div>
+                        <div className="font-bold text-cyan-300">{selectedStarbase.crystalStorage.toLocaleString()}</div>
                       </div>
-                      <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
-                        <div className="text-xs text-blue-600">Deuterium</div>
-                        <div className="font-bold text-blue-700">+{selectedStarbase.deuteriumProductionRate.toLocaleString()}/hr</div>
+                      <div className="bg-blue-900/20 rounded-lg p-3 border border-blue-800/50">
+                        <div className="text-xs text-blue-400">Deuterium Capacity</div>
+                        <div className="font-bold text-blue-300">{selectedStarbase.deuteriumStorage.toLocaleString()}</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-slate-300 mb-2">Production Rates (per hour)</h4>
+                    <div className="grid grid-cols-3 gap-3">
+                      <div className="bg-amber-900/20 rounded-lg p-3 border border-amber-800/50">
+                        <div className="text-xs text-amber-400">Metal</div>
+                        <div className="font-bold text-amber-300">+{selectedStarbase.metalProductionRate.toLocaleString()}/hr</div>
+                      </div>
+                      <div className="bg-cyan-900/20 rounded-lg p-3 border border-cyan-800/50">
+                        <div className="text-xs text-cyan-400">Crystal</div>
+                        <div className="font-bold text-cyan-300">+{selectedStarbase.crystalProductionRate.toLocaleString()}/hr</div>
+                      </div>
+                      <div className="bg-blue-900/20 rounded-lg p-3 border border-blue-800/50">
+                        <div className="text-xs text-blue-400">Deuterium</div>
+                        <div className="font-bold text-blue-300">+{selectedStarbase.deuteriumProductionRate.toLocaleString()}/hr</div>
                       </div>
                     </div>
                   </div>
@@ -532,16 +532,16 @@ export default function Starbases() {
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h4 className="font-medium text-slate-700 flex items-center gap-1.5">
+                        <h4 className="font-medium text-slate-300 flex items-center gap-1.5">
                           <Wrench className="w-4 h-4" /> Available Modules
                         </h4>
-                        <p className="text-xs text-slate-500">Slots: {selectedStarbase.typeInfo?.moduleSlots || 0} · {availableModules.length} modules available</p>
+                        <p className="text-xs text-slate-400">Slots: {selectedStarbase.typeInfo?.moduleSlots || 0} · {availableModules.length} modules available</p>
                       </div>
                       {availableModules.length > 0 && (
                         <div className="flex gap-1">
                           <button
                             onClick={() => setSelectedModCategory("all")}
-                            className={`px-2 py-1 text-xs rounded border ${selectedModCategory === "all" ? "bg-slate-800 text-white border-slate-700" : "bg-white text-slate-600 border-slate-200"}`}
+                            className={`px-2 py-1 text-xs rounded border ${selectedModCategory === "all" ? "bg-slate-700 text-white border-slate-600" : "bg-slate-800 text-slate-400 border-slate-700"}`}
                           >
                             All
                           </button>
@@ -553,8 +553,8 @@ export default function Starbases() {
                                 onClick={() => setSelectedModCategory(cat.key)}
                                 className={`px-2 py-1 text-xs rounded border flex items-center gap-1 ${
                                   selectedModCategory === cat.key
-                                    ? "bg-slate-800 text-white border-slate-700"
-                                    : "bg-white text-slate-600 border-slate-200"
+                                    ? "bg-slate-700 text-white border-slate-600"
+                                    : "bg-slate-800 text-slate-400 border-slate-700"
                                 }`}
                               >
                                 <Icon className="w-3 h-3" /> {cat.label}
@@ -571,21 +571,21 @@ export default function Starbases() {
                           const Icon = MODULE_ICONS[mod.category] || Wrench;
                           const installed = (installedModules[selectedStarbase.id] || []).find(i => i.moduleId === mod.id);
                           return (
-                            <Card key={mod.id} className={`border ${MODULE_COLORS[mod.category] || "border-slate-200"}`}>
+                            <Card key={mod.id} className={`border bg-slate-800/50 ${MODULE_COLORS[mod.category] || "border-slate-700"}`}>
                               <CardContent className="p-3 space-y-2">
                                 <div className="flex items-start justify-between">
                                   <div className="flex items-center gap-2">
-                                    <div className={`p-1.5 rounded ${mod.category === "production" ? "bg-amber-100" : mod.category === "storage" ? "bg-blue-100" : mod.category === "defense" ? "bg-green-100" : mod.category === "offense" ? "bg-red-100" : mod.category === "support" ? "bg-purple-100" : "bg-cyan-100"}`}>
-                                      <Icon className={`w-3.5 h-3.5 ${mod.category === "production" ? "text-amber-600" : mod.category === "storage" ? "text-blue-600" : mod.category === "defense" ? "text-green-600" : mod.category === "offense" ? "text-red-600" : mod.category === "support" ? "text-purple-600" : "text-cyan-600"}`} />
+                                    <div className={`p-1.5 rounded ${mod.category === "production" ? "bg-amber-900/40" : mod.category === "storage" ? "bg-blue-900/40" : mod.category === "defense" ? "bg-green-900/40" : mod.category === "offense" ? "bg-red-900/40" : mod.category === "support" ? "bg-purple-900/40" : "bg-cyan-900/40"}`}>
+                                      <Icon className={`w-3.5 h-3.5 ${mod.category === "production" ? "text-amber-300" : mod.category === "storage" ? "text-blue-300" : mod.category === "defense" ? "text-green-300" : mod.category === "offense" ? "text-red-300" : mod.category === "support" ? "text-purple-300" : "text-cyan-300"}`} />
                                     </div>
                                     <div>
-                                      <div className="font-semibold text-slate-900 text-sm">{mod.name}</div>
-                                      <div className="text-xs text-slate-500 capitalize">{mod.category}</div>
+                                      <div className="font-semibold text-white text-sm">{mod.name}</div>
+                                      <div className="text-xs text-slate-400 capitalize">{mod.category}</div>
                                     </div>
                                   </div>
                                   <Tooltip>
                                     <TooltipTrigger asChild>
-                                      <Badge className={`text-xs cursor-help ${TIER_COLORS[mod.tier] || "bg-slate-100"}`}>
+                                      <Badge className={`text-xs cursor-help ${TIER_COLORS[mod.tier] || "bg-slate-700 text-slate-300"}`}>
                                         {mod.tier}
                                       </Badge>
                                     </TooltipTrigger>
@@ -600,12 +600,12 @@ export default function Starbases() {
                                     </TooltipContent>
                                   </Tooltip>
                                 </div>
-                                <p className="text-xs text-slate-600">{mod.description}</p>
+                                <p className="text-xs text-slate-400">{mod.description}</p>
                                 <div className="flex flex-wrap gap-1">
                                   {Object.entries(mod.effects).map(([k, v]) => (
                                     <Tooltip key={k}>
                                       <TooltipTrigger asChild>
-                                        <Badge variant="outline" className="text-[10px] bg-white cursor-help">
+                                        <Badge variant="outline" className="text-[10px] bg-slate-800 cursor-help border-slate-600 text-slate-300">
                                           {k.replace(/([A-Z])/g, " $1").trim()}: +{v}×{mod.maxLevel}
                                         </Badge>
                                       </TooltipTrigger>
@@ -627,8 +627,8 @@ export default function Starbases() {
                                     </Tooltip>
                                   ))}
                                 </div>
-                                <div className="flex items-center justify-between pt-1 border-t border-slate-100">
-                                  <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                                <div className="flex items-center justify-between pt-1 border-t border-slate-700">
+                                  <div className="flex items-center gap-1.5 text-xs text-slate-400">
                                     <Box className="w-3 h-3" />{mod.costs.metal.toLocaleString()}
                                     <Gem className="w-3 h-3" />{mod.costs.crystal.toLocaleString()}
                                     <Database className="w-3 h-3" />{mod.costs.deuterium.toLocaleString()}
@@ -662,8 +662,8 @@ export default function Starbases() {
                         })}
                       </div>
                     ) : (
-                      <div className="text-center py-6 text-slate-500">
-                        <Wrench className="w-8 h-8 mx-auto mb-2 text-slate-300" />
+                      <div className="text-center py-6 text-slate-400">
+                        <Wrench className="w-8 h-8 mx-auto mb-2 text-slate-500" />
                         <p>No modules available for this starbase type.</p>
                       </div>
                     )}
@@ -674,10 +674,10 @@ export default function Starbases() {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <div className="bg-slate-50 rounded-lg p-3 text-center border border-slate-200 cursor-help">
-                            <Shield className="w-5 h-5 text-green-600 mx-auto mb-1" />
-                            <div className="text-xs text-slate-500">Defense Rating</div>
-                            <div className="text-xl font-bold text-slate-900">{selectedStarbase.defenseLevel}</div>
+                          <div className="bg-slate-800 rounded-lg p-3 text-center border border-slate-700 cursor-help">
+                            <Shield className="w-5 h-5 text-green-400 mx-auto mb-1" />
+                            <div className="text-xs text-slate-400">Defense Rating</div>
+                            <div className="text-xl font-bold text-white">{selectedStarbase.defenseLevel}</div>
                           </div>
                         </TooltipTrigger>
                         <TooltipContent side="bottom" className="w-60 p-2">
@@ -687,11 +687,11 @@ export default function Starbases() {
                       </Tooltip>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <div className="bg-slate-50 rounded-lg p-3 text-center border border-slate-200 cursor-help">
-                            <Layers className="w-5 h-5 text-blue-600 mx-auto mb-1" />
-                            <div className="text-xs text-slate-500">Hull Integrity</div>
+                          <div className="bg-slate-800 rounded-lg p-3 text-center border border-slate-700 cursor-help">
+                            <Layers className="w-5 h-5 text-blue-400 mx-auto mb-1" />
+                            <div className="text-xs text-slate-400">Hull Integrity</div>
                             <Progress value={Math.min(100, selectedStarbase.level * 5)} className="h-2 mb-1" />
-                            <div className="font-bold text-sm text-slate-900">{selectedStarbase.level * 5}%</div>
+                            <div className="font-bold text-sm text-white">{selectedStarbase.level * 5}%</div>
                           </div>
                         </TooltipTrigger>
                         <TooltipContent side="bottom" className="w-60 p-2">
@@ -701,10 +701,10 @@ export default function Starbases() {
                       </Tooltip>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <div className="bg-slate-50 rounded-lg p-3 text-center border border-slate-200 cursor-help">
-                            <Swords className="w-5 h-5 text-red-600 mx-auto mb-1" />
-                            <div className="text-xs text-slate-500">Defense Modules</div>
-                            <div className="text-xl font-bold text-slate-900">
+                          <div className="bg-slate-800 rounded-lg p-3 text-center border border-slate-700 cursor-help">
+                            <Swords className="w-5 h-5 text-red-400 mx-auto mb-1" />
+                            <div className="text-xs text-slate-400">Defense Modules</div>
+                            <div className="text-xl font-bold text-white">
                               {(installedModules[selectedStarbase.id] || []).filter(i => {
                                 const mod = availableModules.find((m: StarbaseModule) => m.id === i.moduleId);
                                 return mod?.category === "defense" || mod?.category === "offense";
@@ -719,10 +719,10 @@ export default function Starbases() {
                       </Tooltip>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <div className="bg-slate-50 rounded-lg p-3 text-center border border-slate-200 cursor-help">
-                            <Package className="w-5 h-5 text-purple-600 mx-auto mb-1" />
-                            <div className="text-xs text-slate-500">Hangar Slots</div>
-                            <div className="text-xl font-bold text-slate-900">{selectedStarbase.hangarSlots}</div>
+                          <div className="bg-slate-800 rounded-lg p-3 text-center border border-slate-700 cursor-help">
+                            <Package className="w-5 h-5 text-purple-400 mx-auto mb-1" />
+                            <div className="text-xs text-slate-400">Hangar Slots</div>
+                            <div className="text-xl font-bold text-white">{selectedStarbase.hangarSlots}</div>
                           </div>
                         </TooltipTrigger>
                         <TooltipContent side="bottom" className="w-60 p-2">
@@ -732,8 +732,8 @@ export default function Starbases() {
                       </Tooltip>
                     </div>
 
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                      <h4 className="text-xs font-bold text-red-700 mb-2 flex items-center gap-1">
+                    <div className="bg-red-900/20 border border-red-800/50 rounded-lg p-3">
+                      <h4 className="text-xs font-bold text-red-400 mb-2 flex items-center gap-1">
                         <Shield className="w-3 h-3" /> Installed Defenses
                       </h4>
                       {(installedModules[selectedStarbase.id] || []).filter(i => {
@@ -749,47 +749,47 @@ export default function Starbases() {
                             if (!mod) return null;
                             const Icon = MODULE_ICONS[mod.category] || Wrench;
                             return (
-                              <div key={i.moduleId} className="flex items-center gap-2 bg-white rounded p-1.5 border border-red-200 text-xs">
-                                <Icon className="w-3 h-3 text-red-500" />
-                                <span className="font-medium text-red-800">{mod.name}</span>
-                                <Badge variant="outline" className="text-[10px] ml-auto">Lv.{i.level}</Badge>
+                              <div key={i.moduleId} className="flex items-center gap-2 bg-slate-800 rounded p-1.5 border border-red-800/50 text-xs">
+                                <Icon className="w-3 h-3 text-red-400" />
+                                <span className="font-medium text-red-300">{mod.name}</span>
+                                <Badge variant="outline" className="text-[10px] ml-auto text-slate-300 border-slate-600">Lv.{i.level}</Badge>
                               </div>
                             );
                           })}
                         </div>
                       ) : (
-                        <p className="text-xs text-red-500">No defensive modules installed. Visit the Modules tab to install defense systems.</p>
+                        <p className="text-xs text-red-400">No defensive modules installed. Visit the Modules tab to install defense systems.</p>
                       )}
                     </div>
 
-                    <div className="bg-white border border-slate-200 rounded-lg p-3">
-                      <h4 className="text-xs font-bold text-slate-600 mb-2">Defense Stats Breakdown</h4>
+                    <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-3">
+                      <h4 className="text-xs font-bold text-slate-300 mb-2">Defense Stats Breakdown</h4>
                       <div className="space-y-2 text-xs">
                         <div className="flex justify-between">
-                          <span className="text-slate-500">Base Defense (Level {selectedStarbase.level}):</span>
-                          <span className="font-medium">{Math.floor(selectedStarbase.level * 10)}</span>
+                          <span className="text-slate-400">Base Defense (Level {selectedStarbase.level}):</span>
+                          <span className="font-medium text-white">{Math.floor(selectedStarbase.level * 10)}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-slate-500">Module Bonuses:</span>
-                          <span className="font-medium">{selectedStarbase.defenseLevel - Math.floor(selectedStarbase.level * 10)}</span>
+                          <span className="text-slate-400">Module Bonuses:</span>
+                          <span className="font-medium text-white">{selectedStarbase.defenseLevel - Math.floor(selectedStarbase.level * 10)}</span>
                         </div>
-                        <Separator />
-                        <div className="flex justify-between font-bold text-slate-900">
+                        <Separator className="bg-slate-700" />
+                        <div className="flex justify-between font-bold text-white">
                           <span>Total Defense:</span>
                           <span>{selectedStarbase.defenseLevel}</span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3">
-                      <h4 className="text-xs font-bold text-indigo-700 mb-2 flex items-center gap-1">
+                    <div className="bg-indigo-900/20 border border-indigo-800/50 rounded-lg p-3">
+                      <h4 className="text-xs font-bold text-indigo-400 mb-2 flex items-center gap-1">
                         <Info className="w-3 h-3" /> Defense Coverage
                       </h4>
                       <div className="grid grid-cols-2 gap-2 text-xs">
-                        <div className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-green-500" /> Point Defense: Active</div>
-                        <div className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-green-500" /> Shield Grid: Online</div>
-                        <div className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-amber-500" /> Anti-Missile: Standby</div>
-                        <div className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-slate-300" /> Counter-Measures: Offline</div>
+                        <div className="flex items-center gap-1.5 text-slate-300"><div className="w-1.5 h-1.5 rounded-full bg-green-500" /> Point Defense: Active</div>
+                        <div className="flex items-center gap-1.5 text-slate-300"><div className="w-1.5 h-1.5 rounded-full bg-green-500" /> Shield Grid: Online</div>
+                        <div className="flex items-center gap-1.5 text-slate-300"><div className="w-1.5 h-1.5 rounded-full bg-amber-500" /> Anti-Missile: Standby</div>
+                        <div className="flex items-center gap-1.5 text-slate-300"><div className="w-1.5 h-1.5 rounded-full bg-slate-600" /> Counter-Measures: Offline</div>
                       </div>
                     </div>
                   </div>

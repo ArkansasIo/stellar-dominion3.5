@@ -101,6 +101,7 @@ export interface PlanetType {
   readonly basePopulation: number;
   readonly atmosphere: string;
   readonly specialFeatures: readonly string[];
+  readonly compatibleBiomes: readonly string[];
 }
 
 export interface MoonType {
@@ -109,6 +110,7 @@ export interface MoonType {
   readonly habitability: number;
   readonly resourceSlots: number;
   readonly specialFeatures: readonly string[];
+  readonly compatibleBiomes: readonly string[];
 }
 
 export interface ResourceDeposit {
@@ -294,6 +296,7 @@ export const PLANET_TYPES: readonly PlanetType[] = [
     basePopulation: 5000000000,
     atmosphere: 'nitrogen-oxygen',
     specialFeatures: ['continents', 'oceans', 'temperate_climate', 'native_biome'],
+    compatibleBiomes: ['Aegis Arbor World', 'Borealis Basin Planet', 'Verdant Crown World', 'Gaia Trench Planet', 'Zenith Haven World'] as const,
   },
   {
     id: 'ocean',
@@ -305,6 +308,7 @@ export const PLANET_TYPES: readonly PlanetType[] = [
     basePopulation: 2000000000,
     atmosphere: 'nitrogen-oxygen',
     specialFeatures: ['deep_ocean', 'thermal_vents', 'aqua_resources'],
+    compatibleBiomes: ['Nimbus Reef World', 'Luminous Marsh Sphere', 'Radiant Fjord World'] as const,
   },
   {
     id: 'desert',
@@ -316,6 +320,7 @@ export const PLANET_TYPES: readonly PlanetType[] = [
     basePopulation: 500000000,
     atmosphere: 'thin-carbon-dioxide',
     specialFeatures: ['sand_dunes', 'rare_minerals', 'solar_reserves'],
+    compatibleBiomes: ['Cryon Dune Sphere', 'Mirage Canyon Planet', 'Pioneer Mesa Sphere', 'Quantum Prairie Planet'] as const,
   },
   {
     id: 'arctic',
@@ -327,6 +332,7 @@ export const PLANET_TYPES: readonly PlanetType[] = [
     basePopulation: 100000000,
     atmosphere: 'thin-nitrogen',
     specialFeatures: ['ice_cap', 'cryogenic_deposits', 'frozen_gas'],
+    compatibleBiomes: ['Jade Tundra World', 'Frostfall Basin Moon', 'Crescent Ice Moon'] as const,
   },
   {
     id: 'tropical',
@@ -338,6 +344,7 @@ export const PLANET_TYPES: readonly PlanetType[] = [
     basePopulation: 4000000000,
     atmosphere: 'nitrogen-oxygen',
     specialFeatures: ['dense_jungle', 'biodiversity', 'rare_flora'],
+    compatibleBiomes: ['Frontier Grove World', 'Ion Forest Planet', 'Tempest Garden Sphere'] as const,
   },
   {
     id: 'gas-giant',
@@ -349,6 +356,7 @@ export const PLANET_TYPES: readonly PlanetType[] = [
     basePopulation: 0,
     atmosphere: 'hydrogen-helium',
     specialFeatures: ['storm_systems', 'ring_system', 'moon_nursery', 'gas_mining'],
+    compatibleBiomes: [] as const,
   },
   {
     id: 'ice-giant',
@@ -360,6 +368,7 @@ export const PLANET_TYPES: readonly PlanetType[] = [
     basePopulation: 0,
     atmosphere: 'hydrogen-helium-methane',
     specialFeatures: ['ice_mantle', 'diamond_rain', 'exotic_materials'],
+    compatibleBiomes: ['Frostfall Basin Moon', 'Crescent Ice Moon', 'Whisper Moon'] as const,
   },
   {
     id: 'rocky',
@@ -371,6 +380,7 @@ export const PLANET_TYPES: readonly PlanetType[] = [
     basePopulation: 0,
     atmosphere: 'trace',
     specialFeatures: ['mineral_rich', 'tectonic_shards', 'heavy_metals'],
+    compatibleBiomes: ['Obsidian Vale Planet', 'Warden Hollow Planet', 'Monolith Moon'] as const,
   },
   {
     id: 'volcanic',
@@ -382,6 +392,7 @@ export const PLANET_TYPES: readonly PlanetType[] = [
     basePopulation: 0,
     atmosphere: 'toxic-sulfur',
     specialFeatures: ['lava_flows', 'geothermal_vents', 'rare_minerals', 'extreme_heat'],
+    compatibleBiomes: ['Ember Rift Planet', 'Umbral Basin Planet', 'Drift Ash Moon'] as const,
   },
   {
     id: 'toxic',
@@ -393,6 +404,7 @@ export const PLANET_TYPES: readonly PlanetType[] = [
     basePopulation: 0,
     atmosphere: 'corrosive-mixed',
     specialFeatures: ['acid_rain', 'toxic_clouds', 'corrosive_minerals', 'hostile_terrain'],
+    compatibleBiomes: ['Umbral Basin Planet', 'Drift Ash Moon'] as const,
   },
   {
     id: 'barren',
@@ -404,6 +416,7 @@ export const PLANET_TYPES: readonly PlanetType[] = [
     basePopulation: 0,
     atmosphere: 'none',
     specialFeatures: ['cratered_surface', 'impact_glass', 'stripped_crust'],
+    compatibleBiomes: ['Monolith Moon', 'Quarry Moon'] as const,
   },
   {
     id: 'crystalline',
@@ -415,6 +428,7 @@ export const PLANET_TYPES: readonly PlanetType[] = [
     basePopulation: 0,
     atmosphere: 'trace-inert',
     specialFeatures: ['crystal_fields', 'energy_refraction', 'exotic_resonance', 'rare_crystals'],
+    compatibleBiomes: ['Yonder Spire Planet', 'Helios Plateau Sphere', 'Xenon Shelf Sphere'] as const,
   },
   {
     id: 'gas-resource',
@@ -426,6 +440,7 @@ export const PLANET_TYPES: readonly PlanetType[] = [
     basePopulation: 0,
     atmosphere: 'hydrogen-helium-rich',
     specialFeatures: ['atmospheric_harvesting', 'volatile_motes', 'rare_gas_deposits'],
+    compatibleBiomes: [] as const,
   },
   {
     id: 'asteroid-belt',
@@ -437,6 +452,7 @@ export const PLANET_TYPES: readonly PlanetType[] = [
     basePopulation: 0,
     atmosphere: 'none',
     specialFeatures: ['mineral_asteroids', 'scattered_debris', 'mining_opportunities', 'navigation_hazard'],
+    compatibleBiomes: ['Quarry Moon', 'Rimevault Moon'] as const,
   },
   {
     id: 'megastructure',
@@ -448,6 +464,7 @@ export const PLANET_TYPES: readonly PlanetType[] = [
     basePopulation: 100000000,
     atmosphere: 'artificial',
     specialFeatures: ['alien_tech', 'vast_resources', 'ancient_systems', 'unknown_purpose'],
+    compatibleBiomes: ['Gateway Space Station Nexus', 'Dockline Space Station Yards', 'Bulwark Starbase Ring'] as const,
   },
 ] as const;
 
@@ -458,6 +475,7 @@ export const MOON_TYPES: readonly MoonType[] = [
     habitability: 70,
     resourceSlots: 3,
     specialFeatures: ['atmosphere', 'liquid_water', 'native_biome'],
+    compatibleBiomes: ['Aster Lunar Reach', 'Glimmer Ridge Moon', 'Harbor Dust Moon'] as const,
   },
   {
     id: 'small-terrestrial',
@@ -465,6 +483,7 @@ export const MOON_TYPES: readonly MoonType[] = [
     habitability: 40,
     resourceSlots: 2,
     specialFeatures: ['thin_atmosphere', 'mineral_deposits'],
+    compatibleBiomes: ['Bastion Crater Moon', 'Ivory Crag Moon', 'Nadir Dust Moon'] as const,
   },
   {
     id: 'ice-moon',
@@ -472,6 +491,7 @@ export const MOON_TYPES: readonly MoonType[] = [
     habitability: 15,
     resourceSlots: 3,
     specialFeatures: ['subsurface_ocean', 'cryogenic_materials', 'geysers'],
+    compatibleBiomes: ['Crescent Ice Moon', 'Frostfall Basin Moon', 'Yardlight Moon'] as const,
   },
   {
     id: 'volcanic-moon',
@@ -479,6 +499,7 @@ export const MOON_TYPES: readonly MoonType[] = [
     habitability: 0,
     resourceSlots: 4,
     specialFeatures: ['active_volcanism', 'lava_flows', 'sulfur_deposits'],
+    compatibleBiomes: ['Drift Ash Moon', 'Talon Moon'] as const,
   },
   {
     id: 'gas-moon',
@@ -486,6 +507,7 @@ export const MOON_TYPES: readonly MoonType[] = [
     habitability: 0,
     resourceSlots: 5,
     specialFeatures: ['atmospheric_harvesting', 'volatile_compounds'],
+    compatibleBiomes: ['Vanguard Moon', 'Zephyr Moon'] as const,
   },
   {
     id: 'asteroid',
@@ -493,6 +515,7 @@ export const MOON_TYPES: readonly MoonType[] = [
     habitability: 0,
     resourceSlots: 2,
     specialFeatures: ['raw_minerals', 'metallic_composition'],
+    compatibleBiomes: ['Quarry Moon', 'Rimevault Moon', 'Kiteglass Moon'] as const,
   },
   {
     id: 'captured',
@@ -500,6 +523,7 @@ export const MOON_TYPES: readonly MoonType[] = [
     habitability: 5,
     resourceSlots: 3,
     specialFeatures: ['irregular_orbit', 'exotic_composition', 'instability'],
+    compatibleBiomes: ['Junction Orbital Moon', 'Lattice Scar Moon', 'Oracle Tide Moon'] as const,
   },
   {
     id: 'artificial',
@@ -507,6 +531,7 @@ export const MOON_TYPES: readonly MoonType[] = [
     habitability: 60,
     resourceSlots: 6,
     specialFeatures: ['advanced_tech', 'self_sustaining', 'unknown_origin'],
+    compatibleBiomes: ['Palisade Moon', 'Sentinel Moon', 'Umbra Moon'] as const,
   },
 ] as const;
 

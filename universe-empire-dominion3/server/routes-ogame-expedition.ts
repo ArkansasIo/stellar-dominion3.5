@@ -57,7 +57,7 @@ export function registerOGameExpeditionRoutes(app: Router) {
       if (!state) return res.status(404).json({ error: "Player state not found" });
 
       const currentFleet = (state.units as Record<string, number>) || {};
-      for (const [shipType, count] of Object.entries(ships)) {
+      for (const [shipType, count] of Object.entries(ships as Record<string, number>)) {
         const available = currentFleet[shipType] || 0;
         if (count > available) {
           return res.status(400).json({ error: `Not enough ${shipType}. Available: ${available}` });
@@ -118,7 +118,7 @@ export function registerOGameExpeditionRoutes(app: Router) {
           break;
         }
         case "alienEncounter": {
-          const damage = Math.floor(Math.random() * 0.3 * Object.entries(ships).reduce((s, [, c]) => s + c, 0));
+          const damage = Math.floor(Math.random() * 0.3 * Object.entries(ships as Record<string, number>).reduce((s, [, c]) => s + c, 0));
           result.damage = damage;
           result.lostShips = Math.max(1, Math.floor(damage / 10));
           result.message = `Alien encounter! Lost ${result.lostShips} ships`;
@@ -137,7 +137,7 @@ export function registerOGameExpeditionRoutes(app: Router) {
         case "pirateAmbush": {
           const combatResult = Math.random() > 0.4 ? "victory" : "defeat";
           result.combatResult = combatResult;
-          result.lostShips = combatResult === "defeat" ? Math.floor(Object.entries(ships).reduce((s, [, c]) => s + c, 0) * 0.5) : Math.floor(Object.entries(ships).reduce((s, [, c]) => s + c, 0) * 0.1);
+          result.lostShips = combatResult === "defeat" ? Math.floor(Object.entries(ships as Record<string, number>).reduce((s, [, c]) => s + c, 0) * 0.5) : Math.floor(Object.entries(ships as Record<string, number>).reduce((s, [, c]) => s + c, 0) * 0.1);
           result.message = `Pirate ambush! ${combatResult === "victory" ? "Defeated pirates" : "Barely escaped"}`;
           break;
         }

@@ -11,14 +11,14 @@ export function registerOGamePhalanxRoutes(app: Router) {
       const userId = req.session?.userId;
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
 
-      const userMoons = await db
+      const userMoons = (await db
         .select({
           moon: moons,
           base: moonBases,
         })
         .from(moonBases)
-        .innerJoin(moons, eq(moonBases.moonId, moons.id))
-        .where(eq(moonBases.playerId, userId));
+        .innerJoin(moons, eq((moonBases as any).moonId, moons.id))
+        .where(eq(moonBases.playerId, userId))) as any[];
 
       const moonsWithPhalanx = userMoons
         .filter((row) => {
@@ -64,17 +64,18 @@ export function registerOGamePhalanxRoutes(app: Router) {
       const level = await phalanxService.getPhalanxLevel(userId, moonId);
 
       const [moon] = await db
-        .select({ name: moons.name, coordinates: moons.coordinates })
+        .select()
         .from(moons)
         .where(eq(moons.id, moonId))
-        .limit(1);
+        .limit(1) as any;
 
+      const m = moon as any;
       res.json({
         success: true,
         phalanx: {
           moonId,
-          moonName: moon?.name || "Unknown",
-          coordinates: moon?.coordinates || "",
+          moonName: m?.name || "Unknown",
+          coordinates: m?.coordinates || "",
           level,
           range: level,
         },

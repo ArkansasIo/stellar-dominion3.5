@@ -318,83 +318,121 @@ const CollapsibleMenu = ({
 
 const menuSections: MenuSection[] = [
   {
-    title: "Empire",
-    icon: Building2,
-    description: "Manage planets, colonies, infrastructure, and civilization growth.",
+    title: "Resources",
+    icon: Pickaxe,
+    description: "Manage resource production, storage, colonies, and population.",
     groups: [
       {
-        title: "Command",
-        description: "Core empire oversight and planetary command tools.",
-        items: [
-          { href: "/empire-command-center", icon: Crown, label: "Command Center", description: "Review empire status, strategic alerts, and central command tools." },
-          { href: "/empire-profile", icon: User, label: "Empire Profile", description: "Manage your empire's 9 core attributes and specializations." },
-          { href: "/empire-view", icon: LayoutDashboard, label: "Empire View", description: "See your empire at a glance across worlds and systems." },
-          { href: "/empire-planets", icon: Globe, label: "Empire Planets", description: "Browse controlled planets and inspect planet detail pages.", activePrefixes: ["/planet/"] },
-          { href: "/planet-command", icon: Rocket, label: "Planet Command", description: "Issue direct orders for planetary production and control." },
-        ],
-      },
-      {
-        title: "Infrastructure",
-        description: "Expand production chains and build out planetary capacity.",
+        title: "Production",
+        description: "Buildings, extraction, and resource generation chains.",
         items: [
           { href: "/resources", icon: Pickaxe, label: "Resources", description: "Track and improve metal, crystal, energy, and strategic reserves." },
-          { href: "/power-grid", icon: Network, label: "Stellar Power Grid", description: "Generate, transmit, store, and autonomously route power across worlds and resource fields." },
-          { href: "/facilities", icon: Factory, label: "Facilities", description: "Construct and upgrade industrial, research, and support facilities." },
-          { href: "/colonies", icon: Home, label: "Colonies", description: "Manage colonization targets, colony slots, and expansion plans." },
-          { href: "/stations", icon: Satellite, label: "Stations", description: "Control orbital stations, outposts, and support platforms." },
-          { href: "/starbases", icon: Satellite, label: "Starbases", description: "Build and manage deep-space starbase facilities." },
-          { href: "/moons", icon: CircleDot, label: "Moons", description: "Manage moon bases and lunar resource extraction." },
-          { href: "/megastructures", icon: CircleDot, label: "Megastructures", description: "Develop late-game empire-scale construction projects." },
-          { href: "/resource-refineries", icon: Factory, label: "Resource Refineries", description: "Convert, refine, and produce resources from raw materials." },
+          { href: "/facilities", icon: Factory, label: "Buildings", description: "Construct and upgrade industrial, production, and utility buildings." },
+          { href: "/resource-refineries", icon: Factory, label: "Refineries", description: "Convert, refine, and produce advanced resources from raw materials." },
+          { href: "/power-grid", icon: Network, label: "Power Grid", description: "Generate, transmit, and route power across worlds and resource fields." },
         ],
       },
       {
-        title: "Civilization",
-        description: "Shape society progression and large-scale empire milestones.",
+        title: "Storage",
+        description: "Warehousing, reserves, and vault systems.",
         items: [
-          { href: "/civilization-systems", icon: Users, label: "Civilization Systems", description: "Review your civilization systems, bonuses, and societal traits." },
+          { href: "/bank-vault", icon: Gem, label: "Bank Vault", description: "Store credits, manage accounts, and access banking services." },
+          { href: "/planet-vault", icon: Database, label: "Planet Vault", description: "Secure planetary resource reserves and inventory." },
+        ],
+      },
+      {
+        title: "Colonies",
+        description: "Expansion targets, colony management, and empire planets.",
+        items: [
+          { href: "/colonies", icon: Home, label: "Colonies", description: "Manage colonization targets, colony slots, and expansion plans." },
+          { href: "/empire-planets", icon: Globe, label: "Empire Planets", description: "Browse controlled planets and inspect planet detail pages.", activePrefixes: ["/planet/"] },
+          { href: "/empire-view", icon: LayoutDashboard, label: "Empire View", description: "See your empire at a glance across worlds and systems." },
+        ],
+      },
+      {
+        title: "Population",
+        description: "Citizens, workforce, happiness, and growth systems.",
+        items: [
+          { href: "/civilization-systems", icon: Users, label: "Civilization Systems", description: "Review civilization systems, bonuses, and societal traits." },
           { href: "/civilization-management", icon: Building2, label: "Civilization Mgmt", description: "Adjust policies and manage civilization-wide development." },
-          { href: "/government-buildings", icon: Building2, label: "Government Buildings", description: "Construct and upgrade government structures and civic facilities." },
-          { href: "/government-progression", icon: Award, label: "Government Progression", description: "Track government advancement through civic tech tree." },
-          { href: "/empire-progression", icon: Award, label: "Kardashev Scale", description: "Track empire advancement through long-term progression tiers." },
         ],
       },
     ],
   },
   {
-    title: "Research",
-    icon: FlaskConical,
-    description: "Unlock technologies, manage labs, and catalog discoveries.",
+    title: "Facilities",
+    icon: Factory,
+    description: "Construct and manage planetary and orbital infrastructure.",
     groups: [
       {
-        title: "Labs",
-        description: "Operate research centers and queue scientific projects.",
+        title: "Industrial",
+        description: "Production facilities and manufacturing chains.",
         items: [
-          { href: "/research", icon: FlaskConical, label: "Research Hub", description: "View current research priorities and laboratory output." },
-          { href: "/skills", icon: BookOpen, label: "Skills Training", description: "Train character skills for improved performance." },
-          { href: "/research-lab", icon: Zap, label: "Research Management", description: "Allocate research capacity and manage active development." },
-          { href: "/research-analytics", icon: ScrollText, label: "Research Analytics", description: "Track discovery streaks, tier spread, and science performance." },
+          { href: "/facilities", icon: Factory, label: "Facilities", description: "Construct and upgrade industrial, research, and support facilities." },
+          { href: "/shipyard", icon: Rocket, label: "Shipyard", description: "Construct ships and prepare new fleets for deployment." },
+          { href: "/smithy", icon: Hammer, label: "Smithy", description: "Forge and upgrade weapons, armor, and equipment." },
+          { href: "/resource-refineries", icon: Factory, label: "Refineries", description: "Convert and refine raw materials into advanced resources." },
         ],
       },
       {
-        title: "Tech Trees",
-        description: "Navigate structured technology paths and reference systems.",
+        title: "Defense",
+        description: "Planetary defense and orbital fortification systems.",
         items: [
-          { href: "/technology-tree", icon: GraduationCap, label: "Technology Tree", description: "Browse upgrade dependencies and long-term tech routes." },
-          { href: "/tech-tree", icon: FlaskConical, label: "Tech Tree Legacy", description: "Open the alternate tech tree route and keep the legacy page linked into navigation." },
-          { href: "/ogame-compendium", icon: Database, label: "OGame Compendium", description: "Reference structured technology, economy, and combat data." },
+          { href: "/orbital-defense", icon: Satellite, label: "Orbital Defense", description: "Build offensive satellites, shield platforms, carriers, and fortresses." },
+          { href: "/combat", icon: ShieldAlert, label: "Defense Center", description: "Manage planetary defense systems and combat readiness." },
         ],
       },
       {
-        title: "Discoveries",
-        description: "Catalog rare finds, advanced designs, and recovered relics.",
+        title: "Space",
+        description: "Deep-space structures, moon bases, and megastructures.",
         items: [
-          { href: "/blueprints", icon: FileText, label: "Blueprints", description: "Review unlocked designs and production-ready schematics." },
-          { href: "/blueprint-charges", icon: Printer, label: "Blueprint Printer", description: "Print, use, and repair blueprints with charge system." },
-          { href: "/blueprint-lithograph", icon: BookOpen, label: "Lithograph Book", description: "Browse the curated atlas of every fabrication schematic in the Imperial foundry." },
-          { href: "/artifacts", icon: Hexagon, label: "Artifacts", description: "Inspect rare artifacts that modify empire capabilities." },
-          { href: "/relics", icon: Gem, label: "Relics", description: "Manage relic bonuses and rare discovery effects." },
-          { href: "/knowledge-library", icon: BookOpen, label: "Knowledge Library", description: "Study mastery tracks, class tiers, and cross-discipline synergies." },
+          { href: "/starbases", icon: Satellite, label: "Starbases", description: "Build and manage deep-space starbase facilities." },
+          { href: "/moons", icon: CircleDot, label: "Moon Bases", description: "Manage moon bases and lunar resource extraction." },
+          { href: "/megastructures", icon: Hexagon, label: "Megastructures", description: "Develop late-game empire-scale construction projects." },
+          { href: "/stations", icon: Satellite, label: "Stations", description: "Control orbital stations, outposts, and support platforms." },
+        ],
+      },
+      {
+        title: "Science",
+        description: "Research labs, knowledge archives, and food/water systems.",
+        items: [
+          { href: "/research-lab", icon: FlaskConical, label: "Research Lab", description: "Allocate research capacity and manage active development." },
+          { href: "/knowledge-library", icon: BookOpen, label: "Knowledge Library", description: "Study mastery tracks, class tiers, and synergies." },
+        ],
+      },
+    ],
+  },
+  {
+    title: "Fleet",
+    icon: Send,
+    description: "Command starships, manage fleet logistics, and deploy combat operations.",
+    groups: [
+      {
+        title: "Ships",
+        description: "Fleet composition, shipyard, and fitting management.",
+        items: [
+          { href: "/fleet", icon: Send, label: "Fleet Command", description: "Dispatch fleets, track missions, and manage formations." },
+          { href: "/fleet-yard", icon: Warehouse, label: "Fleet Yard", description: "Fleet storage, organization, maintenance, and logistics hub." },
+          { href: "/shipyard", icon: Rocket, label: "Shipyard", description: "Construct new ships and prepare fleets for deployment." },
+          { href: "/fitting", icon: Settings, label: "Ship Fitting", description: "Customize ship modules, weapons, and equipment." },
+        ],
+      },
+      {
+        title: "Operations",
+        description: "Combat dispatch, expeditions, and mission coordination.",
+        items: [
+          { href: "/combat", icon: ShieldAlert, label: "Combat Center", description: "Engage combat systems and active battle mechanics." },
+          { href: "/expeditions", icon: Compass, label: "Expeditions", description: "Launch deep-space missions for risk, reward, and discovery." },
+          { href: "/high-command", icon: Target, label: "High Command", description: "Strategic command interface for fleet and army coordination." },
+          { href: "/battle-logs", icon: ScrollText, label: "Battle Logs", description: "Review previous engagements and combat outcomes." },
+        ],
+      },
+      {
+        title: "ACS",
+        description: "Alliance Combat System, fleet formations, and coordination.",
+        items: [
+          { href: "/alliance", icon: Shield, label: "Alliance Fleet", description: "Coordinate joint fleet operations with alliance members." },
+          { href: "/warp-network", icon: Network, label: "Warp Network", description: "Manage travel corridors and inter-system fleet movement." },
         ],
       },
     ],
@@ -402,35 +440,26 @@ const menuSections: MenuSection[] = [
   {
     title: "Military",
     icon: Swords,
-    description: "Command fleets, armies, expeditions, and combat operations.",
+    description: "Ground forces, army management, officers, and combat training.",
     groups: [
       {
-        title: "Forces",
-        description: "Build and organize space and ground units.",
+        title: "Ground Forces",
+        description: "Armies, ground combat, and planetary assault.",
         items: [
-          { href: "/shipyard", icon: Rocket, label: "Shipyard", description: "Construct ships and prepare new fleets for deployment." },
-          { href: "/fitting", icon: Settings, label: "Ship Fitting", description: "Customize ship modules, weapons, and equipment." },
-          { href: "/fleet", icon: Send, label: "Fleet Command", description: "Dispatch fleets, track missions, and manage formations." },
-          { href: "/fleet-yard", icon: Warehouse, label: "Fleet Yard", description: "Fleet storage, organization, maintenance and logistics hub." },
-          { href: "/orbital-defense", icon: Satellite, label: "Orbital Defense", description: "Build and command offensive satellites, shield platforms, carriers, and orbital fortresses." },
+          { href: "/ground-combat", icon: Swords, label: "Ground Combat", description: "Assemble invasion troops, shock units, and special ops." },
           { href: "/army", icon: Users, label: "Army", description: "Review land units, formations, and force composition." },
-          { href: "/army-management", icon: Swords, label: "Army Management", description: "Train, equip, and reorganize planetary armies." },
-          { href: "/training-center", icon: GraduationCap, label: "Training Center", description: "Unlock training tracks, staff academies, and manage force capacity." },
-          { href: "/unit-taxonomy", icon: BookOpen, label: "Unit Taxonomy", description: "Browse the complete unit classification and stats database." },
-          { href: "/unit-systems", icon: Swords, label: "Unit Systems", description: "Manage unit loadouts, formations, and combat roles." },
-          { href: "/smithy", icon: Hammer, label: "Smithy", description: "Forge and upgrade weapons, armor, and equipment." },
+          { href: "/army-management", icon: Building2, label: "Army Management", description: "Train, equip, and reorganize planetary armies." },
+          { href: "/planet-occupation", icon: TowerControl, label: "Planet Occupation", description: "Control captured worlds through garrisons and extraction." },
         ],
       },
       {
-        title: "Operations",
-        description: "Run missions, battles, and after-action reviews.",
+        title: "Officers",
+        description: "Commanders, training, and unit classification.",
         items: [
-          { href: "/expeditions", icon: Compass, label: "Expeditions", description: "Launch deep-space missions for risk, reward, and discovery." },
-          { href: "/combat", icon: ShieldAlert, label: "Combat Center", description: "Engage combat systems and active battle mechanics." },
-          { href: "/ground-combat", icon: Swords, label: "Ground Combat", description: "Assemble invasion troops, shock units, and special ops detachments." },
-          { href: "/planet-occupation", icon: TowerControl, label: "Planet Occupation", description: "Control captured worlds through garrisons, suppression, extraction, and fortifications." },
-          { href: "/battle-logs", icon: ScrollText, label: "Battle Logs", description: "Review previous engagements and combat outcomes." },
-          { href: "/high-command", icon: Target, label: "High Command", description: "Strategic command interface for fleet and army coordination." },
+          { href: "/commander", icon: User, label: "Commander", description: "Customize commander identity, stats, and progression." },
+          { href: "/training-center", icon: GraduationCap, label: "Training Center", description: "Unlock training tracks, staff academies, and force capacity." },
+          { href: "/unit-taxonomy", icon: BookOpen, label: "Unit Taxonomy", description: "Browse the complete unit classification and stats database." },
+          { href: "/unit-systems", icon: Swords, label: "Unit Systems", description: "Manage unit loadouts, formations, and combat roles." },
         ],
       },
       {
@@ -445,64 +474,128 @@ const menuSections: MenuSection[] = [
     ],
   },
   {
-    title: "Exploration",
-    icon: Map,
+    title: "Research",
+    icon: FlaskConical,
+    description: "Unlock technologies, manage labs, and catalog discoveries.",
+    groups: [
+      {
+        title: "Labs",
+        description: "Operate research centers and queue scientific projects.",
+        items: [
+          { href: "/research", icon: FlaskConical, label: "Research Hub", description: "View current research priorities and laboratory output." },
+          { href: "/research-lab", icon: Zap, label: "Research Lab", description: "Allocate research capacity and manage active development." },
+          { href: "/research-analytics", icon: ScrollText, label: "Research Analytics", description: "Track discovery streaks, tier spread, and science performance." },
+          { href: "/skills", icon: BookOpen, label: "Skills Training", description: "Train character skills for improved performance." },
+        ],
+      },
+      {
+        title: "Tech Trees",
+        description: "Navigate structured technology paths and reference systems.",
+        items: [
+          { href: "/technology-tree", icon: GraduationCap, label: "Technology Tree", description: "Browse upgrade dependencies and long-term tech routes." },
+          { href: "/tech-tree", icon: FlaskConical, label: "Tech Tree Legacy", description: "Open the alternate tech tree route." },
+          { href: "/ogame-compendium", icon: Database, label: "OGame Compendium", description: "Reference structured technology, economy, and combat data." },
+        ],
+      },
+      {
+        title: "Blueprints",
+        description: "Unlocked designs, production schematics, and fabrication.",
+        items: [
+          { href: "/blueprints", icon: FileText, label: "Blueprints", description: "Review unlocked designs and production-ready schematics." },
+          { href: "/blueprint-charges", icon: Printer, label: "Blueprint Printer", description: "Print, use, and repair blueprints with charge system." },
+          { href: "/blueprint-lithograph", icon: BookOpen, label: "Lithograph Book", description: "Browse the curated atlas of fabrication schematics." },
+        ],
+      },
+      {
+        title: "Advanced Research",
+        description: "Rare discoveries, advanced designs, and recovered relics.",
+        items: [
+          { href: "/artifacts", icon: Hexagon, label: "Artifacts", description: "Inspect rare artifacts that modify empire capabilities." },
+          { href: "/relics", icon: Gem, label: "Relics", description: "Manage relic bonuses and rare discovery effects." },
+          { href: "/knowledge-library", icon: BookOpen, label: "Knowledge Library", description: "Study mastery tracks, class tiers, and synergies." },
+        ],
+      },
+    ],
+  },
+  {
+    title: "Crafting",
+    icon: Hammer,
+    description: "Forge equipment, process materials, and manage augmentations.",
+    groups: [
+      {
+        title: "Workshop",
+        description: "Crafting stations, material processing, and smithy operations.",
+        items: [
+          { href: "/smithy", icon: Hammer, label: "Workshop", description: "Forge and upgrade weapons, armor, and equipment." },
+          { href: "/research-lab", icon: FlaskConical, label: "Materials Lab", description: "Process raw materials into crafting components." },
+        ],
+      },
+      {
+        title: "Augmentations",
+        description: "Augmentations, item levels, and power systems.",
+        items: [
+          { href: "/power-level", icon: Zap, label: "Augmentations", description: "Manage augmentations and power level modifications." },
+          { href: "/item-levels", icon: Award, label: "Item Levels", description: "Track item progression and enhancement levels." },
+        ],
+      },
+      {
+        title: "Artifacts",
+        description: "Rare discoveries and artifact management.",
+        items: [
+          { href: "/artifacts", icon: Hexagon, label: "Artifacts", description: "Inspect rare artifacts that modify empire capabilities." },
+          { href: "/relics", icon: Gem, label: "Relics", description: "Manage relic bonuses and rare discovery effects." },
+        ],
+      },
+      {
+        title: "Skill Trees",
+        description: "Crafting skills, mastery tracks, and research synergies.",
+        items: [
+          { href: "/skills", icon: BookOpen, label: "Skills", description: "Train character skills for improved crafting performance." },
+          { href: "/knowledge-library", icon: BookOpen, label: "Knowledge Library", description: "Study mastery tracks and cross-discipline synergies." },
+        ],
+      },
+    ],
+  },
+  {
+    title: "Galaxy",
+    icon: Globe,
     description: "Survey space, navigate networks, and discover new worlds.",
     groups: [
       {
         title: "Maps",
         description: "Navigate local, galactic, and generated universe views.",
         items: [
-          { href: "/interstellar", icon: Sparkles, label: "Interstellar", description: "Explore broader interstellar travel and system links." },
           { href: "/galaxy", icon: Globe, label: "Galaxy Map", description: "Browse sector positions, neighbors, and route planning." },
           { href: "/universe", icon: Orbit, label: "Universe View", description: "Inspect the full universe and long-range spatial context." },
           { href: "/universe-generator", icon: RefreshCw, label: "Universe Generator", description: "Generate and inspect procedural universe structures." },
         ],
       },
       {
-        title: "Discovery",
-        description: "Search celestial bodies, biomes, and transit systems.",
+        title: "Sectors",
+        description: "Sector navigation, realm systems, and spatial context.",
+        items: [
+          { href: "/interstellar", icon: Sparkles, label: "Interstellar", description: "Explore broader interstellar travel and system links." },
+          { href: "/celestial-browser", icon: CircleDot, label: "Celestial Browser", description: "Inspect stars, planets, and celestial objects." },
+          { href: "/biome-codex", icon: BookOpen, label: "Biome Codex", description: "Study biome entries and environmental data.", activePrefixes: ["/biome/"] },
+        ],
+      },
+      {
+        title: "Sensor Phalanx",
+        description: "Exploration, warp networks, and detection systems.",
         items: [
           { href: "/exploration", icon: Compass, label: "Exploration", description: "Run exploration loops and reveal frontier opportunities." },
           { href: "/warp-network", icon: Network, label: "Warp Network", description: "Manage travel corridors and inter-system movement." },
-          { href: "/spore-drive", icon: Zap, label: "Spore Drive", description: "Advanced faster-than-light travel system for deep-space exploration." },
-          { href: "/celestial-browser", icon: CircleDot, label: "Celestial Browser", description: "Inspect stars, planets, and other celestial objects." },
-          { href: "/biome-codex", icon: BookOpen, label: "Biome Codex", description: "Study biome entries and their detailed environmental data.", activePrefixes: ["/biome/"] },
+          { href: "/spore-drive", icon: Zap, label: "Spore Drive", description: "Advanced faster-than-light travel for deep-space exploration." },
         ],
       },
       {
-        title: "Events",
-        description: "Respond to live universe activity and dynamic world events.",
+        title: "Stargate Network",
+        description: "Dimensional gates, anomalies, and universe events.",
         items: [
-          { href: "/universe-events", icon: AlertTriangle, label: "Universe Events", description: "Review active world events and their empire-wide impact." },
-          { href: "/dimensional-anomalies", icon: Compass, label: "Dimensional Anomalies", description: "Discover and explore 90 dimensional gate anomalies across the universe." },
-        ],
-      },
-    ],
-  },
-  {
-    title: "Diplomacy",
-    icon: Shield,
-    description: "Lead your people, manage alliances, and build social networks.",
-    groups: [
-      {
-        title: "Leadership",
-        description: "Manage identity, power structures, and ranking systems.",
-        items: [
-          { href: "/commander", icon: User, label: "Commander", description: "Customize commander identity, stats, and personal progression." },
-          { href: "/government", icon: Landmark, label: "Government", description: "Review state structure, laws, and governing bonuses." },
-          { href: "/factions", icon: Users, label: "Factions", description: "Navigate faction relations and influence networks." },
-          { href: "/leaderboard", icon: Trophy, label: "Leaderboard", description: "Compare empire performance against other players." },
-        ],
-      },
-      {
-        title: "Alliances",
-        description: "Coordinate communication, guilds, and allied diplomacy.",
-        items: [
-          { href: "/alliance", icon: Shield, label: "Alliance", description: "Manage alliance structure, members, and cooperative play." },
-          { href: "/guilds", icon: Crown, label: "Guilds", description: "Organize guild participation and long-term group identity." },
-          { href: "/friends", icon: Users, label: "Friends", description: "Track friends, contacts, and cooperative player lists." },
-          { href: "/messages", icon: Mail, label: "Messages", description: "Read diplomatic, social, and operational communications." },
+          { href: "/universe-events", icon: AlertTriangle, label: "Universe Events", description: "Review active world events and empire-wide impact." },
+          { href: "/dimensional-anomalies", icon: Compass, label: "Dimensional Anomalies", description: "Discover dimensional gate anomalies across the universe." },
+          { href: "/abyssal-gates", icon: Hexagon, label: "Abyssal Gates", description: "Access deep-space dimensional gate systems." },
+          { href: "/dimensional-contracts", icon: ScrollText, label: "Dimensional Contracts", description: "Accept and complete cross-dimensional contracts." },
         ],
       },
     ],
@@ -510,42 +603,129 @@ const menuSections: MenuSection[] = [
   {
     title: "Economy",
     icon: ShoppingBag,
-    description: "Trade resources, pursue rewards, and progress through game modes.",
+    description: "Trade resources, manage finances, and pursue economic rewards.",
     groups: [
       {
-        title: "Trade",
-        description: "Buy, sell, and browse goods across the empire economy.",
+        title: "Marketplace",
+        description: "Buy, sell, and browse goods across the economy.",
         items: [
-          { href: "/market", icon: ShoppingBag, label: "Market", description: "Trade raw materials, strategic goods, and market offers." },
-          { href: "/resource-trading", icon: Coins, label: "Resource Trading", description: "Open market for trading metal, crystal, and deuterium between players." },
-          { href: "/merchants", icon: User, label: "Merchants", description: "Work with merchant NPCs and their specialized inventories." },
-          { href: "/storefront", icon: Store, label: "Storefront", description: "Browse premium or featured storefront offerings." },
-          { href: "/bank-vault", icon: Gem, label: "Bank Vault", description: "Store credits, manage accounts, and access banking services." },
+          { href: "/market", icon: ShoppingBag, label: "Marketplace", description: "Trade raw materials, strategic goods, and market offers." },
+          { href: "/resource-trading", icon: Coins, label: "Resource Trading", description: "Open market for trading metal, crystal, and deuterium." },
+          { href: "/merchants", icon: User, label: "Merchants", description: "Work with merchant NPCs and specialized inventories." },
         ],
       },
       {
-        title: "Progression",
-        description: "Advance through achievements, passes, and narrative content.",
+        title: "Trade Routes",
+        description: "Storefronts, banking, and financial services.",
         items: [
-          { href: "/achievements", icon: Trophy, label: "Achievements", description: "Track unlocks, milestones, and earned achievement rewards." },
-          { href: "/weekly-missions", icon: Target, label: "Weekly Missions", description: "Complete weekly objectives for XP, credits, and bonus multipliers." },
-          { href: "/season-pass", icon: Award, label: "Season Pass", description: "Review seasonal objectives and time-limited progression rewards." },
-          { href: "/battle-pass", icon: Swords, label: "Battle Pass", description: "Advance combat-focused progression tracks and rewards." },
-          { href: "/preludes", icon: ScrollText, label: "Preludes", description: "Read narrative preludes that set the stage for each campaign act and chapter." },
-          { href: "/story-mode", icon: BookOpen, label: "Story Mode", description: "Play through narrative content and guided mission arcs." },
+          { href: "/storefront", icon: Store, label: "Storefront", description: "Browse premium or featured storefront offerings." },
+          { href: "/bank-vault", icon: Gem, label: "Bank Vault", description: "Store credits, manage accounts, and banking services." },
+        ],
+      },
+      {
+        title: "Auction House",
+        description: "Season rewards, battle progression, and event currency.",
+        items: [
+          { href: "/season-pass", icon: Award, label: "Season Pass", description: "Review seasonal objectives and time-limited rewards." },
+          { href: "/battle-pass", icon: Swords, label: "Battle Pass", description: "Advance combat-focused progression tracks." },
+          { href: "/achievements", icon: Trophy, label: "Achievements", description: "Track unlocks, milestones, and earned rewards." },
+          { href: "/weekly-missions", icon: Target, label: "Weekly Missions", description: "Complete weekly objectives for XP and credits." },
+        ],
+      },
+    ],
+  },
+  {
+    title: "Alliance",
+    icon: Shield,
+    description: "Coordinate diplomacy, espionage, and intel with allies.",
+    groups: [
+      {
+        title: "Diplomacy",
+        description: "Alliance structure, guilds, and cooperative play.",
+        items: [
+          { href: "/alliance", icon: Shield, label: "Alliance Hub", description: "Manage alliance structure, members, and cooperative play." },
+          { href: "/diplomacy", icon: Users, label: "Diplomacy", description: "Navigate faction relations and diplomatic channels." },
+          { href: "/guilds", icon: Crown, label: "Guilds", description: "Organize guild participation and group identity." },
+          { href: "/factions", icon: Users, label: "Factions", description: "Navigate faction relations and influence networks." },
+        ],
+      },
+      {
+        title: "Espionage",
+        description: "Intelligence, reconnaissance, and covert operations.",
+        items: [
+          { href: "/government", icon: Landmark, label: "Government", description: "Review state structure, laws, and governing bonuses." },
+          { href: "/leaderboard", icon: Trophy, label: "Leaderboard", description: "Compare empire performance against other players." },
+        ],
+      },
+      {
+        title: "Intel",
+        description: "Communications, rankings, and intelligence networks.",
+        items: [
+          { href: "/messages", icon: Mail, label: "Messages", description: "Read diplomatic, social, and operational communications." },
+          { href: "/friends", icon: Users, label: "Friends", description: "Track friends, contacts, and cooperative players." },
+          { href: "/leaderboard", icon: Trophy, label: "Universe Rankings", description: "Compare empire performance against other players." },
+        ],
+      },
+    ],
+  },
+  {
+    title: "Activities",
+    icon: Target,
+    description: "Pirate hunting, world bosses, quests, and seasonal events.",
+    groups: [
+      {
+        title: "Pirate Hunting",
+        description: "Raid operations, target discovery, and boss encounters.",
+        items: [
+          { href: "/raids", icon: Swords, label: "Pirate Hunting", description: "Coordinate raid operations and pirate campaigns." },
+          { href: "/raid-finder", icon: Search, label: "Raid Finder", description: "Search for available raids and suitable objectives." },
+          { href: "/raid-bosses", icon: Crown, label: "World Bosses", description: "Track elite raid bosses and encounter preparation." },
+        ],
+      },
+      {
+        title: "Quests",
+        description: "Story content, narrative missions, and campaigns.",
+        items: [
+          { href: "/story-mode", icon: BookOpen, label: "Story Mode", description: "Play through narrative content and mission arcs." },
+          { href: "/preludes", icon: ScrollText, label: "Preludes", description: "Read narrative preludes for campaign acts and chapters." },
+          { href: "/achievements", icon: Trophy, label: "Achievements", description: "Track unlocks, milestones, and earned rewards." },
+          { href: "/weekly-missions", icon: Target, label: "Weekly Missions", description: "Complete weekly objectives for XP and credits." },
+        ],
+      },
+      {
+        title: "Seasonal Events",
+        description: "Time-limited events, seasons, and special content.",
+        items: [
+          { href: "/season", icon: Award, label: "Season Hub", description: "Access current season content and event activities." },
+          { href: "/season-pass", icon: Award, label: "Season Pass", description: "Review seasonal objectives and progression rewards." },
+          { href: "/battle-pass", icon: Swords, label: "Battle Pass", description: "Advance combat-focused progression tracks." },
+          { href: "/dimensional-anomalies", icon: Compass, label: "Dimensional Anomalies", description: "Discover dimensional gate anomalies." },
         ],
       },
     ],
   },
 ];
 
+const socialItems: NavItem[] = [
+  { href: "/messages", icon: Mail, label: "Messages", description: "Read diplomatic, social, and operational communications." },
+  { href: "/friends", icon: Users, label: "Friends", description: "Track friends, contacts, and cooperative player lists." },
+  { href: "/leaderboard", icon: Trophy, label: "Leaderboard", description: "Compare empire performance against other players." },
+  { href: "/alliance", icon: Shield, label: "Alliance Hub", description: "Coordinate with allies and manage alliance structure." },
+];
+
+const profileItems: NavItem[] = [
+  { href: "/commander", icon: User, label: "Commander Profile", description: "Customize commander identity, stats, and personal progression." },
+  { href: "/empire-profile", icon: LayoutDashboard, label: "Empire Statistics", description: "Review your empire's performance and statistics." },
+  { href: "/settings", icon: Settings, label: "Settings", description: "Update configuration, preferences, and account options." },
+  { href: "/account", icon: User, label: "Account Management", description: "Manage account details and preferences." },
+];
+
 const systemItems: NavItem[] = [
+  { href: "/news-feed", icon: Newspaper, label: "News Feed", description: "Read the latest galactic news, updates, and announcements." },
+  { href: "/patch-notes", icon: ScrollText, label: "Patch Notes", description: "View update history, bug fixes, and new feature changelogs." },
   { href: "/diagnostics", icon: AlertTriangle, label: "Diagnostics", description: "Inspect client, server, and gameplay diagnostic tools." },
   { href: "/cron-dashboard", icon: Clock, label: "Cron Dashboard", description: "Monitor server-side game ticks, cron jobs, and scheduled tasks." },
   { href: "/assets-gallery", icon: Image, label: "Assets Gallery", description: "Browse game assets, including the new OGameX asset pack." },
-  { href: "/news-feed", icon: Newspaper, label: "News Feed", description: "Read the latest galactic news, updates, and announcements." },
-  { href: "/patch-notes", icon: ScrollText, label: "Patch Notes", description: "View update history, bug fixes, and new feature changelogs." },
-  { href: "/settings", icon: Settings, label: "Settings", description: "Update configuration, preferences, and account options." },
   { href: "/forums", icon: ScrollText, label: "Forums", description: "Open community discussions and support channels." },
   { href: "/about", icon: BookOpen, label: "About", description: "Read project background and game overview information." },
   { href: "/terms", icon: FileText, label: "Terms", description: "Review the game terms of service and usage rules." },
@@ -561,40 +741,54 @@ const adminItems: NavItem[] = [
 
 const getCommandTiles = (context: ActivePageContext | null): CommandTile[] => {
   switch (context?.section) {
-    case "Empire":
+    case "Resources":
       return [
         { href: "/empire-planets", icon: Globe, label: "Planet Grid", description: "Jump across core worlds, colonies, and moons from one empire map.", kicker: "Worlds", assetPath: PLANET_ASSETS.TERRESTRIAL.EARTH_LIKE.path },
         { href: "/resources", icon: Pickaxe, label: "Resource Control", description: "Tune raw extraction, storage balance, and supply throughput.", kicker: "Economy", assetPath: OGAMEX_FEATURED_ASSETS.BACKGROUND.path },
+        { href: "/colonies", icon: Home, label: "Colony Ops", description: "Manage colonization targets, expansion plans, and colony slots.", kicker: "Expand", assetPath: OGAMEX_FEATURED_ASSETS.MOON.path },
+        { href: "/power-grid", icon: Network, label: "Power Grid", description: "Generate, transmit, and route power across worlds.", kicker: "Energy", assetPath: OGAMEX_FEATURED_ASSETS.RESEARCH.path },
+      ];
+    case "Facilities":
+      return [
         { href: "/facilities", icon: Factory, label: "Facility Queue", description: "Push building upgrades, production chains, and support structures.", kicker: "Build", assetPath: OGAMEX_FEATURED_ASSETS.DEFENSE.path },
-        { href: "/stations", icon: Satellite, label: "Orbital Layer", description: "Coordinate stations, support rings, and orbital logistics.", kicker: "Orbit", assetPath: OGAMEX_FEATURED_ASSETS.MOON.path },
+        { href: "/shipyard", icon: Rocket, label: "Shipyard", description: "Construct ships and prepare new fleets for deployment.", kicker: "Ships", assetPath: OGAMEX_FEATURED_ASSETS.SHIPS.path },
+        { href: "/starbases", icon: Satellite, label: "Starbases", description: "Build and manage deep-space starbase facilities.", kicker: "Space", assetPath: OGAMEX_FEATURED_ASSETS.MOON.path },
+        { href: "/megastructures", icon: Hexagon, label: "Megastructures", description: "Develop late-game empire-scale construction projects.", kicker: "Mega", assetPath: OGAMEX_FEATURED_ASSETS.BACKGROUND.path },
+      ];
+    case "Fleet":
+      return [
+        { href: "/fleet", icon: Send, label: "Fleet Orders", description: "Dispatch missions, monitor arrivals, and keep combat groups active.", kicker: "Command", assetPath: OGAMEX_FEATURED_ASSETS.SHIPS.path },
+        { href: "/fleet-yard", icon: Warehouse, label: "Fleet Yard", description: "Fleet storage, organization, maintenance, and logistics hub.", kicker: "Logistics", assetPath: OGAMEX_FEATURED_ASSETS.SHIPS.path },
+        { href: "/fitting", icon: Settings, label: "Ship Fitting", description: "Customize ship modules, weapons, and equipment.", kicker: "Fitting", assetPath: OGAMEX_FEATURED_ASSETS.DEFENSE.path },
+        { href: "/expeditions", icon: Compass, label: "Expeditions", description: "Launch deep-space missions for risk, reward, and discovery.", kicker: "Explore", assetPath: OGAMEX_FEATURED_ASSETS.BACKGROUND.path },
+      ];
+    case "Military":
+      return [
+        { href: "/ground-combat", icon: Swords, label: "Ground Assault", description: "Assemble invasion troops, shock units, and special ops.", kicker: "Army", assetPath: OGAMEX_FEATURED_ASSETS.DEFENSE.path },
+        { href: "/combat", icon: ShieldAlert, label: "Combat Center", description: "Launch raids, attacks, and tactical battle actions.", kicker: "Battle", assetPath: OGAMEX_FEATURED_ASSETS.DEFENSE.path },
+        { href: "/battle-logs", icon: ScrollText, label: "Action Reports", description: "Inspect logs, after-action reports, and battle summaries.", kicker: "Reports", assetPath: OGAMEX_FEATURED_ASSETS.DEFENSE.path },
+        { href: "/planet-occupation", icon: TowerControl, label: "Occupation Ops", description: "Control captured planets, garrisons, and extraction pressure.", kicker: "Control", assetPath: OGAMEX_FEATURED_ASSETS.MOON.path },
       ];
     case "Research":
       return [
         { href: "/research-analytics", icon: ScrollText, label: "Analytics", description: "Review live research trends, level pace, and completion spread.", kicker: "Insight", assetPath: OGAMEX_FEATURED_ASSETS.RESEARCH.path },
         { href: "/knowledge-library", icon: BookOpen, label: "Library", description: "Open doctrine, knowledge classes, and synergy references.", kicker: "Archive", assetPath: OGAMEX_FEATURED_ASSETS.RESEARCH.path },
         { href: "/blueprints", icon: FileText, label: "Blueprint Vault", description: "Browse designs, schematics, and unlockable technical plans.", kicker: "Designs", assetPath: OGAMEX_FEATURED_ASSETS.SHIPS.path },
-        { href: "/assets-gallery", icon: Image, label: "Science Assets", description: "View linked PNGs, panel art, and source asset references.", kicker: "Assets", assetPath: OGAMEX_FEATURED_ASSETS.DEFENSE.path },
+        { href: "/skills", icon: BookOpen, label: "Skills Training", description: "Train character skills for improved performance.", kicker: "Skills", assetPath: OGAMEX_FEATURED_ASSETS.RESEARCH.path },
       ];
-    case "Military":
+    case "Crafting":
       return [
-        { href: "/fleet", icon: Send, label: "Fleet Orders", description: "Dispatch missions, monitor arrivals, and keep combat groups active.", kicker: "Command", assetPath: OGAMEX_FEATURED_ASSETS.SHIPS.path },
-        { href: "/combat", icon: ShieldAlert, label: "Combat Center", description: "Launch raids, attacks, and tactical battle actions.", kicker: "Battle", assetPath: OGAMEX_FEATURED_ASSETS.DEFENSE.path },
-        { href: "/battle-logs", icon: ScrollText, label: "Action Reports", description: "Inspect logs, after-action reports, and battle summaries.", kicker: "Reports", assetPath: OGAMEX_FEATURED_ASSETS.DEFENSE.path },
-        { href: "/planet-occupation", icon: TowerControl, label: "Occupation Ops", description: "Control captured planets, garrisons, and extraction pressure.", kicker: "Control", assetPath: OGAMEX_FEATURED_ASSETS.MOON.path },
+        { href: "/smithy", icon: Hammer, label: "Workshop", description: "Forge and upgrade weapons, armor, and equipment.", kicker: "Forge", assetPath: OGAMEX_FEATURED_ASSETS.DEFENSE.path },
+        { href: "/power-level", icon: Zap, label: "Augmentations", description: "Manage augmentations and power level modifications.", kicker: "Power", assetPath: OGAMEX_FEATURED_ASSETS.RESEARCH.path },
+        { href: "/artifacts", icon: Hexagon, label: "Artifacts", description: "Inspect rare artifacts that modify empire capabilities.", kicker: "Relics", assetPath: OGAMEX_FEATURED_ASSETS.MOON.path },
+        { href: "/item-levels", icon: Award, label: "Item Levels", description: "Track item progression and enhancement levels.", kicker: "Levels", assetPath: OGAMEX_FEATURED_ASSETS.SHIPS.path },
       ];
-    case "Exploration":
+    case "Galaxy":
       return [
         { href: "/galaxy", icon: Globe, label: "Galaxy Sweep", description: "Survey sectors, systems, and route pressure across nearby space.", kicker: "Scan", assetPath: OGAMEX_FEATURED_ASSETS.BACKGROUND.path },
         { href: "/universe", icon: Orbit, label: "Universe Lens", description: "Switch to the larger multi-universe command view.", kicker: "Macro", assetPath: OGAMEX_FEATURED_ASSETS.BACKGROUND.path },
         { href: "/warp-network", icon: Network, label: "Warp Corridors", description: "Plot stargates, hyperspace lanes, and warp relays.", kicker: "Transit", assetPath: OGAMEX_FEATURED_ASSETS.SHIPS.path },
         { href: "/celestial-browser", icon: Search, label: "Celestial Index", description: "Browse stars, planets, moons, and interstellar objects.", kicker: "Catalog", assetPath: OGAMEX_FEATURED_ASSETS.MOON.path },
-      ];
-    case "Diplomacy":
-      return [
-        { href: "/alliance", icon: Shield, label: "Alliance Command", description: "Coordinate guilds, members, pacts, and alliance strategy.", kicker: "Allies", assetPath: OGAMEX_FEATURED_ASSETS.DEFENSE.path },
-        { href: "/messages", icon: Mail, label: "Message Relay", description: "Review diplomacy traffic, reports, and system mail.", kicker: "Comms", assetPath: OGAMEX_FEATURED_ASSETS.BACKGROUND.path },
-        { href: "/leaderboard", icon: Trophy, label: "Rankings", description: "Compare empire power, prestige, and commander standings.", kicker: "Ranks", assetPath: OGAMEX_FEATURED_ASSETS.RESEARCH.path },
-        { href: "/friends", icon: Users, label: "Contacts", description: "Manage friends, trusted pilots, and cooperative partners.", kicker: "Network", assetPath: PLANET_ASSETS.TERRESTRIAL.JUNGLE.path },
       ];
     case "Economy":
       return [
@@ -602,6 +796,20 @@ const getCommandTiles = (context: ActivePageContext | null): CommandTile[] => {
         { href: "/storefront", icon: Store, label: "Storefront", description: "Browse premium goods, packs, and featured offers.", kicker: "Store", assetPath: OGAMEX_FEATURED_ASSETS.SHIPS.path },
         { href: "/season-pass", icon: Award, label: "Season Track", description: "Push time-limited objectives, rewards, and progression goals.", kicker: "Pass", assetPath: OGAMEX_FEATURED_ASSETS.RESEARCH.path },
         { href: "/achievements", icon: Trophy, label: "Milestones", description: "Track long-term progression achievements and reward claims.", kicker: "Goals", assetPath: OGAMEX_FEATURED_ASSETS.DEFENSE.path },
+      ];
+    case "Alliance":
+      return [
+        { href: "/alliance", icon: Shield, label: "Alliance Command", description: "Coordinate guilds, members, pacts, and alliance strategy.", kicker: "Allies", assetPath: OGAMEX_FEATURED_ASSETS.DEFENSE.path },
+        { href: "/messages", icon: Mail, label: "Message Relay", description: "Review diplomacy traffic, reports, and system mail.", kicker: "Comms", assetPath: OGAMEX_FEATURED_ASSETS.BACKGROUND.path },
+        { href: "/leaderboard", icon: Trophy, label: "Rankings", description: "Compare empire power, prestige, and commander standings.", kicker: "Ranks", assetPath: OGAMEX_FEATURED_ASSETS.RESEARCH.path },
+        { href: "/friends", icon: Users, label: "Contacts", description: "Manage friends, trusted pilots, and cooperative partners.", kicker: "Network", assetPath: PLANET_ASSETS.TERRESTRIAL.JUNGLE.path },
+      ];
+    case "Activities":
+      return [
+        { href: "/raids", icon: Swords, label: "Pirate Operations", description: "Coordinate raid campaigns and pirate hunting missions.", kicker: "Raids", assetPath: OGAMEX_FEATURED_ASSETS.DEFENSE.path },
+        { href: "/raid-bosses", icon: Crown, label: "World Bosses", description: "Track elite raid bosses and encounter preparation.", kicker: "Bosses", assetPath: OGAMEX_FEATURED_ASSETS.SHIPS.path },
+        { href: "/story-mode", icon: BookOpen, label: "Story Mode", description: "Play through narrative content and mission arcs.", kicker: "Story", assetPath: OGAMEX_FEATURED_ASSETS.RESEARCH.path },
+        { href: "/season", icon: Award, label: "Season Hub", description: "Access current season content and event activities.", kicker: "Events", assetPath: OGAMEX_FEATURED_ASSETS.BACKGROUND.path },
       ];
     default:
       return [
@@ -664,11 +872,29 @@ const getActivePageContext = (location: string, isAdmin: boolean): ActivePageCon
 
 const getPageInfrastructure = (context: ActivePageContext): InfrastructureDetail[] => {
   const sectionInfrastructure: Record<string, Omit<InfrastructureDetail, "label">[]> = {
-    Empire: [
-      { value: "Production → Storage → Expansion", helper: "Resource flow that supports colonies, facilities, and empire growth.", icon: Factory, toneClass: "text-blue-700" },
+    Resources: [
+      { value: "Extraction → Storage → Distribution", helper: "Resource flow that supports colonies, facilities, and empire growth.", icon: Factory, toneClass: "text-blue-700" },
       { value: "Planet • Moon • Station", helper: "Command layers connected to the active base selector.", icon: Globe, toneClass: "text-cyan-700" },
-      { value: "Queues + Resources", helper: "Primary live inputs used by empire management pages.", icon: Database, toneClass: "text-amber-700" },
+      { value: "Queues + Resources", helper: "Primary live inputs used by resource management pages.", icon: Database, toneClass: "text-amber-700" },
       { value: "Stabilize bottlenecks", helper: "Balance capacity before committing to the next expansion cycle.", icon: Zap, toneClass: "text-emerald-700" },
+    ],
+    Facilities: [
+      { value: "Design → Construct → Upgrade", helper: "Construction flow from blueprint to operational facility.", icon: Factory, toneClass: "text-blue-700" },
+      { value: "Industrial • Defense • Space", helper: "Facility categories share resources, queues, and dependencies.", icon: Building2, toneClass: "text-cyan-700" },
+      { value: "Resources + Queue Slots", helper: "Build capacity depends on available materials and open build slots.", icon: Database, toneClass: "text-amber-700" },
+      { value: "Prioritize bottlenecks", helper: "Build facilities that resolve the most critical resource constraint.", icon: Zap, toneClass: "text-emerald-700" },
+    ],
+    Fleet: [
+      { value: "Build → Fit → Deploy", helper: "Fleet lifecycle from construction through fitting to mission dispatch.", icon: Rocket, toneClass: "text-blue-700" },
+      { value: "Ships • Operations • ACS", helper: "Fleet pages share ship data, fuel reserves, and mission status.", icon: Send, toneClass: "text-cyan-700" },
+      { value: "Fuel + Hull Integrity", helper: "Mission availability depends on deuterium and ship readiness.", icon: Database, toneClass: "text-amber-700" },
+      { value: "Confirm fuel reserves", helper: "Verify deuterium supply before launching long-range fleet operations.", icon: Shield, toneClass: "text-emerald-700" },
+    ],
+    Military: [
+      { value: "Train → Equip → Engage", helper: "Military lifecycle from training through equipment to battle deployment.", icon: Swords, toneClass: "text-red-700" },
+      { value: "Ground • Officers • Raids", helper: "Military pages share units, readiness, logistics, and combat reports.", icon: ShieldAlert, toneClass: "text-orange-700" },
+      { value: "Units + Readiness", helper: "Mission availability depends on unit count, training, and active operations.", icon: Send, toneClass: "text-amber-700" },
+      { value: "Confirm return path", helper: "Protect reserves and recovery capacity before launching the next action.", icon: Shield, toneClass: "text-emerald-700" },
     ],
     Research: [
       { value: "Discovery → Research → Unlock", helper: "Technology progression from prerequisite to usable capability.", icon: FlaskConical, toneClass: "text-cyan-700" },
@@ -676,29 +902,35 @@ const getPageInfrastructure = (context: ActivePageContext): InfrastructureDetail
       { value: "Energy + Queue", helper: "Research throughput depends on available power and active work slots.", icon: Zap, toneClass: "text-amber-700" },
       { value: "Resolve prerequisites", helper: "Open the shortest viable unlock path before spending rare materials.", icon: GraduationCap, toneClass: "text-violet-700" },
     ],
-    Military: [
-      { value: "Intel → Formation → Engagement", helper: "Operational chain from target assessment through battle resolution.", icon: Swords, toneClass: "text-red-700" },
-      { value: "Fleet • Army • Defense", helper: "Military pages share units, readiness, logistics, and combat reports.", icon: ShieldAlert, toneClass: "text-orange-700" },
-      { value: "Fuel + Readiness", helper: "Mission availability depends on deuterium, units, and active operations.", icon: Send, toneClass: "text-amber-700" },
-      { value: "Confirm return path", helper: "Protect reserves and recovery capacity before launching the next action.", icon: Shield, toneClass: "text-emerald-700" },
+    Crafting: [
+      { value: "Gather → Forge → Enhance", helper: "Crafting lifecycle from material collection through forging to augmentation.", icon: Hammer, toneClass: "text-orange-700" },
+      { value: "Workshop • Lab • Artifacts", helper: "Crafting pages share materials, blueprints, and enhancement data.", icon: Gem, toneClass: "text-cyan-700" },
+      { value: "Materials + Blueprints", helper: "Crafting throughput depends on available materials and unlocked schematics.", icon: Database, toneClass: "text-amber-700" },
+      { value: "Match blueprint to material", helper: "Select the right schematic before committing rare crafting components.", icon: FileText, toneClass: "text-emerald-700" },
     ],
-    Exploration: [
+    Galaxy: [
       { value: "Scan → Route → Discover", helper: "Exploration loop for revealing systems, objects, and strategic paths.", icon: Compass, toneClass: "text-cyan-700" },
-      { value: "Galaxy • Universe • Warp", helper: "Spatial views connect local coordinates to realm-scale navigation.", icon: Orbit, toneClass: "text-blue-700" },
+      { value: "Galaxy • Sectors • Gates", helper: "Spatial views connect local coordinates to realm-scale navigation.", icon: Orbit, toneClass: "text-blue-700" },
       { value: "Coordinates + Missions", helper: "Current location and active survey fleets drive available discoveries.", icon: Map, toneClass: "text-violet-700" },
       { value: "Secure the corridor", helper: "Evaluate travel risk and support range before extending the frontier.", icon: Network, toneClass: "text-emerald-700" },
-    ],
-    Diplomacy: [
-      { value: "Contact → Negotiate → Coordinate", helper: "Relationship loop for alliances, messages, rankings, and groups.", icon: Users, toneClass: "text-violet-700" },
-      { value: "Alliance • Mail • Social", helper: "Diplomatic pages share membership, communication, and reputation data.", icon: Mail, toneClass: "text-blue-700" },
-      { value: "Standing + Reports", helper: "Unread communications and faction context shape available responses.", icon: ScrollText, toneClass: "text-amber-700" },
-      { value: "Answer priority traffic", helper: "Clear actionable reports before committing political or trade resources.", icon: Shield, toneClass: "text-emerald-700" },
     ],
     Economy: [
       { value: "Produce → Trade → Reinvest", helper: "Economic loop that turns resources into sustained empire capacity.", icon: Coins, toneClass: "text-amber-700" },
       { value: "Market • Store • Rewards", helper: "Economic surfaces share balances, inventories, offers, and progression.", icon: ShoppingBag, toneClass: "text-blue-700" },
       { value: "Credits + Inventory", helper: "Purchasing power and available stock determine transaction options.", icon: Box, toneClass: "text-violet-700" },
       { value: "Preserve reserves", helper: "Keep enough liquidity for queues, upkeep, and emergency replacement.", icon: Database, toneClass: "text-emerald-700" },
+    ],
+    Alliance: [
+      { value: "Contact → Negotiate → Coordinate", helper: "Relationship loop for alliances, messages, rankings, and groups.", icon: Users, toneClass: "text-violet-700" },
+      { value: "Diplomacy • Espionage • Intel", helper: "Alliance pages share membership, communication, and reputation data.", icon: Mail, toneClass: "text-blue-700" },
+      { value: "Standing + Reports", helper: "Unread communications and faction context shape available responses.", icon: ScrollText, toneClass: "text-amber-700" },
+      { value: "Answer priority traffic", helper: "Clear actionable reports before committing political or trade resources.", icon: Shield, toneClass: "text-emerald-700" },
+    ],
+    Activities: [
+      { value: "Locate → Engage → Reward", helper: "Activity loop from target discovery through combat to loot and progression.", icon: Target, toneClass: "text-red-700" },
+      { value: "Raids • Quests • Events", helper: "Activity surfaces share rewards, cooldowns, and seasonal timers.", icon: Swords, toneClass: "text-orange-700" },
+      { value: "Cooldowns + Energy", helper: "Activity availability depends on timers, energy, and active missions.", icon: Clock, toneClass: "text-amber-700" },
+      { value: "Check cooldown timers", helper: "Verify available attempts and energy before launching the next activity.", icon: RefreshCw, toneClass: "text-emerald-700" },
     ],
     System: [
       { value: "Observe → Configure → Verify", helper: "System workflow for settings, diagnostics, tools, and support.", icon: Settings, toneClass: "text-slate-700" },
@@ -843,6 +1075,32 @@ function GameSidebar({
           />
         ))}
 
+        <div className="sd-sidebar-label px-4 mt-4 mb-2 text-xs font-bold text-muted-foreground uppercase tracking-widest">Social</div>
+        {socialItems.map((item) => (
+          <SidebarItem
+            key={item.href}
+            href={item.href}
+            icon={item.icon}
+            label={item.label}
+            active={isNavItemActive(item, location)}
+            onSelect={onNavigate}
+            touchMode={touchMode}
+          />
+        ))}
+
+        <div className="sd-sidebar-label px-4 mt-4 mb-2 text-xs font-bold text-muted-foreground uppercase tracking-widest">Profile</div>
+        {profileItems.map((item) => (
+          <SidebarItem
+            key={item.href}
+            href={item.href}
+            icon={item.icon}
+            label={item.label}
+            active={isNavItemActive(item, location)}
+            onSelect={onNavigate}
+            touchMode={touchMode}
+          />
+        ))}
+
         <div className="sd-sidebar-label px-4 mt-4 mb-2 text-xs font-bold text-muted-foreground uppercase tracking-widest">System</div>
         {systemItems.map((item) => (
           <SidebarItem
@@ -925,9 +1183,13 @@ export default function GameLayout({ children, title, subtitle }: { children: Re
     ? OGAMEX_FEATURED_ASSETS.RESEARCH.path
     : activePageContext?.section === "Military"
       ? OGAMEX_FEATURED_ASSETS.SHIPS.path
-      : activePageContext?.section === "System"
-        ? OGAMEX_FEATURED_ASSETS.DEFENSE.path
-        : OGAMEX_FEATURED_ASSETS.BACKGROUND.path;
+      : activePageContext?.section === "Fleet"
+        ? OGAMEX_FEATURED_ASSETS.SHIPS.path
+        : activePageContext?.section === "Crafting"
+          ? OGAMEX_FEATURED_ASSETS.DEFENSE.path
+          : activePageContext?.section === "System"
+            ? OGAMEX_FEATURED_ASSETS.DEFENSE.path
+            : OGAMEX_FEATURED_ASSETS.BACKGROUND.path;
 
   const { data: turnData, isLoading: turnsLoading } = useQuery({
     queryKey: ['/api/turns'],
@@ -1040,97 +1302,160 @@ export default function GameLayout({ children, title, subtitle }: { children: Re
   const pageInfrastructure = activePageContext ? getPageInfrastructure(activePageContext) : [];
   const unreadMessages = messages.filter((message) => !message.read).length;
   const sharedActions: PageAction[] =
-    activePageContext?.section === "Empire"
+    activePageContext?.section === "Resources"
       ? [
           { label: "Manage Resources", href: "/resources", icon: Pickaxe, helper: "Tune output, storage, and collection cycles." },
           { label: "Upgrade Facilities", href: "/facilities", icon: Factory, helper: "Build infrastructure and queue expansions." },
           { label: "Review Colonies", href: "/colonies", icon: Home, helper: "Inspect colony slots, planets, and moons." },
           { label: "Switch To Planet", icon: Globe, helper: "Focus planetary production and command controls.", onClick: () => setActiveBase("planet") },
         ]
-      : activePageContext?.section === "Research"
+      : activePageContext?.section === "Facilities"
         ? [
-            { label: "Open Research Hub", href: "/research", icon: FlaskConical, helper: "Return to the main research queue and projects." },
-            { label: "View Analytics", href: "/research-analytics", icon: ScrollText, helper: "Read performance, streak, and progress data." },
-            { label: "Open Library", href: "/knowledge-library", icon: BookOpen, helper: "Study knowledge tracks, synergies, and classes." },
-            { label: "Tech Tree Route", href: "/technology-tree", icon: GraduationCap, helper: "Jump into prerequisite planning and unlock paths." },
+            { label: "Open Shipyard", href: "/shipyard", icon: Rocket, helper: "Construct ships and prepare new fleets." },
+            { label: "Orbital Defense", href: "/orbital-defense", icon: Satellite, helper: "Build and manage orbital defense platforms." },
+            { label: "Starbases", href: "/starbases", icon: Satellite, helper: "Deep-space starbase facilities management." },
+            { label: "Megastructures", href: "/megastructures", icon: Hexagon, helper: "Develop late-game construction projects." },
           ]
-        : activePageContext?.section === "Military"
+        : activePageContext?.section === "Fleet"
           ? [
               { label: "Fleet Command", href: "/fleet", icon: Send, helper: "Dispatch fleets, raids, and logistics missions." },
-              { label: "Combat Center", href: "/combat", icon: ShieldAlert, helper: "Run combat actions, strikes, and battle ops." },
-              { label: "Ground Combat", href: "/ground-combat", icon: Swords, helper: "Launch invasions, raids, and planetary assault formations." },
-              { label: "Occupation Ops", href: "/planet-occupation", icon: TowerControl, helper: "Manage garrisons, suppression, and extraction." },
+              { label: "Fleet Yard", href: "/fleet-yard", icon: Warehouse, helper: "Fleet storage and logistics hub." },
+              { label: "Ship Fitting", href: "/fitting", icon: Settings, helper: "Customize ship modules and equipment." },
+              { label: "Expeditions", href: "/expeditions", icon: Compass, helper: "Launch deep-space missions." },
             ]
-          : activePageContext?.section === "Exploration"
+          : activePageContext?.section === "Military"
             ? [
-                { label: "Galaxy Map", href: "/galaxy", icon: Globe, helper: "Scan nearby sectors and route pressure." },
-                { label: "Universe View", href: "/universe", icon: Orbit, helper: "Inspect realm-wide and multi-universe structures." },
-                { label: "Warp Routes", href: "/warp-network", icon: Network, helper: "Switch lanes, gates, and travel corridors." },
-                { label: "Celestial Index", href: "/celestial-browser", icon: Search, helper: "Browse stars, moons, and planetary objects." },
+                { label: "Ground Combat", href: "/ground-combat", icon: Swords, helper: "Launch invasions and planetary assault formations." },
+                { label: "Combat Center", href: "/combat", icon: ShieldAlert, helper: "Run combat actions, strikes, and battle ops." },
+                { label: "Occupation Ops", href: "/planet-occupation", icon: TowerControl, helper: "Manage garrisons, suppression, and extraction." },
+                { label: "Battle Logs", href: "/battle-logs", icon: ScrollText, helper: "Review previous engagements and outcomes." },
               ]
-            : activePageContext?.section === "Diplomacy"
+            : activePageContext?.section === "Research"
               ? [
-                  { label: "Open Messages", href: "/messages", icon: Mail, helper: "Read reports, diplomacy, and system mail." },
-                  { label: "Alliance Board", href: "/alliance", icon: Shield, helper: "Manage allies, members, and pacts." },
-                  { label: "Ranking Feed", href: "/leaderboard", icon: Trophy, helper: "Check prestige, empire, and combat standings." },
-                  { label: "Friends List", href: "/friends", icon: Users, helper: "Track trusted pilots and contacts." },
+                  { label: "Open Research Hub", href: "/research", icon: FlaskConical, helper: "Return to the main research queue and projects." },
+                  { label: "View Analytics", href: "/research-analytics", icon: ScrollText, helper: "Read performance, streak, and progress data." },
+                  { label: "Open Library", href: "/knowledge-library", icon: BookOpen, helper: "Study knowledge tracks, synergies, and classes." },
+                  { label: "Tech Tree Route", href: "/technology-tree", icon: GraduationCap, helper: "Jump into prerequisite planning and unlock paths." },
                 ]
-              : activePageContext?.section === "Economy"
+              : activePageContext?.section === "Crafting"
                 ? [
-                    { label: "Open Market", href: "/market", icon: ShoppingBag, helper: "Trade materials, parts, and commodities." },
-                    { label: "Storefront", href: "/storefront", icon: Store, helper: "Browse premium packs and featured offers." },
-                    { label: "Season Track", href: "/season-pass", icon: Award, helper: "Advance timed objectives and rewards." },
-                    { label: "Achievements", href: "/achievements", icon: Trophy, helper: "Review milestones and reward claims." },
+                    { label: "Workshop", href: "/smithy", icon: Hammer, helper: "Forge and upgrade weapons, armor, and equipment." },
+                    { label: "Materials Lab", href: "/research-lab", icon: FlaskConical, helper: "Process raw materials into crafting components." },
+                    { label: "Augmentations", href: "/power-level", icon: Zap, helper: "Manage augmentations and power modifications." },
+                    { label: "Item Levels", href: "/item-levels", icon: Award, helper: "Track item progression and enhancement levels." },
                   ]
-                : [
-                    { label: "Open Settings", href: "/settings", icon: Settings, helper: "Adjust client options and gameplay preferences." },
-                    { label: "Assets Gallery", href: "/assets-gallery", icon: Image, helper: "Review linked PNG, sprite, and page art." },
-                    { label: "Diagnostics", href: "/diagnostics", icon: AlertTriangle, helper: "Inspect warnings, errors, and health signals." },
-                    { label: "Switch To Station", icon: Satellite, helper: "Set station as the active command base.", onClick: () => setActiveBase("station") },
-                  ];
+                : activePageContext?.section === "Galaxy"
+                  ? [
+                      { label: "Galaxy Map", href: "/galaxy", icon: Globe, helper: "Scan nearby sectors and route pressure." },
+                      { label: "Universe View", href: "/universe", icon: Orbit, helper: "Inspect realm-wide and multi-universe structures." },
+                      { label: "Warp Routes", href: "/warp-network", icon: Network, helper: "Switch lanes, gates, and travel corridors." },
+                      { label: "Celestial Index", href: "/celestial-browser", icon: Search, helper: "Browse stars, moons, and planetary objects." },
+                    ]
+                  : activePageContext?.section === "Economy"
+                    ? [
+                        { label: "Open Market", href: "/market", icon: ShoppingBag, helper: "Trade materials, parts, and commodities." },
+                        { label: "Storefront", href: "/storefront", icon: Store, helper: "Browse premium packs and featured offers." },
+                        { label: "Season Track", href: "/season-pass", icon: Award, helper: "Advance timed objectives and rewards." },
+                        { label: "Achievements", href: "/achievements", icon: Trophy, helper: "Review milestones and reward claims." },
+                      ]
+                    : activePageContext?.section === "Alliance"
+                      ? [
+                          { label: "Open Messages", href: "/messages", icon: Mail, helper: "Read reports, diplomacy, and system mail." },
+                          { label: "Alliance Board", href: "/alliance", icon: Shield, helper: "Manage allies, members, and pacts." },
+                          { label: "Ranking Feed", href: "/leaderboard", icon: Trophy, helper: "Check prestige, empire, and combat standings." },
+                          { label: "Friends List", href: "/friends", icon: Users, helper: "Track trusted pilots and contacts." },
+                        ]
+                      : activePageContext?.section === "Activities"
+                        ? [
+                            { label: "Pirate Hunting", href: "/raids", icon: Swords, helper: "Coordinate raid operations and campaigns." },
+                            { label: "World Bosses", href: "/raid-bosses", icon: Crown, helper: "Track elite bosses and encounter prep." },
+                            { label: "Story Mode", href: "/story-mode", icon: BookOpen, helper: "Play through narrative content and arcs." },
+                            { label: "Season Hub", href: "/season", icon: Award, helper: "Access current season content and events." },
+                          ]
+                        : [
+                            { label: "Open Settings", href: "/settings", icon: Settings, helper: "Adjust client options and gameplay preferences." },
+                            { label: "Assets Gallery", href: "/assets-gallery", icon: Image, helper: "Review linked PNG, sprite, and page art." },
+                            { label: "Diagnostics", href: "/diagnostics", icon: AlertTriangle, helper: "Inspect warnings, errors, and health signals." },
+                            { label: "Switch To Station", icon: Satellite, helper: "Set station as the active command base.", onClick: () => setActiveBase("station") },
+                          ];
 
   const detailCards: DetailCard[] =
-    activePageContext?.section === "Research"
+    activePageContext?.section === "Resources"
       ? [
-          { label: "Active Base", value: activeBase.toUpperCase(), helper: "Current research operating frame.", icon: CircleDot, toneClass: "text-cyan-700" },
-          { label: "Queue Load", value: queue.length.toString(), helper: "Construction and science jobs currently queued.", icon: Clock, toneClass: "text-blue-700" },
+          { label: "Active Base", value: activeBase.toUpperCase(), helper: "Current resource operating frame.", icon: CircleDot, toneClass: "text-cyan-700" },
+          { label: "Queue Load", value: queue.length.toString(), helper: "Construction and production jobs currently queued.", icon: Clock, toneClass: "text-blue-700" },
           { label: "Unread Reports", value: unreadMessages.toString(), helper: "Unread messages, reports, and notifications.", icon: Mail, toneClass: "text-violet-700" },
-          { label: "Energy Reserve", value: resources.energy.toLocaleString(), helper: "Available energy backing current research output.", icon: Zap, toneClass: resources.energy >= 0 ? "text-amber-700" : "text-red-700" },
+          { label: "Energy Reserve", value: resources.energy.toLocaleString(), helper: "Available energy backing current production output.", icon: Zap, toneClass: resources.energy >= 0 ? "text-amber-700" : "text-red-700" },
         ]
-      : activePageContext?.section === "Military"
+      : activePageContext?.section === "Facilities"
         ? [
-            { label: "Mission Ops", value: activeMissions.length.toString(), helper: "Current fleet and tactical operations in motion.", icon: Send, toneClass: "text-red-700" },
-            { label: "Queue Load", value: queue.length.toString(), helper: "Build and upgrade pressure on military systems.", icon: Hammer, toneClass: "text-orange-700" },
-            { label: "Unread Reports", value: unreadMessages.toString(), helper: "Combat reports and battle summaries waiting.", icon: ScrollText, toneClass: "text-violet-700" },
-            { label: "Deuterium", value: resources.deuterium.toLocaleString(), helper: "Flight fuel and war-drive reserve stock.", icon: Database, toneClass: "text-green-700" },
+            { label: "Build Queue", value: queue.length.toString(), helper: "Active construction and upgrade projects.", icon: Clock, toneClass: "text-blue-700" },
+            { label: "Active Base", value: activeBase.toUpperCase(), helper: "Current facility operating frame.", icon: CircleDot, toneClass: "text-cyan-700" },
+            { label: "Metal Reserve", value: resources.metal.toLocaleString(), helper: "Available metal for construction.", icon: Box, toneClass: "text-slate-700" },
+            { label: "Crystal Reserve", value: resources.crystal.toLocaleString(), helper: "Available crystal for advanced builds.", icon: Gem, toneClass: "text-blue-700" },
           ]
-        : activePageContext?.section === "Exploration"
+        : activePageContext?.section === "Fleet"
           ? [
-              { label: "Realm Server", value: selectedRealm?.name || "Offline", helper: "Current realm routing for exploration systems.", icon: Globe, toneClass: "text-cyan-700" },
-              { label: "Mission Ops", value: activeMissions.length.toString(), helper: "Survey fleets and frontier expeditions underway.", icon: Compass, toneClass: "text-blue-700" },
-              { label: "Queue Load", value: queue.length.toString(), helper: "Queued projects competing for exploration tempo.", icon: Clock, toneClass: "text-orange-700" },
-              { label: "Coordinates", value: coordinates, helper: "Active world coordinates anchoring current view.", icon: Map, toneClass: "text-slate-700" },
+              { label: "Mission Ops", value: activeMissions.length.toString(), helper: "Current fleet and tactical operations in motion.", icon: Send, toneClass: "text-red-700" },
+              { label: "Queue Load", value: queue.length.toString(), helper: "Ship construction and fitting pressure.", icon: Clock, toneClass: "text-orange-700" },
+              { label: "Unread Reports", value: unreadMessages.toString(), helper: "Fleet reports and mission summaries waiting.", icon: ScrollText, toneClass: "text-violet-700" },
+              { label: "Deuterium", value: resources.deuterium.toLocaleString(), helper: "Flight fuel and war-drive reserve stock.", icon: Database, toneClass: "text-green-700" },
             ]
-          : activePageContext?.section === "Diplomacy"
+          : activePageContext?.section === "Military"
             ? [
-                { label: "Alliance", value: alliance?.tag || "NONE", helper: "Current alliance or guild command attachment.", icon: Shield, toneClass: alliance ? "text-emerald-700" : "text-slate-700" },
-                { label: "Unread Mail", value: unreadMessages.toString(), helper: "Diplomatic traffic and command communications.", icon: Mail, toneClass: "text-violet-700" },
-                { label: "Realm Server", value: selectedRealm?.name || "Offline", helper: "Current social and server cluster context.", icon: Globe, toneClass: "text-cyan-700" },
-                { label: "Credits", value: resources.credits.toLocaleString(), helper: "Political and trade flexibility reserve.", icon: Coins, toneClass: "text-amber-700" },
+                { label: "Mission Ops", value: activeMissions.length.toString(), helper: "Current fleet and tactical operations in motion.", icon: Send, toneClass: "text-red-700" },
+                { label: "Queue Load", value: queue.length.toString(), helper: "Build and upgrade pressure on military systems.", icon: Hammer, toneClass: "text-orange-700" },
+                { label: "Unread Reports", value: unreadMessages.toString(), helper: "Combat reports and battle summaries waiting.", icon: ScrollText, toneClass: "text-violet-700" },
+                { label: "Deuterium", value: resources.deuterium.toLocaleString(), helper: "Flight fuel and war-drive reserve stock.", icon: Database, toneClass: "text-green-700" },
               ]
-            : activePageContext?.section === "Economy"
+            : activePageContext?.section === "Research"
               ? [
-                  { label: "Credits", value: resources.credits.toLocaleString(), helper: "Liquid economy reserve for trade and growth.", icon: Coins, toneClass: "text-amber-700" },
-                  { label: "Food", value: resources.food.toLocaleString(), helper: "Population support and agricultural capacity.", icon: Wheat, toneClass: "text-lime-700" },
-                  { label: "Water", value: resources.water.toLocaleString(), helper: "Civilian and industrial support reserves.", icon: Droplets, toneClass: "text-cyan-700" },
-                  { label: "Queue Load", value: queue.length.toString(), helper: "Economic projects waiting to complete.", icon: Clock, toneClass: "text-blue-700" },
+                  { label: "Active Base", value: activeBase.toUpperCase(), helper: "Current research operating frame.", icon: CircleDot, toneClass: "text-cyan-700" },
+                  { label: "Queue Load", value: queue.length.toString(), helper: "Construction and science jobs currently queued.", icon: Clock, toneClass: "text-blue-700" },
+                  { label: "Unread Reports", value: unreadMessages.toString(), helper: "Unread messages, reports, and notifications.", icon: Mail, toneClass: "text-violet-700" },
+                  { label: "Energy Reserve", value: resources.energy.toLocaleString(), helper: "Available energy backing current research output.", icon: Zap, toneClass: resources.energy >= 0 ? "text-amber-700" : "text-red-700" },
                 ]
-              : [
-                  { label: "Active Base", value: activeBase.toUpperCase(), helper: "Current command layer for page actions.", icon: CircleDot, toneClass: "text-cyan-700" },
-                  { label: "Queue Load", value: queue.length.toString(), helper: "Total queued construction and upgrade jobs.", icon: Clock, toneClass: "text-blue-700" },
-                  { label: "Mission Ops", value: activeMissions.length.toString(), helper: "Fleets and actions currently in progress.", icon: Send, toneClass: "text-red-700" },
-                  { label: "Unread Reports", value: unreadMessages.toString(), helper: "Unread system logs and command messages.", icon: Mail, toneClass: "text-violet-700" },
-                ];
+              : activePageContext?.section === "Crafting"
+                ? [
+                    { label: "Active Base", value: activeBase.toUpperCase(), helper: "Current crafting operating frame.", icon: CircleDot, toneClass: "text-cyan-700" },
+                    { label: "Queue Load", value: queue.length.toString(), helper: "Crafting and forging jobs currently queued.", icon: Clock, toneClass: "text-blue-700" },
+                    { label: "Unread Reports", value: unreadMessages.toString(), helper: "Crafting reports and material notifications.", icon: Mail, toneClass: "text-violet-700" },
+                    { label: "Credits", value: resources.credits.toLocaleString(), helper: "Available credits for material purchases.", icon: Coins, toneClass: "text-amber-700" },
+                  ]
+                : activePageContext?.section === "Galaxy"
+                  ? [
+                      { label: "Realm Server", value: selectedRealm?.name || "Offline", helper: "Current realm routing for exploration systems.", icon: Globe, toneClass: "text-cyan-700" },
+                      { label: "Mission Ops", value: activeMissions.length.toString(), helper: "Survey fleets and frontier expeditions underway.", icon: Compass, toneClass: "text-blue-700" },
+                      { label: "Queue Load", value: queue.length.toString(), helper: "Queued projects competing for exploration tempo.", icon: Clock, toneClass: "text-orange-700" },
+                      { label: "Coordinates", value: coordinates, helper: "Active world coordinates anchoring current view.", icon: Map, toneClass: "text-slate-700" },
+                    ]
+                  : activePageContext?.section === "Economy"
+                    ? [
+                        { label: "Credits", value: resources.credits.toLocaleString(), helper: "Liquid economy reserve for trade and growth.", icon: Coins, toneClass: "text-amber-700" },
+                        { label: "Food", value: resources.food.toLocaleString(), helper: "Population support and agricultural capacity.", icon: Wheat, toneClass: "text-lime-700" },
+                        { label: "Water", value: resources.water.toLocaleString(), helper: "Civilian and industrial support reserves.", icon: Droplets, toneClass: "text-cyan-700" },
+                        { label: "Queue Load", value: queue.length.toString(), helper: "Economic projects waiting to complete.", icon: Clock, toneClass: "text-blue-700" },
+                      ]
+                    : activePageContext?.section === "Alliance"
+                      ? [
+                          { label: "Alliance", value: alliance?.tag || "NONE", helper: "Current alliance or guild command attachment.", icon: Shield, toneClass: alliance ? "text-emerald-700" : "text-slate-700" },
+                          { label: "Unread Mail", value: unreadMessages.toString(), helper: "Diplomatic traffic and command communications.", icon: Mail, toneClass: "text-violet-700" },
+                          { label: "Realm Server", value: selectedRealm?.name || "Offline", helper: "Current social and server cluster context.", icon: Globe, toneClass: "text-cyan-700" },
+                          { label: "Credits", value: resources.credits.toLocaleString(), helper: "Political and trade flexibility reserve.", icon: Coins, toneClass: "text-amber-700" },
+                        ]
+                      : activePageContext?.section === "Activities"
+                        ? [
+                            { label: "Active Raids", value: activeMissions.length.toString(), helper: "Active raid campaigns and combat operations.", icon: Swords, toneClass: "text-red-700" },
+                            { label: "Queue Load", value: queue.length.toString(), helper: "Activity projects and preparation queues.", icon: Clock, toneClass: "text-orange-700" },
+                            { label: "Unread Reports", value: unreadMessages.toString(), helper: "Activity reports and reward notifications.", icon: ScrollText, toneClass: "text-violet-700" },
+                            { label: "Credits", value: resources.credits.toLocaleString(), helper: "Available credits for activity participation.", icon: Coins, toneClass: "text-amber-700" },
+                          ]
+                        : [
+                            { label: "Active Base", value: activeBase.toUpperCase(), helper: "Current command layer for page actions.", icon: CircleDot, toneClass: "text-cyan-700" },
+                            { label: "Queue Load", value: queue.length.toString(), helper: "Total queued construction and upgrade jobs.", icon: Clock, toneClass: "text-blue-700" },
+                            { label: "Mission Ops", value: activeMissions.length.toString(), helper: "Fleets and actions currently in progress.", icon: Send, toneClass: "text-red-700" },
+                            { label: "Unread Reports", value: unreadMessages.toString(), helper: "Unread system logs and command messages.", icon: Mail, toneClass: "text-violet-700" },
+                          ];
 
   useEffect(() => {
     const root = document.documentElement;

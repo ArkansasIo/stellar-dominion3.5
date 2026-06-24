@@ -204,6 +204,18 @@ export function registerOrbitalStationRoutes(app: Express) {
     res.json({ success: true, station });
   });
 
+  // Decommission (delete) a station
+  app.delete("/api/orbital-stations/:id", async (req: any, res) => {
+    const userId = req.user?.id || "dev-user";
+    const { id } = req.params;
+    const state = await getState(userId);
+    const idx = state.stations.findIndex(s => s.id === id);
+    if (idx === -1) return res.status(404).json({ message: "Station not found" });
+    state.stations.splice(idx, 1);
+    await setState(userId, state);
+    res.json({ success: true, message: "Station decommissioned" });
+  });
+
   // Process station tick
   app.post("/api/orbital-stations/tick", async (req: any, res) => {
     const userId = req.user?.id || "dev-user";

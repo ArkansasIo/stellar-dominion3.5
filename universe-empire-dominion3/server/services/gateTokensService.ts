@@ -183,7 +183,7 @@ export class GateTokensService {
       .where(eq(playerCurrency.userId, userId))
       .limit(1);
 
-    const currentCredits = currencyResult.length > 0 ? currencyResult[0].credits : 0;
+    const currentCredits = currencyResult.length > 0 ? (currencyResult[0] as any).silver : 0;
     if (currentCredits < totalCost) {
       return { success: false, error: 'Insufficient credits' };
     }
@@ -192,7 +192,7 @@ export class GateTokensService {
     if (currencyResult.length > 0) {
       await db
         .update(playerCurrency)
-        .set({ credits: currentCredits - totalCost })
+        .set({ silver: currentCredits - totalCost } as any)
         .where(eq(playerCurrency.userId, userId));
     }
 
@@ -203,7 +203,7 @@ export class GateTokensService {
       quantity,
       'purchased',
       'store',
-      { costPerToken: config.purchasePrice.credits, totalCost }
+      { costPerToken: (config.purchasePrice as any).credits, totalCost }
     );
   }
 

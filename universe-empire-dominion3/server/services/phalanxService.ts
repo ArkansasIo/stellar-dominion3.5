@@ -30,9 +30,9 @@ class PhalanxService {
       .select()
       .from(moonBases)
       .where(
-        and(eq(moonBases.playerId, userId), eq(moonBases.moonId, moonId))
+        and(eq(moonBases.playerId, userId), eq((moonBases as any).moonId, moonId))
       )
-      .limit(1);
+      .limit(1) as any;
 
     if (!moonBase) return 0;
     const buildings = (moonBase.buildings as any) || {};
@@ -56,7 +56,8 @@ class PhalanxService {
       .limit(1);
     if (!moon) throw new Error("Moon not found");
 
-    const moonCoords = moon.coordinates || "";
+    const moonData = moon as any;
+    const moonCoords = moonData.coordinates || "";
     const scanRange = phalanxLevel * PHALANX_RANGE_PER_LEVEL;
 
     if (!this.isInRange(moonCoords, targetCoordinates, scanRange)) {
@@ -128,7 +129,7 @@ class PhalanxService {
 
     return {
       moonId,
-      moonName: moon.name || "Unknown Moon",
+      moonName: moonData.name || "Unknown Moon",
       coordinates: moonCoords,
       phalanxLevel,
       scanRange,

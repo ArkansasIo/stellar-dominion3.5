@@ -120,7 +120,7 @@ export function registerOGameDebrisRoutes(app: Router) {
         .map((b) => ({
           coordinates: b.coordinates,
           debris: b.debris,
-          age: Math.floor((Date.now() - new Date(b.createdAt).getTime()) / 3600000),
+          age: Math.floor((Date.now() - new Date(b.createdAt ?? new Date()).getTime()) / 3600000),
         }));
 
       res.json({ success: true, debrisFields });

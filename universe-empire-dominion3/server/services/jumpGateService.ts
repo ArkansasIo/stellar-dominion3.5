@@ -38,8 +38,8 @@ class JumpGateService {
     const [moonBase] = await db
       .select()
       .from(moonBases)
-      .where(and(eq(moonBases.playerId, userId), eq(moonBases.moonId, moonId)))
-      .limit(1);
+      .where(and(eq(moonBases.playerId, userId), eq((moonBases as any).moonId, moonId)))
+      .limit(1) as any;
 
     if (!moonBase) return 0;
     const buildings = (moonBase.buildings as any) || {};
@@ -47,14 +47,14 @@ class JumpGateService {
   }
 
   async getPlayerMoonsWithGate(userId: string): Promise<any[]> {
-    const userMoons = await db
+    const userMoons = (await db
       .select({
         moon: moons,
         base: moonBases,
       })
       .from(moonBases)
-      .innerJoin(moons, eq(moonBases.moonId, moons.id))
-      .where(eq(moonBases.playerId, userId));
+      .innerJoin(moons, eq((moonBases as any).moonId, moons.id))
+      .where(eq(moonBases.playerId, userId))) as any[];
 
     return userMoons
       .filter((row) => {
@@ -151,13 +151,15 @@ class JumpGateService {
       })
       .where(eq(playerStates.userId, userId));
 
+    const sMoon = sourceMoon as any;
+    const tMoon = targetMoon as any;
     return {
       sourceMoonId,
-      sourceMoonName: sourceMoon.name || "Unknown",
-      sourceCoordinates: sourceMoon.coordinates || "",
+      sourceMoonName: sMoon.name || "Unknown",
+      sourceCoordinates: sMoon.coordinates || "",
       targetMoonId,
-      targetMoonName: targetMoon.name || "Unknown",
-      targetCoordinates: targetMoon.coordinates || "",
+      targetMoonName: tMoon.name || "Unknown",
+      targetCoordinates: tMoon.coordinates || "",
       sourceGateLevel: sourceLevel,
       targetGateLevel: targetLevel,
       deuteriumCost,

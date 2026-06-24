@@ -148,7 +148,7 @@ router.post('/api/universe/scan/execute', isAuthenticated, async (req, res) => {
     }
 
     const activeCooldown = await storage.getActiveScanCooldown(userId, scanType);
-    if (activeCooldown && activeCooldown.scansRemaining <= 0) {
+    if (activeCooldown && (activeCooldown.scansRemaining ?? 0) <= 0) {
       return res.status(429).json({
         error: 'Scan on cooldown',
         cooldownUntil: activeCooldown.cooldownUntil,

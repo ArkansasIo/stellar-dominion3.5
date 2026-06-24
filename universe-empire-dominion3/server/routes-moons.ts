@@ -1,4 +1,5 @@
 import type { Express, Request, Response } from "express";
+import { isAuthenticated } from "./basicAuth";
 import { db } from "./db";
 import { playerStates, moonBases } from "../shared/schema";
 import { eq } from "drizzle-orm";

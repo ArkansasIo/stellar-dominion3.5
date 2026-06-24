@@ -1,3 +1,5 @@
+import { STARFLEET_BIOME_CATALOG_90, type StarfleetBiomeEntry } from './starfleetBiomeCatalogConfig';
+
 export type CelestialFamily =
   | "galaxy"
   | "star"
@@ -981,36 +983,35 @@ const ASTEROIDS: CelestialObject[] = [
 ];
 
 // ===========================================================================
-// BIOMES
+// BIOMES (90 entries from Starfleet Biome Catalog)
 // ===========================================================================
 
-const BIOMES: CelestialObject[] = [
-    // A
-    {
-        id: "biome-001",
-        name: "Aquatic",
-        family: "biome",
-        type: "water-based",
-        subType: "oceanic",
-        class: "marine",
-        subClass: "deep-sea",
-        description: "A biome characterized by vast, deep oceans and a rich diversity of marine life.",
-        characteristics: { flora: ["kelp-forests", "coral-reefs"], fauna: ["leviathans", "bio-luminescent-fish"] }
+function biomeToCelestialObject(biome: StarfleetBiomeEntry): CelestialObject {
+  return {
+    id: biome.id,
+    name: biome.name,
+    family: 'biome' as CelestialFamily,
+    type: biome.biomeType,
+    subType: biome.biomeSubType,
+    class: biome.class,
+    subClass: biome.subClass,
+    description: biome.description,
+    characteristics: {
+      environmentType: biome.environmentType,
+      size: biome.size,
+      rank: biome.rank,
+      rarity: biome.rarity,
+      title: biome.title,
+      code: biome.code,
+      letter: biome.letter,
+      colonyCapacity: biome.colonyCapacity,
+      hazards: biome.hazards,
+      strategicUses: biome.strategicUses,
     },
-    // B
-    {
-        id: "biome-002",
-        name: "Boreal",
-        family: "biome",
-        type: "forest",
-        subType: "taiga",
-        class: "coniferous",
-        subClass: "cold-climate",
-        description: "A cold, northern forest biome dominated by coniferous trees.",
-        characteristics: { flora: ["pine", "spruce"], fauna: ["bears", "wolves"] }
-    },
-    // ... (and so on for all 26 letters)
-];
+  };
+}
+
+const BIOMES: CelestialObject[] = STARFLEET_BIOME_CATALOG_90.map(biomeToCelestialObject);
 
 export const CELESTIAL_OBJECTS = {
   galaxies: GALAXIES,
@@ -1020,3 +1021,94 @@ export const CELESTIAL_OBJECTS = {
   asteroids: ASTEROIDS,
   biomes: BIOMES,
 };
+
+// ===========================================================================
+// BIOME HELPER FUNCTIONS
+// ===========================================================================
+
+export function getBiomeById(id: string): CelestialObject | undefined {
+  return BIOMES.find(biome => biome.id === id);
+}
+
+export function getBiomesByEnvironmentType(environmentType: string): CelestialObject[] {
+  return BIOMES.filter(biome => biome.characteristics.environmentType === environmentType);
+}
+
+export function getBiomesByRarity(rarity: string): CelestialObject[] {
+  return BIOMES.filter(biome => biome.characteristics.rarity === rarity);
+}
+
+export function getBiomesByLetter(letter: string): CelestialObject[] {
+  return BIOMES.filter(biome => biome.characteristics.letter === letter.toUpperCase());
+}
+
+export function getBiomesByType(biomeType: string): CelestialObject[] {
+  return BIOMES.filter(biome => biome.type === biomeType);
+}
+
+export function getPlanetBiomes(): CelestialObject[] {
+  return getBiomesByEnvironmentType('planet');
+}
+
+export function getMoonBiomes(): CelestialObject[] {
+  return getBiomesByEnvironmentType('moon');
+}
+
+export function getColonyBiomes(): CelestialObject[] {
+  return getBiomesByEnvironmentType('colony');
+}
+
+export function getSpaceStationBiomes(): CelestialObject[] {
+  return getBiomesByEnvironmentType('space-station');
+}
+
+export function getStarbaseBiomes(): CelestialObject[] {
+  return getBiomesByEnvironmentType('starbase');
+}
+
+export function getMoonBaseBiomes(): CelestialObject[] {
+  return getBiomesByEnvironmentType('moon-base');
+}
+
+export function getBiomesByClass(biomeClass: string): CelestialObject[] {
+  return BIOMES.filter(biome => biome.class === biomeClass);
+}
+
+export function getLegendaryBiomes(): CelestialObject[] {
+  return getBiomesByRarity('legendary');
+}
+
+export function getEpicBiomes(): CelestialObject[] {
+  return getBiomesByRarity('epic');
+}
+
+export function getRareBiomes(): CelestialObject[] {
+  return getBiomesByRarity('rare');
+}
+
+export function getCommonBiomes(): CelestialObject[] {
+  return getBiomesByRarity('common');
+}
+
+export function getUncommonBiomes(): CelestialObject[] {
+  return getBiomesByRarity('uncommon');
+}
+
+export const BIOME_STATS = {
+  total: BIOMES.length,
+  byEnvironment: {
+    planet: getPlanetBiomes().length,
+    moon: getMoonBiomes().length,
+    colony: getColonyBiomes().length,
+    spaceStation: getSpaceStationBiomes().length,
+    starbase: getStarbaseBiomes().length,
+    moonBase: getMoonBaseBiomes().length,
+  },
+  byRarity: {
+    common: getCommonBiomes().length,
+    uncommon: getUncommonBiomes().length,
+    rare: getRareBiomes().length,
+    epic: getEpicBiomes().length,
+    legendary: getLegendaryBiomes().length,
+  },
+} as const;
