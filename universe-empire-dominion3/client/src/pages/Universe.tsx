@@ -1,3 +1,4 @@
+import GameLayout from "@/components/layout/GameLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -234,8 +235,8 @@ export default function Universe() {
   const sectorGrid = renderSectorGrid();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-      <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-6">
+    <GameLayout>
+      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         {/* Header */}
         <div className="relative rounded-xl overflow-hidden shadow-lg" style={{ minHeight: 120 }}>
           <img src="/assets/backgrounds/galaxy_map.png" alt="" className="absolute inset-0 w-full h-full object-cover" onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
@@ -300,7 +301,7 @@ export default function Universe() {
             {selectedRealm && (
               <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-2 text-xs text-slate-400">
                 <div className="bg-slate-800/60 rounded p-2 border border-slate-700">Region: <span className="font-semibold text-white">{selectedRealm.region}</span></div>
-                <div className="bg-slate-800/60 rounded p-2 border border-slate-700">Players: <span className="font-semibold text-white">{selectedRealm.playersOnline.toLocaleString()} / {selectedRealm.maxPlayers.toLocaleString()}</span></div>
+                <div className="bg-slate-800/60 rounded p-2 border border-slate-700">Players: <span className="font-semibold text-white">{(selectedRealm.playersOnline ?? 0).toLocaleString()} / {(selectedRealm.maxPlayers ?? 0).toLocaleString()}</span></div>
                 <div className="bg-slate-800/60 rounded p-2 border border-slate-700">Tick: <span className="font-semibold text-white">{selectedRealm.tickRateMs}ms</span></div>
                 <div className="bg-slate-800/60 rounded p-2 border border-slate-700">Status: <span className={`font-semibold uppercase ${selectedRealm.status === "online" ? "text-green-400" : "text-red-400"}`}>{selectedRealm.status}</span></div>
               </div>
@@ -595,6 +596,6 @@ export default function Universe() {
           </div>
         </div>
       </div>
-    </div>
+    </GameLayout>
   );
 }

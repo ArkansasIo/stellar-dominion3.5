@@ -1,32 +1,18 @@
 import type { Express, Request, Response } from "express";
 import { storage } from "./storage";
-import { db } from "./db";
 import {
-  dimensionalContracts,
-  abyssalGateTokens,
   playerPowerLevels,
   itemLevels,
-  raidChestRewards,
-  abyssalGateRewards,
   empireProfiles,
 } from "../shared/schema";
 import { eq, and } from "drizzle-orm";
+import { db } from "./db";
 import { isAuthenticated } from "./basicAuth";
 import {
   DIMENSIONAL_CONTRACT_TIERS,
-  getContractTier,
-  calculateTokensEarned,
-  canOpenChest,
-  rollChestRewards,
-  rollRaidRewards,
 } from "../shared/config/dimensionalContractConfig";
 import {
   ABYSSAL_GATE_TIERS,
-  getAbyssalGateTier,
-  calculateAbyssalTokensEarned,
-  canOpenAbyssalChest,
-  rollAbyssalChestRewards,
-  rollAbyssalGateRewards,
 } from "../shared/config/abyssalGateConfig";
 import {
   calculateTotalPower,
@@ -44,6 +30,7 @@ import {
   getItemLevelTierName,
   getItemLevelTierColor,
 } from "../shared/config/itemLevelConfig";
+import { dimensionalAbyssalService } from "./services/dimensionalAbyssalService";
 
 function getUserId(req: Request): string {
   return req.session?.userId as string;
@@ -58,24 +45,7 @@ export function registerDimensionalAbyssalRoutes(app: Express) {
   app.get("/api/dimensional-contracts", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const userId = getUserId(req);
-      const contracts = await db
-        .select()
-        .from(dimensionalContracts)
-        .where(eq(dimensionalContracts.userId, userId));
-
-      // If no contracts exist, create defaults for tier 1 and 9
-      if (contracts.length === 0) {
-        const tier1 = await db
-          .insert(dimensionalContracts)
-          .values({ userId, contractTier: 1 })
-          .returning();
-        const tier9 = await db
-          .insert(dimensionalContracts)
-          .values({ userId, contractTier: 9 })
-          .returning();
-        return res.json({ success: true, contracts: [tier1[0], tier9[0]] });
-      }
-
+      const contracts = await dimensionalAbyssalService.getPlayerContracts(userId);
       res.json({ success: true, contracts });
     } catch (error) {
       console.error("Failed to get dimensional contracts:", error);
@@ -93,56 +63,19 @@ export function registerDimensionalAbyssalRoutes(app: Express) {
     try {
       const userId = getUserId(req);
       const tier = parseInt(req.params.tier);
-      const contract = getContractTier(tier);
 
-      if (!contract) {
-        return res.status(400).json({ message: "Invalid contract tier" });
+      const playerState = await storage.getPlayerState(userId);
+      const playerPower = (playerState as any)?.raidPower || (playerState as any)?.combatPower || 1000;
+
+      const result = await dimensionalAbyssalService.completeRaid(userId, tier, playerPower);
+
+      if (!result.success) {
+        return res.status(400).json({ message: result.error });
       }
-
-      // Get or create contract
-      let [userContract] = await db
-        .select()
-        .from(dimensionalContracts)
-        .where(and(
-          eq(dimensionalContracts.userId, userId),
-          eq(dimensionalContracts.contractTier, tier)
-        ));
-
-      if (!userContract) {
-        [userContract] = await db
-          .insert(dimensionalContracts)
-          .values({ userId, contractTier: tier })
-          .returning();
-      }
-
-      // Calculate tokens earned (125 per raid, max 6900)
-      const newTokensEarned = Math.min(
-        userContract.tokensEarned + contract.tokensPerRaid,
-        contract.maxTokensForChest
-      );
-
-      // Roll raid rewards
-      const raidRewards = rollRaidRewards(tier);
-
-      // Update contract
-      const [updated] = await db
-        .update(dimensionalContracts)
-        .set({
-          tokensEarned: newTokensEarned,
-          raidsCompleted: userContract.raidsCompleted + 1,
-          lastRaidAt: new Date(),
-          updatedAt: new Date(),
-        })
-        .where(eq(dimensionalContracts.id, userContract.id))
-        .returning();
 
       res.json({
         success: true,
-        contract: updated,
-        tokensEarned: contract.tokensPerRaid,
-        totalTokens: newTokensEarned,
-        canOpenChest: canOpenChest(newTokensEarned, tier),
-        raidRewards,
+        ...result.result,
       });
     } catch (error) {
       console.error("Failed to complete raid:", error);
@@ -155,61 +88,16 @@ export function registerDimensionalAbyssalRoutes(app: Express) {
     try {
       const userId = getUserId(req);
       const tier = parseInt(req.params.tier);
-      const contract = getContractTier(tier);
 
-      if (!contract) {
-        return res.status(400).json({ message: "Invalid contract tier" });
+      const result = await dimensionalAbyssalService.openRaidChest(userId, tier);
+
+      if (!result.success) {
+        return res.status(400).json({ message: result.error });
       }
-
-      const [userContract] = await db
-        .select()
-        .from(dimensionalContracts)
-        .where(and(
-          eq(dimensionalContracts.userId, userId),
-          eq(dimensionalContracts.contractTier, tier)
-        ));
-
-      if (!userContract) {
-        return res.status(404).json({ message: "Contract not found" });
-      }
-
-      const availableTokens = userContract.tokensEarned - userContract.tokensSpent;
-      if (availableTokens < contract.maxTokensForChest) {
-        return res.status(400).json({
-          message: "Insufficient tokens",
-          required: contract.maxTokensForChest,
-          available: availableTokens,
-        });
-      }
-
-      // Roll chest rewards
-      const chestRewards = rollChestRewards(tier);
-
-      // Update contract
-      const [updated] = await db
-        .update(dimensionalContracts)
-        .set({
-          tokensSpent: userContract.tokensSpent + contract.maxTokensForChest,
-          chestsOpened: userContract.chestsOpened + 1,
-          updatedAt: new Date(),
-        })
-        .where(eq(dimensionalContracts.id, userContract.id))
-        .returning();
-
-      // Log reward
-      await db.insert(raidChestRewards).values({
-        userId,
-        contractType: "dimensional",
-        contractTier: tier,
-        tokensSpent: contract.maxTokensForChest,
-        rewardsGranted: chestRewards,
-      });
 
       res.json({
         success: true,
-        contract: updated,
-        chestRewards,
-        remainingTokens: updated.tokensEarned - updated.tokensSpent,
+        ...result.result,
       });
     } catch (error) {
       console.error("Failed to open chest:", error);
@@ -225,33 +113,8 @@ export function registerDimensionalAbyssalRoutes(app: Express) {
   app.get("/api/abyssal-gates", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const userId = getUserId(req);
-      const tokens = await db
-        .select()
-        .from(abyssalGateTokens)
-        .where(eq(abyssalGateTokens.userId, userId));
-
-      // If no tokens exist, create defaults
-      if (tokens.length === 0) {
-        const tier1 = await db
-          .insert(abyssalGateTokens)
-          .values({ userId, gateTier: 1 })
-          .returning();
-        const tier3 = await db
-          .insert(abyssalGateTokens)
-          .values({ userId, gateTier: 3 })
-          .returning();
-        const tier6 = await db
-          .insert(abyssalGateTokens)
-          .values({ userId, gateTier: 6 })
-          .returning();
-        const tier9 = await db
-          .insert(abyssalGateTokens)
-          .values({ userId, gateTier: 9 })
-          .returning();
-        return res.json({ success: true, tokens: [tier1[0], tier3[0], tier6[0], tier9[0]] });
-      }
-
-      res.json({ success: true, tokens });
+      const gates = await dimensionalAbyssalService.getPlayerGates(userId);
+      res.json({ success: true, tokens: gates });
     } catch (error) {
       console.error("Failed to get abyssal gate tokens:", error);
       res.status(500).json({ message: "Failed to get abyssal gate tokens" });
@@ -268,52 +131,19 @@ export function registerDimensionalAbyssalRoutes(app: Express) {
     try {
       const userId = getUserId(req);
       const tier = parseInt(req.params.tier);
-      const gate = getAbyssalGateTier(tier);
 
-      if (!gate) {
-        return res.status(400).json({ message: "Invalid gate tier" });
+      const playerState = await storage.getPlayerState(userId);
+      const playerPower = (playerState as any)?.raidPower || (playerState as any)?.combatPower || 1000;
+
+      const result = await dimensionalAbyssalService.completeGate(userId, tier, playerPower);
+
+      if (!result.success) {
+        return res.status(400).json({ message: result.error });
       }
-
-      let [userToken] = await db
-        .select()
-        .from(abyssalGateTokens)
-        .where(and(
-          eq(abyssalGateTokens.userId, userId),
-          eq(abyssalGateTokens.gateTier, tier)
-        ));
-
-      if (!userToken) {
-        [userToken] = await db
-          .insert(abyssalGateTokens)
-          .values({ userId, gateTier: tier })
-          .returning();
-      }
-
-      const newTokensEarned = Math.min(
-        userToken.tokensEarned + gate.tokensPerGate,
-        gate.maxTokensForChest
-      );
-
-      const gateRewards = rollAbyssalGateRewards(tier);
-
-      const [updated] = await db
-        .update(abyssalGateTokens)
-        .set({
-          tokensEarned: newTokensEarned,
-          gatesCompleted: userToken.gatesCompleted + 1,
-          lastGateAt: new Date(),
-          updatedAt: new Date(),
-        })
-        .where(eq(abyssalGateTokens.id, userToken.id))
-        .returning();
 
       res.json({
         success: true,
-        token: updated,
-        tokensEarned: gate.tokensPerGate,
-        totalTokens: newTokensEarned,
-        canOpenChest: canOpenAbyssalChest(newTokensEarned, tier),
-        gateRewards,
+        ...result.result,
       });
     } catch (error) {
       console.error("Failed to complete abyssal gate:", error);
@@ -326,57 +156,16 @@ export function registerDimensionalAbyssalRoutes(app: Express) {
     try {
       const userId = getUserId(req);
       const tier = parseInt(req.params.tier);
-      const gate = getAbyssalGateTier(tier);
 
-      if (!gate) {
-        return res.status(400).json({ message: "Invalid gate tier" });
+      const result = await dimensionalAbyssalService.openGateChest(userId, tier);
+
+      if (!result.success) {
+        return res.status(400).json({ message: result.error });
       }
-
-      const [userToken] = await db
-        .select()
-        .from(abyssalGateTokens)
-        .where(and(
-          eq(abyssalGateTokens.userId, userId),
-          eq(abyssalGateTokens.gateTier, tier)
-        ));
-
-      if (!userToken) {
-        return res.status(404).json({ message: "Gate token not found" });
-      }
-
-      const availableTokens = userToken.tokensEarned - userToken.tokensSpent;
-      if (availableTokens < gate.maxTokensForChest) {
-        return res.status(400).json({
-          message: "Insufficient tokens",
-          required: gate.maxTokensForChest,
-          available: availableTokens,
-        });
-      }
-
-      const chestRewards = rollAbyssalChestRewards(tier);
-
-      const [updated] = await db
-        .update(abyssalGateTokens)
-        .set({
-          tokensSpent: userToken.tokensSpent + gate.maxTokensForChest,
-          chestsOpened: userToken.chestsOpened + 1,
-          updatedAt: new Date(),
-        })
-        .where(eq(abyssalGateTokens.id, userToken.id))
-        .returning();
-
-      await db.insert(abyssalGateRewards).values({
-        userId,
-        gateTier: tier,
-        tokensSpent: gate.maxTokensForChest,
-        rewardsGranted: chestRewards,
-      });
 
       res.json({
         success: true,
-        token: updated,
-        chestRewards,
-        remainingTokens: updated.tokensEarned - updated.tokensSpent,
+        ...result.result,
       });
     } catch (error) {
       console.error("Failed to open abyssal chest:", error);
@@ -393,7 +182,6 @@ export function registerDimensionalAbyssalRoutes(app: Express) {
     try {
       const userId = getUserId(req);
 
-      // Get all player data for power calculation
       const playerState = await storage.getPlayerState(userId);
       const [profile] = await db
         .select()
@@ -413,7 +201,6 @@ export function registerDimensionalAbyssalRoutes(app: Express) {
       const powerTier = getPowerTierName(powerData.totalPower);
       const tierColor = getPowerTierColor(powerData.totalPower);
 
-      // Update or create power level record
       let [existing] = await db
         .select()
         .from(playerPowerLevels)
@@ -493,7 +280,6 @@ export function registerDimensionalAbyssalRoutes(app: Express) {
         return res.status(400).json({ message: "Missing required fields" });
       }
 
-      // Check if already registered
       const [existing] = await db
         .select()
         .from(itemLevels)

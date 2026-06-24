@@ -93,7 +93,7 @@ export function registerOGameFleetRoutes(app: Router) {
       if (!state) return res.status(404).json({ error: "Player state not found" });
 
       const currentFleet = (state.units as Record<string, number>) || {};
-      for (const [unitType, count] of Object.entries(units)) {
+      for (const [unitType, count] of Object.entries(units as Record<string, number>)) {
         const available = currentFleet[unitType] || 0;
         if (count > available) {
           return res.status(400).json({ error: `Not enough ${unitType}. Available: ${available}` });
@@ -152,7 +152,7 @@ export function registerOGameFleetRoutes(app: Router) {
       if (!state) return res.status(404).json({ error: "Player state not found" });
 
       const currentFleet = (state.units as Record<string, number>) || {};
-      for (const [unitType, count] of Object.entries(units)) {
+      for (const [unitType, count] of Object.entries(units as Record<string, number>)) {
         const available = currentFleet[unitType] || 0;
         if (count > available) {
           return res.status(400).json({ error: `Not enough ${unitType}. Available: ${available}` });

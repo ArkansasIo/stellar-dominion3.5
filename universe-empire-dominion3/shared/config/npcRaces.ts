@@ -5,6 +5,7 @@
  */
 
 import type { AIPersonality, AIStrategy, DiplomaticStance } from './enemyRacesConfig';
+import { STARFLEET_BIOME_CATALOG_90, type BiomeEnvironmentType, type BiomeRarity } from './starfleetBiomeCatalogConfig';
 
 // ============================================================================
 // TYPES & INTERFACES
@@ -53,6 +54,8 @@ export interface NPCRace {
     planetClass: string;
     size: string;
     description: string;
+    preferredBiome: string;
+    biomeRarity: BiomeRarity;
   };
 
   // Guild & Alliance
@@ -161,6 +164,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'V7',
       size: 'Large',
       description: 'A fortified hellscape of volcanic ash and crimson skies. Every citizen is a soldier, every factory produces weapons.',
+      preferredBiome: 'Ember Rift Planet',
+      biomeRarity: 'uncommon',
     },
 
     guildName: 'The Warborn Legion',
@@ -254,6 +259,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'M1',
       size: 'Medium',
       description: 'The cradle of humanity. A diverse blue marble with thriving megacities alongside preserved wilderness reserves.',
+      preferredBiome: 'Aegis Arbor World',
+      biomeRarity: 'common',
     },
 
     guildName: 'United Earth Command',
@@ -347,6 +354,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'K5',
       size: 'Large',
       description: 'A temperate world of dramatic mountains and vast battlefields. Ancient honor grounds dot every continent.',
+      preferredBiome: 'Pioneer Mesa Sphere',
+      biomeRarity: 'uncommon',
     },
 
     guildName: 'High Council of the Empire',
@@ -440,6 +449,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'M3',
       size: 'Medium',
       description: 'A green world of towering cities and hidden military installations. Beneath the beauty lies a web of surveillance.',
+      preferredBiome: 'Verdant Crown World',
+      biomeRarity: 'rare',
     },
 
     guildName: 'The Tal Shiar Dominion',
@@ -533,6 +544,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'D3',
       size: 'Medium',
       description: 'A once-beautiful world scarred by industrial exploitation. Massive fortress complexes line the borders.',
+      preferredBiome: 'Mirage Canyon Planet',
+      biomeRarity: 'common',
     },
 
     guildName: 'The Central Command',
@@ -626,6 +639,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'J3',
       size: 'Large',
       description: 'A jungle world of massive predators and constant warfare. The strong rule, the weak perish.',
+      preferredBiome: 'Frontier Grove World',
+      biomeRarity: 'common',
     },
 
     guildName: 'The Scale Throne',
@@ -719,6 +734,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'K4',
       size: 'Small',
       description: 'A verdant world of lawless frontier towns and hidden spaceports. Every port has a secret.',
+      preferredBiome: 'Luminous Marsh Sphere',
+      biomeRarity: 'uncommon',
     },
 
     guildName: 'The Syndicate Council',
@@ -812,6 +829,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'A2',
       size: 'Small',
       description: 'A harsh rocky world where tribal clans fight for dominance. Only the strongest survive.',
+      preferredBiome: 'Obsidian Vale Planet',
+      biomeRarity: 'common',
     },
 
     guildName: 'The Raider Clans',
@@ -905,6 +924,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'T3',
       size: 'Medium',
       description: 'A dense forest world teeming with dangerous megafauna. The ultimate training ground for hunters.',
+      preferredBiome: 'Ion Forest Planet',
+      biomeRarity: 'uncommon',
     },
 
     guildName: 'The Great Hunt',
@@ -1002,6 +1023,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'Y0',
       size: 'Massive',
       description: 'An entire planet converted into a computer. Every surface gleams with circuitry, every structure serves the Collective.',
+      preferredBiome: 'Xenon Shelf Sphere',
+      biomeRarity: 'epic',
     },
 
     guildName: 'The Logic Nexus',
@@ -1095,6 +1118,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'D4',
       size: 'Medium',
       description: 'A hot, arid world of逻辑 temples and ancient libraries. Logic and logic alone rules here.',
+      preferredBiome: 'Quantum Prairie Planet',
+      biomeRarity: 'common',
     },
 
     guildName: 'The High Command',
@@ -1188,6 +1213,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'C9',
       size: 'Large',
       description: 'A massive artificial structure housing billions of assimilated drones. The hive pulses with collective thought.',
+      preferredBiome: 'Zen Colony Anchor',
+      biomeRarity: 'epic',
     },
 
     guildName: 'The Collective',
@@ -1281,6 +1308,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'O9',
       size: 'Large',
       description: 'A dimension of liquid space where bio-organic ships swim between stars like cosmic leviathans.',
+      preferredBiome: 'Nimbus Reef World',
+      biomeRarity: 'common',
     },
 
     guildName: 'The Invasive Collective',
@@ -1374,6 +1403,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'M2',
       size: 'Small',
       description: 'A planet-wide data network where buildings are servers and citizens are processors in a vast digital symphony.',
+      preferredBiome: 'Helios Plateau Sphere',
+      biomeRarity: 'common',
     },
 
     guildName: 'The Paired Council',
@@ -1467,6 +1498,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'Y8',
       size: 'Massive',
       description: 'A generation ship the size of a continent, housing the entire Voth civilization as they wander space.',
+      preferredBiome: 'Frostfall Basin Moon',
+      biomeRarity: 'uncommon',
     },
 
     guildName: 'The Ministry of Elders',
@@ -1560,6 +1593,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'Z1',
       size: 'Large',
       description: 'A massive space station spanning multiple dimensions, slowly decaying as its builders fade.',
+      preferredBiome: 'Gateway Space Station Nexus',
+      biomeRarity: 'epic',
     },
 
     guildName: 'The Keepers',
@@ -1653,6 +1688,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'L1',
       size: 'Medium',
       description: 'A world of endless oceans where Changelings merge in their true form, sharing thoughts and memories.',
+      preferredBiome: 'Zenith Haven World',
+      biomeRarity: 'common',
     },
 
     guildName: 'The Founders',
@@ -1750,6 +1787,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'O3',
       size: 'Medium',
       description: 'The galaxy\'s premier trading hub. Floating cities house markets selling goods from a thousand worlds.',
+      preferredBiome: 'Lifeline Colony Fold',
+      biomeRarity: 'rare',
     },
 
     guildName: 'The Grand Exchange',
@@ -1843,6 +1882,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'M4',
       size: 'Medium',
       description: 'A rainy world of endless commerce. Every building is a shop, every citizen a salesperson.',
+      preferredBiome: 'Kepler Veld Planet',
+      biomeRarity: 'common',
     },
 
     guildName: 'The Ferengi Commerce Authority',
@@ -1936,6 +1977,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'M2',
       size: 'Medium',
       description: 'A beautiful world of rolling hills and ancient temples. Its people are strengthened by faith.',
+      preferredBiome: 'Borealis Basin Planet',
+      biomeRarity: 'common',
     },
 
     guildName: 'The Bajoran Provisional Government',
@@ -2029,6 +2072,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'M1',
       size: 'Small',
       description: 'A lush paradise world where thoughts are shared openly. Privacy is a foreign concept.',
+      preferredBiome: 'Gaia Trench Planet',
+      biomeRarity: 'common',
     },
 
     guildName: 'The Diplomatic Corps',
@@ -2122,6 +2167,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'M2',
       size: 'Medium',
       description: 'A temperate world with vast cave systems where the symbionts live in pools of living water.',
+      preferredBiome: 'Jade Tundra World',
+      biomeRarity: 'common',
     },
 
     guildName: 'The Symbiosis Commission',
@@ -2215,6 +2262,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'H4',
       size: 'Small',
       description: 'A world with a dense atmosphere requiring breathing apparatus for most species. Their environmental mastery is legendary.',
+      preferredBiome: 'Tempest Garden Sphere',
+      biomeRarity: 'uncommon',
     },
 
     guildName: 'The Artisan Guild',
@@ -2308,6 +2357,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'L3',
       size: 'Small',
       description: 'A world of corporate towers and trade monopolies. Business is warfare here.',
+      preferredBiome: 'Ironhold Moon Base Forge',
+      biomeRarity: 'legendary',
     },
 
     guildName: 'The Commerce Syndicate',
@@ -2405,6 +2456,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'T9',
       size: 'Large',
       description: 'A nightmarish world consumed by the Swarm. Organic structures pulse with alien life as countless drones are spawned.',
+      preferredBiome: 'Umbral Basin Planet',
+      biomeRarity: 'uncommon',
     },
 
     guildName: 'The Swarm',
@@ -2498,6 +2551,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'M3',
       size: 'Large',
       description: 'A recovering world with diverse biomes where multiple Xindi species coexist.',
+      preferredBiome: 'Solstice Delta Planet',
+      biomeRarity: 'common',
     },
 
     guildName: 'The Xindi Assembly',
@@ -2591,6 +2646,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'D2',
       size: 'Large',
       description: 'A grey industrial world of endless filing cabinets and bureaucratic towers. Every citizen knows their place.',
+      preferredBiome: 'Dockline Space Station Yards',
+      biomeRarity: 'epic',
     },
 
     guildName: 'The Central Committee',
@@ -2684,6 +2741,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'D6',
       size: 'Medium',
       description: 'A dying world of plague-ravaged cities. The Vidiian people cling to existence through harvesting.',
+      preferredBiome: 'Drift Ash Moon',
+      biomeRarity: 'uncommon',
     },
 
     guildName: 'The Sodality Council',
@@ -2777,6 +2836,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'T5',
       size: 'Medium',
       description: 'A conquered world converted into a hunting preserve. The prey are the indigenous population.',
+      preferredBiome: 'Garrison Colony Delta',
+      biomeRarity: 'rare',
     },
 
     guildName: 'The Occupation Authority',
@@ -2874,6 +2935,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'C5',
       size: 'Medium',
       description: 'A world of crystalline towers and floating monuments. Reality itself bends to the will of its inhabitants.',
+      preferredBiome: 'Yonder Spire Planet',
+      biomeRarity: 'common',
     },
 
     guildName: 'The Ascended Council',
@@ -2967,6 +3030,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'Ω',
       size: 'Infinite',
       description: 'A dimension of thought where the Q exist as pure consciousness. Concepts like space and time are mere suggestions.',
+      preferredBiome: 'Ember Starbase Relay',
+      biomeRarity: 'epic',
     },
 
     guildName: 'The Continuum',
@@ -3059,6 +3124,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'W0',
       size: 'Variable',
       description: 'A stable wormhole connecting the Alpha and Gamma quadrants, home to the non-corporeal Prophets.',
+      preferredBiome: 'Eclipse Ring Moon',
+      biomeRarity: 'uncommon',
     },
 
     guildName: 'The Celestial Temple',
@@ -3152,6 +3219,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'M0',
       size: 'Medium',
       description: 'A hidden world where the Preservers tend to their galactic garden. Its location is a closely guarded secret.',
+      preferredBiome: 'Aurora Colony Arc',
+      biomeRarity: 'rare',
     },
 
     guildName: 'The Keepers of Life',
@@ -3245,6 +3314,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'M5',
       size: 'Small',
       description: 'A hidden world accessible only through gateways. Ancient ruins house portals to every corner of the galaxy.',
+      preferredBiome: 'Junction Orbital Moon',
+      biomeRarity: 'uncommon',
     },
 
     guildName: 'The Gateway Keepers',
@@ -3338,6 +3409,8 @@ export const NPC_RACES: NPCRace[] = [
       planetClass: 'Y8',
       size: 'Large',
       description: 'The ruling citadel of the Voth, where time-viewing chambers reveal the past and future of their civilization.',
+      preferredBiome: 'Bulwark Starbase Ring',
+      biomeRarity: 'epic',
     },
 
     guildName: 'The Ministry of Celestial Guidance',
