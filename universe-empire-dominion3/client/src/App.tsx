@@ -121,6 +121,8 @@ const PatchNotes = lazy(() => import("@/pages/PatchNotes"));
 const NewsFeed = lazy(() => import("@/pages/NewsFeed"));
 const SeasonHub = lazy(() => import("@/pages/SeasonHub"));
 const Diplomacy = lazy(() => import("@/pages/Diplomacy"));
+const SeasonServerPicker = lazy(() => import("@/pages/SeasonServerPicker"));
+const Account = lazy(() => import("@/pages/Account"));
 
 function LoadingSplash() {
   const stars = useMemo(() => Array.from({ length: 60 }).map((_, i) => ({
@@ -280,7 +282,7 @@ function RouterContent() {
           <Route path="/forums" component={Forums} />
           <Route path="/terms" component={Terms} />
           <Route path="/privacy" component={Privacy} />
-          <Route component={SaveSlotsPage} />
+          <Route component={RealmPickerPage} />
         </Switch>
       );
     }
@@ -296,7 +298,23 @@ function RouterContent() {
           <Route path="/forums" component={Forums} />
           <Route path="/terms" component={Terms} />
           <Route path="/privacy" component={Privacy} />
-          <Route component={RealmPickerPage} />
+          <Route component={SeasonServerPicker} />
+        </Switch>
+      );
+    }
+
+    if (onboardingStep === 2) {
+      return (
+        <Switch>
+          <Route path="/threejs-viewer" component={ThreeDViewerPortal} />
+          <Route path="/admin-login" component={AdminLogin} />
+          <Route path="/admin" component={Admin} />
+          <Route path="/admin/database" component={DatabaseAdmin} />
+          <Route path="/about" component={About} />
+          <Route path="/forums" component={Forums} />
+          <Route path="/terms" component={Terms} />
+          <Route path="/privacy" component={Privacy} />
+          <Route component={SaveSlotsPage} />
         </Switch>
       );
     }
@@ -388,6 +406,7 @@ function RouterContent() {
       <Route path="/empire-view" component={EmpireView} />
       <Route path="/empire-command-center" component={EmpireCommandCenter} />
       <Route path="/empire-profile" component={EmpireProfile} />
+      <Route path="/account" component={Account} />
       <Route path="/dimensional-anomalies" component={DimensionalAnomalies} />
       <Route path="/dimensional-contracts" component={DimensionalContracts} />
       <Route path="/abyssal-gates" component={AbyssalGates} />

@@ -3,853 +3,411 @@ import { useGame } from "@/lib/gameContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { 
-  Rocket, MapPin, Crosshair, Truck, Search, Play, Clock, AlertCircle, User, Anchor, 
-  Zap, Skull, Disc, Target, Shield, Sword, TrendingUp, BarChart3, History, Info, Users, GraduationCap
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Slider } from "@/components/ui/slider";
+import {
+  Rocket, Swords, Truck, Eye, Globe, Shield, Target, Clock, Zap,
+  BarChart3, History, Users, Plus, Save, Download, AlertTriangle,
+  RotateCcw, ChevronDown, ChevronUp, Trophy, Skull, Send, Gauge
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { unitData } from "@/lib/unitData";
-import { SHIP_ASSETS } from "@shared/config";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
-import { useArmySubsystems, useMilitaryForce } from "@/hooks/useCivilizationArmy";
-import type { ArmySubsystem, ArmyUnit } from "@shared/types/civilization";
 
-const TEMP_THEME_IMAGE = "/theme-temp.png";
+type FleetTab = "overview" | "dispatch" | "active" | "templates" | "reports" | "stats";
+type MissionType = "attack" | "transport" | "espionage" | "colonize" | "deploy" | "recycle";
 
-type FleetTab = "dispatch" | "active" | "templates" | "combat";
+const MISSION_CONFIG: Record<MissionType, { label: string; icon: any; color: string; bg: string }> = {
+  attack: { label: "Attack", icon: Swords, color: "text-red-400", bg: "bg-red-500/20 border-red-500/40" },
+  transport: { label: "Transport", icon: Truck, color: "text-green-400", bg: "bg-green-500/20 border-green-500/40" },
+  espionage: { label: "Espionage", icon: Eye, color: "text-purple-400", bg: "bg-purple-500/20 border-purple-500/40" },
+  colonize: { label: "Colonize", icon: Globe, color: "text-blue-400", bg: "bg-blue-500/20 border-blue-500/40" },
+  deploy: { label: "Deploy", icon: Shield, color: "text-orange-400", bg: "bg-orange-500/20 border-orange-500/40" },
+  recycle: { label: "Recycle", icon: RotateCcw, color: "text-slate-400", bg: "bg-slate-500/20 border-slate-500/40" },
+};
 
-function getPersonnelSpecialty(subsystem: ArmySubsystem): "pilot" | "gunner" | "officer" | null {
-   const haystack = `${subsystem.name} ${subsystem.description} ${subsystem.flavorText || ""}`.toLowerCase();
-   if (
-      subsystem.role === "commander" ||
-      subsystem.role === "captain" ||
-      haystack.includes("officer") ||
-      haystack.includes("command") ||
-      haystack.includes("tactical")
-   ) {
-      return "officer";
-   }
+const TEMPLATES = [
+  { id: "quick-attack", name: "Quick Attack", mission: "attack" as MissionType, ships: { lightFighter: 50, cruiser: 10, smallCargo: 20 }, icon: Zap },
+  { id: "full-assault", name: "Full Assault", mission: "attack" as MissionType, ships: { heavyFighter: 30, battleship: 5, battlecruiser: 10, interceptor: 20 }, icon: Swords },
+  { id: "colonization", name: "Colonization Force", mission: "colonize" as MissionType, ships: { colonist: 1, lightFighter: 5, largeCargo: 2 }, icon: Globe },
+  { id: "spy-fleet", name: "Spy Fleet", mission: "espionage" as MissionType, ships: { scout: 5, lightFighter: 10 }, icon: Eye },
+  { id: "transport-convoy", name: "Transport Convoy", mission: "transport" as MissionType, ships: { smallCargo: 30, largeCargo: 10, lightFighter: 5 }, icon: Truck },
+];
 
-   if (
-      haystack.includes("pilot") ||
-      haystack.includes("flight") ||
-      haystack.includes("aviator") ||
-      haystack.includes("carrier")
-   ) {
-      return "pilot";
-   }
+const unitName = (id: string) => unitData.find((u) => u.id === id)?.name ?? id;
+const unitGet = (id: string) => unitData.find((u) => u.id === id);
+const unitClass = (id: string) => unitGet(id)?.class ?? "unknown";
+const calcPower = (id: string, count: number) => { const u = unitGet(id); return u ? (u.stats.attack + u.stats.shield + u.stats.structure / 10) * count : 0; };
 
-   if (
-      haystack.includes("gunner") ||
-      haystack.includes("artillery") ||
-      haystack.includes("weapon") ||
-      haystack.includes("turret") ||
-      haystack.includes("assault")
-   ) {
-      return "gunner";
-   }
-
-   return null;
-}
+const MOCK_REPORTS = [
+  { id: "r1", date: "2026-06-22 14:30", target: "1:105:12", result: "victory" as const, shipsLost: 2, plundered: 15000, log: ["15 fighters engaged", "Enemy defenses crumbled", "Victory achieved"], ships: { lightFighter: 50, cruiser: 5 }, power: 12500 },
+  { id: "r2", date: "2026-06-21 09:15", target: "2:42:7", result: "defeat" as const, shipsLost: 28, plundered: 0, log: ["Fleet arrived", "Heavy resistance", "Fleet destroyed"], ships: { heavyFighter: 10, lightFighter: 18 }, power: 2400 },
+  { id: "r3", date: "2026-06-20 21:45", target: "1:88:3", result: "victory" as const, shipsLost: 0, plundered: 45000, log: ["Espionage successful", "Intelligence gathered", "Raid completed"], ships: { scout: 3 }, power: 300 },
+];
 
 export default function Fleet() {
-   const { units, activeMissions } = useGame();
-   const { toast } = useToast();
-   const { data: armySubsystems } = useArmySubsystems();
-   const { data: militaryForce } = useMilitaryForce();
+  const { units, activeMissions } = useGame();
+  const { toast } = useToast();
+  const [tab, setTab] = useState<FleetTab>("overview");
+  const [mission, setMission] = useState<MissionType>("attack");
+  const [sel, setSel] = useState<Record<string, number>>({});
+  const [tgtG, setTgtG] = useState("1"); const [tgtS, setTgtS] = useState("102"); const [tgtP, setTgtP] = useState("8");
+  const [speed, setSpeed] = useState([100]);
+  const [expandM, setExpandM] = useState<string | null>(null);
+  const [expandR, setExpandR] = useState<string | null>(null);
+  const [rFilter, setRFilter] = useState<"all" | "victories" | "defeats" | "raids">("all");
+  const [customTpls, setCustomTpls] = useState<{ name: string; ships: Record<string, number> }[]>([]);
+  const [tplName, setTplName] = useState("");
 
-   const searchParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams();
-   const initialMission = searchParams.get("mission");
-   const initialTargetType = searchParams.get("targetType");
-   const initialTab = searchParams.get("tab");
-   const allowedMissions = new Set(["attack", "transport", "espionage", "sabotage", "colonize", "deploy"]);
-   const allowedTargetTypes = new Set(["planet", "debris", "moon"]);
-   const allowedTabs = new Set(["dispatch", "active", "templates", "combat"]);
+  const sendMut = useMutation({
+    mutationFn: async (p: { destination: string; missionType: string; ships: Record<string, number> }) => {
+      const r = await fetch("/api/game/send-fleet", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify(p) });
+      const d = await r.json().catch(() => null);
+      if (!r.ok) throw new Error(d?.error || d?.message || "Failed to send fleet");
+      return d;
+    },
+    onSuccess: (_, v) => { setSel({}); setTab("active"); toast({ title: "Fleet launched", description: `${v.missionType} dispatched to ${v.destination}.` }); },
+    onError: (e: Error) => { toast({ title: "Launch failed", description: e.message, variant: "destructive" }); },
+  });
 
-   const syncFleetStateFromUrl = () => {
-      const params = new URLSearchParams(window.location.search);
-      const nextMission = params.get("mission");
-      const nextTargetType = params.get("targetType");
-      const nextTab = params.get("tab");
+  const totalCount = useMemo(() => Object.values(units).reduce((a, b) => a + b, 0), [units]);
+  const totalPower = useMemo(() => Object.entries(units).reduce((s, [id, c]) => s + calcPower(id, c), 0), [units]);
+  const selCount = useMemo(() => Object.values(sel).reduce((a, b) => a + b, 0), [sel]);
+  const selPower = useMemo(() => Object.entries(sel).reduce((s, [id, c]) => s + calcPower(id, c), 0), [sel]);
+  const slowSpeed = useMemo(() => { let m = Infinity; Object.entries(sel).forEach(([id, c]) => { if (c > 0) { const u = unitGet(id); if (u) m = Math.min(m, u.stats.speed); } }); return m; }, [sel]);
+  const totalCargo = useMemo(() => Object.entries(sel).reduce((s, [id, c]) => s + (unitGet(id)?.stats.cargo || 0) * c, 0), [sel]);
+  const fuel = useMemo(() => selCount === 0 || slowSpeed === Infinity ? 0 : Math.floor((selCount * (100 - speed[0]) * 1.5) / 100), [selCount, slowSpeed, speed]);
+  const travelT = useMemo(() => slowSpeed === Infinity || slowSpeed === 0 ? 0 : Math.floor(300 / (slowSpeed / 10000) / (speed[0] / 100)), [slowSpeed, speed]);
+  const classPower = useMemo(() => { const cp: Record<string, number> = {}; Object.entries(units).forEach(([id, c]) => { const cls = unitClass(id); cp[cls] = (cp[cls] || 0) + calcPower(id, c); }); const mx = Math.max(...Object.values(cp), 1); return Object.entries(cp).map(([cls, p]) => ({ cls, p, pct: (p / mx) * 100 })).sort((a, b) => b.p - a.p); }, [units]);
+  const selByClass = useMemo(() => { const g: Record<string, { id: string; count: number }[]> = {}; Object.entries(sel).forEach(([id, c]) => { if (c > 0) { const cls = unitClass(id); (g[cls] ??= []).push({ id, count: c }); } }); return g; }, [sel]);
+  const filteredReports = useMemo(() => rFilter === "all" ? MOCK_REPORTS : rFilter === "victories" ? MOCK_REPORTS.filter((r) => r.result === "victory") : rFilter === "defeats" ? MOCK_REPORTS.filter((r) => r.result === "defeat") : MOCK_REPORTS.filter((r) => r.plundered > 0), [rFilter]);
 
-      setTargetGalaxy(params.get("g") ?? "1");
-      setTargetSystem(params.get("s") ?? "102");
-      setTargetPlanet(params.get("p") ?? "8");
-      setMissionType(allowedMissions.has(nextMission || "") ? (nextMission ?? "attack") : "attack");
-      setTargetType(allowedTargetTypes.has(nextTargetType || "") ? (nextTargetType ?? "planet") : "planet");
-      setActiveTab(allowedTabs.has(nextTab || "") ? (nextTab as FleetTab) : "dispatch");
-   };
-  
-  const [selectedUnits, setSelectedUnits] = useState<{[key: string]: number}>({});
-   const [crewAssignments, setCrewAssignments] = useState({ pilot: 0, gunner: 0, officer: 0 });
-   const [targetGalaxy, setTargetGalaxy] = useState(searchParams.get("g") ?? "1");
-   const [targetSystem, setTargetSystem] = useState(searchParams.get("s") ?? "102");
-   const [targetPlanet, setTargetPlanet] = useState(searchParams.get("p") ?? "8");
-   const [missionType, setMissionType] = useState<any>(allowedMissions.has(initialMission || "") ? (initialMission ?? "attack") : "attack");
-   const [targetType, setTargetType] = useState(allowedTargetTypes.has(initialTargetType || "") ? (initialTargetType ?? "planet") : "planet");
-   const [activeTab, setActiveTab] = useState<FleetTab>(allowedTabs.has(initialTab || "") ? (initialTab as FleetTab) : "dispatch");
+  const setUnit = (id: string, v: number) => setSel((p) => ({ ...p, [id]: Math.max(0, Math.min(v, units[id] || 0)) }));
+  const setPct = (id: string, pct: number) => setSel((p) => ({ ...p, [id]: Math.floor(((units[id] || 0) * pct) / 100) }));
+  const loadTpl = (t: (typeof TEMPLATES)[0]) => { const s: Record<string, number> = {}; Object.entries(t.ships).forEach(([id, c]) => { s[id] = Math.min(c, units[id] || 0); }); setSel(s); setMission(t.mission); setTab("dispatch"); toast({ title: "Template loaded", description: t.name }); };
+  const loadCustom = (t: { name: string; ships: Record<string, number> }) => { const s: Record<string, number> = {}; Object.entries(t.ships).forEach(([id, c]) => { s[id] = Math.min(c, units[id] || 0); }); setSel(s); setTab("dispatch"); toast({ title: "Template loaded", description: t.name }); };
+  const saveCustom = () => { const filled = Object.entries(sel).filter(([, c]) => c > 0); if (!filled.length) { toast({ title: "No ships", variant: "destructive" }); return; } const n = tplName.trim() || `Custom ${customTpls.length + 1}`; setCustomTpls((p) => [...p, { name: n, ships: { ...sel } }]); setTplName(""); toast({ title: "Saved", description: n }); };
+  const dispatch = () => { const comp: Record<string, number> = {}; let n = 0; Object.entries(sel).forEach(([id, c]) => { if (c > 0) { comp[id] = c; n += c; } }); if (!n) { toast({ title: "No ships selected", variant: "destructive" }); return; } if (mission === "colonize" && !comp["colonist"] && !comp["colonyShip"]) { toast({ title: "Colonist required", variant: "destructive" }); return; } sendMut.mutate({ destination: `${tgtG}:${tgtS}:${tgtP}`, missionType: mission, ships: comp }); };
 
-   const sendFleetMutation = useMutation({
-      mutationFn: async (payload: { destination: string; missionType: string; ships: { [key: string]: number } }) => {
-         const response = await fetch("/api/game/send-fleet", {
-            method: "POST",
-            credentials: "include",
-            headers: {
-               "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload),
-         });
-
-         const data = await response.json().catch(() => null);
-         if (!response.ok) {
-            throw new Error(data?.error || data?.message || "Failed to send fleet");
-         }
-
-         return data;
-      },
-      onSuccess: (result, variables) => {
-         setSelectedUnits({});
-         setActiveTab("active");
-         toast({
-            title: "Fleet launched",
-            description: result?.message || `${variables.missionType} mission dispatched to ${variables.destination}.`,
-         });
-      },
-      onError: (error: Error) => {
-         toast({ title: "Launch failed", description: error.message, variant: "destructive" });
-      },
-   });
-
-   useEffect(() => {
-      const handlePopState = () => syncFleetStateFromUrl();
-      window.addEventListener("popstate", handlePopState);
-      return () => window.removeEventListener("popstate", handlePopState);
-   }, []);
-
-   useEffect(() => {
-      const params = new URLSearchParams(window.location.search);
-      params.set("g", targetGalaxy || "1");
-      params.set("s", targetSystem || "102");
-      params.set("p", targetPlanet || "8");
-      params.set("mission", missionType);
-      params.set("targetType", targetType);
-      params.set("tab", activeTab);
-
-      const nextUrl = `/fleet?${params.toString()}`;
-      const currentUrl = `${window.location.pathname}${window.location.search}`;
-
-      if (currentUrl !== nextUrl) {
-         window.history.replaceState(null, "", nextUrl);
-      }
-   }, [activeTab, missionType, targetGalaxy, targetPlanet, targetSystem, targetType]);
-
-   const loadTemplate = (template: "attack" | "colony") => {
-      if (template === "attack") {
-         setMissionType("attack");
-         setSelectedUnits((prev) => ({
-            ...prev,
-            lightFighter: Math.min(units.lightFighter || 0, 50),
-            cruiser: Math.min(units.cruiser || 0, 10),
-            smallCargo: Math.min(units.smallCargo || 0, 20),
-         }));
-         toast({ title: "Template loaded", description: "Raiding Party Alpha applied." });
-         return;
-      }
-
-      setMissionType("colonize");
-      setSelectedUnits((prev) => ({
-         ...prev,
-         colonist: Math.min(units.colonist || 0, 1),
-         lightFighter: Math.min(units.lightFighter || 0, 5),
-         largeCargo: Math.min(units.largeCargo || 0, 2),
-      }));
-      toast({ title: "Template loaded", description: "Colony Ship I applied." });
-   };
-
-  const handleUnitChange = (id: string, value: string) => {
-     const num = parseInt(value) || 0;
-     const max = units[id] || 0;
-     setSelectedUnits(prev => ({
-        ...prev,
-        [id]: Math.min(Math.max(0, num), max)
-     }));
-  };
-
-  const handleSelectAll = (id: string) => {
-     setSelectedUnits(prev => ({
-        ...prev,
-        [id]: units[id] || 0
-     }));
-  };
-
-  const handleDispatch = () => {
-     const fleetComposition: {[key: string]: number} = {};
-     let totalCount = 0;
-     Object.entries(selectedUnits).forEach(([id, count]) => {
-        if (count > 0) {
-           fleetComposition[id] = count;
-           totalCount += count;
-        }
-     });
-
-     if (totalCount === 0) {
-        toast({ title: "No ships selected", description: "Select at least one ship before launch.", variant: "destructive" });
-        return;
-     }
-
-     const destinationParts = [targetGalaxy, targetSystem, targetPlanet].map((value) => Number.parseInt(value, 10));
-     const hasInvalidCoordinate = destinationParts.some((value) => !Number.isFinite(value) || value <= 0);
-     if (hasInvalidCoordinate) {
-        toast({ title: "Invalid target", description: "Galaxy, system, and planet must be positive numbers.", variant: "destructive" });
-        return;
-     }
-
-     if (missionType === "colonize" && ((fleetComposition.colonist || 0) + (fleetComposition.colonyShip || 0) < 1)) {
-        toast({
-           title: "Colonist required",
-           description: "Colonization missions require at least 1 colonist or colony ship.",
-           variant: "destructive",
-        });
-        return;
-     }
-
-     sendFleetMutation.mutate({
-        destination: `${destinationParts[0]}:${destinationParts[1]}:${destinationParts[2]}`,
-        missionType,
-        ships: fleetComposition,
-     });
-  };
-
-  const getUnitClass = (id: string) => {
-     const u = unitData.find(ud => ud.id === id);
-     return u ? u.class : "unknown";
-  };
-
-  const getUnitName = (id: string) => {
-     const u = unitData.find(ud => ud.id === id);
-     return u ? u.name : id;
-  };
-
-  const getUnitData = (id: string) => unitData.find(ud => ud.id === id);
-
-  const subsystemById = useMemo(
-    () => new Map<string, ArmySubsystem>((armySubsystems || []).map((subsystem) => [subsystem.id, subsystem])),
-    [armySubsystems],
+  const TabBtn = ({ v, icon: Icon, label, badge }: { v: FleetTab; icon: any; label: string; badge?: number }) => (
+    <TabsTrigger value={v} className="text-slate-300 data-[state=active]:bg-slate-700 data-[state=active]:text-white">
+      <Icon className="w-4 h-4 mr-2" /> {label}{badge ? <Badge className="ml-2 bg-blue-600 text-white h-5">{badge}</Badge> : null}
+    </TabsTrigger>
   );
 
-  const militaryForceData = militaryForce?.force || militaryForce || { squadrons: [] as ArmyUnit[] };
-
-  const personnelPools = useMemo(() => {
-    return militaryForceData.squadrons.reduce(
-      (pools: { pilot: number; gunner: number; officer: number }, squadron: ArmyUnit) => {
-        const subsystem = subsystemById.get(squadron.subsystemId);
-        if (!subsystem) return pools;
-
-        const specialty = getPersonnelSpecialty(subsystem);
-        if (specialty) {
-          pools[specialty] += squadron.quantity;
-        }
-        return pools;
-      },
-      { pilot: 0, gunner: 0, officer: 0 },
-    );
-  }, [militaryForceData.squadrons, subsystemById]);
-
-  const selectedFleetPower = Object.entries(selectedUnits).reduce((sum, [id, count]) => {
-    const unit = getUnitData(id);
-    if (!unit) return sum;
-    const power = unit.stats.attack + unit.stats.shield + (unit.stats.structure / 10);
-    return sum + (power * count);
-  }, 0);
-
-  const selectedShipsCount = Object.values(selectedUnits).reduce((a, b) => a + b, 0);
-  const recommendedCrew = {
-    pilot: Math.min(personnelPools.pilot, Math.max(0, Math.ceil(selectedShipsCount * 0.6))),
-    gunner: Math.min(personnelPools.gunner, Math.max(0, Math.ceil(selectedShipsCount * 0.4))),
-    officer: Math.min(personnelPools.officer, Math.max(0, Math.ceil(selectedShipsCount * 0.12))),
-  };
-
-  useEffect(() => {
-    setCrewAssignments((current) => ({
-      pilot: Math.min(current.pilot, personnelPools.pilot),
-      gunner: Math.min(current.gunner, personnelPools.gunner),
-      officer: Math.min(current.officer, personnelPools.officer),
-    }));
-  }, [personnelPools]);
-
-  const assignedCrew = {
-    pilot: Math.min(crewAssignments.pilot, personnelPools.pilot),
-    gunner: Math.min(crewAssignments.gunner, personnelPools.gunner),
-    officer: Math.min(crewAssignments.officer, personnelPools.officer),
-  };
-
-  const personnelBonuses = {
-    speed: Math.min(24, assignedCrew.pilot * 2),
-    accuracy: Math.min(20, assignedCrew.gunner * 2),
-    attack: Math.min(30, assignedCrew.gunner * 2 + assignedCrew.officer),
-    shield: Math.min(18, assignedCrew.officer * 2),
-    morale: Math.min(25, assignedCrew.officer * 3),
-  };
-
-  const slowestSpeed = Object.entries(selectedUnits).reduce((min, [id, count]) => {
-    if (count === 0) return min;
-    const unit = getUnitData(id);
-    if (!unit) return min;
-    return Math.min(min, unit.stats.speed);
-  }, Infinity);
-
-  const totalFleetPower = Object.entries(units).reduce((sum, [id, count]) => {
-    const unit = getUnitData(id);
-    if (!unit) return sum;
-    const power = unit.stats.attack + unit.stats.shield + (unit.stats.structure / 10);
-    return sum + (power * count);
-  }, 0);
+  const InfoCard = ({ label, value, color }: { label: string; value: string; color: string }) => (
+    <div className="bg-slate-800/50 p-3 rounded-lg border border-slate-700/50">
+      <div className="text-xs text-slate-400">{label}</div>
+      <div className={cn("font-mono font-bold", color)}>{value}</div>
+    </div>
+  );
 
   return (
     <GameLayout>
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
-          <img src="/assets/backgrounds/fleet_bg.png" alt="Fleet" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/92 via-blue-950/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-blue-950/70 to-transparent" />
           <div className="relative z-10 p-6 flex items-center gap-6">
-            <img src="/assets/ships/carrier.png" alt="Carrier" className="w-20 h-20 rounded-xl object-cover ring-2 ring-blue-400/60 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
-            <div>
-              <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow">Fleet Command</h2>
-              <p className="text-blue-300 font-rajdhani text-lg">Manage active missions and dispatch fleets across the galaxy.</p>
-            </div>
+            <div className="w-16 h-16 rounded-xl bg-blue-500/20 border border-blue-500/40 flex items-center justify-center"><Rocket className="w-8 h-8 text-blue-400" /></div>
+            <div><h2 className="text-3xl font-bold text-white">Fleet Command</h2><p className="text-slate-400 text-lg">Manage fleet, dispatch missions, track combat.</p></div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200" data-testid="card-stats-fleet-power">
-            <CardContent className="p-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { icon: Rocket, label: "Total Ships", val: totalCount.toLocaleString(), color: "text-blue-400" },
+            { icon: Zap, label: "Fleet Power", val: Math.floor(totalPower).toLocaleString(), color: "text-red-400" },
+            { icon: Clock, label: "Active Missions", val: String(activeMissions.length), color: "text-purple-400" },
+            { icon: Truck, label: "Fleet Supply", val: totalCargo.toLocaleString(), color: "text-green-400" },
+          ].map((c) => (
+            <Card key={c.label} className="bg-slate-900 border-slate-700/50"><CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden">
-                  <img src={SHIP_ASSETS.CAPITALS.BATTLECRUISER.path} alt="Fleet Power" className="w-8 h-8 object-contain" onError={(e)=>{e.currentTarget.onerror=null;e.currentTarget.src="/theme-temp.png";}} />
-                </div>
-                <div>
-                  <div className="text-xs text-blue-600 uppercase">Total Fleet Power</div>
-                  <div className="text-xl font-orbitron font-bold text-blue-900">{Math.floor(totalFleetPower).toLocaleString()}</div>
-                </div>
+                <div className="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center"><c.icon className={cn("w-5 h-5", c.color)} /></div>
+                <div><div className="text-xs text-slate-400 uppercase">{c.label}</div><div className="text-xl font-bold text-white">{c.val}</div></div>
               </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200" data-testid="card-stats-active-missions">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center overflow-hidden">
-                  <img src={SHIP_ASSETS.FIGHTERS.SCOUT.path} alt="Active Missions" className="w-8 h-8 object-contain" onError={(e)=>{e.currentTarget.onerror=null;e.currentTarget.src="/theme-temp.png";}} />
-                </div>
-                <div>
-                  <div className="text-xs text-purple-600 uppercase">Active Missions</div>
-                  <div className="text-xl font-orbitron font-bold text-purple-900">{activeMissions.length}</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200" data-testid="card-stats-ships-available">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center overflow-hidden">
-                  <img src={SHIP_ASSETS.FIGHTERS.FIGHTER.path} alt="Ships Available" className="w-8 h-8 object-contain" onError={(e)=>{e.currentTarget.onerror=null;e.currentTarget.src="/theme-temp.png";}} />
-                </div>
-                <div>
-                  <div className="text-xs text-green-600 uppercase">Ships Available</div>
-                  <div className="text-xl font-orbitron font-bold text-green-900">
-                    {Object.values(units).reduce((a, b) => a + b, 0).toLocaleString()}
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200" data-testid="card-stats-ships-deployed">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center overflow-hidden">
-                  <img src={SHIP_ASSETS.SPECIAL.CARRIER.path} alt="Ships Deployed" className="w-8 h-8 object-contain" onError={(e)=>{e.currentTarget.onerror=null;e.currentTarget.src="/theme-temp.png";}} />
-                </div>
-                <div>
-                  <div className="text-xs text-orange-600 uppercase">Ships Deployed</div>
-                  <div className="text-xl font-orbitron font-bold text-orange-900">
-                    {activeMissions.reduce((sum, m) => sum + Object.values(m.units).reduce((a: number, b: any) => a + b, 0), 0).toLocaleString()}
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+            </CardContent></Card>
+          ))}
         </div>
 
-      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as FleetTab)} className="w-full">
-           <TabsList className="bg-white border border-slate-200 h-12 w-full justify-start">
-              <TabsTrigger value="dispatch" className="font-orbitron" data-testid="tab-dispatch"><Rocket className="w-4 h-4 mr-2" /> Dispatch Fleet</TabsTrigger>
-              <TabsTrigger value="active" className="font-orbitron" data-testid="tab-active">
-                 <Clock className="w-4 h-4 mr-2" /> Active Missions 
-                 {activeMissions.length > 0 && <Badge className="ml-2 bg-primary text-white h-5">{activeMissions.length}</Badge>}
-              </TabsTrigger>
-              <TabsTrigger value="templates" className="font-orbitron" data-testid="tab-templates"><Anchor className="w-4 h-4 mr-2" /> Fleet Templates</TabsTrigger>
-              <TabsTrigger value="combat" className="font-orbitron" data-testid="tab-combat"><Sword className="w-4 h-4 mr-2" /> Combat Simulator</TabsTrigger>
-           </TabsList>
+        <Tabs value={tab} onValueChange={(v) => setTab(v as FleetTab)} className="w-full">
+          <TabsList className="bg-slate-900 border border-slate-700/50 h-12 w-full justify-start">
+            <TabBtn v="overview" icon={BarChart3} label="Overview" />
+            <TabBtn v="dispatch" icon={Send} label="Dispatch" />
+            <TabBtn v="active" icon={Clock} label="Active Missions" badge={activeMissions.length || undefined} />
+            <TabBtn v="templates" icon={Save} label="Templates" />
+            <TabBtn v="reports" icon={History} label="Combat Reports" />
+            <TabBtn v="stats" icon={Trophy} label="Fleet Stats" />
+          </TabsList>
 
-           <TabsContent value="dispatch" className="mt-6">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <Card className="col-span-2 bg-white border-slate-200 shadow-sm">
-                  <CardHeader>
-                    <CardTitle className="text-lg font-orbitron flex items-center gap-2 text-slate-900">
-                      <Rocket className="w-5 h-5 text-primary" /> Select Fleet Composition
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <Table>
-                      <TableHeader>
-                        <TableRow className="border-slate-200 hover:bg-transparent">
-                          <TableHead className="text-slate-900">Unit Class & Type</TableHead>
-                          <TableHead className="text-right text-slate-900">Power</TableHead>
-                          <TableHead className="text-right text-slate-900">Speed</TableHead>
-                          <TableHead className="text-right text-slate-900">Available</TableHead>
-                          <TableHead className="text-right text-slate-900 w-[140px]">Select</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {["fighter", "capital", "super", "titan", "civilian", "troop", "vehicle"].map(cls => {
-                           const classUnits = Object.keys(units).filter(id => getUnitClass(id) === cls && units[id] > 0);
-                           if (classUnits.length === 0) return null;
+          <TabsContent value="overview" className="mt-6 space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card className="bg-slate-900 border-slate-700/50">
+                <CardHeader><CardTitle className="text-white flex items-center gap-2"><BarChart3 className="w-5 h-5 text-blue-400" /> Power by Class</CardTitle></CardHeader>
+                <CardContent className="space-y-3">
+                  {classPower.map(({ cls, p, pct }) => (
+                    <div key={cls} className="space-y-1">
+                      <div className="flex justify-between text-sm"><span className="text-slate-300 capitalize">{cls}</span><span className="text-slate-400 font-mono">{Math.floor(p).toLocaleString()}</span></div>
+                      <div className="h-2 bg-slate-800 rounded-full overflow-hidden"><div className="h-full bg-blue-500 rounded-full" style={{ width: `${pct}%` }} /></div>
+                    </div>
+                  ))}
+                  {!classPower.length && <div className="text-center py-8 text-slate-500">No ships</div>}
+                </CardContent>
+              </Card>
+              <Card className="bg-slate-900 border-slate-700/50">
+                <CardHeader><CardTitle className="text-white flex items-center gap-2"><Gauge className="w-5 h-5 text-orange-400" /> Fleet Maintenance</CardTitle></CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-4">
+                    <InfoCard label="Metal / Hour" value={`${(totalCount * 5).toLocaleString()}`} color="text-white" />
+                    <InfoCard label="Crystal / Hour" value={`${(totalCount * 2).toLocaleString()}`} color="text-white" />
+                    <InfoCard label="Deuterium / Hour" value={`${totalCount}`} color="text-white" />
+                    <InfoCard label="Total Power" value={Math.floor(totalPower).toLocaleString()} color="text-white" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            <Card className="bg-slate-900 border-slate-700/50">
+              <CardHeader><CardTitle className="text-white flex items-center gap-2"><Rocket className="w-5 h-5 text-green-400" /> Ship Inventory</CardTitle></CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead><tr className="border-b border-slate-700/50">
+                      {["Ship", "Class", "Count", "Power", "Speed", "Range", "Cargo"].map((h) => <th key={h} className={cn("py-3 px-2 text-slate-400 font-medium", h !== "Ship" && h !== "Class" && "text-right")}>{h}</th>)}
+                    </tr></thead>
+                    <tbody>
+                      {unitData.map((u) => { const c = units[u.id] || 0; if (!c) return null; const pw = u.stats.attack + u.stats.shield + u.stats.structure / 10; return (
+                        <tr key={u.id} className="border-b border-slate-800/50 hover:bg-slate-800/30">
+                          <td className="py-3 px-2 text-white font-medium">{u.name}</td>
+                          <td className="py-3 px-2"><Badge variant="outline" className="border-slate-600 text-slate-300 text-xs capitalize">{u.class}</Badge></td>
+                          <td className="py-3 px-2 text-right text-white font-mono">{c.toLocaleString()}</td>
+                          <td className="py-3 px-2 text-right text-red-400 font-mono">{Math.floor(pw).toLocaleString()}</td>
+                          <td className="py-3 px-2 text-right text-blue-400 font-mono">{u.stats.speed.toLocaleString()}</td>
+                          <td className="py-3 px-2 text-right text-green-400 font-mono">{u.stats.speed.toLocaleString()}</td>
+                          <td className="py-3 px-2 text-right text-orange-400 font-mono">{u.stats.cargo.toLocaleString()}</td>
+                        </tr>); })}
+                      {!totalCount && <tr><td colSpan={7} className="py-12 text-center text-slate-500">No ships available</td></tr>}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-                           return (
-                              <>
-                                 <TableRow key={cls} className="bg-slate-50 hover:bg-slate-50 border-slate-200">
-                                    <TableCell colSpan={5} className="font-bold uppercase text-xs tracking-widest text-muted-foreground py-2">
-                                       {cls} Class
-                                    </TableCell>
-                                 </TableRow>
-                                 {classUnits.map(id => {
-                                    const uData = getUnitData(id);
-                                    const power = uData ? uData.stats.attack + uData.stats.shield + (uData.stats.structure / 10) : 0;
-                                    return (
-                                       <TableRow key={id} className="border-slate-100 hover:bg-slate-50">
-                                          <TableCell className="font-medium text-slate-700">
-                                             <div className="flex items-center gap-2">
-                                                {cls === "super" && <Skull className="w-4 h-4 text-purple-500" />}
-                                                {cls === "titan" && <Skull className="w-4 h-4 text-red-500" />}
-                                                {getUnitName(id)}
-                                             </div>
-                                          </TableCell>
-                                          <TableCell className="text-right text-slate-500 text-xs font-mono">{Math.floor(power).toLocaleString()}</TableCell>
-                                          <TableCell className="text-right text-slate-500 text-xs font-mono">{uData?.stats.speed.toLocaleString()}</TableCell>
-                                          <TableCell className="text-right font-mono text-primary cursor-pointer hover:underline" onClick={() => handleSelectAll(id)}>
-                                             {units[id]}
-                                          </TableCell>
-                                          <TableCell className="text-right">
-                                             <div className="flex items-center gap-1 justify-end">
-                                                <Input 
-                                                   type="number" 
-                                                   value={selectedUnits[id] || ""}
-                                                   onChange={(e) => handleUnitChange(id, e.target.value)}
-                                                   placeholder="0" 
-                                                   className="h-8 bg-white border-slate-200 text-right w-20 text-slate-900" 
-                                                   data-testid={`input-select-${id}`}
-                                                />
-                                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleSelectAll(id)}>
-                                                   <Zap className="w-3 h-3" />
-                                                </Button>
-                                             </div>
-                                          </TableCell>
-                                       </TableRow>
-                                    )
-                                 })}
-                              </>
-                           )
-                        })}
-                        
-                        {Object.values(units).every(val => val === 0) && (
-                           <TableRow>
-                              <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
-                                 No units available. Build some in the Shipyard!
-                              </TableCell>
-                           </TableRow>
-                        )}
-                      </TableBody>
-                    </Table>
+          <TabsContent value="dispatch" className="mt-6 space-y-6">
+            <Card className="bg-slate-900 border-slate-700/50">
+              <CardHeader><CardTitle className="text-white flex items-center gap-2"><Target className="w-5 h-5 text-red-400" /> Mission Type</CardTitle></CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+                  {(Object.entries(MISSION_CONFIG) as [MissionType, typeof MISSION_CONFIG[MissionType]][]).map(([k, cfg]) => {
+                    const I = cfg.icon; return (
+                      <Button key={k} variant="outline" className={cn("h-auto py-4 flex flex-col items-center gap-2 border transition-all", mission === k ? cfg.bg + " text-white border-current" : "bg-slate-800/50 border-slate-700/50 text-slate-400 hover:bg-slate-800")} onClick={() => setMission(k)}>
+                        <I className={cn("w-6 h-6", mission === k ? cfg.color : "")} /><span className="text-xs font-medium">{cfg.label}</span>
+                      </Button>);
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <Card className="lg:col-span-2 bg-slate-900 border-slate-700/50">
+                <CardHeader><div className="flex items-center justify-between"><CardTitle className="text-white flex items-center gap-2"><Rocket className="w-5 h-5 text-blue-400" /> Fleet Selection</CardTitle>
+                  <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white" onClick={() => setSel({})}>Clear All</Button>
+                </div></CardHeader>
+                <CardContent><ScrollArea className="h-[400px]"><div className="space-y-3">
+                  {Object.entries(units).map(([id, count]) => { if (!count) return null; const u = unitGet(id); if (!u) return null; const s = sel[id] || 0; const pw = u.stats.attack + u.stats.shield + u.stats.structure / 10; return (
+                    <div key={id} className="bg-slate-800/50 p-3 rounded-lg border border-slate-700/50">
+                      <div className="flex items-center justify-between mb-2">
+                        <div><div className="text-white font-medium text-sm">{u.name}</div><div className="text-xs text-slate-400">Power: <span className="text-red-400">{Math.floor(pw).toLocaleString()}</span> · Speed: <span className="text-blue-400">{u.stats.speed.toLocaleString()}</span> · Cargo: <span className="text-orange-400">{u.stats.cargo.toLocaleString()}</span></div></div>
+                        <div className="text-right"><div className="text-xs text-slate-400">{count.toLocaleString()} avail</div><div className="text-sm font-bold text-white">{s} sel</div></div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Slider value={[s]} max={count} step={1} onValueChange={(v) => setUnit(id, v[0])} className="flex-1" />
+                        <div className="flex gap-1">{[25, 50, 75, 100].map((p) => <Button key={p} variant="ghost" size="sm" className="h-6 px-2 text-xs text-slate-400 hover:text-white" onClick={() => setPct(id, p)}>{p}%</Button>)}</div>
+                      </div>
+                    </div>); })}
+                  {!totalCount && <div className="text-center py-12 text-slate-500">No ships</div>}
+                </div></ScrollArea></CardContent>
+              </Card>
+              <div className="space-y-4">
+                <Card className="bg-slate-900 border-slate-700/50">
+                  <CardHeader><CardTitle className="text-white flex items-center gap-2"><Globe className="w-5 h-5 text-blue-400" /> Target</CardTitle></CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-3 gap-2">
+                      <div><label className="text-xs text-slate-400 uppercase">Galaxy</label><Input value={tgtG} onChange={(e) => setTgtG(e.target.value)} className="bg-slate-800 border-slate-700 text-white font-mono" /></div>
+                      <div><label className="text-xs text-slate-400 uppercase">System</label><Input value={tgtS} onChange={(e) => setTgtS(e.target.value)} className="bg-slate-800 border-slate-700 text-white font-mono" /></div>
+                      <div><label className="text-xs text-slate-400 uppercase">Planet</label><Input value={tgtP} onChange={(e) => setTgtP(e.target.value)} className="bg-slate-800 border-slate-700 text-white font-mono" /></div>
+                    </div>
+                    <div className="bg-slate-800/50 p-3 rounded-lg border border-slate-700/50 text-center">
+                      <div className="text-xs text-slate-400 mb-1">Target</div>
+                      <div className="text-lg font-mono font-bold text-white">[{tgtG}:{tgtS}:{tgtP}]</div>
+                    </div>
                   </CardContent>
                 </Card>
+                <Card className="bg-slate-900 border-slate-700/50">
+                  <CardHeader><CardTitle className="text-white flex items-center gap-2"><Gauge className="w-5 h-5 text-green-400" /> Speed & Cost</CardTitle></CardHeader>
+                  <CardContent className="space-y-4">
+                    <Slider value={speed} max={100} step={10} onValueChange={setSpeed} />
+                    <div className="flex justify-between text-xs text-slate-400"><span>10% Slow</span><span className="text-white font-bold">{speed[0]}%</span><span>100% Fast</span></div>
+                    <Separator className="bg-slate-700/50" />
+                    <InfoCard label="Travel Time" value={`${travelT}s`} color="text-white" />
+                    <InfoCard label="Fuel Cost" value={`${fuel.toLocaleString()} D`} color="text-blue-400" />
+                    <InfoCard label="Cargo" value={totalCargo.toLocaleString()} color="text-orange-400" />
+                  </CardContent>
+                </Card>
+                <Card className="bg-slate-900 border-slate-700/50">
+                  <CardHeader><CardTitle className="text-white flex items-center gap-2"><Zap className="w-5 h-5 text-yellow-400" /> Summary</CardTitle></CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="grid grid-cols-2 gap-3"><InfoCard label="Ships" value={String(selCount)} color="text-white" /><InfoCard label="Power" value={Math.floor(selPower).toLocaleString()} color="text-red-400" /></div>
+                    {selCount > 0 && <div className="space-y-1">{Object.entries(selByClass).map(([cls, ships]) => <div key={cls} className="text-xs text-slate-400 capitalize">{cls}: {ships.map((s) => `${unitName(s.id)} x${s.count}`).join(", ")}</div>)}</div>}
+                  </CardContent>
+                </Card>
+                {selPower < 1000 && selCount > 0 && <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 flex items-center gap-2"><AlertTriangle className="w-4 h-4 text-red-400 shrink-0" /><span className="text-xs text-red-300">Fleet power is very low.</span></div>}
+                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold h-12 text-lg" onClick={dispatch} disabled={!selCount || sendMut.isPending}><Send className="w-5 h-5 mr-2" /> {sendMut.isPending ? "LAUNCHING..." : "CONFIRM DISPATCH"}</Button>
+              </div>
+            </div>
+          </TabsContent>
 
-                <div className="space-y-4">
-                  {selectedShipsCount > 0 && (
-                    <Card className="bg-primary/5 border-primary/20 shadow-sm" data-testid="card-fleet-summary">
-                       <CardHeader className="pb-2">
-                         <CardTitle className="text-sm font-bold uppercase tracking-widest text-primary flex items-center gap-2">
-                           <BarChart3 className="w-4 h-4" /> Fleet Summary
-                         </CardTitle>
-                       </CardHeader>
-                       <CardContent className="space-y-3">
-                          <div className="grid grid-cols-2 gap-3">
-                             <div className="bg-white p-3 rounded border border-slate-100">
-                                <div className="text-xs text-muted-foreground">Ships Selected</div>
-                                <div className="text-xl font-mono font-bold text-slate-900">{selectedShipsCount}</div>
-                             </div>
-                             <div className="bg-white p-3 rounded border border-slate-100">
-                                <div className="text-xs text-muted-foreground">Fleet Power</div>
-                                <div className="text-xl font-mono font-bold text-primary">{Math.floor(selectedFleetPower).toLocaleString()}</div>
-                             </div>
+          <TabsContent value="active" className="mt-6">
+            {!activeMissions.length ? (
+              <Card className="bg-slate-900 border-slate-700/50"><CardContent className="py-20 text-center"><Clock className="w-16 h-16 mx-auto mb-4 text-slate-600" /><h3 className="text-xl font-bold text-white mb-2">No Active Missions</h3><p className="text-slate-400">Fleet command is idle.</p></CardContent></Card>
+            ) : (
+              <div className="space-y-4">
+                {activeMissions.map((m) => {
+                  const now = Date.now(); const isRet = m.status === "return" || now > m.arrivalTime;
+                  const endT = isRet ? m.returnTime : m.arrivalTime; const elapsed = now - ((m as any).departureTime || m.arrivalTime - 60000);
+                  const total = isRet ? m.returnTime - m.arrivalTime : m.arrivalTime - ((m as any).departureTime || m.arrivalTime - 60000);
+                  const prog = Math.max(0, Math.min(100, (elapsed / Math.max(total, 1)) * 100));
+                  const eta = Math.max(0, Math.ceil((endT - now) / 1000));
+                  const sc = Object.values(m.units).reduce((a: number, b: any) => a + b, 0);
+                  const pw = Object.entries(m.units).reduce((s: number, [id, c]: [string, any]) => s + calcPower(id, c), 0);
+                  const cfg = MISSION_CONFIG[m.type as MissionType] || MISSION_CONFIG.attack; const I = cfg.icon;
+                  return (
+                    <Card key={m.id} className="bg-slate-900 border-slate-700/50">
+                      <CardContent className="p-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center gap-3">
+                            <div className={cn("w-12 h-12 rounded-lg flex items-center justify-center", cfg.bg)}><I className={cn("w-6 h-6", cfg.color)} /></div>
+                            <div><div className="flex items-center gap-2"><span className="font-bold text-white uppercase text-sm">{m.type} Mission</span><Badge variant="outline" className={isRet ? "border-blue-500/50 text-blue-400" : "border-red-500/50 text-red-400"}>{isRet ? "Returning" : "En Route"}</Badge></div><div className="text-sm text-slate-400">Target: [{m.target}]</div></div>
                           </div>
-                          <div className="bg-white p-3 rounded border border-slate-100">
-                             <div className="text-xs text-muted-foreground mb-1">Slowest Unit Speed</div>
-                             <div className="font-mono text-slate-900">{slowestSpeed === Infinity ? "-" : slowestSpeed.toLocaleString()}</div>
-                          </div>
-                       </CardContent>
-                    </Card>
-                  )}
+                          <div className="text-right"><div className="text-3xl font-mono font-bold text-white">{eta}s</div><div className="text-xs text-slate-400">ETA</div></div>
+                        </div>
+                        <div className="space-y-1 mb-4"><div className="flex justify-between text-xs text-slate-400"><span>Origin</span><span>{isRet ? "Home" : "Target"}</span></div><Progress value={prog} className="h-2 bg-slate-800" /></div>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                          <InfoCard label="Power" value={Math.floor(pw).toLocaleString()} color="text-white" />
+                          <InfoCard label="Ships" value={String(sc)} color="text-white" />
+                          <InfoCard label="Departure" value={new Date((m as any).departureTime || m.arrivalTime - 60000).toLocaleTimeString()} color="text-white" />
+                          <InfoCard label="Arrival" value={new Date(m.arrivalTime).toLocaleTimeString()} color="text-white" />
+                        </div>
+                        <div className="flex gap-2">
+                          <Button variant="outline" size="sm" className="border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800" onClick={() => setExpandM(expandM === m.id ? null : m.id)}>
+                            {expandM === m.id ? <ChevronUp className="w-4 h-4 mr-1" /> : <ChevronDown className="w-4 h-4 mr-1" />}Details
+                          </Button>
+                          {!isRet && <><Button variant="outline" size="sm" className="border-purple-500/50 text-purple-400 hover:bg-purple-500/10"><Zap className="w-4 h-4 mr-1" /> Speed Up</Button><Button variant="outline" size="sm" className="border-red-500/50 text-red-400 hover:bg-red-500/10"><RotateCcw className="w-4 h-4 mr-1" /> Recall</Button></>}
+                        </div>
+                        {expandM === m.id && <div className="mt-4 pt-4 border-t border-slate-700/50 space-y-2"><div className="text-xs text-slate-400 uppercase font-medium mb-2">Fleet Composition</div>{Object.entries(m.units).map(([id, c]) => <div key={id} className="flex justify-between text-sm"><span className="text-slate-300">{unitName(id)}</span><span className="text-white font-mono">{c as number}</span></div>)}</div>}
+                      </CardContent>
+                    </Card>); })}
+              </div>)}
+          </TabsContent>
 
-                  <Card className="bg-white border-slate-200 shadow-sm">
-                     <CardHeader className="pb-2">
-                       <CardTitle className="text-lg font-orbitron flex items-center gap-2 text-slate-900">
-                         <Users className="w-5 h-5 text-violet-600" /> Personnel Assignment
-                       </CardTitle>
-                     </CardHeader>
-                     <CardContent className="space-y-4">
-                        <div className="rounded border border-slate-200 bg-slate-50 p-3 text-xs text-slate-600">
-                           Trained army specialists can now be attached to fleet task forces to improve speed, accuracy, morale, and shield discipline before launch.
-                        </div>
-                        <div className="space-y-3">
-                           {[
-                              { key: "pilot", label: "Pilots", available: personnelPools.pilot, recommended: recommendedCrew.pilot },
-                              { key: "gunner", label: "Gunners", available: personnelPools.gunner, recommended: recommendedCrew.gunner },
-                              { key: "officer", label: "Officers", available: personnelPools.officer, recommended: recommendedCrew.officer },
-                           ].map((entry) => (
-                              <div key={entry.key} className="rounded border border-slate-200 p-3">
-                                 <div className="flex items-center justify-between gap-2">
-                                    <div>
-                                       <div className="font-semibold text-slate-900">{entry.label}</div>
-                                       <div className="text-[11px] text-slate-500">
-                                          Available {entry.available.toLocaleString()} • Recommended {entry.recommended.toLocaleString()}
-                                       </div>
-                                    </div>
-                                    <Input
-                                       type="number"
-                                       min={0}
-                                       max={entry.available}
-                                       value={assignedCrew[entry.key as keyof typeof assignedCrew]}
-                                       onChange={(event) =>
-                                          setCrewAssignments((current) => ({
-                                             ...current,
-                                             [entry.key]: Math.max(0, Math.min(entry.available, Number(event.target.value) || 0)),
-                                          }))
-                                       }
-                                       className="w-24 bg-white border-slate-200 text-right"
-                                    />
-                                 </div>
-                              </div>
-                           ))}
-                        </div>
-                        <div className="grid grid-cols-2 gap-2 text-xs">
-                           <div className="rounded border border-slate-200 bg-slate-50 p-2">ATK +{personnelBonuses.attack}%</div>
-                           <div className="rounded border border-slate-200 bg-slate-50 p-2">Shield +{personnelBonuses.shield}%</div>
-                           <div className="rounded border border-slate-200 bg-slate-50 p-2">Speed +{personnelBonuses.speed}%</div>
-                           <div className="rounded border border-slate-200 bg-slate-50 p-2">Accuracy +{personnelBonuses.accuracy}%</div>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                           <Button
-                              variant="outline"
-                              className="flex-1"
-                              onClick={() => setCrewAssignments(recommendedCrew)}
-                           >
-                              <GraduationCap className="w-4 h-4 mr-2" /> Auto Assign
-                           </Button>
-                           <Button
-                              variant="ghost"
-                              className="flex-1"
-                              onClick={() => setCrewAssignments({ pilot: 0, gunner: 0, officer: 0 })}
-                           >
-                              Clear
-                           </Button>
-                        </div>
-                     </CardContent>
-                  </Card>
-                  
-                  <Card className="bg-white border-slate-200 shadow-sm">
-                     <CardHeader className="pb-2">
-                       <CardTitle className="text-lg font-orbitron flex items-center gap-2 text-slate-900">
-                         <MapPin className="w-5 h-5 text-blue-600" /> Target Coordinates
-                       </CardTitle>
-                     </CardHeader>
-                     <CardContent className="space-y-4">
-                        <div className="grid grid-cols-3 gap-2">
-                           <div>
-                              <label className="text-xs text-muted-foreground uppercase">Galaxy</label>
-                              <Input value={targetGalaxy} onChange={e => setTargetGalaxy(e.target.value)} className="bg-slate-50 border-slate-200 font-mono text-slate-900" data-testid="input-galaxy" />
-                           </div>
-                           <div>
-                              <label className="text-xs text-muted-foreground uppercase">System</label>
-                              <Input value={targetSystem} onChange={e => setTargetSystem(e.target.value)} className="bg-slate-50 border-slate-200 font-mono text-slate-900" data-testid="input-system" />
-                           </div>
-                           <div>
-                              <label className="text-xs text-muted-foreground uppercase">Planet</label>
-                              <Input value={targetPlanet} onChange={e => setTargetPlanet(e.target.value)} className="bg-slate-50 border-slate-200 font-mono text-slate-900" data-testid="input-planet" />
-                           </div>
-                        </div>
-                        
-                        <Select value={targetType} onValueChange={setTargetType}>
-                           <SelectTrigger className="bg-slate-50 border-slate-200 text-slate-900">
-                              <SelectValue placeholder="Target Type" />
-                           </SelectTrigger>
-                           <SelectContent>
-                              <SelectItem value="planet">Planet</SelectItem>
-                              <SelectItem value="debris">Debris Field</SelectItem>
-                              <SelectItem value="moon">Moon</SelectItem>
-                           </SelectContent>
-                        </Select>
-                     </CardContent>
-                  </Card>
-
-                  <Card className="bg-white border-slate-200 shadow-sm">
-                     <CardHeader className="pb-2">
-                       <CardTitle className="text-lg font-orbitron flex items-center gap-2 text-slate-900">
-                         <Crosshair className="w-5 h-5 text-red-600" /> Mission Type
-                       </CardTitle>
-                     </CardHeader>
-                     <CardContent className="space-y-2">
-                        {[
-                           { id: "attack", icon: Crosshair, label: "Attack", desc: "Engage enemy defenses", color: "text-red-600" },
-                           { id: "transport", icon: Truck, label: "Transport", desc: "Deliver resources", color: "text-green-600" },
-                           { id: "espionage", icon: Search, label: "Espionage", desc: "Gather intelligence", color: "text-blue-600" },
-                           { id: "sabotage", icon: Skull, label: "Sabotage", desc: "Destroy structures", color: "text-orange-600" },
-                           { id: "colonize", icon: MapPin, label: "Colonize", desc: "Establish new colony", color: "text-yellow-600" },
-                           { id: "deploy", icon: Anchor, label: "Deploy", desc: "Station fleet at target", color: "text-purple-600" },
-                        ].map(m => (
-                           <Button 
-                              key={m.id}
-                              variant={missionType === m.id ? "secondary" : "outline"} 
-                              className={cn("w-full justify-start border-slate-200 text-slate-700 h-auto py-2", missionType === m.id && "bg-slate-100 border-slate-300")}
-                              onClick={() => setMissionType(m.id)}
-                              data-testid={`button-mission-${m.id}`}
-                           >
-                              <m.icon className={cn("w-4 h-4 mr-3", m.color)} />
-                              <div className="text-left">
-                                <div className="font-medium">{m.label}</div>
-                                <div className="text-[10px] text-muted-foreground">{m.desc}</div>
-                              </div>
-                           </Button>
-                        ))}
-                     </CardContent>
-                  </Card>
-                  
-                  <Button 
-                     className="w-full bg-primary text-white hover:bg-primary/90 font-bold font-orbitron h-12 text-lg shadow-md"
-                     onClick={handleDispatch}
-                     disabled={selectedShipsCount === 0 || sendFleetMutation.isPending}
-                     data-testid="button-launch-fleet"
-                  >
-                     <Play className="w-5 h-5 mr-2 fill-white" /> {sendFleetMutation.isPending ? "LAUNCHING..." : "LAUNCH FLEET"}
-                  </Button>
+          <TabsContent value="templates" className="mt-6 space-y-6">
+            <Card className="bg-slate-900 border-slate-700/50">
+              <CardHeader><CardTitle className="text-white flex items-center gap-2"><Save className="w-5 h-5 text-yellow-400" /> Pre-built Templates</CardTitle></CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                  {TEMPLATES.map((t) => { const I = t.icon; const cfg = MISSION_CONFIG[t.mission]; const ts = Object.values(t.ships).reduce((a, b) => a + b, 0); const tp = Object.entries(t.ships).reduce((s, [id, c]) => s + calcPower(id, c), 0); return (
+                    <Card key={t.id} className="bg-slate-800/50 border-slate-700/50 hover:border-slate-600 transition-colors cursor-pointer" onClick={() => loadTpl(t)}>
+                      <CardContent className="p-4 space-y-3">
+                        <div className="flex items-center justify-between"><div className={cn("w-10 h-10 rounded-lg flex items-center justify-center", cfg.bg)}><I className={cn("w-5 h-5", cfg.color)} /></div><Badge variant="outline" className={cn("text-xs border-current", cfg.color)}>{cfg.label}</Badge></div>
+                        <div><div className="text-white font-bold text-sm">{t.name}</div><div className="text-xs text-slate-400">{ts} ships · {Math.floor(tp).toLocaleString()} power</div></div>
+                        <div className="space-y-1">{Object.entries(t.ships).slice(0, 3).map(([id, c]) => <div key={id} className="flex justify-between text-xs"><span className="text-slate-400">{unitName(id)}</span><span className="text-slate-300 font-mono">{c}</span></div>)}</div>
+                        <Button variant="outline" size="sm" className="w-full border-slate-600 text-slate-300 hover:text-white"><Download className="w-3 h-3 mr-1" /> Load</Button>
+                      </CardContent>
+                    </Card>); })}
                 </div>
-              </div>
-           </TabsContent>
+              </CardContent>
+            </Card>
+            <Card className="bg-slate-900 border-slate-700/50">
+              <CardHeader><CardTitle className="text-white flex items-center gap-2"><Plus className="w-5 h-5 text-green-400" /> Custom Templates</CardTitle></CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex gap-2"><Input value={tplName} onChange={(e) => setTplName(e.target.value)} placeholder="Template name..." className="bg-slate-800 border-slate-700 text-white" /><Button className="bg-green-600 hover:bg-green-700 text-white" onClick={saveCustom}><Save className="w-4 h-4 mr-1" /> Save</Button></div>
+                {customTpls.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {customTpls.map((t, i) => { const ts = Object.values(t.ships).reduce((a, b) => a + b, 0); const tp = Object.entries(t.ships).reduce((s, [id, c]) => s + calcPower(id, c), 0); return (
+                      <Card key={i} className="bg-slate-800/50 border-slate-700/50 cursor-pointer hover:border-slate-600 transition-colors" onClick={() => loadCustom(t)}>
+                        <CardContent className="p-4 space-y-2"><div className="text-white font-bold">{t.name}</div><div className="text-xs text-slate-400">{ts} ships · {Math.floor(tp).toLocaleString()} power</div><Button variant="outline" size="sm" className="w-full border-slate-600 text-slate-300"><Download className="w-3 h-3 mr-1" /> Load</Button></CardContent>
+                      </Card>); })}
+                  </div>) : <div className="text-center py-8 text-slate-500">Select ships in Dispatch tab, then save.</div>}
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-           <TabsContent value="active" className="mt-6">
-              {activeMissions.length === 0 ? (
-                 <div className="text-center py-20 bg-white border border-slate-200 rounded-lg border-dashed">
-                    <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden">
-                       <img
-                          src={SHIP_ASSETS.FIGHTERS.SCOUT.path}
-                          alt="idle fleet"
-                          className="w-9 h-9 object-contain opacity-60"
-                          onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }}
-                       />
+          <TabsContent value="reports" className="mt-6 space-y-6">
+            <div className="flex gap-2">{(["all", "victories", "defeats", "raids"] as const).map((f) => <Button key={f} variant="outline" size="sm" className={cn("border-slate-700 capitalize", rFilter === f ? "bg-slate-700 text-white" : "text-slate-400 hover:text-white")} onClick={() => setRFilter(f)}>{f}</Button>)}</div>
+            <div className="space-y-4">
+              {filteredReports.map((r) => (
+                <Card key={r.id} className="bg-slate-900 border-slate-700/50">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className={cn("w-12 h-12 rounded-lg flex items-center justify-center", r.result === "victory" ? "bg-green-500/20" : "bg-red-500/20")}>{r.result === "victory" ? <Trophy className="w-6 h-6 text-green-400" /> : <Skull className="w-6 h-6 text-red-400" />}</div>
+                        <div><div className="flex items-center gap-2"><span className="font-bold text-white uppercase text-sm">{r.result}</span><Badge variant="outline" className={r.result === "victory" ? "border-green-500/50 text-green-400" : "border-red-500/50 text-red-400"}>{r.result === "victory" ? "Victory" : "Defeat"}</Badge></div><div className="text-sm text-slate-400">[{r.target}] · {r.date}</div></div>
+                      </div>
+                      <div className="text-right"><div className="text-lg font-bold text-white">{Math.floor(r.power).toLocaleString()}</div><div className="text-xs text-slate-400">Power</div></div>
                     </div>
-                    <h3 className="text-lg font-bold text-slate-900">No Active Missions</h3>
-                    <p className="text-slate-500">Fleet command is idle. Dispatch ships to see them here.</p>
-                 </div>
-              ) : (
-                 <div className="space-y-4">
-                    {activeMissions.map(mission => {
-                       const now = Date.now();
-                       const isReturn = mission.status === "return" || (now > mission.arrivalTime);
-                       const endTime = isReturn ? mission.returnTime : mission.arrivalTime;
-                       const totalTime = 10000;
-                       const timeLeft = Math.max(0, endTime - now);
-                       const progress = Math.max(0, 100 - (timeLeft / totalTime) * 100);
-
-                       const missionPower = Object.entries(mission.units).reduce((sum, [id, count]: [string, any]) => {
-                         const unit = getUnitData(id);
-                         if (!unit) return sum;
-                         const power = unit.stats.attack + unit.stats.shield + (unit.stats.structure / 10);
-                         return sum + (power * count);
-                       }, 0);
-
-                       return (
-                          <Card key={mission.id} className={cn("bg-white border-slate-200", isReturn ? "border-l-4 border-l-blue-500" : "border-l-4 border-l-red-500")}>
-                             <CardContent className="p-6">
-                                <div className="flex items-center justify-between mb-4">
-                                   <div className="flex items-center gap-3">
-                                      <div className={cn("w-12 h-12 rounded flex items-center justify-center", isReturn ? "bg-blue-100 text-blue-600" : "bg-red-100 text-red-600")}>
-                                         {isReturn ? <Anchor className="w-6 h-6" /> : <Rocket className="w-6 h-6" />}
-                                      </div>
-                                      <div>
-                                         <div className="font-bold text-slate-900 uppercase text-sm tracking-wider flex items-center gap-2">
-                                            {mission.type} Mission
-                                            <Badge variant="outline" className={isReturn ? "border-blue-200 text-blue-600" : "border-red-200 text-red-600"}>
-                                              {isReturn ? "Returning" : "En Route"}
-                                            </Badge>
-                                         </div>
-                                         <div className="text-sm text-slate-500">Target: [{mission.target}]</div>
-                                      </div>
-                                   </div>
-                                   <div className="text-right">
-                                      <div className="text-3xl font-mono font-bold text-slate-900">{Math.ceil(timeLeft / 1000)}s</div>
-                                      <div className="text-xs text-muted-foreground">ETA</div>
-                                   </div>
-                                </div>
-                                
-                                <div className="space-y-1 mb-4">
-                                   <div className="flex justify-between text-xs text-slate-500">
-                                      <span>Origin</span>
-                                      <span>Target</span>
-                                   </div>
-                                   <Progress value={progress} className="h-3" />
-                                </div>
-
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                   <div className="bg-slate-50 p-3 rounded border border-slate-100">
-                                      <div className="text-xs text-muted-foreground">Fleet Power</div>
-                                      <div className="font-mono font-bold text-slate-900">{Math.floor(missionPower).toLocaleString()}</div>
-                                   </div>
-                                   <div className="bg-slate-50 p-3 rounded border border-slate-100">
-                                      <div className="text-xs text-muted-foreground">Ship Count</div>
-                                      <div className="font-mono font-bold text-slate-900">
-                                        {Object.values(mission.units).reduce((a: number, b: any) => a + b, 0)}
-                                      </div>
-                                   </div>
-                                   {Object.entries(mission.units).slice(0, 2).map(([id, count]) => (
-                                      <div key={id} className="bg-slate-50 p-3 rounded border border-slate-100">
-                                         <div className="text-xs text-muted-foreground truncate">{getUnitName(id)}</div>
-                                         <div className="font-mono font-bold text-slate-900">{count}</div>
-                                      </div>
-                                   ))}
-                                </div>
-                             </CardContent>
-                          </Card>
-                       )
-                    })}
-                 </div>
-              )}
-           </TabsContent>
-
-           <TabsContent value="templates" className="mt-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                 <Card className="bg-white border-slate-200 cursor-pointer hover:border-primary transition-colors group">
-                    <CardHeader>
-                       <CardTitle className="text-slate-900 group-hover:text-primary flex items-center justify-between">
-                          Raiding Party Alpha
-                          <Badge variant="outline" className="bg-red-50 text-red-600 border-red-200">Attack</Badge>
-                       </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                       <div className="space-y-2 text-sm text-slate-600">
-                          <div className="flex justify-between"><span>Light Fighter</span> <span className="font-mono">50</span></div>
-                          <div className="flex justify-between"><span>Cruiser</span> <span className="font-mono">10</span></div>
-                          <div className="flex justify-between"><span>Small Cargo</span> <span className="font-mono">20</span></div>
-                       </div>
-                       <Separator className="my-4" />
-                       <div className="flex justify-between text-xs text-muted-foreground">
-                         <span>Est. Power: 15,000</span>
-                         <span>80 ships</span>
-                       </div>
-                       <Button className="w-full mt-4" variant="outline" onClick={() => loadTemplate("attack")} data-testid="button-load-template-alpha">Load Template</Button>
-                    </CardContent>
-                 </Card>
-
-                 <Card className="bg-white border-slate-200 cursor-pointer hover:border-primary transition-colors group">
-                    <CardHeader>
-                       <CardTitle className="text-slate-900 group-hover:text-primary flex items-center justify-between">
-                          Colony Ship I
-                          <Badge variant="outline" className="bg-yellow-50 text-yellow-600 border-yellow-200">Colonize</Badge>
-                       </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                       <div className="space-y-2 text-sm text-slate-600">
-                          <div className="flex justify-between"><span>Colony Ship</span> <span className="font-mono">1</span></div>
-                          <div className="flex justify-between"><span>Light Fighter</span> <span className="font-mono">5</span></div>
-                          <div className="flex justify-between"><span>Large Cargo</span> <span className="font-mono">2</span></div>
-                       </div>
-                       <Separator className="my-4" />
-                       <div className="flex justify-between text-xs text-muted-foreground">
-                         <span>Est. Power: 2,500</span>
-                         <span>8 ships</span>
-                       </div>
-                       <Button className="w-full mt-4" variant="outline" onClick={() => loadTemplate("colony")} data-testid="button-load-template-colony">Load Template</Button>
-                    </CardContent>
-                 </Card>
-
-                 <Card className="border-2 border-dashed border-slate-200 flex items-center justify-center min-h-[200px] hover:bg-slate-50 cursor-pointer">
-                    <div className="text-center text-slate-400">
-                       <Anchor className="w-10 h-10 mx-auto mb-2" />
-                       <span className="font-bold block">Create New Template</span>
-                       <span className="text-xs">Save your fleet configurations</span>
+                    <div className="grid grid-cols-3 gap-3 mb-4">
+                      <InfoCard label="Ships Lost" value={String(r.shipsLost)} color="text-red-400" />
+                      <InfoCard label="Plundered" value={r.plundered.toLocaleString()} color="text-green-400" />
+                      <InfoCard label="Fleet Size" value={String(Object.values(r.ships).reduce((a, b) => a + b, 0))} color="text-white" />
                     </div>
-                 </Card>
-              </div>
-           </TabsContent>
+                    <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white" onClick={() => setExpandR(expandR === r.id ? null : r.id)}>
+                      {expandR === r.id ? <ChevronUp className="w-4 h-4 mr-1" /> : <ChevronDown className="w-4 h-4 mr-1" />}Battle Log
+                    </Button>
+                    {expandR === r.id && <div className="mt-4 pt-4 border-t border-slate-700/50 space-y-2">
+                      <div className="text-xs text-slate-400 uppercase font-medium mb-2">Composition</div>
+                      {Object.entries(r.ships).map(([id, c]) => <div key={id} className="flex justify-between text-sm"><span className="text-slate-300">{unitName(id)}</span><span className="text-white font-mono">{c}</span></div>)}
+                      <Separator className="bg-slate-700/50 my-3" />
+                      <div className="text-xs text-slate-400 uppercase font-medium mb-2">Battle Log</div>
+                      {r.log.map((l, i) => <div key={i} className="text-sm text-slate-300 bg-slate-800/30 p-2 rounded">{l}</div>)}
+                    </div>}
+                  </CardContent>
+                </Card>))}
+              {!filteredReports.length && <Card className="bg-slate-900 border-slate-700/50"><CardContent className="py-12 text-center"><History className="w-12 h-12 mx-auto mb-4 text-slate-600" /><p className="text-slate-400">No reports</p></CardContent></Card>}
+            </div>
+          </TabsContent>
 
-           <TabsContent value="combat" className="mt-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                 <Card className="bg-white border-slate-200" data-testid="card-combat-simulator">
-                    <CardHeader>
-                       <CardTitle className="text-lg font-orbitron flex items-center gap-2 text-slate-900">
-                          <Sword className="w-5 h-5 text-red-500" /> Combat Simulator
-                       </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                       <p className="text-sm text-muted-foreground">Simulate battles before launching an attack to estimate your chances of victory.</p>
-                       
-                       <div className="grid grid-cols-2 gap-4">
-                          <div className="bg-blue-50 p-4 rounded border border-blue-200">
-                             <div className="text-xs text-blue-600 uppercase font-bold mb-2">Your Fleet</div>
-                             <div className="text-2xl font-mono font-bold text-blue-900">{Math.floor(totalFleetPower).toLocaleString()}</div>
-                             <div className="text-xs text-blue-600">Combat Power</div>
-                          </div>
-                          <div className="bg-red-50 p-4 rounded border border-red-200">
-                             <div className="text-xs text-red-600 uppercase font-bold mb-2">Enemy (Est.)</div>
-                             <Input placeholder="Enter power..." className="bg-white border-red-200 font-mono" />
-                          </div>
-                       </div>
-                       
-                       <Button className="w-full" variant="outline">
-                          <Target className="w-4 h-4 mr-2" /> Run Simulation
-                       </Button>
-                       
-                       <div className="bg-slate-50 p-4 rounded border border-slate-200 text-center">
-                          <Info className="w-8 h-8 mx-auto mb-2 text-slate-300" />
-                          <p className="text-sm text-slate-500">Enter enemy fleet power to simulate combat outcome</p>
-                       </div>
-                    </CardContent>
-                 </Card>
-
-                 <Card className="bg-white border-slate-200" data-testid="card-combat-history">
-                    <CardHeader>
-                       <CardTitle className="text-lg font-orbitron flex items-center gap-2 text-slate-900">
-                          <History className="w-5 h-5 text-slate-500" /> Recent Combat Reports
-                       </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                       <div className="text-center py-8">
-                          <History className="w-12 h-12 mx-auto mb-4 text-slate-200" />
-                          <p className="text-slate-500">No combat reports yet</p>
-                          <p className="text-xs text-slate-400 mt-1">Attack or defend to see battle results here</p>
-                       </div>
-                    </CardContent>
-                 </Card>
-              </div>
-           </TabsContent>
+          <TabsContent value="stats" className="mt-6 space-y-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {[{ v: totalCount.toLocaleString(), l: "Total Ships Built", c: "text-white" }, { v: "28", l: "Total Destroyed", c: "text-red-400" }, { v: "3", l: "Total Battles", c: "text-purple-400" }, { v: "67%", l: "Win/Loss Ratio", c: "text-green-400" }].map((s) => (
+                <Card key={s.l} className="bg-slate-900 border-slate-700/50"><CardContent className="p-4 text-center"><div className={cn("text-3xl font-bold", s.c)}>{s.v}</div><div className="text-xs text-slate-400 uppercase mt-1">{s.l}</div></CardContent></Card>
+              ))}
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card className="bg-slate-900 border-slate-700/50">
+                <CardHeader><CardTitle className="text-white flex items-center gap-2"><BarChart3 className="w-5 h-5 text-blue-400" /> Fleet Power Over Time</CardTitle></CardHeader>
+                <CardContent className="space-y-3">
+                  {[{ w: "Week 1", p: 8500 }, { w: "Week 2", p: 12400 }, { w: "Week 3", p: 18200 }, { w: "Week 4", p: totalPower }].map(({ w, p }) => (
+                    <div key={w} className="space-y-1"><div className="flex justify-between text-sm"><span className="text-slate-400">{w}</span><span className="text-white font-mono">{Math.floor(p).toLocaleString()}</span></div><div className="h-2 bg-slate-800 rounded-full overflow-hidden"><div className="h-full bg-gradient-to-r from-blue-600 to-blue-400 rounded-full" style={{ width: `${(p / Math.max(totalPower, 1)) * 100}%` }} /></div></div>
+                  ))}
+                </CardContent>
+              </Card>
+              <Card className="bg-slate-900 border-slate-700/50">
+                <CardHeader><CardTitle className="text-white flex items-center gap-2"><Swords className="w-5 h-5 text-red-400" /> Combat Efficiency</CardTitle></CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-700/50 text-center"><div className="text-5xl font-bold text-green-400 mb-2">B+</div><div className="text-xs text-slate-400 uppercase">Combat Rating</div></div>
+                  <div className="space-y-3">
+                    {[{ l: "Most Used Ship", v: "Viper", p: 78, c: "bg-green-500" }, { l: "Attack Success", v: "67%", p: 67, c: "bg-blue-500" }, { l: "Espionage Success", v: "100%", p: 100, c: "bg-purple-500" }].map((s) => (
+                      <div key={s.l} className="space-y-1"><div className="flex justify-between text-sm"><span className="text-slate-400">{s.l}</span><span className="text-white">{s.v}</span></div><div className="h-2 bg-slate-800 rounded-full overflow-hidden"><div className={cn("h-full rounded-full", s.c)} style={{ width: `${s.p}%` }} /></div></div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
         </Tabs>
       </div>
     </GameLayout>
