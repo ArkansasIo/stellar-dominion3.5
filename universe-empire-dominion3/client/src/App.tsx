@@ -176,6 +176,7 @@ function LoadingSplash() {
 function RouterContent() {
   const { isLoggedIn, needsSetup, isLoading, onboardingStep } = useGame();
   const [showSplash, setShowSplash] = useState(true);
+  const [hasError, setHasError] = useState(false);
   const loadingStartedAtRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -184,6 +185,7 @@ function RouterContent() {
         loadingStartedAtRef.current = Date.now();
       }
       setShowSplash(true);
+      setHasError(false);
       return;
     }
 
@@ -194,6 +196,8 @@ function RouterContent() {
 
     const elapsed = Date.now() - loadingStartedAtRef.current;
     const minSplashMs = 350;
+    const maxSplashMs = 5000; // Force hide after 5 seconds
+
     if (elapsed >= minSplashMs) {
       setShowSplash(false);
       loadingStartedAtRef.current = null;
@@ -207,6 +211,36 @@ function RouterContent() {
 
     return () => clearTimeout(timeout);
   }, [isLoading]);
+
+  // Safety timeout to prevent infinite loading
+  useEffect(() => {
+    if (!isLoading) return;
+    
+    const safetyTimeout = setTimeout(() => {
+      console.warn('[App] Loading timeout reached, forcing render');
+      setShowSplash(false);
+      loadingStartedAtRef.current = null;
+    }, 5000);
+
+    return () => clearTimeout(safetyTimeout);
+  }, [isLoading]);
+
+  if (hasError) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl text-red-500 mb-4">Error Loading Game</h1>
+          <p className="text-slate-400">Please refresh the page or check the console for errors.</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Refresh Page
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading || showSplash) {
     return <LoadingSplash />;
