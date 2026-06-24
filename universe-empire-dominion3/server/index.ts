@@ -229,6 +229,7 @@ import { registerMoonRoutes } from "./routes-moons";
 import { registerSporeDriveRoutes } from "./routes-spore-drive";
 import { registerWeeklyMissionRoutes } from "./routes-weekly-missions";
 import { registerOGameCombatRoutes } from "./routes-ogame-combat";
+import seasonRoutes from "./routes-season";
 import { db, pool } from "./db";
 import { adminUsers, users } from "../shared/schema";
 import { eq, ilike, or } from "drizzle-orm";
@@ -321,6 +322,7 @@ import { eq, ilike, or } from "drizzle-orm";
   registerNewsRoutes(app);
   registerAdminConsoleRoutes(app);
   registerOGameCombatRoutes(app);
+  app.use('/api/season', seasonRoutes);
   const viewerRoot = path.resolve(process.cwd(), "threejs_galaxy_viewer_project");
   app.get("/api/viewer/status", (_req, res) => {
     res.json({
