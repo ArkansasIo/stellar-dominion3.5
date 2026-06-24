@@ -1,5 +1,5 @@
 import { db, pool } from '.';
-import { users, adminUsers, playerStates } from '@shared/schema';
+import { users, adminUsers } from '@shared/schema';
 import { eq } from 'drizzle-orm';
 
 export async function initializeDatabase() {

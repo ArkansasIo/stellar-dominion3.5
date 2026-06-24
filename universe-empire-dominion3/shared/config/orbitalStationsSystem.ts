@@ -362,8 +362,23 @@ export interface OrbitalStation {
   };
 }
 
+export interface InfrastructureDeployment {
+  id: string;
+  stationId: string;
+  name: string;
+  category: string;
+  subCategory: string;
+  tier: number;
+  level: number;
+  class: string;
+  count: number;
+  deployedAt: number;
+  isOnline: boolean;
+}
+
 export interface OrbitalStationsState {
   stations: OrbitalStation[];
+  infrastructure: InfrastructureDeployment[];
   maxStations: number;
   totalStationLevels: number;
   globalBonuses: { statType: string; value: number; isPercent: boolean }[];
@@ -379,6 +394,7 @@ export interface OrbitalStationsState {
 export function getDefaultOrbitalStationsState(): OrbitalStationsState {
   return {
     stations: [],
+    infrastructure: [],
     maxStations: 3,
     totalStationLevels: 0,
     globalBonuses: [],

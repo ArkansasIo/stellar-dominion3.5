@@ -1,5 +1,4 @@
 import { db } from "../db";
-import { sql } from "drizzle-orm";
 import { storage } from "../storage";
 import {
   RARITY_TIERS,

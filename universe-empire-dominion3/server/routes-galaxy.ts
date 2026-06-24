@@ -1,11 +1,43 @@
 import type { Express, Request, Response } from "express";
 import { db } from "./db";
 import { storage } from "./storage";
-import { playerStates, users, alliances } from "../shared/schema";
+import { playerStates, users } from "../shared/schema";
 import { like, eq } from "drizzle-orm";
 import { isAuthenticated } from "./basicAuth";
+import { PLANET_CATALOG, PLANET_SIZE_CLASSES, type PlanetClassification } from "../shared/config/planetCatalog";
+import { MOON_CATALOG, MOON_SIZE_CLASSES, type MoonClassification } from "../shared/config/moonCatalog";
+import { GALAXY_MORPHOLOGY_TYPES, classifyGalaxy, type GalaxyClassification } from "../shared/config/galaxyClassification";
+import { UNIVERSE_CLASSIFICATION, getClassForSize } from "../shared/config/universeClassification";
+import { NPC_RACES, getRaceById } from "../shared/config/npcRaces";
+import { PIRATE_FACTIONS, getPiratesInSector } from "../shared/config/pirateFactions";
+import { getRelation, areEnemies } from "../shared/config/raceAlliances";
 
 type SystemObjectType = "planet" | "asteroid" | "nebula" | "blackhole" | "station" | "empty";
+
+interface MoonDetail {
+  name: string;
+  type: string;
+  class: string;
+  subclass: string;
+  size: string;
+  sizeClass: string;
+  diameter: number;
+  gravity: number;
+  habitable: boolean;
+  atmosphere: string;
+  temperature: number;
+  resources: string[];
+  specialFeatures: string[];
+}
+
+interface NPCPresence {
+  raceId: string;
+  raceName: string;
+  faction: string;
+  fleetPower: number;
+  diplomaticStance: string;
+  isHostile: boolean;
+}
 
 interface SystemPosition {
   position: number;
@@ -15,14 +47,34 @@ interface SystemPosition {
   alliance?: string;
   debris?: { metal: number; crystal: number };
   moon?: boolean;
+  moonDetails?: MoonDetail;
   class?: string;
-  activity?: number; // minutes since last activity (undefined = no activity data)
+  subclass?: string;
+  category?: string;
+  subcategory?: string;
+  planetType?: string;
+  temperature?: number;
+  resources?: string[];
+  habitable?: boolean;
+  gravity?: number;
+  atmosphere?: string;
+  activity?: number;
+  stations?: { name: string; level: number; type: string }[];
+  diameter?: number;
+  mass?: number;
+  waterPercent?: number;
+  specialFeatures?: string[];
+  planetId?: string;
+  npcs?: NPCPresence[];
 }
 
 interface GeneratedSystem {
   systemName: string;
   star: { type: string; name: string };
   positions: SystemPosition[];
+  galaxyClassification: GalaxyClassification;
+  racePresence: NPCPresence[];
+  planetCount: number;
 }
 
 type ScanReport = {
@@ -39,7 +91,7 @@ type ScanReport = {
 // ---------------------------------------------------------------------------
 
 /** Maximum orbital positions displayed in a system (matches the client table). */
-const MAX_SYSTEM_POSITIONS = 15;
+const MAX_SYSTEM_POSITIONS = 45;
 
 /** FNV-1a 32-bit hash of an arbitrary string. */
 function fnv1a(str: string): number {
@@ -125,6 +177,73 @@ function pickPlanetClass(r: number): string {
   return "K";
 }
 
+/** Planet type distribution for detailed classification. */
+const PLANET_TYPE_THRESHOLDS: Array<[string, number]> = [
+  ["rocky", 0.30],
+  ["gas_giant", 0.42],
+  ["ice_giant", 0.50],
+  ["desert", 0.62],
+  ["ocean", 0.70],
+  ["volcanic", 0.78],
+  ["frozen", 0.88],
+  ["terran", 0.93],
+  ["barren", 0.97],
+  ["toxic", 1.00],
+];
+
+function pickPlanetType(r: number): string {
+  for (const [type, threshold] of PLANET_TYPE_THRESHOLDS) {
+    if (r < threshold) return type;
+  }
+  return "rocky";
+}
+
+/** Moon type distribution. */
+const MOON_TYPE_THRESHOLDS: Array<[string, number]> = [
+  ["rocky", 0.35],
+  ["icy", 0.55],
+  ["volcanic", 0.65],
+  ["ice-rock", 0.80],
+  ["gas-moon", 0.88],
+  ["metallic", 0.95],
+  ["captured", 1.00],
+];
+
+function pickMoonType(r: number): string {
+  for (const [type, threshold] of MOON_TYPE_THRESHOLDS) {
+    if (r < threshold) return type;
+  }
+  return "rocky";
+}
+
+/** Resources by planet type. */
+const PLANET_RESOURCES: Record<string, string[]> = {
+  rocky: ["metal", "crystal"],
+  gas_giant: ["deuterium", "helium"],
+  ice_giant: ["water", "deuterium"],
+  desert: ["metal", "crystal", "energy"],
+  ocean: ["water", "food", "deuterium"],
+  volcanic: ["metal", "energy", "crystal"],
+  frozen: ["water", "deuterium", "crystal"],
+  terran: ["food", "water", "metal", "crystal"],
+  barren: ["metal"],
+  toxic: ["crystal", "exotic"],
+};
+
+/** Atmosphere types by planet type. */
+const PLANET_ATMOSPHERE: Record<string, string> = {
+  rocky: "thin nitrogen-CO2",
+  gas_giant: "dense hydrogen-helium",
+  ice_giant: "methane-ammonia",
+  desert: "thin CO2-argon",
+  ocean: "nitrogen-oxygen (breathable)",
+  volcanic: "sulfur dioxide toxic",
+  frozen: "thin nitrogen-methane",
+  terran: "nitrogen-oxygen (breathable)",
+  barren: "negligible",
+  toxic: "corrosive mixed gases",
+};
+
 /**
  * Generate a full star system using NMS-style deterministic seeding.
  * The star type and planet count are derived from the system seed; planets
@@ -145,25 +264,122 @@ function generateSystem(
   const starName = generateName(fnv1a(`${baseKey}:star-name`));
   const systemName = generateName(fnv1a(`${baseKey}:sys-name`));
 
-  // Planet count: 2-9 planets per system (NMS-style)
-  const planetCount = Math.floor(seededAt(sysHash, 1) * 8) + 2;
+  // Planet count: 15-45 planets per system
+  const planetCount = Math.floor(seededAt(sysHash, 1) * 31) + 15;
 
   const positions: SystemPosition[] = [];
+
+  // Determine galaxy classification for this system
+  const galaxyMorphologyIds = GALAXY_MORPHOLOGY_TYPES.map(t => t.id);
+  const galaxyMorphologyIdx = Math.floor(seededAt(sysHash, 100) * galaxyMorphologyIds.length);
+  const galaxyMorphology = galaxyMorphologyIds[galaxyMorphologyIdx] || 'spiral-normal';
+  const galaxySizeVariant = seededAt(sysHash, 101) > 0.6 ? 'large' : seededAt(sysHash, 101) > 0.3 ? 'medium' : 'small';
+  const galaxyHabitability = Math.floor(seededAt(sysHash, 102) * 100);
+  const galaxyClassification = classifyGalaxy(galaxyMorphology, galaxySizeVariant, galaxyHabitability);
+
+  // Determine NPC race territory presence
+  const racePresence: NPCPresence[] = [];
+  for (const race of NPC_RACES) {
+    const raceHash = fnv1a(`${baseKey}:race-${race.id}`);
+    const presenceRoll = seededAt(raceHash, 0);
+    // Race is present if spawnWeight check passes and territory includes this sector
+    if (presenceRoll < race.spawnWeight / 200 && seededAt(raceHash, 1) < 0.15) {
+      const stance = race.defaultStance;
+      racePresence.push({
+        raceId: race.id,
+        raceName: race.name,
+        faction: race.category,
+        fleetPower: Math.floor(race.fleetStrength * (0.5 + seededAt(raceHash, 2) * 1.5)),
+        diplomaticStance: stance,
+        isHostile: stance === 'hostile',
+      });
+    }
+  }
 
   // Place planets in sequential orbital positions starting at 1
   for (let i = 0; i < planetCount; i++) {
     const pos = i + 1;
     const planetHash = fnv1a(`${baseKey}:planet-${pos}`);
     const planetClass = pickPlanetClass(seededAt(planetHash, 0));
+    const pType = pickPlanetType(seededAt(planetHash, 5));
     const hasMoon = seededAt(planetHash, 1) < 0.42;
     const planetName = generateName(fnv1a(`${baseKey}:pname-${pos}`));
+    const temperature = Math.floor(seededAt(planetHash, 6) * 380) + 80;
+    const resources = PLANET_RESOURCES[pType] || ["metal"];
+    const atmosphere = PLANET_ATMOSPHERE[pType] || "none";
+    const habitable = pType === "terran" || pType === "ocean" || (pType === "rocky" && temperature >= 240 && temperature <= 340);
+    const gravity = Number((seededAt(planetHash, 7) * 3.5 + 0.2).toFixed(2));
+    const diameter = Math.floor(seededAt(planetHash, 14) * 14000 + 1000);
+    const mass = Number((seededAt(planetHash, 15) * 8.0 + 0.1).toFixed(3));
+    const waterPercent = pType === "ocean" ? Math.floor(seededAt(planetHash, 16) * 40 + 60) : pType === "terran" ? Math.floor(seededAt(planetHash, 16) * 50 + 20) : Math.floor(seededAt(planetHash, 16) * 15);
+
+    // Classify using planetCatalog
+    const sizeIds = PLANET_SIZE_CLASSES.map(s => s.id);
+    const sizeIdx = Math.floor(seededAt(planetHash, 17) * sizeIds.length);
+    const sizeClass = sizeIds[sizeIdx] || 'M';
+
+    // Special features based on type and class
+    const specialFeatures: string[] = [];
+    if (habitable) specialFeatures.push('habitable_zone');
+    if (pType === "terran") specialFeatures.push('continents', 'oceans', 'temperate_climate');
+    if (pType === "volcanic") specialFeatures.push('lava_flows', 'geothermal_vents');
+    if (pType === "gas_giant") specialFeatures.push('ring_system', 'storm_systems');
+    if (pType === "ocean") specialFeatures.push('deep_ocean', 'thermal_vents');
+    if (planetClass === "M") specialFeatures.push('native_biome');
+    if (seededAt(planetHash, 18) > 0.9) specialFeatures.push('precursor_remnants');
+
+    const planetId = `G${String(galaxy).padStart(3, '0')}-S${String(sector).padStart(2, '0')}-S${String(system).padStart(3, '0')}-P${String(pos).padStart(2, '0')}`;
+
+    const moonDetails: MoonDetail | undefined = hasMoon ? {
+      name: generateName(fnv1a(`${baseKey}:moon-${pos}`)),
+      type: pickMoonType(seededAt(planetHash, 8)),
+      class: seededAt(planetHash, 19) > 0.6 ? 'Terrestrial' : seededAt(planetHash, 19) > 0.3 ? 'Ice' : 'Rocky',
+      subclass: seededAt(planetHash, 20) > 0.7 ? 'Major' : seededAt(planetHash, 20) > 0.4 ? 'Medium' : 'Small',
+      size: seededAt(planetHash, 9) > 0.7 ? "large" : seededAt(planetHash, 9) > 0.3 ? "medium" : "small",
+      sizeClass: seededAt(planetHash, 9) > 0.7 ? 'Large' : seededAt(planetHash, 9) > 0.3 ? 'Medium' : 'Small',
+      diameter: Math.floor(seededAt(planetHash, 21) * 4500 + 100),
+      gravity: Number((seededAt(planetHash, 22) * 1.5 + 0.05).toFixed(3)),
+      habitable: seededAt(planetHash, 10) > 0.85,
+      atmosphere: seededAt(planetHash, 23) > 0.7 ? 'nitrogen-oxygen' : seededAt(planetHash, 23) > 0.4 ? 'thin-CO2' : 'trace',
+      temperature: Math.floor(seededAt(planetHash, 24) * 300 + 50),
+      resources: seededAt(planetHash, 25) > 0.5 ? ['metal', 'crystal'] : ['metal'],
+      specialFeatures: seededAt(planetHash, 26) > 0.7 ? ['subsurface_ocean'] : seededAt(planetHash, 26) > 0.4 ? ['mineral_deposits'] : ['cratered_surface'],
+    } : undefined;
+
+    // Some planets have orbital stations
+    const hasStation = seededAt(planetHash, 11) > 0.88;
+    const stations = hasStation ? [{
+      name: `${planetName} Orbital`,
+      level: Math.floor(seededAt(planetHash, 12) * 20) + 1,
+      type: seededAt(planetHash, 13) > 0.6 ? "defense" : seededAt(planetHash, 13) > 0.3 ? "trade" : "research",
+    }] : [];
+
+    // Find NPC presences near this planet
+    const nearbyNPCs = racePresence.filter(np => seededAt(fnv1a(`${baseKey}:npc-planet-${np.raceId}-${pos}`), 0) > 0.7);
 
     positions.push({
       position: pos,
       type: "planet",
       name: planetName,
       moon: hasMoon,
+      moonDetails,
       class: planetClass,
+      subclass: planetClass + sizeClass,
+      category: habitable ? "habitable" : pType === "gas_giant" || pType === "ice_giant" ? "gas" : "hostile",
+      subcategory: resources.includes("metal") ? "mineral-rich" : resources.includes("crystal") ? "crystal-rich" : resources.includes("energy") ? "energy-rich" : "standard",
+      planetType: pType,
+      temperature,
+      resources,
+      habitable,
+      gravity,
+      atmosphere,
+      diameter,
+      mass,
+      waterPercent,
+      specialFeatures,
+      planetId,
+      stations,
+      npcs: nearbyNPCs.length > 0 ? nearbyNPCs : undefined,
     });
   }
 
@@ -214,7 +430,7 @@ function generateSystem(
     }
   }
 
-  return { systemName, star: { type: starType, name: starName }, positions };
+  return { systemName, star: { type: starType, name: starName }, positions, galaxyClassification, racePresence, planetCount };
 }
 
 function generateScanReport(
@@ -298,6 +514,7 @@ export function registerGalaxyRoutes(app: Express) {
         // Generate base system data using NMS-style seeded generation
         const generated = generateSystem(universe, galaxy, sector, system);
         const positions: SystemPosition[] = generated.positions;
+        const { galaxyClassification, racePresence, planetCount } = generated;
 
         // Overlay real player data from DB.
         // Player coordinate format in DB: "[galaxy:sector:system:pos]" or "[galaxy:system:pos]"
@@ -366,6 +583,9 @@ export function registerGalaxyRoutes(app: Express) {
           // DB lookup failure is non-fatal; fall back to generated data
         }
 
+        // Get pirate activity in this sector
+        const sectorPirates = getPiratesInSector(`${galaxy}-${sector}`);
+
         res.json({
           universe,
           galaxy,
@@ -374,6 +594,27 @@ export function registerGalaxyRoutes(app: Express) {
           systemName: generated.systemName,
           star: generated.star,
           positions,
+          galaxyClassification: {
+            morphology: galaxyClassification.morphology,
+            class: galaxyClassification.class,
+            subclass: galaxyClassification.subclass,
+            category: galaxyClassification.category,
+            subcategory: galaxyClassification.subcategory,
+            designation: galaxyClassification.designation,
+          },
+          npcPresence: racePresence,
+          pirateActivity: sectorPirates.map(p => ({
+            id: p.id,
+            name: p.name,
+            aggression: p.aggression,
+            controlledSectors: p.controlledSectors,
+          })),
+          systemInfo: {
+            totalPlanets: planetCount,
+            habitablePlanets: positions.filter(p => p.habitable).length,
+            asteroidBelts: positions.filter(p => p.type === "asteroid").length,
+            specialObjects: positions.filter(p => p.type === "blackhole" || p.type === "nebula" || p.type === "station").length,
+          },
         });
       } catch (error) {
         console.error("Galaxy route error:", error);

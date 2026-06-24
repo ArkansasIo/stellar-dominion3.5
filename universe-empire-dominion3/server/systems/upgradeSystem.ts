@@ -1,4 +1,4 @@
-import { PROGRESSION_CONFIG, ShipEquipment, DeviceInventory } from "../../shared/config/xenoberage/progressionConfig";
+import { PROGRESSION_CONFIG, ShipEquipment } from "../../shared/config/xenoberage/progressionConfig";
 import { DEVICE_CONFIG, DeviceType } from "../../shared/config/xenoberage/deviceConfig";
 import { COLONIZATION_CONFIG } from "../../shared/config/xenoberage/colonizationConfig";
 import { db } from "../db";

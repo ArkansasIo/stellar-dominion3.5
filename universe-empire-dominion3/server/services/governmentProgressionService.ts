@@ -3,7 +3,6 @@
  * Manages user's government progression state, unlocking nodes, and calculating effects
  */
 
-import type { Express, Request, Response } from 'express';
 import { storage } from '../storage';
 import {
   GOVERNMENT_PROGRESSION_TREE_DEFINITION,

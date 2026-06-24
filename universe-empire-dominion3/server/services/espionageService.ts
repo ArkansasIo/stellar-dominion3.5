@@ -4,7 +4,7 @@
  */
 
 import { db } from "../db";
-import { eq, and, gte } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { playerStates, messages } from "../../shared/schema";
 
 export const ESPIONAGE_CONFIG = {

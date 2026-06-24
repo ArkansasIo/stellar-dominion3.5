@@ -237,7 +237,7 @@ export default function ResearchLabPage() {
       <GameLayout>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
-            <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-blue-600" />
+            <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-[var(--sd-panel-border)] border-t-blue-600" />
             <p className="text-muted-foreground font-rajdhani">Loading research labs...</p>
           </div>
         </div>
@@ -266,13 +266,13 @@ export default function ResearchLabPage() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="bg-white border-slate-200 shadow-sm">
+          <Card className="bg-[var(--sd-panel-top)] border-[var(--sd-panel-border)] shadow-sm">
             <CardContent className="pt-4">
               <div className="flex items-center gap-2 mb-1">
                 <TrendingUp className="w-4 h-4 text-blue-600" />
                 <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Active Research</span>
               </div>
-              <p className="text-2xl font-bold text-slate-900 truncate">
+              <p className="text-2xl font-bold text-[var(--sd-text-primary)] truncate">
                 {activeResearch?.techName || "None"}
               </p>
               <p className="text-sm text-muted-foreground mt-1">
@@ -281,39 +281,39 @@ export default function ResearchLabPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-slate-200 shadow-sm">
+          <Card className="bg-[var(--sd-panel-top)] border-[var(--sd-panel-border)] shadow-sm">
             <CardContent className="pt-4">
               <div className="flex items-center gap-2 mb-1">
                 <Layers className="w-4 h-4 text-blue-600" />
                 <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Queue Length</span>
               </div>
-              <p className="text-2xl font-bold text-slate-900">{queue.length}</p>
+              <p className="text-2xl font-bold text-[var(--sd-text-primary)]">{queue.length}</p>
               <p className="text-sm text-muted-foreground mt-1">
                 {Math.max(0, queue.length - 1)} waiting
               </p>
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-slate-200 shadow-sm">
+          <Card className="bg-[var(--sd-panel-top)] border-[var(--sd-panel-border)] shadow-sm">
             <CardContent className="pt-4">
               <div className="flex items-center gap-2 mb-1">
                 <Zap className="w-4 h-4 text-yellow-500" />
                 <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Speed Multiplier</span>
               </div>
-              <p className="text-2xl font-bold text-slate-900">
+              <p className="text-2xl font-bold text-[var(--sd-text-primary)]">
                 {multiplierData?.multiplier ?? "1.0"}x
               </p>
               <p className="text-sm text-muted-foreground mt-1">{allBonuses.length} bonus(es) active</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-slate-200 shadow-sm">
+          <Card className="bg-[var(--sd-panel-top)] border-[var(--sd-panel-border)] shadow-sm">
             <CardContent className="pt-4">
               <div className="flex items-center gap-2 mb-1">
                 <AlertCircle className="w-4 h-4 text-green-600" />
                 <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Lab Durability</span>
               </div>
-              <p className="text-2xl font-bold text-slate-900">
+              <p className="text-2xl font-bold text-[var(--sd-text-primary)]">
                 {diagnosticsData?.diagnostics?.labDurability ?? 100}%
               </p>
               <p className="text-sm text-muted-foreground mt-1">Operational</p>
@@ -322,7 +322,7 @@ export default function ResearchLabPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="bg-white border-slate-200 shadow-sm">
+          <Card className="bg-[var(--sd-panel-top)] border-[var(--sd-panel-border)] shadow-sm">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                 <Building2 className="w-4 h-4" /> Administration Matrix
@@ -330,21 +330,21 @@ export default function ResearchLabPage() {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="grid grid-cols-2 gap-3 text-sm">
-                <div className="rounded border border-slate-200 bg-slate-50 p-3">
+                <div className="rounded border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-3">
                   <div className="text-xs text-muted-foreground uppercase">Throughput</div>
-                  <div className="text-xl font-bold text-slate-900">{adminState.score.throughput}%</div>
+                  <div className="text-xl font-bold text-[var(--sd-text-primary)]">{adminState.score.throughput}%</div>
                 </div>
-                <div className="rounded border border-slate-200 bg-slate-50 p-3">
+                <div className="rounded border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-3">
                   <div className="text-xs text-muted-foreground uppercase">Stability</div>
-                  <div className="text-xl font-bold text-slate-900">{adminState.score.stability}%</div>
+                  <div className="text-xl font-bold text-[var(--sd-text-primary)]">{adminState.score.stability}%</div>
                 </div>
-                <div className="rounded border border-slate-200 bg-slate-50 p-3">
+                <div className="rounded border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-3">
                   <div className="text-xs text-muted-foreground uppercase">Efficiency</div>
-                  <div className="text-xl font-bold text-slate-900">{adminState.score.efficiency}%</div>
+                  <div className="text-xl font-bold text-[var(--sd-text-primary)]">{adminState.score.efficiency}%</div>
                 </div>
-                <div className="rounded border border-slate-200 bg-slate-50 p-3">
+                <div className="rounded border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-3">
                   <div className="text-xs text-muted-foreground uppercase">Governance</div>
-                  <div className="text-xl font-bold text-slate-900">{adminState.score.governance}%</div>
+                  <div className="text-xl font-bold text-[var(--sd-text-primary)]">{adminState.score.governance}%</div>
                 </div>
               </div>
               <div>
@@ -364,13 +364,13 @@ export default function ResearchLabPage() {
               </div>
               <div className="space-y-1">
                 {adminState.recommendations.map((recommendation, index) => (
-                  <p key={index} className="text-xs text-slate-600">- {recommendation}</p>
+                  <p key={index} className="text-xs text-[var(--sd-text-secondary)]">- {recommendation}</p>
                 ))}
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-slate-200 shadow-sm">
+          <Card className="bg-[var(--sd-panel-top)] border-[var(--sd-panel-border)] shadow-sm">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                 <Users className="w-4 h-4" /> Unit Clone / Gen Editing
@@ -383,7 +383,7 @@ export default function ResearchLabPage() {
                   <select
                     value={personnelDomain}
                     onChange={(event) => setPersonnelDomain(event.target.value as UnitPersonnelDomain)}
-                    className="w-full border border-slate-200 rounded-md px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="w-full border border-[var(--sd-panel-border)] rounded-md px-3 py-2 text-sm text-[var(--sd-text-primary)] focus:outline-none focus:ring-2 focus:ring-primary/30"
                   >
                     <option value="military">Military</option>
                     <option value="government">Government</option>
@@ -397,7 +397,7 @@ export default function ResearchLabPage() {
                   <select
                     value={personnelUnitId}
                     onChange={(event) => setPersonnelUnitId(event.target.value)}
-                    className="w-full border border-slate-200 rounded-md px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="w-full border border-[var(--sd-panel-border)] rounded-md px-3 py-2 text-sm text-[var(--sd-text-primary)] focus:outline-none focus:ring-2 focus:ring-primary/30"
                   >
                     {domainUnits.map((unit) => (
                       <option key={unit.id} value={unit.id}>{unit.name}</option>
@@ -412,7 +412,7 @@ export default function ResearchLabPage() {
                     max={500}
                     value={generationCount}
                     onChange={(event) => setGenerationCount(Math.max(1, Math.min(500, Number(event.target.value) || 1)))}
-                    className="w-full border border-slate-200 rounded-md px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="w-full border border-[var(--sd-panel-border)] rounded-md px-3 py-2 text-sm text-[var(--sd-text-primary)] focus:outline-none focus:ring-2 focus:ring-primary/30"
                   />
                 </div>
                 <div>
@@ -423,7 +423,7 @@ export default function ResearchLabPage() {
                     max={25}
                     value={editLevelDelta}
                     onChange={(event) => setEditLevelDelta(Math.max(-5, Math.min(25, Number(event.target.value) || 0)))}
-                    className="w-full border border-slate-200 rounded-md px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="w-full border border-[var(--sd-panel-border)] rounded-md px-3 py-2 text-sm text-[var(--sd-text-primary)] focus:outline-none focus:ring-2 focus:ring-primary/30"
                   />
                 </div>
                 <div className="sm:col-span-2">
@@ -434,7 +434,7 @@ export default function ResearchLabPage() {
                     max={40}
                     value={editMoraleDelta}
                     onChange={(event) => setEditMoraleDelta(Math.max(-40, Math.min(40, Number(event.target.value) || 0)))}
-                    className="w-full border border-slate-200 rounded-md px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="w-full border border-[var(--sd-panel-border)] rounded-md px-3 py-2 text-sm text-[var(--sd-text-primary)] focus:outline-none focus:ring-2 focus:ring-primary/30"
                   />
                 </div>
               </div>
@@ -442,9 +442,9 @@ export default function ResearchLabPage() {
               {personnelProgram ? (
                 <div className="space-y-2">
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
-                    <div className="rounded border border-slate-200 bg-slate-50 p-2">
+                    <div className="rounded border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-2">
                       <div className="text-muted-foreground">Generated</div>
-                      <div className="font-semibold text-slate-900">{personnelProgram.generated.quantity} total</div>
+                      <div className="font-semibold text-[var(--sd-text-primary)]">{personnelProgram.generated.quantity} total</div>
                       <div className="text-muted-foreground">Readiness {personnelProgram.generatedReadiness}%</div>
                     </div>
                     <div className="rounded border border-amber-200 bg-amber-50 p-2">
@@ -459,12 +459,12 @@ export default function ResearchLabPage() {
                     </div>
                   </div>
 
-                  <div className="rounded border border-slate-200 bg-slate-50 p-2 text-xs space-y-1">
-                    <div className="font-semibold text-slate-800">Sample Edited Profiles</div>
+                  <div className="rounded border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-2 text-xs space-y-1">
+                    <div className="font-semibold text-[var(--sd-text-primary)]">Sample Edited Profiles</div>
                     {personnelProgram.edited.slice(0, 3).map((profile) => (
                       <div key={profile.id} className="flex items-center justify-between gap-2">
-                        <span className="text-slate-700 truncate">{profile.displayName} - {profile.grade}</span>
-                        <span className="text-slate-500">L{profile.progress.level} / Morale {profile.progress.morale}</span>
+                        <span className="text-[var(--sd-text-secondary)] truncate">{profile.displayName} - {profile.grade}</span>
+                        <span className="text-[var(--sd-text-secondary)]">L{profile.progress.level} / Morale {profile.progress.morale}</span>
                       </div>
                     ))}
                   </div>
@@ -478,7 +478,7 @@ export default function ResearchLabPage() {
 
         {/* Active Research Progress */}
         {activeResearch && (
-          <Card className="bg-white border-primary/20 shadow-sm">
+          <Card className="bg-[var(--sd-panel-top)] border-primary/20 shadow-sm">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-bold uppercase tracking-widest text-primary flex items-center gap-2">
                 <Clock className="w-4 h-4" /> Current Research
@@ -486,7 +486,7 @@ export default function ResearchLabPage() {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="font-semibold text-slate-900">{activeResearch.techName}</span>
+                <span className="font-semibold text-[var(--sd-text-primary)]">{activeResearch.techName}</span>
                 <Badge variant="secondary">{activeResearch.turnsRemaining} turns remaining</Badge>
               </div>
               <div>
@@ -524,7 +524,7 @@ export default function ResearchLabPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Queue New Research */}
-          <Card className="bg-white border-slate-200 shadow-sm lg:col-span-1">
+          <Card className="bg-[var(--sd-panel-top)] border-[var(--sd-panel-border)] shadow-sm lg:col-span-1">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                 <Plus className="w-4 h-4" /> Queue Research
@@ -540,7 +540,7 @@ export default function ResearchLabPage() {
                   placeholder="e.g. armor_tech_1"
                   value={selectedTech}
                   onChange={(e) => setSelectedTech(e.target.value)}
-                  className="w-full border border-slate-200 rounded-md px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  className="w-full border border-[var(--sd-panel-border)] rounded-md px-3 py-2 text-sm text-[var(--sd-text-primary)] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30"
                 />
               </div>
               <div>
@@ -550,7 +550,7 @@ export default function ResearchLabPage() {
                 <select
                   value={selectedPriority}
                   onChange={(e) => setSelectedPriority(e.target.value)}
-                  className="w-full border border-slate-200 rounded-md px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  className="w-full border border-[var(--sd-panel-border)] rounded-md px-3 py-2 text-sm text-[var(--sd-text-primary)] focus:outline-none focus:ring-2 focus:ring-primary/30"
                 >
                   <option value="low">Low</option>
                   <option value="normal">Normal</option>
@@ -571,7 +571,7 @@ export default function ResearchLabPage() {
           </Card>
 
           {/* Research Queue */}
-          <Card className="bg-white border-slate-200 shadow-sm lg:col-span-2">
+          <Card className="bg-[var(--sd-panel-top)] border-[var(--sd-panel-border)] shadow-sm lg:col-span-2">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                 <Layers className="w-4 h-4" /> Research Queue ({queue.length})
@@ -591,13 +591,13 @@ export default function ResearchLabPage() {
                       className={`p-3 rounded-lg border transition-colors ${
                         idx === 0
                           ? "bg-blue-50 border-blue-200"
-                          : "bg-slate-50 border-slate-100"
+                          : "bg-[var(--sd-panel-bottom)] border-slate-100"
                       }`}
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <span className="font-semibold text-slate-900 truncate">
+                            <span className="font-semibold text-[var(--sd-text-primary)] truncate">
                               {idx + 1}. {item.techName}
                             </span>
                             <Badge variant={priorityVariant(item.priority)} className="shrink-0 text-[10px]">
@@ -669,7 +669,7 @@ export default function ResearchLabPage() {
 
         {/* Active Bonuses */}
         {allBonuses.length > 0 && (
-          <Card className="bg-white border-slate-200 shadow-sm">
+          <Card className="bg-[var(--sd-panel-top)] border-[var(--sd-panel-border)] shadow-sm">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                 <Zap className="w-4 h-4 text-yellow-500" /> Active Bonuses ({allBonuses.length})
@@ -679,7 +679,7 @@ export default function ResearchLabPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {allBonuses.map((bonus: any) => (
                   <div key={bonus.id} className="rounded-lg border border-green-200 bg-green-50 p-3">
-                    <div className="font-semibold text-slate-900 text-sm">{bonus.name}</div>
+                    <div className="font-semibold text-[var(--sd-text-primary)] text-sm">{bonus.name}</div>
                     <p className="text-xs text-muted-foreground mt-1">{bonus.description}</p>
                     {bonus.speedBonus && (
                       <Badge variant="secondary" className="mt-2 text-[10px]">

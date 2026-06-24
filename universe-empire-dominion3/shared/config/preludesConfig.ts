@@ -169,6 +169,7 @@ export const ACT_PRELUDES: ActPrelude[] = [
     ],
     closingNote:
       "The colony holds. The fleet patrols. But the ancient signal from the southern continent continues to pulse — patient, unanswered, and growing stronger.",
+    unlocks: [],
   },
   {
     act: 2,
@@ -202,6 +203,7 @@ export const ACT_PRELUDES: ActPrelude[] = [
     ],
     closingNote:
       "The alliances you forge — and the enemies you make — in these first encounters will echo across the galaxy for centuries.",
+    unlocks: [],
   },
   {
     act: 3,
@@ -235,6 +237,7 @@ export const ACT_PRELUDES: ActPrelude[] = [
     ],
     closingNote:
       "The Nexus falls silent, but its final transmission carries a warning: you are not the first to find it, and you will not be the last.",
+    unlocks: [],
   },
   {
     act: 4,
@@ -268,6 +271,7 @@ export const ACT_PRELUDES: ActPrelude[] = [
     ],
     closingNote:
       "The siege is broken, but at great cost. The galaxy has learned that Veridian-7 will not fall easily — and that lesson carries consequences.",
+    unlocks: [],
   },
   {
     act: 5,
@@ -301,6 +305,7 @@ export const ACT_PRELUDES: ActPrelude[] = [
     ],
     closingNote:
       "The Council votes. The colony is no longer a colony. It is a nation — small, young, and determined.",
+    unlocks: [],
   },
   {
     act: 6,
@@ -334,6 +339,7 @@ export const ACT_PRELUDES: ActPrelude[] = [
     ],
     closingNote:
       "The veil lifts, but the face behind it is not what you expected. The real game has only just begun.",
+    unlocks: [],
   },
   {
     act: 7,
@@ -367,6 +373,7 @@ export const ACT_PRELUDES: ActPrelude[] = [
     ],
     closingNote:
       "The foundries burn bright. The fleet grows. But in the outer dark, something ancient has taken notice of the new fire in the galaxy.",
+    unlocks: [],
   },
   {
     act: 8,
@@ -400,6 +407,7 @@ export const ACT_PRELUDES: ActPrelude[] = [
     ],
     closingNote:
       "The Helios Gate activates under Veridian-7 control. On the other side, entire civilizations await — some friendly, some hostile, and some that have been waiting for this moment for millennia.",
+    unlocks: [],
   },
   {
     act: 9,
@@ -433,6 +441,7 @@ export const ACT_PRELUDES: ActPrelude[] = [
     ],
     closingNote:
       "The tribunal closes. The colony emerges wounded but intact — and with a legal framework that will serve it for generations.",
+    unlocks: [],
   },
   {
     act: 10,
@@ -466,6 +475,7 @@ export const ACT_PRELUDES: ActPrelude[] = [
     ],
     closingNote:
       "The Stormline falls under joint jurisdiction. The ancient blueprints are secured. And the intelligence in the storms — whatever it is — has not revealed itself. Yet.",
+    unlocks: [],
   },
   {
     act: 11,
@@ -499,6 +509,7 @@ export const ACT_PRELUDES: ActPrelude[] = [
     ],
     closingNote:
       "The components are sealed in a vault beneath Veridian-7, guarded by the most powerful security systems the colony can devise. The weapon exists — but it will not be used. Not today.",
+    unlocks: [],
   },
   {
     act: 12,
@@ -532,6 +543,7 @@ export const ACT_PRELUDES: ActPrelude[] = [
     ],
     closingNote:
       "The stars burn bright. The Nexus pulses with ancient life. And in the Veridian system, a civilization that began with a single spark now tends the flame of all galactic existence. The dominion is eternal — not because it is absolute, but because it is shared.",
+    unlocks: [],
   },
 ];
 

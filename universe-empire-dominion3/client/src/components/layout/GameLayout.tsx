@@ -4,8 +4,8 @@ import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { OGAMEX_FEATURED_ASSETS, PLANET_ASSETS } from "@shared/config";
+import { BUILD_INFO, getDisplayVersion, getPatchLabel, getFooterBuildString } from "@shared/config/buildConfig";
 import { Button } from "@/components/ui/button";
-import { SceneLayer, resolveShellScenePreset } from "@/components/views3d";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -71,9 +71,10 @@ import {
   Newspaper,
   Download,
   ClipboardList,
-  CheckCircle2,
-  X,
-  Printer,
+   CheckCircle2,
+   X,
+   Printer,
+   Warehouse,
 } from "lucide-react";
 
 interface NavItem {
@@ -275,7 +276,7 @@ const CollapsibleMenu = ({
           onClick={() => setIsOpen(!isOpen)}
           data-testid={`button-menu-toggle-${title.toLowerCase().replace(/\s+/g, '-')}`}
           className={cn(
-            "sd-sidebar-toggle flex w-12 items-center justify-center border-l border-slate-200/70 transition-colors duration-200",
+              "sd-sidebar-toggle flex w-12 items-center justify-center border-l sd-border transition-colors duration-200",
             touchMode && "min-h-[50px]",
             hasActiveChild ? "bg-primary/5 text-primary" : "hover:bg-slate-100 text-slate-500"
           )}
@@ -410,6 +411,7 @@ const menuSections: MenuSection[] = [
           { href: "/shipyard", icon: Rocket, label: "Shipyard", description: "Construct ships and prepare new fleets for deployment." },
           { href: "/fitting", icon: Settings, label: "Ship Fitting", description: "Customize ship modules, weapons, and equipment." },
           { href: "/fleet", icon: Send, label: "Fleet Command", description: "Dispatch fleets, track missions, and manage formations." },
+          { href: "/fleet-yard", icon: Warehouse, label: "Fleet Yard", description: "Fleet storage, organization, maintenance and logistics hub." },
           { href: "/orbital-defense", icon: Satellite, label: "Orbital Defense", description: "Build and command offensive satellites, shield platforms, carriers, and orbital fortresses." },
           { href: "/army", icon: Users, label: "Army", description: "Review land units, formations, and force composition." },
           { href: "/army-management", icon: Swords, label: "Army Management", description: "Train, equip, and reorganize planetary armies." },
@@ -543,7 +545,6 @@ const systemItems: NavItem[] = [
   { href: "/assets-gallery", icon: Image, label: "Assets Gallery", description: "Browse game assets, including the new OGameX asset pack." },
   { href: "/news-feed", icon: Newspaper, label: "News Feed", description: "Read the latest galactic news, updates, and announcements." },
   { href: "/patch-notes", icon: ScrollText, label: "Patch Notes", description: "View update history, bug fixes, and new feature changelogs." },
-  { href: "/threejs-viewer", icon: Orbit, label: "3D Galaxy Viewer", description: "Explore the galaxy in interactive 3D visualization." },
   { href: "/settings", icon: Settings, label: "Settings", description: "Update configuration, preferences, and account options." },
   { href: "/forums", icon: ScrollText, label: "Forums", description: "Open community discussions and support channels." },
   { href: "/about", icon: BookOpen, label: "About", description: "Read project background and game overview information." },
@@ -726,7 +727,7 @@ const ResourceDisplay = ({ icon: Icon, label, value, colorClass }: { icon: any, 
   const safeValue = Number.isFinite(value) ? value : 0;
 
   return (
-    <div className="sd-resource-chip flex shrink-0 items-center gap-2 rounded border border-slate-200 bg-white px-2.5 py-2 shadow-sm min-w-[112px] sm:min-w-[124px]" data-resource={label.toLowerCase()}>
+      <div className="sd-resource-chip sd-card flex shrink-0 items-center gap-2 rounded border px-2.5 py-2 shadow-sm min-w-[112px] sm:min-w-[124px]" data-resource={label.toLowerCase()}>
       <div className={cn("rounded-full bg-slate-100 p-1.5", colorClass)}>
         <Icon className="w-3.5 h-3.5" />
       </div>
@@ -791,11 +792,11 @@ function GameSidebar({
   return (
     <>
       <div className="sd-sidebar-console p-4">
-        <div className="relative overflow-hidden rounded border border-slate-200 text-center">
+        <div className="relative overflow-hidden rounded border sd-border text-center">
           <div className="absolute inset-0 bg-cover bg-center opacity-20" style={{ backgroundImage: `url(${sidebarBackdropImage})` }} />
           <div className="absolute inset-0 bg-gradient-to-br from-slate-900/10 via-white/80 to-white/95" />
           <div className="relative p-3">
-            <div className="mx-auto mb-2 h-14 w-14 overflow-hidden rounded-full border-2 border-primary bg-white shadow-sm">
+            <div className="mx-auto mb-2 h-14 w-14 overflow-hidden rounded-full border-2 border-primary sd-card shadow-sm">
               <img
                 src={sidebarPlanetImage}
                 alt={planetName || "Planet"}
@@ -811,7 +812,7 @@ function GameSidebar({
             </div>
             <h3 className="font-orbitron text-sm font-bold text-slate-900">{planetName}</h3>
             <p className="text-xs text-muted-foreground">[{coordinates}]</p>
-            <div className="sd-sidebar-status-pill mt-2 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500">
+            <div className="sd-sidebar-status-pill sd-badge mt-2 inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.2em]">
               <span>OGameX Assets</span>
               <span className="text-primary">Linked</span>
             </div>
@@ -879,7 +880,7 @@ function GameSidebar({
         )}
       </nav>
 
-      <div className="p-4 border-t border-slate-200">
+        <div className="p-4 border-t sd-border">
         <button
           onClick={logout}
           className={cn(
@@ -919,9 +920,9 @@ export default function GameLayout({ children, title, subtitle }: { children: Re
   const [hasCoarsePointer, setHasCoarsePointer] = useState(false);
   const [showPageCommandDeck, setShowPageCommandDeck] = useState(false);
   const [showPatchNotes, setShowPatchNotes] = useState(false);
-  const appVersion = import.meta.env.VITE_APP_VERSION || "Alpha 1.5.0";
-  const buildId = import.meta.env.VITE_BUILD_ID || "dev";
-  const buildTime = import.meta.env.VITE_BUILD_TIME || "local";
+  const appVersion = getDisplayVersion();
+  const buildId = BUILD_INFO.gitCommit;
+  const buildTime = BUILD_INFO.buildDate;
   const activePageContext = getActivePageContext(location, isAdmin);
   const contextBackdropImage = activePageContext?.section === "Research"
     ? OGAMEX_FEATURED_ASSETS.RESEARCH.path
@@ -930,7 +931,6 @@ export default function GameLayout({ children, title, subtitle }: { children: Re
       : activePageContext?.section === "System"
         ? OGAMEX_FEATURED_ASSETS.DEFENSE.path
         : OGAMEX_FEATURED_ASSETS.BACKGROUND.path;
-  const scenePreset = resolveShellScenePreset(activePageContext?.section);
 
   const { data: turnData, isLoading: turnsLoading } = useQuery({
     queryKey: ['/api/turns'],
@@ -981,7 +981,6 @@ export default function GameLayout({ children, title, subtitle }: { children: Re
   });
 
   const displayedManifest = updateInfo?.manifest ?? patchManifest;
-  const displayedPatchVersion = displayedManifest?.version ?? appVersion;
   const patchNotes = displayedManifest?.changelog?.length
     ? displayedManifest.changelog
     : [
@@ -1174,15 +1173,10 @@ export default function GameLayout({ children, title, subtitle }: { children: Re
       touchMode && "touch-manipulation",
       !displayPreferences.showAnimations && "motion-reduce",
     )}>
-      <SceneLayer
-        preset={scenePreset}
-        backdropImage={contextBackdropImage}
-        animate={displayPreferences.showAnimations}
-      />
       
       {/* Top Bar - Resources */}
       <header className={cn(
-        "sd-topbar relative z-20 border-b border-slate-200 bg-white/88 shadow-sm backdrop-blur-md",
+        "sd-topbar sd-topbar relative z-20 border-b shadow-sm backdrop-blur-md",
         isMobile && displayPreferences.stickyMobileBars && "sticky top-0",
       )}>
         <div className={cn(
@@ -1373,7 +1367,7 @@ export default function GameLayout({ children, title, subtitle }: { children: Re
 
       <div className="flex flex-1 relative z-10 overflow-hidden">
         {/* Sidebar Navigation */}
-        <aside className="sd-sidebar-shell hidden w-[17rem] border-r border-slate-200 bg-white/84 backdrop-blur-md md:flex md:w-[18rem] md:flex-col md:overflow-y-auto md:scrollbar-hide xl:w-[19rem]">
+        <aside className="sd-sidebar-shell sd-sidebar-shell hidden w-[17rem] border-r backdrop-blur-md md:flex md:w-[18rem] md:flex-col md:overflow-y-auto md:scrollbar-hide xl:w-[19rem]">
           <GameSidebar
             location={location}
             empireName={empireName}
@@ -1699,32 +1693,36 @@ export default function GameLayout({ children, title, subtitle }: { children: Re
         </main>
       </div>
 
-      <footer className="sd-footer-shell relative z-10 border-t border-slate-200 bg-white/88 px-4 py-2 backdrop-blur-md sm:px-6 flex flex-col gap-1 sm:h-10 sm:flex-row sm:items-center sm:justify-between text-[11px] text-slate-500 font-mono" data-testid="footer-build-info">
+      <footer className="sd-footer-shell sd-footer-shell relative z-10 border-t px-4 py-2 backdrop-blur-md sm:px-6 flex flex-col gap-1 sm:h-10 sm:flex-row sm:items-center sm:justify-between text-[11px] font-mono" data-testid="footer-build-info">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-          <img src="/assets/stellar-dominion-logo.svg" alt="Stellar Dominion™" className="h-6 w-6 inline-block" />
-          <span className="font-bold text-slate-800 tracking-wide">Stellar Dominion™</span>
+          <img src="/assets/stellar-dominion-logo.svg" alt={`${BUILD_INFO.appName}™`} className="h-6 w-6 inline-block" />
+          <span className="font-bold text-slate-800 tracking-wide">{BUILD_INFO.appName}™</span>
           <span className="text-slate-400">|</span>
-          <span className="text-[10px]">&copy; 2025-2026 Stephen</span>
+          <span className="text-[10px]">&copy; {BUILD_INFO.copyright}</span>
           <span className="text-slate-400">|</span>
-          <span className="text-[10px]">Licensed under MIT</span>
+          <span className="text-[10px]">Licensed under {BUILD_INFO.license}</span>
           <span className="text-slate-400 hidden sm:inline">|</span>
-          <span className="text-[10px] hidden sm:inline">ArkansasIo™</span>
+          <span className="text-[10px] hidden sm:inline">{BUILD_INFO.devAlias}™</span>
+          <span className="text-slate-400 hidden sm:inline">|</span>
+          <span className="text-[10px] hidden sm:inline">{BUILD_INFO.studioName}</span>
         </div>
         <div className="flex flex-wrap items-center gap-4">
+          <span className="font-semibold text-slate-700">{BUILD_INFO.buildName}</span>
           <span>Version: {appVersion}</span>
           <Link href="/patch-notes">
             <span
               className="font-semibold text-cyan-700 hover:text-cyan-900 hover:underline cursor-pointer"
               data-testid="button-footer-patch-info"
             >
-              Patch: {displayedPatchVersion}
+              Patch: {getPatchLabel()}
             </span>
           </Link>
           <span className={updateInfo?.available ? "font-semibold text-amber-700" : "text-emerald-700"}>
             Update: {updateStatusLabel}
           </span>
-          <span>Build: {buildId}</span>
-          <span>Time: {buildTime}</span>
+          <span>Build: #{BUILD_INFO.buildNumber}</span>
+          <span>{buildTime}</span>
+          <span className="hidden sm:inline text-slate-400">[{buildId}]</span>
         </div>
       </footer>
 
@@ -1740,14 +1738,14 @@ export default function GameLayout({ children, title, subtitle }: { children: Re
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-4">
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
               <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Installed</div>
               <div className="mt-1 font-orbitron text-sm font-bold text-slate-900">{appVersion}</div>
             </div>
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
               <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Latest Patch</div>
-              <div className="mt-1 font-orbitron text-sm font-bold text-cyan-700">{displayedPatchVersion}</div>
+              <div className="mt-1 font-orbitron text-sm font-bold text-cyan-700">{getPatchLabel()}</div>
             </div>
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
               <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Status</div>
@@ -1755,6 +1753,25 @@ export default function GameLayout({ children, title, subtitle }: { children: Re
                 {updateStatusLabel}
               </div>
             </div>
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Build</div>
+              <div className="mt-1 font-orbitron text-sm font-bold text-violet-700">#{BUILD_INFO.buildNumber}</div>
+              <div className="text-[10px] text-slate-400">{BUILD_INFO.gitBranch} • {BUILD_INFO.gitCommit}</div>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-2 text-[10px] text-slate-400">
+            <span>Engine: {BUILD_INFO.engineVersion}</span>
+            <span>•</span>
+            <span>Protocol: {BUILD_INFO.protocolVersion}</span>
+            <span>•</span>
+            <span>API: {BUILD_INFO.apiVersion}</span>
+            <span>•</span>
+            <span>Channel: {BUILD_INFO.buildChannel}</span>
+            <span>•</span>
+            <span>Dev: {BUILD_INFO.devName}</span>
+            <span>•</span>
+            <span>{BUILD_INFO.studioName}</span>
           </div>
 
           {displayedManifest?.releaseDate && (

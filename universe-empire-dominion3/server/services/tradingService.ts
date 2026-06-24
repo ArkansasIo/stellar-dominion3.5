@@ -1,6 +1,6 @@
 import { db } from '../db';
 import { sql, and } from 'drizzle-orm';
-import { marketOrders, auctionListings, auctionBids, tradeHistory, playerStates, users } from '../../shared/schema';
+import { users } from '../../shared/schema';
 
 export class TradingService {
   static async createTradeOrder(userId: string, type: string, resource: string, amount: number, pricePerUnit: number) {

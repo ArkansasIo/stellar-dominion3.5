@@ -1,4 +1,4 @@
-import { COMBAT_CONFIG, SectorDefenses } from "../../shared/config/xenoberage/combatConfig";
+import { COMBAT_CONFIG } from "../../shared/config/xenoberage/combatConfig";
 
 /**
  * Calculate defense degradation over time.

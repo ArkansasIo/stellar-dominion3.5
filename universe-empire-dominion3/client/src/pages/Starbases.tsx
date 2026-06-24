@@ -11,12 +11,15 @@ import { Progress } from "@/components/ui/progress";
 import {
   Rocket, Pickaxe, Factory, FlaskConical, ShoppingCart, Shield, Crown,
   Plus, ArrowUp, Trash2, Power, PowerOff, Edit3, Check, X, Loader2,
-  HardDrive, Swords, Wrench, Package, Zap, BarChart3
+  HardDrive, Swords, Wrench, Package, Zap, BarChart3, Layers,
+  Box, Gem, Database, Clock, Cpu, Target, Radar, Crosshair,
+  ChevronDown, ChevronRight, Info,
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   fetchStarbases,
   fetchStarbaseTypes,
+  fetchStarbaseModules,
   buildStarbase,
   upgradeStarbase,
   renameStarbase,
@@ -24,8 +27,9 @@ import {
   deleteStarbase,
   type StarbaseWithType,
 } from "@/lib/starbaseData";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import type { StarbaseType } from "@shared/config/starbaseConfig";
+import type { StarbaseType, StarbaseModule, StarbaseModuleCategory } from "@shared/config/starbaseConfig";
 
 const STARBASE_ICONS: Record<StarbaseType, typeof Rocket> = {
   mining: Pickaxe,
@@ -66,6 +70,8 @@ export default function Starbases() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
   const [showBuildMenu, setShowBuildMenu] = useState(false);
+  const [installedModules, setInstalledModules] = useState<Record<string, Array<{ moduleId: string; level: number }>>>({});
+  const [selectedModCategory, setSelectedModCategory] = useState<StarbaseModuleCategory | "all">("all");
 
   const { data: starbases = [], isLoading } = useQuery({
     queryKey: ["starbases"],
@@ -76,6 +82,44 @@ export default function Starbases() {
     queryKey: ["starbase-types"],
     queryFn: fetchStarbaseTypes,
   });
+
+  const selectedType = selectedStarbase?.starbaseType as StarbaseType | undefined;
+  const { data: availableModules = [] } = useQuery({
+    queryKey: ["starbase-modules", selectedType],
+    queryFn: () => fetchStarbaseModules(selectedType!),
+    enabled: !!selectedType,
+  });
+
+  const moduleCategories: { key: StarbaseModuleCategory; label: string; icon: typeof Wrench }[] = [
+    { key: "production", label: "Production", icon: Zap },
+    { key: "storage", label: "Storage", icon: Package },
+    { key: "defense", label: "Defense", icon: Shield },
+    { key: "offense", label: "Offense", icon: Crosshair },
+    { key: "support", label: "Support", icon: Wrench },
+    { key: "utility", label: "Utility", icon: Cpu },
+  ];
+  const MODULE_ICONS: Record<string, typeof Wrench> = {
+    production: Zap, storage: Package, defense: Shield,
+    offense: Crosshair, support: Wrench, utility: Cpu,
+  };
+  const MODULE_COLORS: Record<string, string> = {
+    production: "bg-amber-100 text-amber-700 border-amber-300",
+    storage: "bg-blue-100 text-blue-700 border-blue-300",
+    defense: "bg-green-100 text-green-700 border-green-300",
+    offense: "bg-red-100 text-red-700 border-red-300",
+    support: "bg-purple-100 text-purple-700 border-purple-300",
+    utility: "bg-cyan-100 text-cyan-700 border-cyan-300",
+  };
+  const TIER_COLORS: Record<string, string> = {
+    standard: "bg-slate-100 text-slate-700",
+    advanced: "bg-blue-100 text-blue-700",
+    elite: "bg-purple-100 text-purple-700",
+    legendary: "bg-amber-100 text-amber-800",
+  };
+
+  const filteredModules = selectedModCategory === "all"
+    ? availableModules
+    : availableModules.filter((m: StarbaseModule) => m.category === selectedModCategory);
 
   const buildMutation = useMutation({
     mutationFn: () => buildStarbase(buildType!, buildName || undefined),
@@ -195,21 +239,47 @@ export default function Starbases() {
                 {Object.values(starbaseTypes).map((type: any) => {
                   const Icon = STARBASE_ICONS[type.id as StarbaseType] || Rocket;
                   const isSelected = buildType === type.id;
+                  const stats = type.baseStats || {};
                   return (
-                    <button
-                      key={type.id}
-                      onClick={() => setBuildType(type.id)}
-                      className={cn(
-                        "p-3 rounded-xl border-2 text-left transition-all",
-                        isSelected ? "border-primary bg-primary/5 shadow-md" : "border-slate-200 hover:border-slate-300 bg-white"
-                      )}
-                    >
-                      <div className={cn("w-10 h-10 rounded-lg bg-gradient-to-br flex items-center justify-center text-white mb-2", STARBASE_COLORS[type.id as StarbaseType])}>
-                        <Icon className="w-5 h-5" />
-                      </div>
-                      <div className="font-medium text-sm text-slate-900">{type.name}</div>
-                      <div className="text-xs text-slate-500 mt-0.5 line-clamp-2">{type.description?.substring(0, 60)}...</div>
-                    </button>
+                    <Tooltip key={type.id}>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={() => setBuildType(type.id)}
+                          className={cn(
+                            "p-3 rounded-xl border-2 text-left transition-all",
+                            isSelected ? "border-primary bg-primary/5 shadow-md" : "border-slate-200 hover:border-slate-300 bg-white"
+                          )}
+                        >
+                          <div className={cn("w-10 h-10 rounded-lg bg-gradient-to-br flex items-center justify-center text-white mb-2", STARBASE_COLORS[type.id as StarbaseType])}>
+                            <Icon className="w-5 h-5" />
+                          </div>
+                          <div className="font-medium text-sm text-slate-900">{type.name}</div>
+                          <div className="text-xs text-slate-500 mt-0.5 line-clamp-2">{type.description?.substring(0, 60)}...</div>
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent side="right" className="w-72 p-3 space-y-2">
+                        <div className="font-bold text-sm">{type.name}</div>
+                        <div className="text-xs text-slate-300">{type.description}</div>
+                        <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs border-t border-slate-600 pt-2">
+                          <div><span className="text-slate-400">Max Level:</span> <span className="font-medium text-white">{type.maxLevel}</span></div>
+                          <div><span className="text-slate-400">Module Slots:</span> <span className="font-medium text-white">{type.moduleSlots}</span></div>
+                        </div>
+                        {stats.metalStorage !== undefined && (
+                          <div className="border-t border-slate-600 pt-2">
+                            <div className="text-xs text-slate-400 mb-1.5 font-medium">Base Stats (Lv.1)</div>
+                            <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[11px]">
+                              <div><span className="text-slate-400">Metal/hr:</span> <span className="font-medium text-amber-400">{stats.metalProduction}</span></div>
+                              <div><span className="text-slate-400">Crystal/hr:</span> <span className="font-medium text-blue-400">{stats.crystalProduction}</span></div>
+                              <div><span className="text-slate-400">Deut/hr:</span> <span className="font-medium text-green-400">{stats.deuteriumProduction}</span></div>
+                              <div><span className="text-slate-400">Defense:</span> <span className="font-medium text-red-400">{stats.defenseLevel}</span></div>
+                              <div><span className="text-slate-400">Hangar:</span> <span className="font-medium">{stats.hangarSlots}</span></div>
+                              <div><span className="text-slate-400">Research:</span> <span className="font-medium">{stats.researchSlots}</span></div>
+                              <div className="col-span-2"><span className="text-slate-400">Metal Storage:</span> <span className="font-medium text-white">{stats.metalStorage?.toLocaleString()}</span></div>
+                            </div>
+                          </div>
+                        )}
+                      </TooltipContent>
+                    </Tooltip>
                   );
                 })}
               </div>
@@ -459,17 +529,269 @@ export default function Starbases() {
                   </div>
                 </TabsContent>
                 <TabsContent value="modules" className="mt-4">
-                  <div className="text-center py-8 text-slate-500">
-                    <Wrench className="w-8 h-8 mx-auto mb-2 text-slate-300" />
-                    <p>Module system coming soon. Upgrade your starbase to unlock module slots.</p>
-                    <p className="text-xs mt-1">Available slots: {selectedStarbase.typeInfo?.moduleSlots || 0}</p>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium text-slate-700 flex items-center gap-1.5">
+                          <Wrench className="w-4 h-4" /> Available Modules
+                        </h4>
+                        <p className="text-xs text-slate-500">Slots: {selectedStarbase.typeInfo?.moduleSlots || 0} · {availableModules.length} modules available</p>
+                      </div>
+                      {availableModules.length > 0 && (
+                        <div className="flex gap-1">
+                          <button
+                            onClick={() => setSelectedModCategory("all")}
+                            className={`px-2 py-1 text-xs rounded border ${selectedModCategory === "all" ? "bg-slate-800 text-white border-slate-700" : "bg-white text-slate-600 border-slate-200"}`}
+                          >
+                            All
+                          </button>
+                          {moduleCategories.map((cat) => {
+                            const Icon = cat.icon;
+                            return (
+                              <button
+                                key={cat.key}
+                                onClick={() => setSelectedModCategory(cat.key)}
+                                className={`px-2 py-1 text-xs rounded border flex items-center gap-1 ${
+                                  selectedModCategory === cat.key
+                                    ? "bg-slate-800 text-white border-slate-700"
+                                    : "bg-white text-slate-600 border-slate-200"
+                                }`}
+                              >
+                                <Icon className="w-3 h-3" /> {cat.label}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+
+                    {filteredModules.length > 0 ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {filteredModules.map((mod: StarbaseModule) => {
+                          const Icon = MODULE_ICONS[mod.category] || Wrench;
+                          const installed = (installedModules[selectedStarbase.id] || []).find(i => i.moduleId === mod.id);
+                          return (
+                            <Card key={mod.id} className={`border ${MODULE_COLORS[mod.category] || "border-slate-200"}`}>
+                              <CardContent className="p-3 space-y-2">
+                                <div className="flex items-start justify-between">
+                                  <div className="flex items-center gap-2">
+                                    <div className={`p-1.5 rounded ${mod.category === "production" ? "bg-amber-100" : mod.category === "storage" ? "bg-blue-100" : mod.category === "defense" ? "bg-green-100" : mod.category === "offense" ? "bg-red-100" : mod.category === "support" ? "bg-purple-100" : "bg-cyan-100"}`}>
+                                      <Icon className={`w-3.5 h-3.5 ${mod.category === "production" ? "text-amber-600" : mod.category === "storage" ? "text-blue-600" : mod.category === "defense" ? "text-green-600" : mod.category === "offense" ? "text-red-600" : mod.category === "support" ? "text-purple-600" : "text-cyan-600"}`} />
+                                    </div>
+                                    <div>
+                                      <div className="font-semibold text-slate-900 text-sm">{mod.name}</div>
+                                      <div className="text-xs text-slate-500 capitalize">{mod.category}</div>
+                                    </div>
+                                  </div>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Badge className={`text-xs cursor-help ${TIER_COLORS[mod.tier] || "bg-slate-100"}`}>
+                                        {mod.tier}
+                                      </Badge>
+                                    </TooltipTrigger>
+                                    <TooltipContent side="top" className="w-56 p-2">
+                                      <div className="text-xs font-bold capitalize">{mod.tier} Module</div>
+                                      <div className="text-[11px] text-slate-300 mt-1">
+                                        {mod.tier === "standard" && "Basic-grade module. Low cost, reliable performance, suitable for early-game starbases."}
+                                        {mod.tier === "advanced" && "High-grade module with improved stats. Requires some prerequisites and provides stronger effects."}
+                                        {mod.tier === "elite" && "Top-tier military/industrial module. Expensive but provides powerful bonuses and unique capabilities."}
+                                        {mod.tier === "legendary" && "Ultra-rare module of exceptional power. Provides game-changing bonuses and special effects."}
+                                      </div>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </div>
+                                <p className="text-xs text-slate-600">{mod.description}</p>
+                                <div className="flex flex-wrap gap-1">
+                                  {Object.entries(mod.effects).map(([k, v]) => (
+                                    <Tooltip key={k}>
+                                      <TooltipTrigger asChild>
+                                        <Badge variant="outline" className="text-[10px] bg-white cursor-help">
+                                          {k.replace(/([A-Z])/g, " $1").trim()}: +{v}×{mod.maxLevel}
+                                        </Badge>
+                                      </TooltipTrigger>
+                                      <TooltipContent side="top" className="w-56 p-2">
+                                        <div className="text-xs font-bold">{k.replace(/([A-Z])/g, " $1").trim()}</div>
+                                        <div className="text-[11px] text-slate-300 mt-1">
+                                          {k === "metalProduction" && "Increases metal production rate of this starbase per hour per level."}
+                                          {k === "crystalProduction" && "Increases crystal production rate of this starbase per hour per level."}
+                                          {k === "deuteriumProduction" && "Increases deuterium production rate of this starbase per hour per level."}
+                                          {k === "metalStorage" && "Adds additional metal storage capacity to this starbase."}
+                                          {k === "crystalStorage" && "Adds additional crystal storage capacity to this starbase."}
+                                          {k === "deuteriumStorage" && "Adds additional deuterium storage capacity to this starbase."}
+                                          {k === "defenseLevel" && "Boosts overall defense rating, improving survivability against attacks."}
+                                          {k === "hangarSlots" && "Increases the number of ships that can dock at this starbase."}
+                                          {k === "researchSlots" && "Adds research capacity for technology development."}
+                                        </div>
+                                        <div className="text-[11px] text-slate-400 mt-1">Current: +{v} per level · Max level: {mod.maxLevel}</div>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  ))}
+                                </div>
+                                <div className="flex items-center justify-between pt-1 border-t border-slate-100">
+                                  <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                                    <Box className="w-3 h-3" />{mod.costs.metal.toLocaleString()}
+                                    <Gem className="w-3 h-3" />{mod.costs.crystal.toLocaleString()}
+                                    <Database className="w-3 h-3" />{mod.costs.deuterium.toLocaleString()}
+                                    <Clock className="w-3 h-3" />{Math.floor(mod.buildTime / 60)}m
+                                  </div>
+                                  <Button
+                                    size="sm"
+                                    variant={installed ? "default" : "outline"}
+                                    className="h-7 text-xs"
+                                    onClick={() => {
+                                      const current = installedModules[selectedStarbase.id] || [];
+                                      if (installed) {
+                                        setInstalledModules({
+                                          ...installedModules,
+                                          [selectedStarbase.id]: current.filter(i => i.moduleId !== mod.id),
+                                        });
+                                      } else {
+                                        setInstalledModules({
+                                          ...installedModules,
+                                          [selectedStarbase.id]: [...current, { moduleId: mod.id, level: 1 }],
+                                        });
+                                      }
+                                    }}
+                                  >
+                                    {installed ? "Installed" : "Install"}
+                                  </Button>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="text-center py-6 text-slate-500">
+                        <Wrench className="w-8 h-8 mx-auto mb-2 text-slate-300" />
+                        <p>No modules available for this starbase type.</p>
+                      </div>
+                    )}
                   </div>
                 </TabsContent>
                 <TabsContent value="defense" className="mt-4">
-                  <div className="text-center py-8 text-slate-500">
-                    <Shield className="w-8 h-8 mx-auto mb-2 text-slate-300" />
-                    <p>Defense systems overview.</p>
-                    <p className="text-xs mt-1">Current defense rating: {selectedStarbase.defenseLevel}</p>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="bg-slate-50 rounded-lg p-3 text-center border border-slate-200 cursor-help">
+                            <Shield className="w-5 h-5 text-green-600 mx-auto mb-1" />
+                            <div className="text-xs text-slate-500">Defense Rating</div>
+                            <div className="text-xl font-bold text-slate-900">{selectedStarbase.defenseLevel}</div>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" className="w-60 p-2">
+                          <div className="text-xs font-bold">Defense Rating</div>
+                          <div className="text-[11px] text-slate-300 mt-1">Combined score of all defensive systems including turrets, shields, armor, and point-defense. Higher rating reduces damage from attacks and increases survivability.</div>
+                        </TooltipContent>
+                      </Tooltip>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="bg-slate-50 rounded-lg p-3 text-center border border-slate-200 cursor-help">
+                            <Layers className="w-5 h-5 text-blue-600 mx-auto mb-1" />
+                            <div className="text-xs text-slate-500">Hull Integrity</div>
+                            <Progress value={Math.min(100, selectedStarbase.level * 5)} className="h-2 mb-1" />
+                            <div className="font-bold text-sm text-slate-900">{selectedStarbase.level * 5}%</div>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" className="w-60 p-2">
+                          <div className="text-xs font-bold">Hull Integrity</div>
+                          <div className="text-[11px] text-slate-300 mt-1">Structural health of the starbase. Scales with level (5% per level). At 0% the starbase is destroyed. Repairs restore hull integrity over time.</div>
+                        </TooltipContent>
+                      </Tooltip>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="bg-slate-50 rounded-lg p-3 text-center border border-slate-200 cursor-help">
+                            <Swords className="w-5 h-5 text-red-600 mx-auto mb-1" />
+                            <div className="text-xs text-slate-500">Defense Modules</div>
+                            <div className="text-xl font-bold text-slate-900">
+                              {(installedModules[selectedStarbase.id] || []).filter(i => {
+                                const mod = availableModules.find((m: StarbaseModule) => m.id === i.moduleId);
+                                return mod?.category === "defense" || mod?.category === "offense";
+                              }).length}
+                            </div>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" className="w-60 p-2">
+                          <div className="text-xs font-bold">Defense Modules</div>
+                          <div className="text-[11px] text-slate-300 mt-1">Number of defense and offense modules installed on this starbase. Each module contributes to overall defense rating and provides special combat capabilities.</div>
+                        </TooltipContent>
+                      </Tooltip>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="bg-slate-50 rounded-lg p-3 text-center border border-slate-200 cursor-help">
+                            <Package className="w-5 h-5 text-purple-600 mx-auto mb-1" />
+                            <div className="text-xs text-slate-500">Hangar Slots</div>
+                            <div className="text-xl font-bold text-slate-900">{selectedStarbase.hangarSlots}</div>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" className="w-60 p-2">
+                          <div className="text-xs font-bold">Hangar Slots</div>
+                          <div className="text-[11px] text-slate-300 mt-1">Total ship docking capacity. Each slot allows one ship to dock for repairs, refueling, or cargo transfer. Expand with hangar bay modules.</div>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                      <h4 className="text-xs font-bold text-red-700 mb-2 flex items-center gap-1">
+                        <Shield className="w-3 h-3" /> Installed Defenses
+                      </h4>
+                      {(installedModules[selectedStarbase.id] || []).filter(i => {
+                        const mod = availableModules.find((m: StarbaseModule) => m.id === i.moduleId);
+                        return mod?.category === "defense" || mod?.category === "offense";
+                      }).length > 0 ? (
+                        <div className="grid grid-cols-2 gap-1.5">
+                          {(installedModules[selectedStarbase.id] || []).filter(i => {
+                            const mod = availableModules.find((m: StarbaseModule) => m.id === i.moduleId);
+                            return mod?.category === "defense" || mod?.category === "offense";
+                          }).map((i) => {
+                            const mod = availableModules.find((m: StarbaseModule) => m.id === i.moduleId);
+                            if (!mod) return null;
+                            const Icon = MODULE_ICONS[mod.category] || Wrench;
+                            return (
+                              <div key={i.moduleId} className="flex items-center gap-2 bg-white rounded p-1.5 border border-red-200 text-xs">
+                                <Icon className="w-3 h-3 text-red-500" />
+                                <span className="font-medium text-red-800">{mod.name}</span>
+                                <Badge variant="outline" className="text-[10px] ml-auto">Lv.{i.level}</Badge>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <p className="text-xs text-red-500">No defensive modules installed. Visit the Modules tab to install defense systems.</p>
+                      )}
+                    </div>
+
+                    <div className="bg-white border border-slate-200 rounded-lg p-3">
+                      <h4 className="text-xs font-bold text-slate-600 mb-2">Defense Stats Breakdown</h4>
+                      <div className="space-y-2 text-xs">
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">Base Defense (Level {selectedStarbase.level}):</span>
+                          <span className="font-medium">{Math.floor(selectedStarbase.level * 10)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">Module Bonuses:</span>
+                          <span className="font-medium">{selectedStarbase.defenseLevel - Math.floor(selectedStarbase.level * 10)}</span>
+                        </div>
+                        <Separator />
+                        <div className="flex justify-between font-bold text-slate-900">
+                          <span>Total Defense:</span>
+                          <span>{selectedStarbase.defenseLevel}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3">
+                      <h4 className="text-xs font-bold text-indigo-700 mb-2 flex items-center gap-1">
+                        <Info className="w-3 h-3" /> Defense Coverage
+                      </h4>
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-green-500" /> Point Defense: Active</div>
+                        <div className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-green-500" /> Shield Grid: Online</div>
+                        <div className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-amber-500" /> Anti-Missile: Standby</div>
+                        <div className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-slate-300" /> Counter-Measures: Offline</div>
+                      </div>
+                    </div>
                   </div>
                 </TabsContent>
               </Tabs>

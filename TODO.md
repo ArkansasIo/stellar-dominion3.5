@@ -101,16 +101,32 @@ All extracted to `server/config/gameSettings.ts` with env var overrides:
 - `server/services/gameJobs.ts` — tick intervals, login bonus amounts, resource production multipliers all configurable
 - `server/routes-espionage.ts` — espionage config moved to shared config
 
-### Remaining (lower priority)
-- [ ] `/api/orbital-stations/*` — Stations page exists but doesn't call these endpoints
-- [ ] `/api/config/*` — no dedicated page
-- [ ] `/api/research/xp/*` — no dedicated page
-- [ ] `/api/research/recommendations/*` — no dedicated page
-- [ ] `/api/game-asset-library` — GameAssetsGallery page doesn't use it
+### ✅ DONE — Orbital Stations Infrastructure Persistence
+- Infrastructure tab now persists deployments to DB via `/api/orbital-stations/infrastructure` endpoints
+- `OrbitalStationsState` extended with `infrastructure: InfrastructureDeployment[]` field
+- New routes: `GET /api/orbital-stations/infrastructure`, `POST /api/orbital-stations/infrastructure/deploy`, `POST /api/orbital-stations/infrastructure/upgrade`
+- Station scores endpoint (`/api/orbital-stations/scores`) now displayed in Active Platforms tab
+
+### ✅ DONE — Config Route Duplication
+- Removed 4 duplicate civilization routes from `routes-lifesupport.ts` (civilization-jobs, meta, domain, projection)
+- `routes-civilization.ts` is now the single source of truth for civilization job routes
+
+### ✅ DONE — Research XP & Recommendations UI
+- `ResearchAnalyticsDashboard.tsx` now includes:
+  - Complete Research form (calls `/api/research/xp/complete-research`)
+  - Level Rewards checker (calls `/api/research/xp/level-rewards/:level`)
+  - Research Path calculator (calls `/api/research/recommendations/path`)
+  - Queue Optimizer (calls `/api/research/recommendations/optimize-queue`)
+  - Strategy Analysis display (calls `/api/research/recommendations/strategy`)
+  - XP Config display (calls `/api/research/xp/config`)
+  - Enhanced level progress with next-level info
 
 ### ✅ DONE — Signature Mismatches
 - `schedulerSystem.ts` — `processApocalypse()` now passes `Date.now()` as tick
 - `schedulerSystem.ts` — `processDefenseDegrade()` now passes sector data
+
+### Remaining (lower priority)
+- [ ] OGamex stubs (1,395+ files) — massive PHP→TypeScript port, not feasible in current scope
 
 ---
 

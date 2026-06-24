@@ -59,8 +59,8 @@ function StatCard({
       <div className="flex items-center justify-between">
         <div>
           <div className={`text-xs uppercase tracking-wider font-semibold ${colorClass}`}>{label}</div>
-          <div className="text-2xl font-orbitron font-bold text-slate-900 mt-0.5">{value}</div>
-          {sub && <div className="text-xs text-slate-500 mt-0.5">{sub}</div>}
+          <div className="text-2xl font-orbitron font-bold sd-text mt-0.5">{value}</div>
+          {sub && <div className="text-xs sd-text-secondary mt-0.5">{sub}</div>}
         </div>
         <div className={`w-12 h-12 rounded-full flex items-center justify-center bg-current/5`}>
           <Icon className={`w-6 h-6 ${colorClass}`} />
@@ -70,10 +70,10 @@ function StatCard({
   );
   return href ? (
     <Link href={href}>
-      <Card className="cursor-pointer hover:shadow-md transition-shadow border-slate-200">{inner}</Card>
+      <Card className="cursor-pointer hover:shadow-md transition-shadow sd-border">{inner}</Card>
     </Link>
   ) : (
-    <Card className="border-slate-200">{inner}</Card>
+    <Card className="sd-border">{inner}</Card>
   );
 }
 
@@ -85,15 +85,15 @@ function ResourceRow({
   production?: number; colorClass: string;
 }) {
   return (
-    <div className="flex items-center justify-between py-1.5 border-b border-slate-100 last:border-0">
+    <div className="flex items-center justify-between py-1.5 border-b border-[var(--sd-panel-border)] last:border-0">
       <div className="flex items-center gap-2">
         <Icon className={`w-4 h-4 ${colorClass}`} />
-        <span className="text-sm font-medium text-slate-700">{label}</span>
+        <span className="text-sm font-medium sd-text">{label}</span>
       </div>
       <div className="flex items-center gap-4">
         <span className={`font-mono font-bold text-sm ${colorClass}`}>{fmt(value)}</span>
         {production !== undefined && (
-          <span className="text-xs text-slate-500 font-mono w-20 text-right">
+          <span className="text-xs sd-text-secondary font-mono w-20 text-right">
             {production >= 0 ? "+" : ""}{fmt(production)}/h
           </span>
         )}
@@ -111,13 +111,13 @@ function ManageTile({
 }) {
   return (
     <Link href={href}>
-      <div className="group flex items-start gap-3 p-3 rounded-lg border border-slate-200 bg-white hover:border-primary/50 hover:bg-primary/5 transition-all cursor-pointer">
-        <div className={`p-2 rounded-md bg-slate-100 group-hover:bg-primary/10 ${colorClass}`}>
+      <div className="group flex items-start gap-3 p-3 rounded-lg border sd-border bg-[var(--sd-panel-top)] hover:border-primary/50 hover:bg-primary/5 transition-all cursor-pointer">
+        <div className={`p-2 rounded-md bg-[var(--sd-panel-bottom)] group-hover:bg-primary/10 ${colorClass}`}>
           <Icon className="w-5 h-5" />
         </div>
         <div className="min-w-0">
-          <div className="text-sm font-bold text-slate-800 font-rajdhani uppercase tracking-wide">{label}</div>
-          <div className="text-xs text-slate-500 truncate">{description}</div>
+          <div className="text-sm font-bold sd-text font-rajdhani uppercase tracking-wide">{label}</div>
+          <div className="text-xs sd-text-secondary truncate">{description}</div>
         </div>
         <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-primary ml-auto self-center shrink-0" />
       </div>
@@ -224,9 +224,9 @@ export default function EmpireView() {
       <div className="space-y-6 animate-in fade-in duration-500" data-testid="empire-view">
 
         {/* ── Page header ──────────────────────────────────────── */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-slate-200 pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b sd-border pb-4">
           <div>
-            <h1 className="text-3xl font-orbitron font-bold text-slate-900 flex items-center gap-2">
+            <h1 className="text-3xl font-orbitron font-bold sd-text flex items-center gap-2">
               <Crown className="w-8 h-8 text-amber-500" />
               Empire Management
             </h1>
@@ -235,7 +235,7 @@ export default function EmpireView() {
               <span className="font-mono text-sm">[{coordinates}]</span>
             </p>
           </div>
-          <div className="text-right text-sm text-slate-500">
+          <div className="text-right text-sm sd-text-secondary">
             <div className="font-mono">{new Date().toLocaleTimeString('en-US', { timeZone: 'UTC' })} UTC</div>
             <div className="text-xs">{new Date().toLocaleDateString()}</div>
           </div>
@@ -283,7 +283,7 @@ export default function EmpireView() {
           <div className="space-y-4">
 
             {/* Homeworld card */}
-            <Card className="border-slate-200 shadow-sm" data-testid="card-homeworld">
+            <Card className="sd-border shadow-sm" data-testid="card-homeworld">
               <CardHeader className="pb-2 bg-gradient-to-r from-primary/10 to-blue-50 rounded-t-lg">
                 <CardTitle className="text-base font-orbitron flex items-center gap-2">
                   <Globe className="w-5 h-5 text-primary" />
@@ -302,8 +302,8 @@ export default function EmpireView() {
                     />
                   </div>
                   <div>
-                    <div className="font-orbitron font-bold text-lg text-slate-900">{planetName}</div>
-                    <div className="flex items-center gap-1 text-xs text-slate-500">
+                    <div className="font-orbitron font-bold text-lg sd-text">{planetName}</div>
+                    <div className="flex items-center gap-1 text-xs sd-text-secondary">
                       <MapPin className="w-3 h-3" />
                       <span className="font-mono">[{coordinates}]</span>
                     </div>
@@ -314,27 +314,27 @@ export default function EmpireView() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="bg-slate-50 rounded p-2">
-                    <div className="text-slate-400 uppercase tracking-wide">Temperature</div>
-                    <div className="font-mono font-bold text-slate-700 flex items-center gap-1">
-                      <Thermometer className="w-3 h-3 text-orange-400" />
-                      {planetInfo.temperature}
-                    </div>
-                  </div>
-                  <div className="bg-slate-50 rounded p-2">
-                    <div className="text-slate-400 uppercase tracking-wide">Gravity</div>
-                    <div className="font-mono font-bold text-slate-700">{planetInfo.gravity}</div>
-                  </div>
-                  <div className="bg-slate-50 rounded p-2 col-span-2">
-                    <div className="text-slate-400 uppercase tracking-wide">Atmosphere</div>
-                    <div className="font-mono font-bold text-slate-700">{planetInfo.atmosphere}</div>
+                  <div className="bg-[var(--sd-panel-bottom)] rounded p-2">
+                     <div className="text-slate-400 uppercase tracking-wide">Temperature</div>
+                     <div className="font-mono font-bold sd-text flex items-center gap-1">
+                       <Thermometer className="w-3 h-3 text-orange-400" />
+                       {planetInfo.temperature}
+                     </div>
+                   </div>
+                   <div className="bg-[var(--sd-panel-bottom)] rounded p-2">
+                     <div className="text-slate-400 uppercase tracking-wide">Gravity</div>
+                     <div className="font-mono font-bold sd-text">{planetInfo.gravity}</div>
+                   </div>
+                   <div className="bg-[var(--sd-panel-bottom)] rounded p-2 col-span-2">
+                     <div className="text-slate-400 uppercase tracking-wide">Atmosphere</div>
+                     <div className="font-mono font-bold sd-text">{planetInfo.atmosphere}</div>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Resources card */}
-            <Card className="border-slate-200 shadow-sm" data-testid="card-resources">
+            <Card className="sd-border shadow-sm" data-testid="card-resources">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                   <Database className="w-4 h-4 text-slate-400" />
@@ -350,7 +350,7 @@ export default function EmpireView() {
             </Card>
 
             {/* Government / Commander */}
-            <Card className="border-slate-200 shadow-sm" data-testid="card-gov-commander">
+            <Card className="sd-border shadow-sm" data-testid="card-gov-commander">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                   <Landmark className="w-4 h-4 text-slate-400" />
@@ -359,26 +359,26 @@ export default function EmpireView() {
               </CardHeader>
               <CardContent className="p-4 space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-600">Government</span>
+                   <span className="text-sm sd-text-secondary">Government</span>
                   <Badge variant="outline" className="capitalize text-xs font-semibold">
                     {government.type}
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-600">Stability</span>
-                  <span className="text-sm font-mono font-bold text-slate-900">
+                   <span className="text-sm sd-text-secondary">Stability</span>
+                   <span className="text-sm font-mono font-bold sd-text">
                     {government.stats.stability}%
                   </span>
                 </div>
                 <Progress value={government.stats.stability} className="h-1.5" />
-                <div className="border-t border-slate-100 pt-2 flex items-center justify-between">
-                  <span className="text-sm text-slate-600">Commander</span>
-                  <span className="text-sm font-bold text-slate-900 capitalize">
+                <div className="border-t border-[var(--sd-panel-border)] pt-2 flex items-center justify-between">
+                   <span className="text-sm sd-text-secondary">Commander</span>
+                   <span className="text-sm font-bold sd-text capitalize">
                     {commander.name} &mdash; {commander.class}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-600">Commander Level</span>
+                   <span className="text-sm sd-text-secondary">Commander Level</span>
                   <span className="text-sm font-mono font-bold text-primary">
                     Lv {commander.stats.level}
                   </span>
@@ -398,7 +398,7 @@ export default function EmpireView() {
           <div className="space-y-4">
 
             {/* Homeworld buildings */}
-            <Card className="border-slate-200 shadow-sm" data-testid="card-buildings">
+            <Card className="sd-border shadow-sm" data-testid="card-buildings">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                   <Building2 className="w-4 h-4 text-slate-400" />
@@ -413,12 +413,12 @@ export default function EmpireView() {
                     {buildingEntries.map(([key, level]) => (
                       <div
                         key={key}
-                        className="bg-slate-50 border border-slate-200 rounded p-2 text-center"
+                        className="bg-[var(--sd-panel-bottom)] sd-border rounded p-2 text-center"
                       >
-                        <div className="text-[10px] text-slate-500 uppercase tracking-wide leading-tight">
+                        <div className="text-[10px] sd-text-secondary uppercase tracking-wide leading-tight">
                           {buildingLabels[key] ?? key}
                         </div>
-                        <div className="text-lg font-orbitron font-bold text-slate-900 mt-0.5">
+                        <div className="text-lg font-orbitron font-bold sd-text mt-0.5">
                           {level}
                         </div>
                       </div>
@@ -434,7 +434,7 @@ export default function EmpireView() {
             </Card>
 
             {/* Fleet summary */}
-            <Card className="border-slate-200 shadow-sm" data-testid="card-fleet">
+            <Card className="sd-border shadow-sm" data-testid="card-fleet">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                   <Ship className="w-4 h-4 text-slate-400" />
@@ -448,14 +448,14 @@ export default function EmpireView() {
                   <div className="space-y-2">
                     {unitEntries.map(([key, count]) => (
                       <div key={key} className="flex items-center justify-between text-sm">
-                        <span className="text-slate-600">{unitLabels[key] ?? key}</span>
-                        <span className="font-mono font-bold text-slate-900">{fmt(count)}</span>
+                        <span className="sd-text-secondary">{unitLabels[key] ?? key}</span>
+                         <span className="font-mono font-bold sd-text">{fmt(count)}</span>
                       </div>
                     ))}
                   </div>
                 )}
-                <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                  <span className="text-slate-500">Total fleet power</span>
+                <div className="mt-3 pt-3 border-t border-[var(--sd-panel-border)] flex items-center justify-between text-xs">
+                   <span className="sd-text-secondary">Total fleet power</span>
                   <span className="font-orbitron font-bold text-blue-600">{fmt(totalFleetPower)}</span>
                 </div>
                 <div className="flex gap-2 mt-3">
@@ -474,7 +474,7 @@ export default function EmpireView() {
             </Card>
 
             {/* Active missions */}
-            <Card className="border-slate-200 shadow-sm" data-testid="card-missions">
+            <Card className="sd-border shadow-sm" data-testid="card-missions">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                   <Target className="w-4 h-4 text-slate-400" />
@@ -503,7 +503,7 @@ export default function EmpireView() {
                         >
                           {m.type}
                         </Badge>
-                        <span className="font-mono text-slate-600">{m.target}</span>
+                        <span className="font-mono sd-text-secondary">{m.target}</span>
                         <span className={`font-bold ${m.status === "returning" ? "text-green-600" : "text-orange-600"}`}>
                           {m.status}
                         </span>

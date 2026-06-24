@@ -4,18 +4,30 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Globe, 
-  ChevronLeft, 
-  ChevronRight, 
-  MessageSquare, 
-  ShieldAlert, 
-  Hexagon, 
-  Triangle, 
-  CircleDot, 
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Globe,
+  ChevronLeft,
+  ChevronRight,
+  MessageSquare,
+  ShieldAlert,
+  Hexagon,
+  Triangle,
+  CircleDot,
   Orbit,
   Search,
-  Rocket
+  Rocket,
+  Moon,
+  Thermometer,
+  Droplets,
+  Wind,
+  Mountain,
+  Star,
+  Factory,
+  X,
+  Eye,
+  Zap,
+  Users,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -25,6 +37,13 @@ import { useLocation } from "wouter";
 
 type SystemObjectType = "planet" | "asteroid" | "nebula" | "blackhole" | "station" | "empty";
 
+interface MoonDetail {
+  name: string;
+  type: string;
+  size: string;
+  habitable: boolean;
+}
+
 interface SystemPosition {
   position: number;
   type: SystemObjectType;
@@ -33,7 +52,16 @@ interface SystemPosition {
   alliance?: string;
   debris?: { metal: number; crystal: number };
   moon?: boolean;
+  moonDetails?: MoonDetail;
   class?: string;
+  planetType?: string;
+  temperature?: number;
+  resources?: string[];
+  habitable?: boolean;
+  gravity?: number;
+  atmosphere?: string;
+  activity?: number;
+  stations?: { name: string; level: number; type: string }[];
 }
 
 interface SystemData {
@@ -47,32 +75,31 @@ interface SystemData {
 }
 
 interface ScanResponse {
-   success: boolean;
-   message: string;
-   report: {
-      targetName: string;
-      targetType: SystemObjectType;
-      threatLevel: "low" | "medium" | "high";
-      anomalies: string[];
-      estimatedResources: { metal: number; crystal: number; deuterium: number };
-      timestamp: number;
-   };
+  success: boolean;
+  message: string;
+  report: {
+    targetName: string;
+    targetType: SystemObjectType;
+    threatLevel: "low" | "medium" | "high";
+    anomalies: string[];
+    estimatedResources: { metal: number; crystal: number; deuterium: number };
+    timestamp: number;
+  };
 }
 
 interface FleetActionPayload {
-   targetName: string;
-   destination: string;
-   missionType: "attack" | "espionage";
-   ships: Record<string, number>;
+  targetName: string;
+  destination: string;
+  missionType: "attack" | "espionage";
+  ships: Record<string, number>;
 }
 
 interface MessageActionPayload {
-   targetName: string;
-   recipientName: string;
-   destination: string;
+  targetName: string;
+  recipientName: string;
+  destination: string;
 }
 
-/** Planet class → Tailwind gradient classes for the visual circle. */
 const PLANET_GRADIENT: Record<string, string> = {
   M: "from-blue-400 to-emerald-600",
   H: "from-yellow-500 to-orange-700",
@@ -87,7 +114,6 @@ const PLANET_GRADIENT: Record<string, string> = {
 const getPlanetGradient = (cls?: string) =>
   cls && PLANET_GRADIENT[cls] ? PLANET_GRADIENT[cls] : "from-blue-500 to-purple-800";
 
-/** Planet class → badge colour classes. */
 const PLANET_CLASS_BADGE: Record<string, string> = {
   M: "bg-green-100 text-green-700",
   H: "bg-yellow-100 text-yellow-700",
@@ -99,38 +125,86 @@ const PLANET_CLASS_BADGE: Record<string, string> = {
   T: "bg-sky-100 text-sky-700",
 };
 
-/** Star type labels and visual colours for the system info bar. */
+const PLANET_TYPE_LABEL: Record<string, string> = {
+  rocky: "Rocky",
+  gas_giant: "Gas Giant",
+  ice_giant: "Ice Giant",
+  desert: "Desert",
+  ocean: "Ocean",
+  volcanic: "Volcanic",
+  frozen: "Frozen",
+  terran: "Terran",
+  barren: "Barren",
+  toxic: "Toxic",
+};
+
+const PLANET_TYPE_ICON: Record<string, string> = {
+  rocky: "🪨",
+  gas_giant: "🪐",
+  ice_giant: "🧊",
+  desert: "🏜️",
+  ocean: "🌊",
+  volcanic: "🌋",
+  frozen: "❄️",
+  terran: "🌍",
+  barren: "🌑",
+  toxic: "☠️",
+};
+
+const MOON_TYPE_LABEL: Record<string, string> = {
+  rocky: "Rocky",
+  icy: "Icy",
+  volcanic: "Volcanic",
+  "ice-rock": "Ice-Rock",
+  "gas-moon": "Gas Moon",
+  metallic: "Metallic",
+  captured: "Captured",
+};
+
 const STAR_INFO: Record<string, { label: string; color: string; glow: string }> = {
-  O: { label: "Blue Giant",    color: "#9bb0ff", glow: "shadow-[0_0_16px_#9bb0ff]" },
-  B: { label: "Blue-White",    color: "#aabfff", glow: "shadow-[0_0_14px_#aabfff]" },
-  A: { label: "White Star",    color: "#e0e8ff", glow: "shadow-[0_0_12px_#cad7ff]" },
-  F: { label: "Yellow-White",  color: "#fff8dc", glow: "shadow-[0_0_12px_#f8f7ff]" },
-  G: { label: "Yellow Dwarf",  color: "#fff4ea", glow: "shadow-[0_0_12px_#ffe4a0]" },
-  K: { label: "Orange Dwarf",  color: "#ffd2a1", glow: "shadow-[0_0_12px_#ffa060]" },
-  M: { label: "Red Dwarf",     color: "#ffcc6f", glow: "shadow-[0_0_12px_#ff6040]" },
+  O: { label: "Blue Giant", color: "#9bb0ff", glow: "shadow-[0_0_16px_#9bb0ff]" },
+  B: { label: "Blue-White", color: "#aabfff", glow: "shadow-[0_0_14px_#aabfff]" },
+  A: { label: "White Star", color: "#e0e8ff", glow: "shadow-[0_0_12px_#cad7ff]" },
+  F: { label: "Yellow-White", color: "#fff8dc", glow: "shadow-[0_0_12px_#f8f7ff]" },
+  G: { label: "Yellow Dwarf", color: "#fff4ea", glow: "shadow-[0_0_12px_#ffe4a0]" },
+  K: { label: "Orange Dwarf", color: "#ffd2a1", glow: "shadow-[0_0_12px_#ffa060]" },
+  M: { label: "Red Dwarf", color: "#ffcc6f", glow: "shadow-[0_0_12px_#ff6040]" },
+};
+
+const RESOURCE_COLORS: Record<string, string> = {
+  metal: "text-slate-400",
+  crystal: "text-blue-400",
+  deuterium: "text-cyan-400",
+  water: "text-blue-300",
+  food: "text-green-400",
+  energy: "text-amber-400",
+  helium: "text-purple-300",
+  exotic: "text-pink-400",
 };
 
 export default function Galaxy() {
-   const { toast } = useToast();
-   const [, setLocation] = useLocation();
-   const searchParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams();
-   const parsePositiveInt = (value: string | null, fallback: number) => {
-      const parsed = Number.parseInt(value ?? "", 10);
-      return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
-   };
+  const { toast } = useToast();
+  const [, setLocation] = useLocation();
+  const searchParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams();
+  const parsePositiveInt = (value: string | null, fallback: number) => {
+    const parsed = Number.parseInt(value ?? "", 10);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+  };
 
-   const syncGalaxyStateFromUrl = () => {
-      const params = new URLSearchParams(window.location.search);
-      setUniverse(params.get("universe") || "uni1");
-      setGalaxy(parsePositiveInt(params.get("galaxy"), 1));
-      setSector(parsePositiveInt(params.get("sector"), 4));
-      setSystem(parsePositiveInt(params.get("system"), 102));
-   };
+  const syncGalaxyStateFromUrl = () => {
+    const params = new URLSearchParams(window.location.search);
+    setUniverse(params.get("universe") || "uni1");
+    setGalaxy(parsePositiveInt(params.get("galaxy"), 1));
+    setSector(parsePositiveInt(params.get("sector"), 4));
+    setSystem(parsePositiveInt(params.get("system"), 102));
+  };
 
-   const [universe, setUniverse] = useState(searchParams.get("universe") || "uni1");
-   const [galaxy, setGalaxy] = useState(parsePositiveInt(searchParams.get("galaxy"), 1));
-   const [sector, setSector] = useState(parsePositiveInt(searchParams.get("sector"), 4)); 
-   const [system, setSystem] = useState(parsePositiveInt(searchParams.get("system"), 102));
+  const [universe, setUniverse] = useState(searchParams.get("universe") || "uni1");
+  const [galaxy, setGalaxy] = useState(parsePositiveInt(searchParams.get("galaxy"), 1));
+  const [sector, setSector] = useState(parsePositiveInt(searchParams.get("sector"), 4));
+  const [system, setSystem] = useState(parsePositiveInt(searchParams.get("system"), 102));
+  const [selectedPlanet, setSelectedPlanet] = useState<SystemPosition | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
 
   useEffect(() => {
     const handlePopState = () => syncGalaxyStateFromUrl();
@@ -163,107 +237,84 @@ export default function Galaxy() {
     staleTime: 30_000,
   });
 
-   const deepScanMutation = useMutation({
-      mutationFn: async (target: { position: number; name: string; type: SystemObjectType }) => {
-         const response = await fetch(`/api/galaxy/${universe}/${galaxy}/${sector}/${system}/scan`, {
-            method: "POST",
-            credentials: "include",
-            headers: {
-               "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-               position: target.position,
-               targetName: target.name,
-               targetType: target.type,
-            }),
-         });
+  const deepScanMutation = useMutation({
+    mutationFn: async (target: { position: number; name: string; type: SystemObjectType }) => {
+      const response = await fetch(`/api/galaxy/${universe}/${galaxy}/${sector}/${system}/scan`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ position: target.position, targetName: target.name, targetType: target.type }),
+      });
+      const payload = await response.json().catch(() => null);
+      if (!response.ok) throw new Error(payload?.error || payload?.message || "Deep scan failed");
+      return payload as ScanResponse;
+    },
+    onSuccess: (result) => {
+      const report = result.report;
+      toast({
+        title: `Scan Complete · ${report.targetName}`,
+        description: `${report.threatLevel.toUpperCase()} threat | M ${report.estimatedResources.metal.toLocaleString()} · C ${report.estimatedResources.crystal.toLocaleString()} · D ${report.estimatedResources.deuterium.toLocaleString()} | ${report.anomalies.join(", ")}`,
+      });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Deep scan failed", description: error.message, variant: "destructive" });
+    },
+  });
 
-         const payload = await response.json().catch(() => null);
-         if (!response.ok) {
-            throw new Error(payload?.error || payload?.message || "Deep scan failed");
-         }
+  const fleetActionMutation = useMutation({
+    mutationFn: async (payload: FleetActionPayload) => {
+      const response = await fetch("/api/game/send-fleet", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ destination: payload.destination, missionType: payload.missionType, ships: payload.ships }),
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok) throw new Error(data?.error || data?.message || "Fleet dispatch failed");
+      return { ...data, payload };
+    },
+    onSuccess: (result) => {
+      toast({ title: "Fleet dispatched", description: result?.message || `${result.payload.missionType} mission launched toward ${result.payload.targetName}.` });
+      setLocation("/fleet?tab=active");
+    },
+    onError: (error: Error) => {
+      toast({ title: "Fleet dispatch failed", description: error.message, variant: "destructive" });
+    },
+  });
 
-         return payload as ScanResponse;
-      },
-      onSuccess: (result) => {
-         const report = result.report;
-         toast({
-            title: `Scan Complete · ${report.targetName}`,
-            description: `${report.threatLevel.toUpperCase()} threat | M ${report.estimatedResources.metal.toLocaleString()} · C ${report.estimatedResources.crystal.toLocaleString()} · D ${report.estimatedResources.deuterium.toLocaleString()} | ${report.anomalies.join(", ")}`,
-         });
-      },
-      onError: (error: Error) => {
-         toast({ title: "Deep scan failed", description: error.message, variant: "destructive" });
-      },
-   });
+  const messageActionMutation = useMutation({
+    mutationFn: async (payload: MessageActionPayload) => {
+      const response = await fetch("/api/messages", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to: payload.recipientName,
+          subject: `Transmission from ${universe} ${galaxy}:${sector}:${system}`,
+          body: `Scouting transmission for ${payload.targetName} at coordinates ${payload.destination}.`,
+          type: "player",
+        }),
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok) throw new Error(data?.error || data?.message || "Message send failed");
+      return { ...data, payload };
+    },
+    onSuccess: (result) => {
+      toast({ title: "Message sent", description: `Transmission delivered to ${result.payload.recipientName}.` });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Message failed", description: error.message, variant: "destructive" });
+    },
+  });
 
-   const fleetActionMutation = useMutation({
-      mutationFn: async (payload: FleetActionPayload) => {
-         const response = await fetch("/api/game/send-fleet", {
-            method: "POST",
-            credentials: "include",
-            headers: {
-               "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-               destination: payload.destination,
-               missionType: payload.missionType,
-               ships: payload.ships,
-            }),
-         });
+  const openPlanetDetail = (pos: SystemPosition) => {
+    setSelectedPlanet(pos);
+    setDetailOpen(true);
+  };
 
-         const data = await response.json().catch(() => null);
-         if (!response.ok) {
-            throw new Error(data?.error || data?.message || "Fleet dispatch failed");
-         }
-
-         return { ...data, payload };
-      },
-      onSuccess: (result) => {
-         toast({
-            title: "Fleet dispatched",
-            description: result?.message || `${result.payload.missionType} mission launched toward ${result.payload.targetName}.`,
-         });
-         setLocation("/fleet?tab=active");
-      },
-      onError: (error: Error) => {
-         toast({ title: "Fleet dispatch failed", description: error.message, variant: "destructive" });
-      },
-   });
-
-   const messageActionMutation = useMutation({
-      mutationFn: async (payload: MessageActionPayload) => {
-         const response = await fetch("/api/messages", {
-            method: "POST",
-            credentials: "include",
-            headers: {
-               "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-               to: payload.recipientName,
-               subject: `Transmission from ${universe} ${galaxy}:${sector}:${system}`,
-               body: `Scouting transmission for ${payload.targetName} at coordinates ${payload.destination}. Requesting diplomatic channel confirmation.`,
-               type: "player",
-            }),
-         });
-
-         const data = await response.json().catch(() => null);
-         if (!response.ok) {
-            throw new Error(data?.error || data?.message || "Message send failed");
-         }
-
-         return { ...data, payload };
-      },
-      onSuccess: (result) => {
-         toast({
-            title: "Message sent",
-            description: `Transmission delivered to ${result.payload.recipientName}.`,
-         });
-      },
-      onError: (error: Error) => {
-         toast({ title: "Message failed", description: error.message, variant: "destructive" });
-      },
-   });
+  const planetPositions = systemData?.positions?.filter(p => p.type === "planet") || [];
+  const totalMoons = planetPositions.filter(p => p.moon).length;
+  const habitableCount = planetPositions.filter(p => p.habitable).length;
 
   return (
     <GameLayout>
@@ -275,261 +326,462 @@ export default function Galaxy() {
             <img src="/assets/planets/gas_giant.png" alt="Planet" className="w-20 h-20 rounded-full object-cover ring-2 ring-cyan-400/50 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
             <div>
               <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow">Galaxy View</h2>
-              <p className="text-cyan-300 font-rajdhani text-lg">Scan surrounding sectors and systems for resources and anomalies.</p>
+              <p className="text-cyan-300 font-rajdhani text-lg">Explore star systems with up to 45 orbital positions. Click any planet for a detailed overview.</p>
             </div>
           </div>
         </div>
 
         {/* Navigation Bar */}
         <div className="bg-white border border-slate-200 p-4 rounded-lg flex flex-wrap justify-center items-center gap-4 shadow-sm">
-           
-           {/* Universe Selector */}
-           <div className="flex items-center gap-2">
-              <span className="text-muted-foreground uppercase text-xs font-bold">Universe</span>
-              <Select value={universe} onValueChange={setUniverse}>
-                <SelectTrigger className="w-[140px] bg-slate-50 border-slate-200 text-slate-900 h-8">
-                  <SelectValue placeholder="Select Universe" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="uni1">Nexus-Alpha</SelectItem>
-                  <SelectItem value="uni2">Cyborg-Beta</SelectItem>
-                  <SelectItem value="uni3">Quantum-Gamma</SelectItem>
-                </SelectContent>
-              </Select>
-           </div>
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground uppercase text-xs font-bold">Universe</span>
+            <Select value={universe} onValueChange={setUniverse}>
+              <SelectTrigger className="w-[140px] bg-slate-50 border-slate-200 text-slate-900 h-8">
+                <SelectValue placeholder="Select Universe" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="uni1">Nexus-Alpha</SelectItem>
+                <SelectItem value="uni2">Cyborg-Beta</SelectItem>
+                <SelectItem value="uni3">Quantum-Gamma</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-           <div className="h-8 w-px bg-slate-200 mx-2 hidden md:block" />
+          <div className="h-8 w-px bg-slate-200 mx-2 hidden md:block" />
 
-           {/* Galaxy Nav */}
-           <div className="flex items-center gap-2">
-              <span className="text-muted-foreground uppercase text-xs font-bold">Galaxy</span>
-              <div className="flex items-center">
-                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setGalaxy(g => Math.max(1, g - 1))}><ChevronLeft className="w-4 h-4" /></Button>
-                 <Input className="w-14 h-8 text-center font-mono bg-slate-50 border-slate-200 text-slate-900" value={galaxy} onChange={(e) => setGalaxy(parseInt(e.target.value) || 1)} />
-                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setGalaxy(g => g + 1)}><ChevronRight className="w-4 h-4" /></Button>
-              </div>
-           </div>
-           
-           {/* Sector Nav (New) */}
-           <div className="flex items-center gap-2">
-              <span className="text-muted-foreground uppercase text-xs font-bold text-primary">Sector</span>
-              <div className="flex items-center">
-                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSector(s => Math.max(1, s - 1))}><ChevronLeft className="w-4 h-4" /></Button>
-                 <Input className="w-14 h-8 text-center font-mono bg-slate-50 border-primary/30 text-primary font-bold" value={sector} onChange={(e) => setSector(parseInt(e.target.value) || 1)} />
-                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSector(s => s + 1)}><ChevronRight className="w-4 h-4" /></Button>
-              </div>
-           </div>
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground uppercase text-xs font-bold">Galaxy</span>
+            <div className="flex items-center">
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setGalaxy(g => Math.max(1, g - 1))}><ChevronLeft className="w-4 h-4" /></Button>
+              <Input className="w-14 h-8 text-center font-mono bg-slate-50 border-slate-200 text-slate-900" value={galaxy} onChange={(e) => setGalaxy(parseInt(e.target.value) || 1)} />
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setGalaxy(g => g + 1)}><ChevronRight className="w-4 h-4" /></Button>
+            </div>
+          </div>
 
-           {/* System Nav */}
-           <div className="flex items-center gap-2">
-              <span className="text-muted-foreground uppercase text-xs font-bold">System</span>
-              <div className="flex items-center">
-                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSystem(s => Math.max(1, s - 1))}><ChevronLeft className="w-4 h-4" /></Button>
-                 <Input className="w-16 h-8 text-center font-mono bg-slate-50 border-slate-200 text-slate-900" value={system} onChange={(e) => setSystem(parseInt(e.target.value) || 1)} />
-                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSystem(s => s + 1)}><ChevronRight className="w-4 h-4" /></Button>
-              </div>
-           </div>
-           
-           <Button className="ml-auto bg-primary/10 text-primary hover:bg-primary/20 border border-primary/30 h-8 text-xs uppercase tracking-wider">
-              <Orbit className="w-3 h-3 mr-2" /> Expedition
-           </Button>
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground uppercase text-xs font-bold text-primary">Sector</span>
+            <div className="flex items-center">
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSector(s => Math.max(1, s - 1))}><ChevronLeft className="w-4 h-4" /></Button>
+              <Input className="w-14 h-8 text-center font-mono bg-slate-50 border-primary/30 text-primary font-bold" value={sector} onChange={(e) => setSector(parseInt(e.target.value) || 1)} />
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSector(s => s + 1)}><ChevronRight className="w-4 h-4" /></Button>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground uppercase text-xs font-bold">System</span>
+            <div className="flex items-center">
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSystem(s => Math.max(1, s - 1))}><ChevronLeft className="w-4 h-4" /></Button>
+              <Input className="w-16 h-8 text-center font-mono bg-slate-50 border-slate-200 text-slate-900" value={system} onChange={(e) => setSystem(parseInt(e.target.value) || 1)} />
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSystem(s => s + 1)}><ChevronRight className="w-4 h-4" /></Button>
+            </div>
+          </div>
+
+          <Button className="ml-auto bg-primary/10 text-primary hover:bg-primary/20 border border-primary/30 h-8 text-xs uppercase tracking-wider">
+            <Orbit className="w-3 h-3 mr-2" /> Expedition
+          </Button>
         </div>
 
-        {/* System Info / Star Display */}
+        {/* System Info / Star Display + System Summary */}
         {systemData?.star && (
-          <div className="bg-white border border-slate-200 p-4 rounded-lg flex items-center gap-4 shadow-sm">
-            <div
-              className={cn(
-                "w-12 h-12 rounded-full flex-shrink-0",
-                STAR_INFO[systemData.star.type]?.glow,
-              )}
-              style={{ background: `radial-gradient(circle at 35% 35%, white, ${STAR_INFO[systemData.star.type]?.color ?? "#ffe4a0"})` }}
-            />
-            <div>
-              <div className="font-bold text-slate-900 font-orbitron text-lg">
-                {systemData.systemName ?? systemData.star.name} System
+          <div className="flex gap-4">
+            <div className="bg-white border border-slate-200 p-4 rounded-lg flex items-center gap-4 shadow-sm flex-1">
+              <div
+                className={cn("w-12 h-12 rounded-full flex-shrink-0", STAR_INFO[systemData.star.type]?.glow)}
+                style={{ background: `radial-gradient(circle at 35% 35%, white, ${STAR_INFO[systemData.star.type]?.color ?? "#ffe4a0"})` }}
+              />
+              <div>
+                <div className="font-bold text-slate-900 font-orbitron text-lg">
+                  {systemData.systemName ?? systemData.star.name} System
+                </div>
+                <div className="text-sm text-muted-foreground font-rajdhani">
+                  Star: <span className="font-semibold text-slate-700">{systemData.star.name}</span>
+                  {" · "}Type <span className="font-semibold text-slate-700">{systemData.star.type}</span>
+                  {" · "}
+                  <span className="italic">{STAR_INFO[systemData.star.type]?.label ?? "Unknown"}</span>
+                </div>
               </div>
-              <div className="text-sm text-muted-foreground font-rajdhani">
-                Star: <span className="font-semibold text-slate-700">{systemData.star.name}</span>
-                {" · "}Type <span className="font-semibold text-slate-700">{systemData.star.type}</span>
-                {" · "}
-                <span className="italic">{STAR_INFO[systemData.star.type]?.label ?? "Unknown"}</span>
-              </div>
+            </div>
+            <div className="flex gap-3">
+              <Card className="bg-white border-slate-200 shadow-sm min-w-[100px]">
+                <CardContent className="p-3 text-center">
+                  <div className="text-xl font-bold text-blue-600">{planetPositions.length}</div>
+                  <div className="text-xs text-slate-500">Planets</div>
+                </CardContent>
+              </Card>
+              <Card className="bg-white border-slate-200 shadow-sm min-w-[100px]">
+                <CardContent className="p-3 text-center">
+                  <div className="text-xl font-bold text-green-600">{habitableCount}</div>
+                  <div className="text-xs text-slate-500">Habitable</div>
+                </CardContent>
+              </Card>
+              <Card className="bg-white border-slate-200 shadow-sm min-w-[100px]">
+                <CardContent className="p-3 text-center">
+                  <div className="text-xl font-bold text-slate-600">{totalMoons}</div>
+                  <div className="text-xs text-slate-500">Moons</div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         )}
 
-        {/* Galaxy Table */}
-        <div className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
-           <Table>
-             <TableHeader>
-               <TableRow className="bg-slate-50 border-slate-200 hover:bg-slate-50">
-                 <TableHead className="text-center w-[60px] text-slate-700">Pos</TableHead>
-                 <TableHead className="w-[80px] text-slate-700">Visual</TableHead>
-                 <TableHead className="text-slate-700">Name</TableHead>
-                 <TableHead className="text-slate-700">Class</TableHead>
-                 <TableHead className="text-slate-700">Moon/Debris</TableHead>
-                 <TableHead className="text-slate-700">Player / Status</TableHead>
-                 <TableHead className="text-slate-700">Alliance</TableHead>
-                 <TableHead className="text-right text-slate-700">Actions</TableHead>
-               </TableRow>
-             </TableHeader>
-             <TableBody>
-               {isFetching && !systemData && (
-                 <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">Loading system data...</TableCell></TableRow>
-               )}
-               {Array.from({ length: 15 }).map((_, i) => {
-                 const pos = i + 1;
-                 const data: SystemPosition = systemData?.positions?.find(p => p.position === pos) ||
-                   { position: pos, type: "empty", name: "" };
-                 const isMe = false; // Server sets real owner names; local identity resolved server-side
-                 
-                 return (
-                   <TableRow key={pos} className="border-slate-100 hover:bg-slate-50 transition-colors">
-                      <TableCell className="text-center font-mono text-muted-foreground">{pos}</TableCell>
-                      
-                      {/* Visual Column */}
+        {/* Main Content: Table + Detail Panel */}
+        <div className="flex gap-4">
+          {/* Galaxy Table */}
+          <div className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm flex-1">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-slate-50 border-slate-200 hover:bg-slate-50">
+                  <TableHead className="text-center w-[50px] text-slate-700 text-xs">Pos</TableHead>
+                  <TableHead className="w-[50px] text-slate-700 text-xs"></TableHead>
+                  <TableHead className="text-slate-700 text-xs">Name</TableHead>
+                  <TableHead className="text-slate-700 text-xs hidden lg:table-cell">Type</TableHead>
+                  <TableHead className="text-slate-700 text-xs hidden md:table-cell">Moon</TableHead>
+                  <TableHead className="text-slate-700 text-xs hidden lg:table-cell">Player</TableHead>
+                  <TableHead className="text-right text-slate-700 text-xs">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {isFetching && !systemData && (
+                  <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Loading system data...</TableCell></TableRow>
+                )}
+                {systemData?.positions?.map((data) => {
+                  const isMe = false;
+                  return (
+                    <TableRow
+                      key={data.position}
+                      className={cn(
+                        "border-slate-100 transition-colors cursor-pointer",
+                        selectedPlanet?.position === data.position ? "bg-blue-50 border-blue-200" : "hover:bg-slate-50"
+                      )}
+                      onClick={() => data.type !== "empty" && openPlanetDetail(data)}
+                    >
+                      <TableCell className="text-center font-mono text-muted-foreground text-xs">{data.position}</TableCell>
+
                       <TableCell>
-                         {data.type === "planet" && (
-                           <div className={cn("w-10 h-10 rounded-full bg-gradient-to-br shadow-sm border border-slate-200", getPlanetGradient(data.class))}></div>
-                         )}
-                         {data.type === "asteroid" && (
-                           <div className="w-10 h-10 flex items-center justify-center">
-                             <div className="w-8 h-8 rounded bg-slate-300 rotate-45 border border-slate-400"></div>
-                           </div>
-                         )}
-                         {data.type === "blackhole" && (
-                           <div className="w-10 h-10 rounded-full bg-black shadow-[0_0_10px_rgba(0,0,0,0.5)] border border-slate-800 flex items-center justify-center">
-                             <div className="w-9 h-9 rounded-full border border-white/20"></div>
-                           </div>
-                         )}
-                         {data.type === "nebula" && (
-                           <div className="w-10 h-10 rounded-full bg-purple-100 blur-sm opacity-80"></div>
-                         )}
-                         {data.type === "station" && (
-                            <div className="w-10 h-10 flex items-center justify-center">
-                              <Hexagon className="w-8 h-8 text-slate-600 fill-slate-200" />
-                            </div>
-                         )}
-                      </TableCell>
-                      
-                      {/* Name Column */}
-                      <TableCell>
-                         {data.type !== "empty" ? (
-                            <div className={cn("font-medium", isMe ? "text-primary" : "text-slate-700")}>
-                               {data.name}
-                            </div>
-                         ) : (
-                            <span className="text-muted-foreground/30 italic">-- Empty Space --</span>
-                         )}
+                        {data.type === "planet" && (
+                          <div className={cn("w-8 h-8 rounded-full bg-gradient-to-br shadow-sm border border-slate-200", getPlanetGradient(data.class))}></div>
+                        )}
+                        {data.type === "asteroid" && (
+                          <div className="w-8 h-8 flex items-center justify-center">
+                            <div className="w-6 h-6 rounded bg-slate-300 rotate-45 border border-slate-400"></div>
+                          </div>
+                        )}
+                        {data.type === "blackhole" && (
+                          <div className="w-8 h-8 rounded-full bg-black shadow-[0_0_10px_rgba(0,0,0,0.5)] border border-slate-800 flex items-center justify-center">
+                            <div className="w-7 h-7 rounded-full border border-white/20"></div>
+                          </div>
+                        )}
+                        {data.type === "nebula" && (
+                          <div className="w-8 h-8 rounded-full bg-purple-100 blur-sm opacity-80"></div>
+                        )}
+                        {data.type === "station" && (
+                          <div className="w-8 h-8 flex items-center justify-center">
+                            <Hexagon className="w-6 h-6 text-slate-600 fill-slate-200" />
+                          </div>
+                        )}
                       </TableCell>
 
-                      {/* Class/Type Column */}
                       <TableCell>
-                         {data.type === "asteroid" && <Badge variant="outline" className="border-slate-400 text-slate-600">Asteroid</Badge>}
-                         {data.type === "blackhole" && <Badge variant="destructive" className="bg-black hover:bg-black text-white">Singularity</Badge>}
-                         {data.type === "nebula" && <Badge variant="secondary" className="bg-purple-100 text-purple-700 hover:bg-purple-100">Nebula</Badge>}
-                         {data.type === "station" && <Badge variant="outline" className="border-red-400 text-red-600">Pirate Base</Badge>}
-                         {data.type === "planet" && <Badge variant="secondary" className={cn(
-                            data.class && PLANET_CLASS_BADGE[data.class]
-                              ? PLANET_CLASS_BADGE[data.class]
-                              : "bg-blue-100 text-blue-700"
-                         )}>Class {data.class}</Badge>}
+                        {data.type !== "empty" ? (
+                          <div className="font-medium text-slate-700 text-sm">{data.name}</div>
+                        ) : (
+                          <span className="text-muted-foreground/30 italic text-xs">-- Empty --</span>
+                        )}
                       </TableCell>
-                      
-                      {/* Moon/Debris Column */}
-                      <TableCell>
-                         <div className="flex items-center gap-2">
-                            {data.moon && <div className="w-4 h-4 rounded-full bg-slate-300 border border-slate-400" title="Moon"></div>}
-                            {data.debris && (
-                               <div className="flex items-center text-xs text-yellow-600 font-mono" title={`Metal: ${data.debris.metal}, Crystal: ${data.debris.crystal}`}>
-                                  <Triangle className="w-3 h-3 mr-1 fill-yellow-600 rotate-180" /> 
-                                  <span>D-Field</span>
-                               </div>
+
+                      <TableCell className="hidden lg:table-cell">
+                        {data.type === "planet" && (
+                          <div className="flex items-center gap-1.5">
+                            <Badge variant="secondary" className={cn("text-xs", data.class && PLANET_CLASS_BADGE[data.class] ? PLANET_CLASS_BADGE[data.class] : "bg-blue-100 text-blue-700")}>
+                              {data.class}
+                            </Badge>
+                            {data.planetType && (
+                              <span className="text-xs text-slate-500">{PLANET_TYPE_LABEL[data.planetType] || data.planetType}</span>
                             )}
-                         </div>
+                          </div>
+                        )}
+                        {data.type === "asteroid" && <Badge variant="outline" className="border-slate-400 text-slate-600 text-xs">Asteroid</Badge>}
+                        {data.type === "blackhole" && <Badge variant="destructive" className="bg-black hover:bg-black text-white text-xs">Singularity</Badge>}
+                        {data.type === "nebula" && <Badge variant="secondary" className="bg-purple-100 text-purple-700 hover:bg-purple-100 text-xs">Nebula</Badge>}
+                        {data.type === "station" && <Badge variant="outline" className="border-red-400 text-red-600 text-xs">Pirate Base</Badge>}
                       </TableCell>
-                      
-                      {/* Player Column */}
-                      <TableCell>
-                         {data.owner && (
-                            <span className={cn(
-                              "font-medium",
-                              isMe ? "text-green-600" : data.type === "station" ? "text-red-600" : "text-red-500"
-                            )}>
-                               {data.owner}
-                               {data.type === "station" && " (Hostile)"}
-                            </span>
-                         )}
-                      </TableCell>
-                      
-                      {/* Alliance Column */}
-                      <TableCell>
-                         {data.alliance && <span className="text-blue-500 font-bold">[{data.alliance}]</span>}
-                      </TableCell>
-                      
-                      {/* Actions Column */}
-                      <TableCell className="text-right">
-                         {data.type !== "empty" && !isMe && (
-                            <div className="flex justify-end gap-2">
-                                                                     <Button
-                                                                        size="icon"
-                                                                        variant="ghost"
-                                                                        className="h-8 w-8 hover:bg-blue-50 hover:text-blue-600"
-                                                                        onClick={() => deepScanMutation.mutate({ position: pos, name: data.name || `Position ${pos}`, type: data.type })}
-                                                                        disabled={deepScanMutation.isPending}
-                                                                     >
-                                 <Search className="w-4 h-4" />
-                               </Button>
-                               {(data.type === "planet" || data.type === "station") && (
-                                 <>
-                                                                                 <Button
-                                                                                    size="icon"
-                                                                                    variant="ghost"
-                                                                                    className="h-8 w-8 hover:bg-blue-50 hover:text-blue-600"
-                                                                                    onClick={() => messageActionMutation.mutate({
-                                                                                       targetName: data.name || `Position ${pos}`,
-                                                                                       recipientName: data.owner || "",
-                                                                                       destination: `${galaxy}:${system}:${pos}`,
-                                                                                    })}
-                                                                                    disabled={messageActionMutation.isPending || !data.owner}
-                                                                                 ><MessageSquare className="w-4 h-4" /></Button>
-                                                                                 <Button
-                                                                                    size="icon"
-                                                                                    variant="ghost"
-                                                                                    className="h-8 w-8 hover:bg-red-50 hover:text-red-600"
-                                                                                    onClick={() => fleetActionMutation.mutate({
-                                                                                       targetName: data.name || `Position ${pos}`,
-                                                                                       destination: `${galaxy}:${system}:${pos}`,
-                                                                                       missionType: "attack",
-                                                                                       ships: { lightFighter: 10, cruiser: 2 },
-                                                                                    })}
-                                                                                    disabled={fleetActionMutation.isPending}
-                                                                                 ><ShieldAlert className="w-4 h-4" /></Button>
-                                 </>
-                               )}
-                               {(data.type === "asteroid" || data.type === "blackhole") && (
-                                                                            <Button
-                                                                               size="icon"
-                                                                               variant="ghost"
-                                                                               className="h-8 w-8 hover:bg-yellow-50 hover:text-yellow-600"
-                                                                               onClick={() => fleetActionMutation.mutate({
-                                                                                  targetName: data.name || `Position ${pos}`,
-                                                                                  destination: `${galaxy}:${system}:${pos}`,
-                                                                                  missionType: "espionage",
-                                                                                  ships: { espionageProbe: 3, smallCargo: 1 },
-                                                                               })}
-                                                                               disabled={fleetActionMutation.isPending}
-                                                                            ><Rocket className="w-4 h-4" /></Button>
-                               )}
+
+                      <TableCell className="hidden md:table-cell">
+                        <div className="flex items-center gap-1.5">
+                          {data.moon && (
+                            <div className="flex items-center gap-1">
+                              <Moon className="w-3.5 h-3.5 text-slate-400" />
+                              {data.moonDetails && <span className="text-xs text-slate-500">{data.moonDetails.type}</span>}
                             </div>
-                         )}
+                          )}
+                          {data.debris && (
+                            <div className="flex items-center text-xs text-yellow-600 font-mono">
+                              <Triangle className="w-3 h-3 mr-0.5 fill-yellow-600 rotate-180" />
+                              D-Field
+                            </div>
+                          )}
+                          {data.stations && data.stations.length > 0 && (
+                            <div className="flex items-center gap-0.5">
+                              <Factory className="w-3 h-3 text-slate-500" />
+                              <span className="text-xs text-slate-500">Lv.{data.stations[0].level}</span>
+                            </div>
+                          )}
+                        </div>
                       </TableCell>
-                   </TableRow>
-                 );
-               })}
-             </TableBody>
-           </Table>
+
+                      <TableCell className="hidden lg:table-cell">
+                        {data.owner && (
+                          <span className={cn("font-medium text-sm", isMe ? "text-green-600" : data.type === "station" ? "text-red-600" : "text-red-500")}>
+                            {data.owner}
+                          </span>
+                        )}
+                        {data.alliance && <span className="text-blue-500 font-bold text-xs ml-1">[{data.alliance}]</span>}
+                      </TableCell>
+
+                      <TableCell className="text-right">
+                        {data.type !== "empty" && !isMe && (
+                          <div className="flex justify-end gap-1" onClick={(e) => e.stopPropagation()}>
+                            <Button size="icon" variant="ghost" className="h-7 w-7 hover:bg-blue-50 hover:text-blue-600"
+                              onClick={() => deepScanMutation.mutate({ position: data.position, name: data.name || `Position ${data.position}`, type: data.type })}
+                              disabled={deepScanMutation.isPending}>
+                              <Search className="w-3.5 h-3.5" />
+                            </Button>
+                            <Button size="icon" variant="ghost" className="h-7 w-7 hover:bg-slate-100"
+                              onClick={() => openPlanetDetail(data)}>
+                              <Eye className="w-3.5 h-3.5" />
+                            </Button>
+                            {(data.type === "planet" || data.type === "station") && (
+                              <>
+                                <Button size="icon" variant="ghost" className="h-7 w-7 hover:bg-blue-50 hover:text-blue-600"
+                                  onClick={() => messageActionMutation.mutate({ targetName: data.name || `Position ${data.position}`, recipientName: data.owner || "", destination: `${galaxy}:${system}:${data.position}` })}
+                                  disabled={messageActionMutation.isPending || !data.owner}>
+                                  <MessageSquare className="w-3.5 h-3.5" />
+                                </Button>
+                                <Button size="icon" variant="ghost" className="h-7 w-7 hover:bg-red-50 hover:text-red-600"
+                                  onClick={() => fleetActionMutation.mutate({ targetName: data.name || `Position ${data.position}`, destination: `${galaxy}:${system}:${data.position}`, missionType: "attack", ships: { lightFighter: 10, cruiser: 2 } })}
+                                  disabled={fleetActionMutation.isPending}>
+                                  <ShieldAlert className="w-3.5 h-3.5" />
+                                </Button>
+                              </>
+                            )}
+                          </div>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Planet Overview Panel (OGame-style sidebar) */}
+          {detailOpen && selectedPlanet && (
+            <div className="w-[380px] flex-shrink-0">
+              <Card className="bg-white border-slate-200 shadow-sm sticky top-24">
+                <CardHeader className="pb-3 border-b border-slate-100">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-base font-orbitron flex items-center gap-2">
+                      {selectedPlanet.type === "planet" && (
+                        <div className={cn("w-8 h-8 rounded-full bg-gradient-to-br shadow-sm border border-slate-200", getPlanetGradient(selectedPlanet.class))}></div>
+                      )}
+                      {selectedPlanet.type === "asteroid" && <div className="w-6 h-6 rounded bg-slate-300 rotate-45 border border-slate-400"></div>}
+                      {selectedPlanet.type === "blackhole" && <div className="w-6 h-6 rounded-full bg-black border border-white/20"></div>}
+                      {selectedPlanet.type === "nebula" && <div className="w-6 h-6 rounded-full bg-purple-200 blur-sm"></div>}
+                      {selectedPlanet.type === "station" && <Hexagon className="w-6 h-6 text-slate-600 fill-slate-200" />}
+                      {selectedPlanet.name || `Position ${selectedPlanet.position}`}
+                    </CardTitle>
+                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setDetailOpen(false)}>
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    {universe} · Galaxy {galaxy} · Sector {sector} · System {system} · Orbit {selectedPlanet.position}
+                  </div>
+                </CardHeader>
+                <CardContent className="p-4 space-y-4">
+                  {/* Planet Type & Class */}
+                  {selectedPlanet.type === "planet" && (
+                    <>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="p-2 bg-slate-50 rounded border border-slate-200">
+                          <div className="text-xs text-slate-500">Class</div>
+                          <div className="font-bold text-sm">{selectedPlanet.class}</div>
+                        </div>
+                        <div className="p-2 bg-slate-50 rounded border border-slate-200">
+                          <div className="text-xs text-slate-500">Type</div>
+                          <div className="font-bold text-sm">{PLANET_TYPE_LABEL[selectedPlanet.planetType || ""] || selectedPlanet.planetType}</div>
+                        </div>
+                      </div>
+
+                      {/* Physical Properties */}
+                      <div className="space-y-2">
+                        <h4 className="text-xs font-bold text-slate-600 uppercase tracking-wider">Physical Properties</h4>
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                          <div className="flex items-center gap-1.5">
+                            <Thermometer className="w-3.5 h-3.5 text-orange-400" />
+                            <span className="text-slate-500">Temperature:</span>
+                            <span className="font-medium">{selectedPlanet.temperature}K</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <Mountain className="w-3.5 h-3.5 text-stone-400" />
+                            <span className="text-slate-500">Gravity:</span>
+                            <span className="font-medium">{selectedPlanet.gravity}g</span>
+                          </div>
+                          <div className="flex items-center gap-1.5 col-span-2">
+                            <Wind className="w-3.5 h-3.5 text-blue-400" />
+                            <span className="text-slate-500">Atmosphere:</span>
+                            <span className="font-medium">{selectedPlanet.atmosphere}</span>
+                          </div>
+                        </div>
+                        {selectedPlanet.habitable !== undefined && (
+                          <div className={cn("text-xs font-medium px-2 py-1 rounded", selectedPlanet.habitable ? "bg-green-50 text-green-700 border border-green-200" : "bg-red-50 text-red-600 border border-red-200")}>
+                            {selectedPlanet.habitable ? "Habitable Zone" : "Non-Habitable"}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Resources */}
+                      {selectedPlanet.resources && selectedPlanet.resources.length > 0 && (
+                        <div className="space-y-2">
+                          <h4 className="text-xs font-bold text-slate-600 uppercase tracking-wider">Resources</h4>
+                          <div className="flex flex-wrap gap-1.5">
+                            {selectedPlanet.resources.map((res) => (
+                              <Badge key={res} variant="outline" className={cn("text-xs", RESOURCE_COLORS[res] || "text-slate-500")}>
+                                {res}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Moon */}
+                      {selectedPlanet.moon && selectedPlanet.moonDetails && (
+                        <div className="space-y-2">
+                          <h4 className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center gap-1.5">
+                            <Moon className="w-3.5 h-3.5" /> Moon
+                          </h4>
+                          <div className="p-3 bg-slate-50 rounded border border-slate-200 space-y-2">
+                            <div className="font-medium text-sm">{selectedPlanet.moonDetails.name}</div>
+                            <div className="grid grid-cols-2 gap-2 text-xs">
+                              <div>
+                                <span className="text-slate-500">Type:</span>{" "}
+                                <span className="font-medium">{MOON_TYPE_LABEL[selectedPlanet.moonDetails.type] || selectedPlanet.moonDetails.type}</span>
+                              </div>
+                              <div>
+                                <span className="text-slate-500">Size:</span>{" "}
+                                <span className="font-medium capitalize">{selectedPlanet.moonDetails.size}</span>
+                              </div>
+                            </div>
+                            {selectedPlanet.moonDetails.habitable && (
+                              <div className="text-xs bg-green-50 text-green-700 px-2 py-1 rounded border border-green-200">
+                                Habitable Moon
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Orbital Stations */}
+                      {selectedPlanet.stations && selectedPlanet.stations.length > 0 && (
+                        <div className="space-y-2">
+                          <h4 className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center gap-1.5">
+                            <Factory className="w-3.5 h-3.5" /> Orbital Stations
+                          </h4>
+                          {selectedPlanet.stations.map((station, idx) => (
+                            <div key={idx} className="p-3 bg-slate-50 rounded border border-slate-200">
+                              <div className="font-medium text-sm">{station.name}</div>
+                              <div className="flex items-center gap-3 text-xs text-slate-500 mt-1">
+                                <span>Type: <span className="font-medium capitalize">{station.type}</span></span>
+                                <span>Level: <span className="font-medium">{station.level}</span></span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Owner */}
+                      {selectedPlanet.owner && (
+                        <div className="space-y-2">
+                          <h4 className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center gap-1.5">
+                            <Users className="w-3.5 h-3.5" /> Colony
+                          </h4>
+                          <div className="p-3 bg-slate-50 rounded border border-slate-200">
+                            <div className="font-medium text-sm">{selectedPlanet.owner}</div>
+                            {selectedPlanet.alliance && (
+                              <div className="text-xs text-blue-500 font-bold mt-0.5">[{selectedPlanet.alliance}]</div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Action Buttons */}
+                      <div className="space-y-2 pt-2 border-t border-slate-100">
+                        <Button className="w-full" size="sm" onClick={() => deepScanMutation.mutate({ position: selectedPlanet.position, name: selectedPlanet.name, type: selectedPlanet.type })} disabled={deepScanMutation.isPending}>
+                          <Search className="w-3.5 h-3.5 mr-2" /> Deep Scan
+                        </Button>
+                        {selectedPlanet.owner && (
+                          <div className="grid grid-cols-2 gap-2">
+                            <Button variant="outline" size="sm" onClick={() => messageActionMutation.mutate({ targetName: selectedPlanet.name, recipientName: selectedPlanet.owner || "", destination: `${galaxy}:${system}:${selectedPlanet.position}` })} disabled={messageActionMutation.isPending}>
+                              <MessageSquare className="w-3.5 h-3.5 mr-1" /> Message
+                            </Button>
+                            <Button variant="outline" size="sm" className="text-red-600 border-red-200 hover:bg-red-50" onClick={() => fleetActionMutation.mutate({ targetName: selectedPlanet.name, destination: `${galaxy}:${system}:${selectedPlanet.position}`, missionType: "attack", ships: { lightFighter: 10, cruiser: 2 } })} disabled={fleetActionMutation.isPending}>
+                              <ShieldAlert className="w-3.5 h-3.5 mr-1" /> Attack
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  )}
+
+                  {/* Non-planet types */}
+                  {selectedPlanet.type !== "planet" && (
+                    <div className="text-center py-6 text-muted-foreground text-sm">
+                      {selectedPlanet.type === "asteroid" && (
+                        <div className="space-y-3">
+                          <div className="text-3xl">☄️</div>
+                          <div className="font-bold text-slate-700">Asteroid Belt</div>
+                          {selectedPlanet.debris && (
+                            <div className="text-xs space-y-1">
+                              <div>Metal: <span className="font-mono font-bold text-slate-600">{selectedPlanet.debris.metal.toLocaleString()}</span></div>
+                              <div>Crystal: <span className="font-mono font-bold text-blue-600">{selectedPlanet.debris.crystal.toLocaleString()}</span></div>
+                            </div>
+                          )}
+                          <Button size="sm" className="w-full" onClick={() => fleetActionMutation.mutate({ targetName: selectedPlanet.name, destination: `${galaxy}:${system}:${selectedPlanet.position}`, missionType: "espionage", ships: { espionageProbe: 3 } })}>
+                            <Rocket className="w-3.5 h-3.5 mr-1" /> Send Recyclers
+                          </Button>
+                        </div>
+                      )}
+                      {selectedPlanet.type === "blackhole" && (
+                        <div className="space-y-3">
+                          <div className="text-3xl">🕳️</div>
+                          <div className="font-bold text-slate-700">Singularity</div>
+                          <div className="text-xs text-red-500">Extreme gravitational anomaly detected. Unstable for fleet operations.</div>
+                        </div>
+                      )}
+                      {selectedPlanet.type === "nebula" && (
+                        <div className="space-y-3">
+                          <div className="text-3xl">🌌</div>
+                          <div className="font-bold text-slate-700">Ion Cloud</div>
+                          <div className="text-xs text-purple-500">Electromagnetic interference zone. Sensor range reduced by 60%.</div>
+                        </div>
+                      )}
+                      {selectedPlanet.type === "station" && (
+                        <div className="space-y-3">
+                          <div className="text-3xl">🏴‍☠️</div>
+                          <div className="font-bold text-red-600">Pirate Outpost</div>
+                          <div className="text-xs text-red-500">Hostile station. Armed defenders detected.</div>
+                          {selectedPlanet.owner && <div className="text-xs">Operated by: <span className="font-bold">{selectedPlanet.owner}</span></div>}
+                          <Button size="sm" variant="destructive" className="w-full" onClick={() => fleetActionMutation.mutate({ targetName: selectedPlanet.name, destination: `${galaxy}:${system}:${selectedPlanet.position}`, missionType: "attack", ships: { lightFighter: 20, cruiser: 5 } })}>
+                            <ShieldAlert className="w-3.5 h-3.5 mr-1" /> Raid Outpost
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          )}
         </div>
       </div>
     </GameLayout>

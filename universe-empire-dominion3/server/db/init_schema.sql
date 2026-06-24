@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS sessions (
   expire timestamp NOT NULL
 );
 
-CREATE INDEX IF NOT EXISTS IDX_session_expire ON sessions(expire);
+CREATE INDEX IF NOT EXISTS IDX_legacy_session_expire ON sessions(expire);
 
 CREATE TABLE IF NOT EXISTS users (
   id varchar PRIMARY KEY DEFAULT gen_random_uuid(),

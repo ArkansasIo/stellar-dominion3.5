@@ -1,5 +1,5 @@
 import type { Express, Request, Response } from "express";
-import { isAuthenticated, isAdmin } from "./basicAuth";
+import { isAuthenticated } from "./basicAuth";
 import { storage } from "./storage";
 
 type NewsArticle = {

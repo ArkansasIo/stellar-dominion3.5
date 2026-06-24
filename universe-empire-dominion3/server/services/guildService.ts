@@ -1,6 +1,6 @@
 import { db } from '../db';
-import { sql, eq, and, desc } from 'drizzle-orm';
-import { guilds, guildMembers, users, playerStates } from '../../shared/schema';
+import { sql, and } from 'drizzle-orm';
+import { guilds, users } from '../../shared/schema';
 
 export class GuildService {
   static async createGuild(userId: string, name: string) {

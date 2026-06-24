@@ -694,6 +694,32 @@ export function getCommanderEquipmentRarityCounts(): Record<ItemRarity, number> 
 
 export const COMMANDER_EQUIPMENT_TEMPLATE_COUNT = COMMANDER_EQUIPMENT_TEMPLATES.length;
 
+export interface LoadoutPreset {
+  id: string;
+  name: string;
+  description: string;
+  equipment: Record<CommanderEquipmentSlotId, string | null>; // item id references
+  createdAt: number;
+  updatedAt: number;
+  powerScore: number;
+}
+
+export function createEmptyLoadoutPreset(name: string): LoadoutPreset {
+  const id = `loadout_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+  const emptyEquipment = COMMANDER_EQUIPMENT_SLOT_DEFINITIONS.reduce((acc, slot) => {
+    acc[slot.id] = null;
+    return acc;
+  }, {} as Record<CommanderEquipmentSlotId, string | null>);
+  return {
+    id,
+    name,
+    description: "",
+    equipment: emptyEquipment,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+    powerScore: 0,
+  };
+}
 
 // Mock recipes
 export const blueprints = [

@@ -371,7 +371,7 @@ export class ServerStatusService {
       return {
         status: 'ok',
         value: 0,
-        threshold: 75,
+        threshold: HEALTH_CHECK_THRESHOLDS.database.connectionUsageWarning,
         message: 'Database status unknown',
         lastChecked: Date.now(),
       };
@@ -384,7 +384,7 @@ export class ServerStatusService {
     return {
       status,
       value: connectionUsage,
-      threshold: 75,
+      threshold: HEALTH_CHECK_THRESHOLDS.database.connectionUsageWarning,
       message: `Database connections: ${metrics.database.connections}/${metrics.database.maxConnections}`,
       lastChecked: Date.now(),
     };
@@ -395,7 +395,7 @@ export class ServerStatusService {
       return {
         status: 'ok',
         value: 0,
-        threshold: 70,
+        threshold: HEALTH_CHECK_THRESHOLDS.memory.usageWarning,
         message: 'Memory status unknown',
         lastChecked: Date.now(),
       };
@@ -411,7 +411,7 @@ export class ServerStatusService {
     return {
       status,
       value: metrics.memory.usage,
-      threshold: 70,
+      threshold: HEALTH_CHECK_THRESHOLDS.memory.usageWarning,
       message: `Memory usage: ${Math.round(metrics.memory.used)}MB / ${Math.round(metrics.memory.total)}MB`,
       lastChecked: Date.now(),
     };
@@ -422,7 +422,7 @@ export class ServerStatusService {
       return {
         status: 'ok',
         value: 0,
-        threshold: 60,
+        threshold: HEALTH_CHECK_THRESHOLDS.cpu.usageWarning,
         message: 'CPU status unknown',
         lastChecked: Date.now(),
       };
@@ -438,7 +438,7 @@ export class ServerStatusService {
     return {
       status,
       value: metrics.cpu.usage,
-      threshold: 60,
+      threshold: HEALTH_CHECK_THRESHOLDS.cpu.usageWarning,
       message: `CPU usage: ${Math.round(metrics.cpu.usage)}%`,
       lastChecked: Date.now(),
     };
@@ -449,7 +449,7 @@ export class ServerStatusService {
       return {
         status: 'ok',
         value: 0,
-        threshold: 70,
+        threshold: HEALTH_CHECK_THRESHOLDS.disk.usageWarning,
         message: 'Disk status unknown',
         lastChecked: Date.now(),
       };
@@ -460,7 +460,7 @@ export class ServerStatusService {
     return {
       status,
       value: metrics.disk.usage,
-      threshold: 70,
+      threshold: HEALTH_CHECK_THRESHOLDS.disk.usageWarning,
       message: `Disk usage: ${Math.round(metrics.disk.usage)}%`,
       lastChecked: Date.now(),
     };
@@ -471,7 +471,7 @@ export class ServerStatusService {
       return {
         status: 'ok',
         value: 0,
-        threshold: 50,
+        threshold: HEALTH_CHECK_THRESHOLDS.api.errorRateWarning,
         message: 'API status unknown',
         lastChecked: Date.now(),
       };
@@ -488,7 +488,7 @@ export class ServerStatusService {
     return {
       status,
       value: errorRate,
-      threshold: 1,
+      threshold: HEALTH_CHECK_THRESHOLDS.api.errorRateWarning,
       message: `API error rate: ${errorRate.toFixed(2)}%`,
       lastChecked: Date.now(),
     };

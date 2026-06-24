@@ -19,6 +19,7 @@ const Skills = lazy(() => import("@/pages/Skills"));
 const Fitting = lazy(() => import("@/pages/Fitting"));
 const Shipyard = lazy(() => import("@/pages/Shipyard"));
 const Fleet = lazy(() => import("@/pages/Fleet"));
+const FleetYard = lazy(() => import("@/pages/FleetYard"));
 const Galaxy = lazy(() => import("@/pages/Galaxy"));
 const Universe = lazy(() => import("@/pages/Universe"));
 const UniverseGenerator = lazy(() => import("@/pages/UniverseGenerator"));
@@ -111,10 +112,18 @@ const UnitTaxonomyPage = lazy(() => import("@/pages/UnitTaxonomyPage"));
 const UnitSystemsPage = lazy(() => import("@/pages/UnitSystemsPage"));
 const GovernmentBuildingsPage = lazy(() => import("@/pages/GovernmentBuildingsPage"));
 const GovernmentProgressionPage = lazy(() => import("@/pages/GovernmentProgressionPage"));
+const DimensionalContracts = lazy(() => import("@/pages/DimensionalContracts"));
+const AbyssalGates = lazy(() => import("@/pages/AbyssalGates"));
+const PowerLevelPage = lazy(() => import("@/pages/PowerLevelPage"));
+const ItemLevels = lazy(() => import("@/pages/ItemLevels"));
 const SaveSlotsPage = lazy(() => import("@/pages/SaveSlotsPage"));
 const RealmPickerPage = lazy(() => import("@/pages/RealmPickerPage"));
 const PatchNotes = lazy(() => import("@/pages/PatchNotes"));
 const NewsFeed = lazy(() => import("@/pages/NewsFeed"));
+const SeasonHub = lazy(() => import("@/pages/SeasonHub"));
+const Diplomacy = lazy(() => import("@/pages/Diplomacy"));
+const SeasonServerPicker = lazy(() => import("@/pages/SeasonServerPicker"));
+const Account = lazy(() => import("@/pages/Account"));
 
 function LoadingSplash() {
   const stars = useMemo(() => Array.from({ length: 60 }).map((_, i) => ({
@@ -176,6 +185,7 @@ function LoadingSplash() {
 function RouterContent() {
   const { isLoggedIn, needsSetup, isLoading, onboardingStep } = useGame();
   const [showSplash, setShowSplash] = useState(true);
+  const [hasError, setHasError] = useState(false);
   const loadingStartedAtRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -184,6 +194,7 @@ function RouterContent() {
         loadingStartedAtRef.current = Date.now();
       }
       setShowSplash(true);
+      setHasError(false);
       return;
     }
 
@@ -194,6 +205,8 @@ function RouterContent() {
 
     const elapsed = Date.now() - loadingStartedAtRef.current;
     const minSplashMs = 350;
+    const maxSplashMs = 5000; // Force hide after 5 seconds
+
     if (elapsed >= minSplashMs) {
       setShowSplash(false);
       loadingStartedAtRef.current = null;
@@ -207,6 +220,36 @@ function RouterContent() {
 
     return () => clearTimeout(timeout);
   }, [isLoading]);
+
+  // Safety timeout to prevent infinite loading
+  useEffect(() => {
+    if (!isLoading) return;
+    
+    const safetyTimeout = setTimeout(() => {
+      console.warn('[App] Loading timeout reached, forcing render');
+      setShowSplash(false);
+      loadingStartedAtRef.current = null;
+    }, 5000);
+
+    return () => clearTimeout(safetyTimeout);
+  }, [isLoading]);
+
+  if (hasError) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl text-red-500 mb-4">Error Loading Game</h1>
+          <p className="text-slate-400">Please refresh the page or check the console for errors.</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Refresh Page
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading || showSplash) {
     return <LoadingSplash />;
@@ -240,7 +283,7 @@ function RouterContent() {
           <Route path="/forums" component={Forums} />
           <Route path="/terms" component={Terms} />
           <Route path="/privacy" component={Privacy} />
-          <Route component={SaveSlotsPage} />
+          <Route component={RealmPickerPage} />
         </Switch>
       );
     }
@@ -256,7 +299,23 @@ function RouterContent() {
           <Route path="/forums" component={Forums} />
           <Route path="/terms" component={Terms} />
           <Route path="/privacy" component={Privacy} />
-          <Route component={RealmPickerPage} />
+          <Route component={SeasonServerPicker} />
+        </Switch>
+      );
+    }
+
+    if (onboardingStep === 2) {
+      return (
+        <Switch>
+          <Route path="/threejs-viewer" component={ThreeDViewerPortal} />
+          <Route path="/admin-login" component={AdminLogin} />
+          <Route path="/admin" component={Admin} />
+          <Route path="/admin/database" component={DatabaseAdmin} />
+          <Route path="/about" component={About} />
+          <Route path="/forums" component={Forums} />
+          <Route path="/terms" component={Terms} />
+          <Route path="/privacy" component={Privacy} />
+          <Route component={SaveSlotsPage} />
         </Switch>
       );
     }
@@ -294,6 +353,7 @@ function RouterContent() {
       <Route path="/artifacts" component={Artifacts} />
       <Route path="/shipyard" component={Shipyard} />
       <Route path="/fleet" component={Fleet} />
+      <Route path="/fleet-yard" component={FleetYard} />
       <Route path="/army" component={Army} />
       <Route path="/army-management" component={ArmyManagement} />
       <Route path="/training-center" component={TrainingCenter} />
@@ -348,7 +408,12 @@ function RouterContent() {
       <Route path="/empire-view" component={EmpireView} />
       <Route path="/empire-command-center" component={EmpireCommandCenter} />
       <Route path="/empire-profile" component={EmpireProfile} />
+      <Route path="/account" component={Account} />
       <Route path="/dimensional-anomalies" component={DimensionalAnomalies} />
+      <Route path="/dimensional-contracts" component={DimensionalContracts} />
+      <Route path="/abyssal-gates" component={AbyssalGates} />
+      <Route path="/power-level" component={PowerLevelPage} />
+      <Route path="/item-levels" component={ItemLevels} />
       <Route path="/resource-refineries" component={ResourceRefineries} />
       <Route path="/cron-dashboard" component={CronDashboard} />
       <Route path="/blueprint-charges" component={BlueprintCharges} />
@@ -378,6 +443,9 @@ function RouterContent() {
       <Route path="/server-console" component={ServerConsole} />
       <Route path="/patch-notes" component={PatchNotes} />
       <Route path="/news-feed" component={NewsFeed} />
+      <Route path="/season" component={SeasonHub} />
+      <Route path="/season/:tab" component={SeasonHub} />
+      <Route path="/diplomacy" component={Diplomacy} />
       <Route component={NotFound} />
     </Switch>
   );

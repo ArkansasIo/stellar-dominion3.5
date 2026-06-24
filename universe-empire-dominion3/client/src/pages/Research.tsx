@@ -95,7 +95,7 @@ function ResearchCard({
     (energyCost === 0 || resources.energy >= energyCost);
 
   return (
-    <Card className="border-slate-200 bg-white shadow-sm">
+    <Card className="border-[var(--sd-panel-border)] bg-[var(--sd-panel-top)] shadow-sm">
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
@@ -103,8 +103,8 @@ function ResearchCard({
               <Icon className="h-5 w-5" />
             </div>
             <div>
-              <CardTitle className="text-base text-slate-900">{item.name}</CardTitle>
-              <div className="mt-1 text-xs uppercase tracking-[0.18em] text-slate-500">Level {level}</div>
+              <CardTitle className="text-base text-[var(--sd-text-primary)]">{item.name}</CardTitle>
+              <div className="mt-1 text-xs uppercase tracking-[0.18em] text-[var(--sd-text-secondary)]">Level {level}</div>
             </div>
           </div>
           <Badge variant="outline" className={areaTone(item.area)}>
@@ -113,15 +113,15 @@ function ResearchCard({
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        <p className="text-sm text-slate-600">{item.description}</p>
+        <p className="text-sm text-[var(--sd-text-secondary)]">{item.description}</p>
 
-        <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-          <div className="mb-2 text-xs uppercase tracking-widest text-slate-500">Research Effects</div>
+        <div className="rounded-lg border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-3">
+          <div className="mb-2 text-xs uppercase tracking-widest text-[var(--sd-text-secondary)]">Research Effects</div>
           <div className="space-y-2">
             {item.effects.map((effect) => (
               <div key={`${item.id}-${effect.name}`} className="flex items-center justify-between text-sm">
-                <span className="text-slate-700">{effect.name}</span>
-                <span className="font-medium text-slate-900">
+                <span className="text-[var(--sd-text-secondary)]">{effect.name}</span>
+                <span className="font-medium text-[var(--sd-text-primary)]">
                   {effect.value}
                   {effect.perLevel ? ` (${effect.perLevel})` : ""}
                 </span>
@@ -130,16 +130,16 @@ function ResearchCard({
           </div>
         </div>
 
-        <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm">
-          <div className="mb-2 text-xs uppercase tracking-widest text-slate-500">Upgrade Costs</div>
+        <div className="rounded-lg border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-3 text-sm">
+          <div className="mb-2 text-xs uppercase tracking-widest text-[var(--sd-text-secondary)]">Upgrade Costs</div>
           <div className="space-y-1">
-            <div className="flex items-center justify-between"><span className="text-slate-600">Metal</span><span className={cn(resources.metal < metalCost && "font-bold text-red-600")}>{metalCost.toLocaleString()}</span></div>
-            <div className="flex items-center justify-between"><span className="text-slate-600">Crystal</span><span className={cn(resources.crystal < crystalCost && "font-bold text-red-600")}>{crystalCost.toLocaleString()}</span></div>
-            <div className="flex items-center justify-between"><span className="text-slate-600">Deuterium</span><span className={cn(resources.deuterium < deuteriumCost && "font-bold text-red-600")}>{deuteriumCost.toLocaleString()}</span></div>
+            <div className="flex items-center justify-between"><span className="text-[var(--sd-text-secondary)]">Metal</span><span className={cn(resources.metal < metalCost && "font-bold text-red-600")}>{metalCost.toLocaleString()}</span></div>
+            <div className="flex items-center justify-between"><span className="text-[var(--sd-text-secondary)]">Crystal</span><span className={cn(resources.crystal < crystalCost && "font-bold text-red-600")}>{crystalCost.toLocaleString()}</span></div>
+            <div className="flex items-center justify-between"><span className="text-[var(--sd-text-secondary)]">Deuterium</span><span className={cn(resources.deuterium < deuteriumCost && "font-bold text-red-600")}>{deuteriumCost.toLocaleString()}</span></div>
             {energyCost > 0 && (
-              <div className="flex items-center justify-between"><span className="text-slate-600">Energy</span><span className={cn(resources.energy < energyCost && "font-bold text-red-600")}>{energyCost.toLocaleString()}</span></div>
+              <div className="flex items-center justify-between"><span className="text-[var(--sd-text-secondary)]">Energy</span><span className={cn(resources.energy < energyCost && "font-bold text-red-600")}>{energyCost.toLocaleString()}</span></div>
             )}
-            <div className="flex items-center justify-between pt-1 text-xs text-slate-500"><span>Duration</span><span>{buildTime / 1000}s</span></div>
+            <div className="flex items-center justify-between pt-1 text-xs text-[var(--sd-text-secondary)]"><span>Duration</span><span>{buildTime / 1000}s</span></div>
           </div>
         </div>
 
@@ -196,34 +196,34 @@ export default function Research() {
         </div>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-          <Card className="border-slate-200 bg-white">
+          <Card className="border-[var(--sd-panel-border)] bg-[var(--sd-panel-top)]">
             <CardContent className="pt-6">
-              <div className="text-xs uppercase tracking-widest text-slate-500">Research Levels</div>
+              <div className="text-xs uppercase tracking-widest text-[var(--sd-text-secondary)]">Research Levels</div>
               <div className="mt-1 text-2xl font-bold text-blue-700">{researchTotal}</div>
             </CardContent>
           </Card>
-          <Card className="border-slate-200 bg-white">
+          <Card className="border-[var(--sd-panel-border)] bg-[var(--sd-panel-top)]">
             <CardContent className="pt-6">
-              <div className="text-xs uppercase tracking-widest text-slate-500">Division Systems</div>
+              <div className="text-xs uppercase tracking-widest text-[var(--sd-text-secondary)]">Division Systems</div>
               <div className="mt-1 text-2xl font-bold text-violet-700">{TECHNOLOGY_DIVISION_COUNTS.totalSystems}</div>
             </CardContent>
           </Card>
-          <Card className="border-slate-200 bg-white">
+          <Card className="border-[var(--sd-panel-border)] bg-[var(--sd-panel-top)]">
             <CardContent className="pt-6">
-              <div className="text-xs uppercase tracking-widest text-slate-500">Active Division Tracks</div>
+              <div className="text-xs uppercase tracking-widest text-[var(--sd-text-secondary)]">Active Division Tracks</div>
               <div className="mt-1 text-2xl font-bold text-emerald-700">{activeDivisionSystems}</div>
             </CardContent>
           </Card>
-          <Card className="border-slate-200 bg-white">
+          <Card className="border-[var(--sd-panel-border)] bg-[var(--sd-panel-top)]">
             <CardContent className="pt-6">
-              <div className="text-xs uppercase tracking-widest text-slate-500">Kardashev Gate</div>
+              <div className="text-xs uppercase tracking-widest text-[var(--sd-text-secondary)]">Kardashev Gate</div>
               <div className="mt-1 text-2xl font-bold text-amber-700">Level {kardashevLevel}</div>
             </CardContent>
           </Card>
         </div>
 
         {researchQueue.length > 0 && (
-          <Card className="border-primary/20 bg-white shadow-sm">
+          <Card className="border-primary/20 bg-[var(--sd-panel-top)] shadow-sm">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm uppercase tracking-widest text-primary">Active Research</CardTitle>
             </CardHeader>
@@ -231,10 +231,10 @@ export default function Research() {
               {researchQueue.map((item) => {
                 const timeLeft = Math.max(0, Math.floor((item.endTime - Date.now()) / 1000));
                 return (
-                  <div key={item.id} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                    <div className="flex items-center justify-between text-sm font-medium text-slate-900">
+                  <div key={item.id} className="rounded-lg border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-3">
+                    <div className="flex items-center justify-between text-sm font-medium text-[var(--sd-text-primary)]">
                       <span>{item.name}</span>
-                      <span className="font-mono text-slate-500">{timeLeft}s</span>
+                      <span className="font-mono text-[var(--sd-text-secondary)]">{timeLeft}s</span>
                     </div>
                     <Progress value={Math.max(0, 100 - (timeLeft / 5) * 100)} className="mt-2 h-1.5" />
                   </div>
@@ -245,20 +245,20 @@ export default function Research() {
         )}
 
         <Tabs defaultValue="core-research" className="w-full">
-          <TabsList className="flex h-auto w-full flex-wrap justify-start gap-2 border border-slate-200 bg-slate-50 p-2">
-            <TabsTrigger value="core-research" className="font-orbitron data-[state=active]:bg-white">Core Research</TabsTrigger>
-            <TabsTrigger value="division-matrix" className="font-orbitron data-[state=active]:bg-white">
+          <TabsList className="flex h-auto w-full flex-wrap justify-start gap-2 border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-2">
+            <TabsTrigger value="core-research" className="font-orbitron data-[state=active]:bg-[var(--sd-panel-top)]">Core Research</TabsTrigger>
+            <TabsTrigger value="division-matrix" className="font-orbitron data-[state=active]:bg-[var(--sd-panel-top)]">
               Division Matrix {TECHNOLOGY_DIVISION_COUNTS.divisions} x {TECHNOLOGY_DIVISION_COUNTS.systemsPerDivision}
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="core-research" className="mt-6 space-y-6">
             <Tabs defaultValue="physics" className="w-full">
-              <TabsList className="grid h-14 w-full grid-cols-3 border border-slate-200 bg-white p-1">
+              <TabsList className="grid h-14 w-full grid-cols-3 border border-[var(--sd-panel-border)] bg-[var(--sd-panel-top)] p-1">
                 {areas.map((area) => {
                   const Icon = area.icon;
                   return (
-                    <TabsTrigger key={area.id} value={area.id} className="flex h-full gap-2 font-orbitron data-[state=active]:bg-slate-50">
+                    <TabsTrigger key={area.id} value={area.id} className="flex h-full gap-2 font-orbitron data-[state=active]:bg-[var(--sd-panel-bottom)]">
                       <Icon className="h-5 w-5" /> {area.label}
                     </TabsTrigger>
                   );
@@ -284,36 +284,36 @@ export default function Research() {
           </TabsContent>
 
           <TabsContent value="division-matrix" className="mt-6 space-y-6">
-            <Card className="border-slate-200 bg-slate-50">
+            <Card className="border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)]">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg">Technology Division Matrix</CardTitle>
               </CardHeader>
               <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-4 text-sm">
-                <div className="rounded-lg border border-slate-200 bg-white p-4">
-                  <div className="text-xs uppercase tracking-widest text-slate-500">Divisions</div>
-                  <div className="mt-1 text-2xl font-bold text-slate-900">{TECHNOLOGY_DIVISION_COUNTS.divisions}</div>
+                <div className="rounded-lg border border-[var(--sd-panel-border)] bg-[var(--sd-panel-top)] p-4">
+                  <div className="text-xs uppercase tracking-widest text-[var(--sd-text-secondary)]">Divisions</div>
+                  <div className="mt-1 text-2xl font-bold text-[var(--sd-text-primary)]">{TECHNOLOGY_DIVISION_COUNTS.divisions}</div>
                 </div>
-                <div className="rounded-lg border border-slate-200 bg-white p-4">
-                  <div className="text-xs uppercase tracking-widest text-slate-500">Systems Per Division</div>
-                  <div className="mt-1 text-2xl font-bold text-slate-900">{TECHNOLOGY_DIVISION_COUNTS.systemsPerDivision}</div>
+                <div className="rounded-lg border border-[var(--sd-panel-border)] bg-[var(--sd-panel-top)] p-4">
+                  <div className="text-xs uppercase tracking-widest text-[var(--sd-text-secondary)]">Systems Per Division</div>
+                  <div className="mt-1 text-2xl font-bold text-[var(--sd-text-primary)]">{TECHNOLOGY_DIVISION_COUNTS.systemsPerDivision}</div>
                 </div>
-                <div className="rounded-lg border border-slate-200 bg-white p-4">
-                  <div className="text-xs uppercase tracking-widest text-slate-500">Total Division Levels</div>
+                <div className="rounded-lg border border-[var(--sd-panel-border)] bg-[var(--sd-panel-top)] p-4">
+                  <div className="text-xs uppercase tracking-widest text-[var(--sd-text-secondary)]">Total Division Levels</div>
                   <div className="mt-1 text-2xl font-bold text-violet-700">{technologyDivisionLevelTotal}</div>
                 </div>
-                <div className="rounded-lg border border-slate-200 bg-white p-4">
-                  <div className="text-xs uppercase tracking-widest text-slate-500">Tree Link</div>
-                  <div className="mt-1 text-sm font-medium text-slate-700">Each division uses a core tech as its anchor unlock.</div>
+                <div className="rounded-lg border border-[var(--sd-panel-border)] bg-[var(--sd-panel-top)] p-4">
+                  <div className="text-xs uppercase tracking-widest text-[var(--sd-text-secondary)]">Tree Link</div>
+                  <div className="mt-1 text-sm font-medium text-[var(--sd-text-secondary)]">Each division uses a core tech as its anchor unlock.</div>
                 </div>
               </CardContent>
             </Card>
 
             <Tabs defaultValue={TECHNOLOGY_DIVISIONS[0]?.id || "energy-systems"} className="w-full">
-              <TabsList className="flex h-auto w-full flex-wrap justify-start gap-2 border border-slate-200 bg-white p-2">
+              <TabsList className="flex h-auto w-full flex-wrap justify-start gap-2 border border-[var(--sd-panel-border)] bg-[var(--sd-panel-top)] p-2">
                 {TECHNOLOGY_DIVISIONS.map((division) => {
                   const Icon = DIVISION_ICON_MAP[division.icon as keyof typeof DIVISION_ICON_MAP] || Cpu;
                   return (
-                    <TabsTrigger key={division.id} value={division.id} className="data-[state=active]:bg-slate-50">
+                    <TabsTrigger key={division.id} value={division.id} className="data-[state=active]:bg-[var(--sd-panel-bottom)]">
                       <Icon className="mr-2 h-4 w-4" /> {division.name}
                     </TabsTrigger>
                   );
@@ -350,7 +350,7 @@ export default function Research() {
 
                 return (
                   <TabsContent key={division.id} value={division.id} className="mt-6 space-y-4">
-                    <Card className="border-slate-200 bg-slate-50">
+                    <Card className="border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)]">
                       <CardContent className="p-5">
                         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                           <div className="flex items-center gap-4">
@@ -358,23 +358,23 @@ export default function Research() {
                               <Icon className="h-6 w-6" />
                             </div>
                             <div>
-                              <div className="text-xs uppercase tracking-[0.18em] text-slate-500">Division {division.order}</div>
-                              <div className="mt-1 text-2xl font-bold text-slate-900">{division.name}</div>
-                              <div className="mt-1 text-sm text-slate-600">{division.summary}</div>
+                              <div className="text-xs uppercase tracking-[0.18em] text-[var(--sd-text-secondary)]">Division {division.order}</div>
+                              <div className="mt-1 text-2xl font-bold text-[var(--sd-text-primary)]">{division.name}</div>
+                              <div className="mt-1 text-sm text-[var(--sd-text-secondary)]">{division.summary}</div>
                             </div>
                           </div>
                           <div className="grid grid-cols-1 gap-3 text-sm md:grid-cols-3">
-                            <div className="rounded-lg border border-slate-200 bg-white p-3">
-                              <div className="text-xs uppercase tracking-widest text-slate-500">Anchor Tech</div>
-                              <div className="mt-1 font-semibold text-slate-900">{division.anchorTechLabel} L{anchorLevel}</div>
+                            <div className="rounded-lg border border-[var(--sd-panel-border)] bg-[var(--sd-panel-top)] p-3">
+                              <div className="text-xs uppercase tracking-widest text-[var(--sd-text-secondary)]">Anchor Tech</div>
+                              <div className="mt-1 font-semibold text-[var(--sd-text-primary)]">{division.anchorTechLabel} L{anchorLevel}</div>
                             </div>
-                            <div className="rounded-lg border border-slate-200 bg-white p-3">
-                              <div className="text-xs uppercase tracking-widest text-slate-500">Completed Systems</div>
-                              <div className="mt-1 font-semibold text-slate-900">{divisionCompleted} / {TECHNOLOGY_DIVISION_COUNTS.systemsPerDivision}</div>
+                            <div className="rounded-lg border border-[var(--sd-panel-border)] bg-[var(--sd-panel-top)] p-3">
+                              <div className="text-xs uppercase tracking-widest text-[var(--sd-text-secondary)]">Completed Systems</div>
+                              <div className="mt-1 font-semibold text-[var(--sd-text-primary)]">{divisionCompleted} / {TECHNOLOGY_DIVISION_COUNTS.systemsPerDivision}</div>
                             </div>
-                            <div className="rounded-lg border border-slate-200 bg-white p-3">
-                              <div className="text-xs uppercase tracking-widest text-slate-500">Specialty</div>
-                              <div className="mt-1 font-semibold text-slate-900">{division.specialty}</div>
+                            <div className="rounded-lg border border-[var(--sd-panel-border)] bg-[var(--sd-panel-top)] p-3">
+                              <div className="text-xs uppercase tracking-widest text-[var(--sd-text-secondary)]">Specialty</div>
+                              <div className="mt-1 font-semibold text-[var(--sd-text-primary)]">{division.specialty}</div>
                             </div>
                           </div>
                         </div>
@@ -383,12 +383,12 @@ export default function Research() {
 
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
                       {divisionSystems.map((system) => (
-                        <Card key={system.id} className={cn("border-slate-200 bg-white shadow-sm", !system.unlocked && "opacity-80")} data-testid={`card-division-${system.id}`}>
+                        <Card key={system.id} className={cn("border-[var(--sd-panel-border)] bg-[var(--sd-panel-top)] shadow-sm", !system.unlocked && "opacity-80")} data-testid={`card-division-${system.id}`}>
                           <CardHeader className="pb-2">
                             <div className="flex items-start justify-between gap-3">
                               <div>
-                                <CardTitle className="text-base text-slate-900">{system.name}</CardTitle>
-                                <div className="mt-1 text-xs uppercase tracking-[0.18em] text-slate-500">
+                                <CardTitle className="text-base text-[var(--sd-text-primary)]">{system.name}</CardTitle>
+                                <div className="mt-1 text-xs uppercase tracking-[0.18em] text-[var(--sd-text-secondary)]">
                                   Node {system.sequence} • Level {system.level}
                                 </div>
                               </div>
@@ -398,42 +398,42 @@ export default function Research() {
                             </div>
                           </CardHeader>
                           <CardContent className="space-y-4">
-                            <p className="text-sm text-slate-600">{system.description}</p>
+                            <p className="text-sm text-[var(--sd-text-secondary)]">{system.description}</p>
 
-                            <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                              <div className="text-xs uppercase tracking-widest text-slate-500">Specialty Effect</div>
-                              <div className="mt-1 text-sm font-medium text-slate-900">{system.effect}</div>
+                            <div className="rounded-lg border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-3">
+                              <div className="text-xs uppercase tracking-widest text-[var(--sd-text-secondary)]">Specialty Effect</div>
+                              <div className="mt-1 text-sm font-medium text-[var(--sd-text-primary)]">{system.effect}</div>
                             </div>
 
                             <div className="grid grid-cols-2 gap-3">
-                              <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                                <div className="text-xs uppercase tracking-widest text-slate-500">Current Bonus</div>
+                              <div className="rounded-lg border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-3">
+                                <div className="text-xs uppercase tracking-widest text-[var(--sd-text-secondary)]">Current Bonus</div>
                                 <div className="mt-1 text-lg font-bold text-emerald-700">+{system.snapshot.currentBonus}%</div>
                               </div>
-                              <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                                <div className="text-xs uppercase tracking-widest text-slate-500">Next Level</div>
+                              <div className="rounded-lg border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-3">
+                                <div className="text-xs uppercase tracking-widest text-[var(--sd-text-secondary)]">Next Level</div>
                                 <div className="mt-1 text-lg font-bold text-blue-700">+{system.snapshot.nextBonus}%</div>
                               </div>
                             </div>
 
-                            <div className="rounded-lg border border-dashed border-slate-200 bg-white p-3 text-sm">
-                              <div className="mb-2 text-xs uppercase tracking-widest text-slate-500">Unlock Requirements</div>
-                              <div className="space-y-1 text-slate-700">
+                            <div className="rounded-lg border border-dashed border-[var(--sd-panel-border)] bg-[var(--sd-panel-top)] p-3 text-sm">
+                              <div className="mb-2 text-xs uppercase tracking-widest text-[var(--sd-text-secondary)]">Unlock Requirements</div>
+                              <div className="space-y-1 text-[var(--sd-text-secondary)]">
                                 <div>{division.anchorTechLabel}: {anchorLevel} / {system.requirements.anchorResearchLevel}</div>
                                 <div>Kardashev Level: {kardashevLevel} / {system.requirements.kardashevLevel}</div>
                                 <div>Prior Systems: {divisionCompleted} / {system.requirements.priorSystems}</div>
                               </div>
                             </div>
 
-                            <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm">
-                              <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-widest text-slate-500">
+                            <div className="rounded-lg border border-[var(--sd-panel-border)] bg-[var(--sd-panel-bottom)] p-3 text-sm">
+                              <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-widest text-[var(--sd-text-secondary)]">
                                 <TrendingUp className="h-3.5 w-3.5 text-primary" /> Upgrade Costs
                               </div>
                               <div className="space-y-1">
-                                <div className="flex items-center justify-between"><span className="text-slate-600">Metal</span><span className={cn(resources.metal < system.snapshot.cost.metal && "font-bold text-red-600")}>{system.snapshot.cost.metal.toLocaleString()}</span></div>
-                                <div className="flex items-center justify-between"><span className="text-slate-600">Crystal</span><span className={cn(resources.crystal < system.snapshot.cost.crystal && "font-bold text-red-600")}>{system.snapshot.cost.crystal.toLocaleString()}</span></div>
-                                <div className="flex items-center justify-between"><span className="text-slate-600">Deuterium</span><span className={cn(resources.deuterium < system.snapshot.cost.deuterium && "font-bold text-red-600")}>{system.snapshot.cost.deuterium.toLocaleString()}</span></div>
-                                <div className="flex items-center justify-between pt-1 text-xs text-slate-500"><span className="flex items-center gap-1"><Clock className="h-3 w-3" /> Upgrade Time</span><span>{system.snapshot.buildTimeSeconds}s</span></div>
+                                <div className="flex items-center justify-between"><span className="text-[var(--sd-text-secondary)]">Metal</span><span className={cn(resources.metal < system.snapshot.cost.metal && "font-bold text-red-600")}>{system.snapshot.cost.metal.toLocaleString()}</span></div>
+                                <div className="flex items-center justify-between"><span className="text-[var(--sd-text-secondary)]">Crystal</span><span className={cn(resources.crystal < system.snapshot.cost.crystal && "font-bold text-red-600")}>{system.snapshot.cost.crystal.toLocaleString()}</span></div>
+                                <div className="flex items-center justify-between"><span className="text-[var(--sd-text-secondary)]">Deuterium</span><span className={cn(resources.deuterium < system.snapshot.cost.deuterium && "font-bold text-red-600")}>{system.snapshot.cost.deuterium.toLocaleString()}</span></div>
+                                <div className="flex items-center justify-between pt-1 text-xs text-[var(--sd-text-secondary)]"><span className="flex items-center gap-1"><Clock className="h-3 w-3" /> Upgrade Time</span><span>{system.snapshot.buildTimeSeconds}s</span></div>
                               </div>
                             </div>
 

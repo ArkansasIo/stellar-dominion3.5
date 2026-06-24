@@ -9,9 +9,7 @@ import {
   BUILDING_FACTORY_JOB_META,
   ENTITY_ARCHETYPES_90,
   ENTITY_ARCHETYPES_META,
-  CIVILIZATION_MILITARY_JOB_ARCHETYPES_90,
   CIVILIZATION_MILITARY_JOB_META,
-  getJobArchetypesByDomain,
   estimateFoodWaterForJobAssignments,
   estimateProductivityForAssignments,
   FRAME_SYSTEMS,
@@ -101,59 +99,6 @@ export function registerLifeSupportRoutes(app: Express) {
       success: true,
       total: ENTITY_ARCHETYPES_90.length,
       meta: ENTITY_ARCHETYPES_META,
-    });
-  });
-
-  app.get("/api/config/civilization-jobs", (_req: Request, res: Response) => {
-    res.json({
-      success: true,
-      total: CIVILIZATION_MILITARY_JOB_ARCHETYPES_90.length,
-      items: CIVILIZATION_MILITARY_JOB_ARCHETYPES_90,
-    });
-  });
-
-  app.get("/api/config/civilization-jobs/meta", (_req: Request, res: Response) => {
-    res.json({
-      success: true,
-      meta: CIVILIZATION_MILITARY_JOB_META,
-    });
-  });
-
-  app.get("/api/config/civilization-jobs/domain/:domain", (req: Request, res: Response) => {
-    const domain = String(req.params.domain || "").toLowerCase();
-    if (domain !== "civilization" && domain !== "military") {
-      return res.status(400).json({ success: false, message: "Invalid domain" });
-    }
-
-    res.json({
-      success: true,
-      domain,
-      total: getJobArchetypesByDomain(domain).length,
-      items: getJobArchetypesByDomain(domain),
-    });
-  });
-
-  app.post("/api/config/civilization-jobs/projection", (req: Request, res: Response) => {
-    const assignments = Array.isArray(req.body?.assignments) ? req.body.assignments : [];
-    const normalizedAssignments = assignments
-      .map((entry: any) => ({
-        jobId: String(entry?.jobId || "").trim(),
-        count: Math.max(0, toNumber(entry?.count, 0)),
-      }))
-      .filter((entry: { jobId: string; count: number }) => entry.jobId.length > 0 && entry.count > 0);
-
-    const resourceDemand = estimateFoodWaterForJobAssignments(normalizedAssignments);
-    const projectedProductivity = estimateProductivityForAssignments(normalizedAssignments);
-
-    res.json({
-      success: true,
-      assignments: normalizedAssignments,
-      projection: {
-        workforce: resourceDemand.workforce,
-        projectedProductivity,
-        foodDemandPerHour: resourceDemand.foodDemandPerHour,
-        waterDemandPerHour: resourceDemand.waterDemandPerHour,
-      },
     });
   });
 

@@ -671,10 +671,53 @@ export default function Stations() {
     },
   });
 
-  const [infrastructureBuildCounts, setInfrastructureBuildCounts] = useState<Record<string, number>>({});
+  const { data: infrastructureData, refetch: refetchInfrastructure } = useQuery<any>({
+    queryKey: ["orbital-stations-infrastructure"],
+    queryFn: async () => {
+      const response = await fetch("/api/orbital-stations/infrastructure", { credentials: "include" });
+      if (!response.ok) throw new Error("Failed to fetch infrastructure");
+      return response.json();
+    },
+  });
+
+  const { data: stationScores } = useQuery<any>({
+    queryKey: ["orbital-stations-scores"],
+    queryFn: async () => {
+      const response = await fetch("/api/orbital-stations/scores", { credentials: "include" });
+      if (!response.ok) throw new Error("Failed to fetch scores");
+      return response.json();
+    },
+  });
+
+  const infraDeployMutation = useMutation({
+    mutationFn: async (body: { stationId: string; name: string; category: string; subCategory: string; stationClass: string }) => {
+      const res = await fetch("/api/orbital-stations/infrastructure/deploy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null);
+        throw new Error(errData?.message || "Failed to deploy infrastructure");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Infrastructure Deployed", description: "Station deployed and saved." });
+      refetchInfrastructure();
+    },
+    onError: (err: any) => {
+      toast({ title: "Deployment Failed", description: err.message, variant: "destructive" });
+    },
+  });
 
   const totalFacilityLevels = Object.values(buildingLevels).reduce<number>((sum, level) => sum + level, 0);
-  const totalInfrastructureBuilt = Object.values(infrastructureBuildCounts).reduce<number>((sum, count) => sum + count, 0);
+  const infrastructureBuildCounts = (infrastructureData?.infrastructure || []).reduce((acc: Record<string, number>, dep: any) => {
+    acc[dep.stationId] = (acc[dep.stationId] || 0) + dep.count;
+    return acc;
+  }, {} as Record<string, number>);
+  const totalInfrastructureBuilt = infrastructureData?.summary?.totalDeployed || 0;
   const totalStrongholds = Object.values(deployedStrongholds).reduce<number>((sum, count) => sum + count, 0);
   const averageCostFactor =
     activeBuildingPool.length > 0
@@ -763,11 +806,12 @@ export default function Stations() {
       return;
     }
 
-    const nextCount = (infrastructureBuildCounts[station.id] ?? 0) + 1;
-    setInfrastructureBuildCounts((current) => ({ ...current, [station.id]: nextCount }));
-    toast({
-      title: "Infrastructure deployed",
-      description: `${station.title} online. Total deployed: ${nextCount}.`,
+    infraDeployMutation.mutate({
+      stationId: station.id,
+      name: station.title,
+      category: station.category,
+      subCategory: station.subCategory,
+      stationClass: station.class,
     });
   };
 
@@ -1086,6 +1130,40 @@ export default function Stations() {
                     </div>
                   </CardContent>
                 </Card>
+
+                {/* Station Scores Breakdown */}
+                {stationScores?.scores && stationScores.scores.length > 0 && (
+                  <Card className="bg-slate-900/60 border-slate-800 text-white">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <TrendingUp className="w-5 h-5 text-amber-400" /> Station Scores Breakdown
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {stationScores.scores.map((s: any) => (
+                          <div key={s.id} className="p-3 bg-slate-950/40 rounded border border-slate-850">
+                            <div className="font-bold text-white text-sm mb-2">{s.name}</div>
+                            <div className="grid grid-cols-3 gap-2 text-xs">
+                              <div className="text-center">
+                                <div className="text-emerald-400 font-bold">{s.defenseScore}</div>
+                                <div className="text-slate-500">Defense</div>
+                              </div>
+                              <div className="text-center">
+                                <div className="text-rose-400 font-bold">{s.offenseScore}</div>
+                                <div className="text-slate-500">Offense</div>
+                              </div>
+                              <div className="text-center">
+                                <div className="text-amber-400 font-bold">{s.production.metal}/{s.production.crystal}/{s.production.deuterium}</div>
+                                <div className="text-slate-500">Prod.</div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
 
                 {/* Built Station Cards */}
                 {orbitalStatus?.stations && orbitalStatus.stations.length > 0 ? (
