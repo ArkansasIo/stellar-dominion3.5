@@ -61,6 +61,88 @@ async function ensureDevBypassUser() {
 
   user = await syncDevPasswordIfNeeded(user, defaultPassword, "Dev bypass");
 
+  // Ensure player state exists for dev bypass user
+  const existingState = await storage.getPlayerState(user.id);
+  if (!existingState) {
+    await storage.createPlayerState({
+      userId: user.id,
+      setupComplete: true,
+      planetName: "Dev Colony",
+      coordinates: "[1:1:1]",
+      knownPlanets: [],
+      travelState: { activeRoute: null, discoveredWormholes: [] },
+      travelLog: [],
+      resources: { metal: 10000, crystal: 5000, deuterium: 1000, energy: 500 },
+      buildings: { roboticsFactory: 5, shipyard: 3, researchLab: 5 },
+      orbitalBuildings: {},
+      research: {},
+      researchQueue: [],
+      researchHistory: [],
+      activeResearch: null,
+      researchBonuses: [],
+      researchModifiers: [],
+      researchLab: { type: "standard", level: 5, specialization: "general", durability: 100 },
+      availableLabs: [],
+      turnsData: {
+        totalTurnsGenerated: 100,
+        currentTurn: 100,
+        lastTurnTimestamp: Date.now(),
+        turnsAvailable: 50,
+        currentResearchTurns: 0,
+        researchTurnHistory: []
+      },
+      researchXP: {
+        totalXP: 0,
+        currentLevelXP: 0,
+        currentLevel: 1,
+        researchesCompleted: 0,
+        discoveredTechs: [],
+        discoveries: [],
+        discoveryStreak: 0,
+        lastDiscoveryTime: 0,
+        discoveryMultiplier: 1.0
+      },
+      units: {},
+      commander: {
+        race: "human",
+        class: "warrior",
+        stats: { level: 10, xp: 500, warfare: 10, logistics: 5, engineering: 5 },
+        equipment: {},
+        inventory: [],
+        title: "Dev Commander"
+      },
+      government: {
+        type: "democracy",
+        taxRate: 10,
+        policies: [],
+        stats: { stability: 80, efficiency: 85, publicSupport: 75, militaryReadiness: 70 }
+      },
+      artifacts: [],
+      cronJobs: [],
+      smithyState: null,
+      bankVaultState: null,
+      orbitalStations: null,
+      sporeDriveState: null,
+      moonsData: {},
+      activeRaids: [],
+      expeditionsData: [],
+      eventParticipation: [],
+      empireLevel: 5,
+      empireExperience: 5000,
+      tier: 3,
+      tierExperience: 25000,
+      prestigeLevel: 0,
+      prestigeBonus: { resourceMultiplier: 1.5, experienceMultiplier: 1.5, researchMultiplier: 1.5 },
+      tierBonuses: {},
+      kardashevProgress: { metal: 100, crystal: 50, deuterium: 20, research: 30 },
+      totalTurns: 100,
+      currentTurns: 50,
+      lastTurnUpdate: new Date(),
+      lastResourceUpdate: new Date(),
+    });
+    logger.info("AUTH", `Dev bypass player state created for: ${username}`);
+  }
+
   const [adminRecord] = await db
     .select({ id: adminUsers.id })
     .from(adminUsers)
@@ -104,7 +186,7 @@ export function getSession() {
     sessionStore = new PgSession({
       pool,
       tableName: "user_sessions",
-      createTableIfMissing: true,
+      createTableIfMissing: false,
     });
     logger.info("AUTH", "Using PostgreSQL session store");
   }
