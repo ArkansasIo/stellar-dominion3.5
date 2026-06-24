@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   LayoutDashboard, Pickaxe, Factory, FlaskConical, Rocket, Send, Globe,
-  Zap, Database, Box, Gem, User, Landmark, Mail, Shield, Hexagon, ShoppingBag, Orbit, Sword, Eye
+  Zap, Database, Box, Gem, User, Landmark, Mail, Shield, Hexagon, ShoppingBag, Orbit, Sword, Eye, Warehouse
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +16,7 @@ const navItems = [
   { href: "/blueprints", icon: Factory, label: "Blueprints" },
   { href: "/shipyard", icon: Rocket, label: "Shipyard" },
   { href: "/fleet", icon: Send, label: "Fleet" },
+  { href: "/fleet-yard", icon: Warehouse, label: "Fleet Yard" },
   { href: "/combat", icon: Sword, label: "Combat" },
   { href: "/battle-logs", icon: Eye, label: "Battle Logs" },
   { href: "/exploration", icon: Orbit, label: "Exploration" },
@@ -39,7 +40,7 @@ export default function Navigation() {
     },
     {
       title: "Military",
-      items: navItems.filter((item) => ["/shipyard", "/fleet", "/combat", "/battle-logs"].includes(item.href)),
+      items: navItems.filter((item) => ["/shipyard", "/fleet", "/fleet-yard", "/combat", "/battle-logs"].includes(item.href)),
     },
     {
       title: "Galaxy & Social",

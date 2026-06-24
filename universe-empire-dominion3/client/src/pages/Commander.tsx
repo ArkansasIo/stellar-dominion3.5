@@ -13,7 +13,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { 
   User, Sword, Shield, Cpu, Hammer, Anvil, Sparkles, 
   Box, Gem, Database, Flame, Star, Fingerprint, Dna, FlaskConical,
-   Trophy, Target, Rocket, Medal, Award, Crown, Zap, Heart, History, Dice6, Stars, TreePine
+   Trophy, Target, Rocket, Medal, Award, Crown, Zap, Heart, History, Dice6, Stars, TreePine,
+   Save, Pencil, Trash2, Check, X
 } from "lucide-react";
 import {
    Item,
@@ -278,7 +279,18 @@ export default function Commander() {
       setHomeWorldName,
       setCommanderIdentity,
       upgradeCommanderSkill,
+      loadoutPresets,
+      saveLoadout,
+      loadLoadout,
+      deleteLoadout,
+      renameLoadout,
+      unequipAll,
+      equipAll,
+      autoOptimize,
    } = useGame();
+   const [presetName, setPresetName] = useState("");
+   const [editingPresetId, setEditingPresetId] = useState<string | null>(null);
+   const [editingPresetName, setEditingPresetName] = useState("");
    const [selectedRace, setSelectedRace] = useState<RaceId>(commander?.race || "terran");
    const [selectedClass, setSelectedClass] = useState<ClassId>(commander?.class || "admiral");
   const [selectedSubClass, setSelectedSubClass] = useState<SubClassId | "none">(commander?.subClass || "none");
@@ -870,167 +882,231 @@ export default function Commander() {
              </div>
           </TabsContent>
 
-          <TabsContent value="loadout" className="mt-6">
-             <div className="space-y-6">
-                <Card className="bg-white border-slate-200" data-testid="card-loadout-system">
-                   <CardHeader>
-                      <CardTitle className="flex items-center gap-2 text-slate-900"><Shield className="w-5 h-5 text-indigo-600" /> Commander Equipment & Inventory Slots</CardTitle>
-                      <CardDescription>Full loadout matrix with slot states, inventory pools, and tactical readiness outputs.</CardDescription>
-                   </CardHeader>
-                   <CardContent className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
-                         {COMMANDER_EQUIPMENT_SLOT_DEFINITIONS.map((slot) => (
-                           <div key={slot.id} className="rounded border border-slate-200 bg-slate-50 p-3">
-                             <div className="text-xs uppercase text-slate-500">{slot.label}</div>
-                             <div className="font-semibold text-slate-900 mt-1">{loadoutSummary.slots[slot.id]?.name || "Unassigned"}</div>
-                           </div>
-                         ))}
-                      </div>
+           <TabsContent value="loadout" className="mt-6">
+              <div className="space-y-6">
+                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Card className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white border-0">
+                       <CardHeader className="pb-2">
+                          <CardTitle className="text-white text-sm font-orbitron flex items-center gap-2"><Zap className="w-4 h-4" /> Power Score</CardTitle>
+                       </CardHeader>
+                       <CardContent>
+                          <div className="text-3xl font-bold">{loadoutSummary.subAttributes.equipmentScore || 0}</div>
+                          <div className="text-indigo-200 text-xs mt-1">Equipment Score</div>
+                       </CardContent>
+                    </Card>
+                    <Card className="bg-white border-slate-200">
+                       <CardHeader className="pb-2">
+                          <CardTitle className="text-slate-900 text-sm font-orbitron flex items-center gap-2"><Shield className="w-4 h-4 text-indigo-600" /> Loadout Actions</CardTitle>
+                       </CardHeader>
+                       <CardContent className="flex flex-wrap gap-2">
+                          <Button size="sm" variant="outline" onClick={equipAll} title="Fill empty slots with best-rarity items"><Box className="w-4 h-4 mr-1" /> Equip All</Button>
+                          <Button size="sm" variant="outline" onClick={unequipAll} title="Remove all equipped items"><Box className="w-4 h-4 mr-1" /> Unequip All</Button>
+                          <Button size="sm" variant="secondary" onClick={autoOptimize} title="Optimize each slot for best power score"><Zap className="w-4 h-4 mr-1" /> Auto-Optimize</Button>
+                       </CardContent>
+                    </Card>
+                    <Card className="bg-white border-slate-200">
+                       <CardHeader className="pb-2">
+                          <CardTitle className="text-slate-900 text-sm font-orbitron flex items-center gap-2"><Save className="w-4 h-4 text-emerald-600" /> Loadout Presets</CardTitle>
+                       </CardHeader>
+                       <CardContent className="space-y-2">
+                          <div className="flex gap-2">
+                             <Input
+                                placeholder="Preset name..."
+                                value={presetName}
+                                onChange={(e) => setPresetName(e.target.value)}
+                                className="h-8 text-xs"
+                             />
+                             <Button size="sm" onClick={() => { saveLoadout(presetName); setPresetName(""); }} disabled={!presetName.trim()} className="h-8">Save</Button>
+                          </div>
+                          {loadoutPresets.length > 0 && (
+                             <ScrollArea className="max-h-32">
+                                {loadoutPresets.map((p) => (
+                                   <div key={p.id} className="flex items-center gap-1 py-1 border-b border-slate-100 last:border-0">
+                                      {editingPresetId === p.id ? (
+                                         <div className="flex gap-1 flex-1">
+                                            <Input
+                                               value={editingPresetName}
+                                               onChange={(e) => setEditingPresetName(e.target.value)}
+                                               className="h-7 text-xs flex-1"
+                                               autoFocus
+                                            />
+                                            <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => { renameLoadout(p.id, editingPresetName); setEditingPresetId(null); }}><Check className="w-3 h-3" /></Button>
+                                            <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => setEditingPresetId(null)}><X className="w-3 h-3" /></Button>
+                                         </div>
+                                      ) : (
+                                         <>
+                                            <Button size="sm" variant="ghost" className="flex-1 justify-start text-xs h-7 px-2" onClick={() => loadLoadout(p.id)}>{p.name}</Button>
+                                            <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => { setEditingPresetId(p.id); setEditingPresetName(p.name); }}><Pencil className="w-3 h-3" /></Button>
+                                            <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-500 hover:text-red-600" onClick={() => deleteLoadout(p.id)}><Trash2 className="w-3 h-3" /></Button>
+                                         </>
+                                      )}
+                                   </div>
+                                ))}
+                             </ScrollArea>
+                          )}
+                       </CardContent>
+                    </Card>
+                 </div>
 
-                      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                         <div className="rounded border border-slate-200 bg-white p-3"><div className="text-xs text-slate-500 uppercase">Weapons</div><div className="text-xl font-bold text-slate-900">{loadoutSummary.inventoryByType.weapon}</div></div>
-                         <div className="rounded border border-slate-200 bg-white p-3"><div className="text-xs text-slate-500 uppercase">Armor</div><div className="text-xl font-bold text-slate-900">{loadoutSummary.inventoryByType.armor}</div></div>
-                         <div className="rounded border border-slate-200 bg-white p-3"><div className="text-xs text-slate-500 uppercase">Modules</div><div className="text-xl font-bold text-slate-900">{loadoutSummary.inventoryByType.module}</div></div>
-                         <div className="rounded border border-slate-200 bg-white p-3"><div className="text-xs text-slate-500 uppercase">Blueprints</div><div className="text-xl font-bold text-slate-900">{loadoutSummary.inventoryByType.blueprint}</div></div>
-                         <div className="rounded border border-slate-200 bg-white p-3"><div className="text-xs text-slate-500 uppercase">Materials</div><div className="text-xl font-bold text-slate-900">{loadoutSummary.inventoryByType.material}</div></div>
-                      </div>
-                      <div className="rounded border border-indigo-200 bg-indigo-50 p-3 text-sm text-indigo-900">
-                        Active Loadout Slots: <span className="font-semibold">{loadoutSummary.subAttributes.activeSlots}</span> / {COMMANDER_EQUIPMENT_SLOT_DEFINITIONS.length}
-                      </div>
-                   </CardContent>
-                </Card>
+                 <Card className="bg-white border-slate-200" data-testid="card-loadout-system">
+                    <CardHeader>
+                       <CardTitle className="flex items-center gap-2 text-slate-900"><Shield className="w-5 h-5 text-indigo-600" /> Commander Equipment & Inventory Slots</CardTitle>
+                       <CardDescription>Full loadout matrix with slot states, inventory pools, and tactical readiness outputs.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
+                          {COMMANDER_EQUIPMENT_SLOT_DEFINITIONS.map((slot) => (
+                            <div key={slot.id} className="rounded border border-slate-200 bg-slate-50 p-3">
+                              <div className="text-xs uppercase text-slate-500">{slot.label}</div>
+                              <div className="font-semibold text-slate-900 mt-1">{loadoutSummary.slots[slot.id]?.name || "Unassigned"}</div>
+                            </div>
+                          ))}
+                       </div>
 
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                   <Card className="bg-white border-slate-200">
-                      <CardHeader>
-                         <CardTitle className="text-slate-900 text-base">Core Stats & Sub Stats</CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-3">
-                         <div className="grid grid-cols-2 gap-2 text-sm">
-                            <div className="rounded border border-slate-200 bg-slate-50 p-2">Warfare: <span className="font-semibold">{loadoutSummary.coreStats.warfare}</span></div>
-                            <div className="rounded border border-slate-200 bg-slate-50 p-2">Logistics: <span className="font-semibold">{loadoutSummary.coreStats.logistics}</span></div>
-                            <div className="rounded border border-slate-200 bg-slate-50 p-2">Science: <span className="font-semibold">{loadoutSummary.coreStats.science}</span></div>
-                            <div className="rounded border border-slate-200 bg-slate-50 p-2">Engineering: <span className="font-semibold">{loadoutSummary.coreStats.engineering}</span></div>
-                         </div>
-                         <Separator />
-                         <div className="grid grid-cols-2 gap-2 text-xs">
-                            {Object.entries(loadoutSummary.subStats).map(([key, value]) => (
-                               <div key={key} className="rounded border border-slate-200 px-2 py-1 bg-white flex justify-between">
-                                  <span className="capitalize">{key.replace(/([A-Z])/g, " $1")}</span>
-                                  <span className="font-semibold">{value}</span>
-                               </div>
-                            ))}
-                         </div>
-                      </CardContent>
-                   </Card>
+                       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                          <div className="rounded border border-slate-200 bg-white p-3"><div className="text-xs text-slate-500 uppercase">Weapons</div><div className="text-xl font-bold text-slate-900">{loadoutSummary.inventoryByType.weapon}</div></div>
+                          <div className="rounded border border-slate-200 bg-white p-3"><div className="text-xs text-slate-500 uppercase">Armor</div><div className="text-xl font-bold text-slate-900">{loadoutSummary.inventoryByType.armor}</div></div>
+                          <div className="rounded border border-slate-200 bg-white p-3"><div className="text-xs text-slate-500 uppercase">Modules</div><div className="text-xl font-bold text-slate-900">{loadoutSummary.inventoryByType.module}</div></div>
+                          <div className="rounded border border-slate-200 bg-white p-3"><div className="text-xs text-slate-500 uppercase">Blueprints</div><div className="text-xl font-bold text-slate-900">{loadoutSummary.inventoryByType.blueprint}</div></div>
+                          <div className="rounded border border-slate-200 bg-white p-3"><div className="text-xs text-slate-500 uppercase">Materials</div><div className="text-xl font-bold text-slate-900">{loadoutSummary.inventoryByType.material}</div></div>
+                       </div>
+                       <div className="rounded border border-indigo-200 bg-indigo-50 p-3 text-sm text-indigo-900">
+                         Active Loadout Slots: <span className="font-semibold">{loadoutSummary.subAttributes.activeSlots}</span> / {COMMANDER_EQUIPMENT_SLOT_DEFINITIONS.length}
+                       </div>
+                    </CardContent>
+                 </Card>
 
-                   <Card className="bg-white border-slate-200">
-                      <CardHeader>
-                         <CardTitle className="text-slate-900 text-base">Attributes & Sub Attributes</CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-3">
-                         <div className="grid grid-cols-2 gap-2 text-xs">
-                            {Object.entries(loadoutSummary.attributes).map(([key, value]) => (
-                               <div key={key} className="rounded border border-indigo-200 bg-indigo-50 px-2 py-1 flex justify-between">
-                                  <span className="capitalize">{key}</span>
-                                  <span className="font-semibold text-indigo-900">{value}</span>
-                               </div>
-                            ))}
-                         </div>
-                         <Separator />
-                         <div className="grid grid-cols-2 gap-2 text-xs">
-                            {Object.entries(loadoutSummary.subAttributes).map(([key, value]) => (
-                               <div key={key} className="rounded border border-slate-200 px-2 py-1 bg-white flex justify-between">
-                                  <span className="capitalize">{key.replace(/([A-Z])/g, " $1")}</span>
-                                  <span className="font-semibold">{value}</span>
-                               </div>
-                            ))}
-                         </div>
-                      </CardContent>
-                   </Card>
-                </div>
+                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                    <Card className="bg-white border-slate-200">
+                       <CardHeader>
+                          <CardTitle className="text-slate-900 text-base">Core Stats & Sub Stats</CardTitle>
+                       </CardHeader>
+                       <CardContent className="space-y-3">
+                          <div className="grid grid-cols-2 gap-2 text-sm">
+                             <div className="rounded border border-slate-200 bg-slate-50 p-2">Warfare: <span className="font-semibold">{loadoutSummary.coreStats.warfare}</span></div>
+                             <div className="rounded border border-slate-200 bg-slate-50 p-2">Logistics: <span className="font-semibold">{loadoutSummary.coreStats.logistics}</span></div>
+                             <div className="rounded border border-slate-200 bg-slate-50 p-2">Science: <span className="font-semibold">{loadoutSummary.coreStats.science}</span></div>
+                             <div className="rounded border border-slate-200 bg-slate-50 p-2">Engineering: <span className="font-semibold">{loadoutSummary.coreStats.engineering}</span></div>
+                          </div>
+                          <Separator />
+                          <div className="grid grid-cols-2 gap-2 text-xs">
+                             {Object.entries(loadoutSummary.subStats).map(([key, value]) => (
+                                <div key={key} className="rounded border border-slate-200 px-2 py-1 bg-white flex justify-between">
+                                   <span className="capitalize">{key.replace(/([A-Z])/g, " $1")}</span>
+                                   <span className="font-semibold">{value}</span>
+                                </div>
+                             ))}
+                          </div>
+                       </CardContent>
+                    </Card>
 
-                <Card className="bg-white border-slate-200">
-                   <CardHeader>
-                      <CardTitle className="flex items-center gap-2 text-slate-900"><Crown className="w-5 h-5 text-amber-600" /> Other Commanders Operations Matrix</CardTitle>
-                      <CardDescription>Assign recruited commanders to Fleet, Research, Governance, and Industry operational lanes.</CardDescription>
-                   </CardHeader>
-                   <CardContent>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4 text-xs">
-                         <div className="rounded border border-slate-200 bg-slate-50 p-2">Command Index: <span className="font-semibold">{commandDetailSummary.commandIndex}</span></div>
-                         <div className="rounded border border-slate-200 bg-slate-50 p-2">Governance Index: <span className="font-semibold">{commandDetailSummary.governanceIndex}</span></div>
-                         <div className="rounded border border-slate-200 bg-slate-50 p-2">Research Index: <span className="font-semibold">{commandDetailSummary.researchIndex}</span></div>
-                         <div className="rounded border border-slate-200 bg-slate-50 p-2">Logistics Index: <span className="font-semibold">{commandDetailSummary.logisticsIndex}</span></div>
-                      </div>
-                      {rosterScores.length === 0 ? (
-                         <div className="text-sm text-slate-500">No recruited commanders yet. Use the Gacha tab to build your roster.</div>
-                      ) : (
-                         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
-                            {rosterScores.slice(0, 12).map((entry) => (
-                               <div key={entry.instanceId} className="rounded border border-slate-200 bg-slate-50 p-3">
-                                  <div className="flex items-center justify-between">
-                                     <div className="font-semibold text-slate-900 text-sm truncate">{entry.name}</div>
-                                     <Badge variant="outline" className="text-[10px] uppercase">{entry.rarity}</Badge>
-                                  </div>
-                                  <div className="text-xs text-slate-500 mt-1">Role: {entry.role} - Type: {entry.type}</div>
-                                  <div className="grid grid-cols-3 gap-1 mt-2 text-[11px]">
-                                        <div className="rounded bg-white border border-slate-200 px-2 py-1">Cmd {entry.commandScore + governmentTieInBonuses.military}</div>
-                                        <div className="rounded bg-white border border-slate-200 px-2 py-1">Sup {entry.supportScore + governmentTieInBonuses.economy}</div>
-                                        <div className="rounded bg-amber-50 border border-amber-200 px-2 py-1">Syn {entry.synergy + governmentTieInBonuses.diplomacy + governmentTieInBonuses.stability}</div>
-                                  </div>
-                               </div>
-                            ))}
-                         </div>
-                      )}
-                   </CardContent>
-                </Card>
+                    <Card className="bg-white border-slate-200">
+                       <CardHeader>
+                          <CardTitle className="text-slate-900 text-base">Attributes & Sub Attributes</CardTitle>
+                       </CardHeader>
+                       <CardContent className="space-y-3">
+                          <div className="grid grid-cols-2 gap-2 text-xs">
+                             {Object.entries(loadoutSummary.attributes).map(([key, value]) => (
+                                <div key={key} className="rounded border border-indigo-200 bg-indigo-50 px-2 py-1 flex justify-between">
+                                   <span className="capitalize">{key}</span>
+                                   <span className="font-semibold text-indigo-900">{value}</span>
+                                </div>
+                             ))}
+                          </div>
+                          <Separator />
+                          <div className="grid grid-cols-2 gap-2 text-xs">
+                             {Object.entries(loadoutSummary.subAttributes).map(([key, value]) => (
+                                <div key={key} className="rounded border border-slate-200 px-2 py-1 bg-white flex justify-between">
+                                   <span className="capitalize">{key.replace(/([A-Z])/g, " $1")}</span>
+                                   <span className="font-semibold">{value}</span>
+                                </div>
+                             ))}
+                          </div>
+                       </CardContent>
+                    </Card>
+                 </div>
 
-                   <Card className="bg-white border-slate-200">
-                      <CardHeader>
-                         <CardTitle className="flex items-center gap-2 text-slate-900"><Award className="w-5 h-5 text-sky-600" /> Commander Detail Dossier</CardTitle>
-                         <CardDescription>Expanded detailed view of command structure, operational profile, and strategic posture.</CardDescription>
-                      </CardHeader>
-                      <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                         <div className="rounded border border-slate-200 bg-slate-50 p-3">
-                            <div className="font-semibold text-slate-900 mb-1">Profile</div>
-                            <div>Name: {commander.name}</div>
-                            <div>Callsign: {commanderProfileData?.profile?.callsign || "N/A"}</div>
-                            <div>Fleet Title: {commanderProfileData?.profile?.fleetTitle || "N/A"}</div>
-                            <div>Race: {RACES[commander.race]?.name}</div>
-                            <div>Class: {CLASSES[commander.class]?.name}</div>
-                            <div>Sub-Class: {commander.subClass ? SUBCLASSES[commander.subClass]?.name : "None"}</div>
-                         </div>
-                         <div className="rounded border border-slate-200 bg-slate-50 p-3">
-                            <div className="font-semibold text-slate-900 mb-1">Loadout</div>
-                            <div>Primary Weapon: {loadoutSummary.slots.primaryWeapon?.name || "None"}</div>
-                            <div>Armor Core: {loadoutSummary.slots.armorCore?.name || "None"}</div>
-                            <div>Command Module: {loadoutSummary.slots.commandModule?.name || "None"}</div>
-                            <div>Active Slots: {loadoutSummary.subAttributes.activeSlots} / {COMMANDER_EQUIPMENT_SLOT_DEFINITIONS.length}</div>
-                            <div>Equipment Score: {loadoutSummary.subAttributes.equipmentScore}</div>
-                         </div>
-                         <div className="rounded border border-slate-200 bg-slate-50 p-3">
-                            <div className="font-semibold text-slate-900 mb-1">Operational</div>
-                            <div>Command Power: {loadoutSummary.subStats.commandPower}</div>
-                            <div>Tactical Agility: {loadoutSummary.subStats.tacticalAgility}</div>
-                            <div>Sustainment: {loadoutSummary.subStats.sustainment}</div>
-                            <div>Research Cadence: {loadoutSummary.subStats.researchCadence}</div>
-                         </div>
-                         <div className="rounded border border-slate-200 bg-slate-50 p-3">
-                            <div className="font-semibold text-slate-900 mb-1">Government Tie-In</div>
-                            <div>Appointed Leaders: {activeGovernmentLeaders.length}</div>
-                            <div>Stability: +{governmentTieInBonuses.stability}</div>
-                            <div>Economy: +{governmentTieInBonuses.economy}</div>
-                            <div>Research: +{governmentTieInBonuses.research}</div>
-                         </div>
-                         <div className="rounded border border-slate-200 bg-slate-50 p-3 md:col-span-2">
-                            <div className="font-semibold text-slate-900 mb-1">Doctrine Notes</div>
-                            <div className="text-slate-700 whitespace-pre-wrap">{commanderProfileData?.profile?.doctrineNotes || "No doctrine notes saved yet."}</div>
-                            <div className="mt-2 text-slate-700 whitespace-pre-wrap">{commanderProfileData?.profile?.bio || "No commander bio saved yet."}</div>
-                         </div>
-                      </CardContent>
-                   </Card>
-             </div>
-          </TabsContent>
+                 <Card className="bg-white border-slate-200">
+                    <CardHeader>
+                       <CardTitle className="flex items-center gap-2 text-slate-900"><Crown className="w-5 h-5 text-amber-600" /> Other Commanders Operations Matrix</CardTitle>
+                       <CardDescription>Assign recruited commanders to Fleet, Research, Governance, and Industry operational lanes.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                       <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4 text-xs">
+                          <div className="rounded border border-slate-200 bg-slate-50 p-2">Command Index: <span className="font-semibold">{commandDetailSummary.commandIndex}</span></div>
+                          <div className="rounded border border-slate-200 bg-slate-50 p-2">Governance Index: <span className="font-semibold">{commandDetailSummary.governanceIndex}</span></div>
+                          <div className="rounded border border-slate-200 bg-slate-50 p-2">Research Index: <span className="font-semibold">{commandDetailSummary.researchIndex}</span></div>
+                          <div className="rounded border border-slate-200 bg-slate-50 p-2">Logistics Index: <span className="font-semibold">{commandDetailSummary.logisticsIndex}</span></div>
+                       </div>
+                       {rosterScores.length === 0 ? (
+                          <div className="text-sm text-slate-500">No recruited commanders yet. Use the Gacha tab to build your roster.</div>
+                       ) : (
+                          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+                             {rosterScores.slice(0, 12).map((entry) => (
+                                <div key={entry.instanceId} className="rounded border border-slate-200 bg-slate-50 p-3">
+                                   <div className="flex items-center justify-between">
+                                      <div className="font-semibold text-slate-900 text-sm truncate">{entry.name}</div>
+                                      <Badge variant="outline" className="text-[10px] uppercase">{entry.rarity}</Badge>
+                                   </div>
+                                   <div className="text-xs text-slate-500 mt-1">Role: {entry.role} - Type: {entry.type}</div>
+                                   <div className="grid grid-cols-3 gap-1 mt-2 text-[11px]">
+                                         <div className="rounded bg-white border border-slate-200 px-2 py-1">Cmd {entry.commandScore + governmentTieInBonuses.military}</div>
+                                         <div className="rounded bg-white border border-slate-200 px-2 py-1">Sup {entry.supportScore + governmentTieInBonuses.economy}</div>
+                                         <div className="rounded bg-amber-50 border border-amber-200 px-2 py-1">Syn {entry.synergy + governmentTieInBonuses.diplomacy + governmentTieInBonuses.stability}</div>
+                                   </div>
+                                </div>
+                             ))}
+                          </div>
+                       )}
+                    </CardContent>
+                 </Card>
+
+                    <Card className="bg-white border-slate-200">
+                       <CardHeader>
+                          <CardTitle className="flex items-center gap-2 text-slate-900"><Award className="w-5 h-5 text-sky-600" /> Commander Detail Dossier</CardTitle>
+                          <CardDescription>Expanded detailed view of command structure, operational profile, and strategic posture.</CardDescription>
+                       </CardHeader>
+                       <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                          <div className="rounded border border-slate-200 bg-slate-50 p-3">
+                             <div className="font-semibold text-slate-900 mb-1">Profile</div>
+                             <div>Name: {commander.name}</div>
+                             <div>Callsign: {commanderProfileData?.profile?.callsign || "N/A"}</div>
+                             <div>Fleet Title: {commanderProfileData?.profile?.fleetTitle || "N/A"}</div>
+                             <div>Race: {RACES[commander.race]?.name}</div>
+                             <div>Class: {CLASSES[commander.class]?.name}</div>
+                             <div>Sub-Class: {commander.subClass ? SUBCLASSES[commander.subClass]?.name : "None"}</div>
+                          </div>
+                          <div className="rounded border border-slate-200 bg-slate-50 p-3">
+                             <div className="font-semibold text-slate-900 mb-1">Loadout</div>
+                             <div>Primary Weapon: {loadoutSummary.slots.primaryWeapon?.name || "None"}</div>
+                             <div>Armor Core: {loadoutSummary.slots.armorCore?.name || "None"}</div>
+                             <div>Command Module: {loadoutSummary.slots.commandModule?.name || "None"}</div>
+                             <div>Active Slots: {loadoutSummary.subAttributes.activeSlots} / {COMMANDER_EQUIPMENT_SLOT_DEFINITIONS.length}</div>
+                             <div>Equipment Score: {loadoutSummary.subAttributes.equipmentScore}</div>
+                          </div>
+                          <div className="rounded border border-slate-200 bg-slate-50 p-3">
+                             <div className="font-semibold text-slate-900 mb-1">Operational</div>
+                             <div>Command Power: {loadoutSummary.subStats.commandPower}</div>
+                             <div>Tactical Agility: {loadoutSummary.subStats.tacticalAgility}</div>
+                             <div>Sustainment: {loadoutSummary.subStats.sustainment}</div>
+                             <div>Research Cadence: {loadoutSummary.subStats.researchCadence}</div>
+                          </div>
+                          <div className="rounded border border-slate-200 bg-slate-50 p-3">
+                             <div className="font-semibold text-slate-900 mb-1">Government Tie-In</div>
+                             <div>Appointed Leaders: {activeGovernmentLeaders.length}</div>
+                             <div>Stability: +{governmentTieInBonuses.stability}</div>
+                             <div>Economy: +{governmentTieInBonuses.economy}</div>
+                             <div>Research: +{governmentTieInBonuses.research}</div>
+                          </div>
+                          <div className="rounded border border-slate-200 bg-slate-50 p-3 md:col-span-2">
+                             <div className="font-semibold text-slate-900 mb-1">Doctrine Notes</div>
+                             <div className="text-slate-700 whitespace-pre-wrap">{commanderProfileData?.profile?.doctrineNotes || "No doctrine notes saved yet."}</div>
+                             <div className="mt-2 text-slate-700 whitespace-pre-wrap">{commanderProfileData?.profile?.bio || "No commander bio saved yet."}</div>
+                          </div>
+                       </CardContent>
+                    </Card>
+              </div>
+           </TabsContent>
 
           <TabsContent value="skills" className="mt-6">
              <Card className="bg-white border-slate-200" data-testid="card-skills">

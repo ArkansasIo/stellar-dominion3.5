@@ -19,6 +19,7 @@ const Skills = lazy(() => import("@/pages/Skills"));
 const Fitting = lazy(() => import("@/pages/Fitting"));
 const Shipyard = lazy(() => import("@/pages/Shipyard"));
 const Fleet = lazy(() => import("@/pages/Fleet"));
+const FleetYard = lazy(() => import("@/pages/FleetYard"));
 const Galaxy = lazy(() => import("@/pages/Galaxy"));
 const Universe = lazy(() => import("@/pages/Universe"));
 const UniverseGenerator = lazy(() => import("@/pages/UniverseGenerator"));
@@ -352,6 +353,7 @@ function RouterContent() {
       <Route path="/artifacts" component={Artifacts} />
       <Route path="/shipyard" component={Shipyard} />
       <Route path="/fleet" component={Fleet} />
+      <Route path="/fleet-yard" component={FleetYard} />
       <Route path="/army" component={Army} />
       <Route path="/army-management" component={ArmyManagement} />
       <Route path="/training-center" component={TrainingCenter} />

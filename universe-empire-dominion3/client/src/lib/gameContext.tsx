@@ -6,6 +6,8 @@ import {
   RaceId,
   ClassId,
   SubClassId,
+  LoadoutPreset,
+  createEmptyLoadoutPreset,
   RACES,
   CLASSES,
   SUBCLASSES,
@@ -401,6 +403,15 @@ interface GameState {
   addEvent: (title: string, description: string, type: GameEvent["type"]) => void;
   equipItem: (item: Item) => void;
   unequipItem: (slot: CommanderEquipmentSlotId) => void;
+  equipSlot: (slot: CommanderEquipmentSlotId, item: Item) => void;
+  unequipAll: () => void;
+  equipAll: () => void;
+  autoOptimize: () => void;
+  loadoutPresets: LoadoutPreset[];
+  saveLoadout: (name: string) => void;
+  loadLoadout: (id: string) => void;
+  deleteLoadout: (id: string) => void;
+  renameLoadout: (id: string, name: string) => void;
   craftItem: (item: Item, cost: {metal: number, crystal: number, deuterium?: number}) => void;
   temperItem: (itemId: string) => void;
   setCommanderName: (name: string) => void;
@@ -1484,6 +1495,170 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const [loadoutPresets, setLoadoutPresets] = useState<LoadoutPreset[]>(() => {
+    try {
+      const saved = localStorage.getItem("stellar_loadout_presets");
+      return saved ? JSON.parse(saved) : [];
+    } catch { return []; }
+  });
+
+  useEffect(() => {
+    localStorage.setItem("stellar_loadout_presets", JSON.stringify(loadoutPresets));
+  }, [loadoutPresets]);
+
+  const saveLoadout = (name: string) => {
+    setCommander(prev => {
+      const preset = createEmptyLoadoutPreset(name);
+      const equipmentRefs: Record<CommanderEquipmentSlotId, string | null> = {} as any;
+      for (const slot of COMMANDER_EQUIPMENT_SLOT_DEFINITIONS) {
+        const item = prev.equipment[slot.id];
+        equipmentRefs[slot.id] = item ? item.id : null;
+      }
+      preset.equipment = equipmentRefs;
+      preset.description = `Save from ${new Date().toLocaleString()}`;
+      setLoadoutPresets(existing => {
+        const updated = existing.filter(p => p.name !== name);
+        return [...updated, preset].sort((a, b) => b.updatedAt - a.updatedAt);
+      });
+      return prev;
+    });
+    toast({ title: "Loadout Saved", description: `"${name}" has been saved.` });
+  };
+
+  const loadLoadout = (id: string) => {
+    const preset = loadoutPresets.find(p => p.id === id);
+    if (!preset) { toast({ title: "Loadout not found", variant: "destructive" }); return; }
+    setCommander(prev => {
+      const newEquipment = { ...prev.equipment };
+      const swapToInventory: Item[] = [];
+      const refs = preset.equipment;
+      for (const slot of COMMANDER_EQUIPMENT_SLOT_DEFINITIONS) {
+        const itemId = refs[slot.id];
+        if (itemId) {
+          const item = prev.inventory.find(i => i.id === itemId);
+          if (item) {
+            const current = newEquipment[slot.id];
+            if (current) swapToInventory.push(current);
+            newEquipment[slot.id] = item;
+          }
+        } else {
+          const current = newEquipment[slot.id];
+          if (current) { swapToInventory.push(current); newEquipment[slot.id] = null; }
+        }
+      }
+      const usedIds = new Set(Object.values(newEquipment).filter(Boolean).map(i => (i as Item).id));
+      const remainingInventory = prev.inventory.filter(i => !usedIds.has(i.id));
+      return {
+        ...prev,
+        equipment: newEquipment,
+        inventory: [...remainingInventory, ...swapToInventory],
+      };
+    });
+    toast({ title: "Loadout Applied", description: `"${preset.name}" equipped.` });
+  };
+
+  const deleteLoadout = (id: string) => {
+    setLoadoutPresets(prev => prev.filter(p => p.id !== id));
+    toast({ title: "Loadout Deleted" });
+  };
+
+  const renameLoadout = (id: string, name: string) => {
+    setLoadoutPresets(prev => prev.map(p => p.id === id ? { ...p, name, updatedAt: Date.now() } : p));
+    toast({ title: "Loadout Renamed", description: `Renamed to "${name}".` });
+  };
+
+  const unequipAll = () => {
+    setCommander(prev => {
+      const equipped = Object.values(prev.equipment).filter(Boolean) as Item[];
+      return {
+        ...prev,
+        equipment: createDefaultCommanderEquipment(),
+        inventory: [...prev.inventory, ...equipped],
+      };
+    });
+    addEvent("Loadout Cleared", "All equipment slots have been unequipped.", "info");
+  };
+
+  const equipSlot = (slot: CommanderEquipmentSlotId, item: Item) => {
+    if (item.type === "blueprint" || item.type === "material") return;
+    setCommander(prev => {
+      const current = prev.equipment[slot];
+      const newInventory = prev.inventory.filter(i => i.id !== item.id);
+      if (current) newInventory.push(current);
+      return {
+        ...prev,
+        equipment: { ...prev.equipment, [slot]: item },
+        inventory: newInventory,
+      };
+    });
+  };
+
+  const equipAll = () => {
+    setCommander(prev => {
+      const newEquipment = { ...prev.equipment };
+      const remaining: Item[] = [];
+      const sorted = [...prev.inventory]
+        .filter(i => i.type !== "blueprint" && i.type !== "material")
+        .sort((a, b) => {
+          const rarityOrder = { legendary: 5, epic: 4, rare: 3, uncommon: 2, common: 1 };
+          return (rarityOrder[b.rarity] || 0) - (rarityOrder[a.rarity] || 0);
+        });
+      for (const item of sorted) {
+        const compatibleSlots = COMMANDER_EQUIPMENT_SLOT_DEFINITIONS.filter(s => s.type === item.type);
+        const openSlot = compatibleSlots.find(s => !newEquipment[s.id]);
+        if (openSlot) {
+          newEquipment[openSlot.id] = item;
+        } else {
+          remaining.push(item);
+        }
+      }
+      return { ...prev, equipment: newEquipment, inventory: remaining };
+    });
+    addEvent("Auto-Equipped", "Best items equipped to open slots.", "success");
+  };
+
+  const autoOptimize = () => {
+    setCommander(prev => {
+      const newEquipment = { ...prev.equipment };
+      const remaining: Item[] = [];
+      const scored = [...prev.inventory]
+        .filter(i => i.type !== "blueprint" && i.type !== "material")
+        .map(item => {
+          const rarityScore = { legendary: 44, epic: 30, rare: 20, uncommon: 12, common: 8 }[item.rarity] || 6;
+          const statSum = Object.values(item.stats || {}).reduce((a, b) => a + Number(b || 0), 0);
+          const temperScore = Number(item.tempering || 0) * 6;
+          const masteryScore = item.masterwork ? 14 : 0;
+          return { item, score: rarityScore + statSum * 5 + temperScore + masteryScore + Math.max(0, item.level - 1) };
+        })
+        .sort((a, b) => b.score - a.score);
+      for (const { item } of scored) {
+        const compatibleSlots = COMMANDER_EQUIPMENT_SLOT_DEFINITIONS.filter(s => s.type === item.type);
+        const openSlot = compatibleSlots.find(s => !newEquipment[s.id]);
+        if (openSlot) {
+          newEquipment[openSlot.id] = item;
+        } else {
+          const worstSlot = compatibleSlots
+            .map(s => ({ slot: s, current: newEquipment[s.id] ? (() => {
+              const cs = newEquipment[s.id]!;
+              const rs = { legendary: 44, epic: 30, rare: 20, uncommon: 12, common: 8 }[cs.rarity] || 6;
+              const ss = Object.values(cs.stats || {}).reduce((a, b) => a + Number(b || 0), 0);
+              return rs + ss * 5 + Number(cs.tempering || 0) * 6 + (cs.masterwork ? 14 : 0) + Math.max(0, cs.level - 1);
+            })() : 0 }))
+            .sort((a, b) => a.current - b.current);
+          const worst = worstSlot[0];
+          if (worst && worst.current < scored[0].score) {
+            remaining.push(newEquipment[worst.slot.id]!);
+            newEquipment[worst.slot.id] = item;
+          } else {
+            remaining.push(item);
+          }
+        }
+      }
+      return { ...prev, equipment: newEquipment, inventory: remaining };
+    });
+    addEvent("Optimized", "Loadout optimized for best stat allocation.", "success");
+  };
+
   const equipItem = (item: Item) => {
     if (item.type === "blueprint" || item.type === "material") return;
     
@@ -2050,10 +2225,19 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
        buildUnit,
        constructMegastructure,
        addEvent,
-       equipItem,
-       unequipItem,
-      craftItem,
-      temperItem,
+        equipItem,
+        unequipItem,
+        equipSlot,
+        unequipAll,
+        equipAll,
+        autoOptimize,
+        loadoutPresets,
+        saveLoadout,
+        loadLoadout,
+        deleteLoadout,
+        renameLoadout,
+       craftItem,
+       temperItem,
       setCommanderName,
       setEmpireName,
       setHomeWorldName,

@@ -71,9 +71,10 @@ import {
   Newspaper,
   Download,
   ClipboardList,
-  CheckCircle2,
-  X,
-  Printer,
+   CheckCircle2,
+   X,
+   Printer,
+   Warehouse,
 } from "lucide-react";
 
 interface NavItem {
@@ -410,6 +411,7 @@ const menuSections: MenuSection[] = [
           { href: "/shipyard", icon: Rocket, label: "Shipyard", description: "Construct ships and prepare new fleets for deployment." },
           { href: "/fitting", icon: Settings, label: "Ship Fitting", description: "Customize ship modules, weapons, and equipment." },
           { href: "/fleet", icon: Send, label: "Fleet Command", description: "Dispatch fleets, track missions, and manage formations." },
+          { href: "/fleet-yard", icon: Warehouse, label: "Fleet Yard", description: "Fleet storage, organization, maintenance and logistics hub." },
           { href: "/orbital-defense", icon: Satellite, label: "Orbital Defense", description: "Build and command offensive satellites, shield platforms, carriers, and orbital fortresses." },
           { href: "/army", icon: Users, label: "Army", description: "Review land units, formations, and force composition." },
           { href: "/army-management", icon: Swords, label: "Army Management", description: "Train, equip, and reorganize planetary armies." },
