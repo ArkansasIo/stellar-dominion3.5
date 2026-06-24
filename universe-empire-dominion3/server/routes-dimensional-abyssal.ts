@@ -32,6 +32,7 @@ import {
   calculateTotalPower,
   getPowerTierName,
   getPowerTierColor,
+  POWER_SOURCES,
 } from "../shared/config/powerLevelConfig";
 import {
   ITEM_LEVEL_TIERS,
@@ -454,7 +455,6 @@ export function registerDimensionalAbyssalRoutes(app: Express) {
 
   // GET /api/power-level/config - Get power source configurations
   app.get("/api/power-level/config", (_req: Request, res: Response) => {
-    const { POWER_SOURCES } = require("../shared/config/powerLevelConfig");
     res.json({ success: true, sources: POWER_SOURCES });
   });
 

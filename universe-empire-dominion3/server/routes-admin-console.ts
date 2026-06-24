@@ -16,7 +16,7 @@ function requireAdmin(req: Request, res: Response): string | null {
 const commandLog: { timestamp: string; command: string; admin: string; result: string }[] = [];
 
 function logCommand(admin: string, command: string, result: string) {
-  commandLog.push({ timestamp: new Date().toISOString(), command, admin: result ? "success" : admin });
+  commandLog.push({ timestamp: new Date().toISOString(), command, admin: result ? "success" : admin, result });
   if (commandLog.length > 500) commandLog.shift();
 }
 
@@ -30,7 +30,7 @@ export function registerAdminConsoleRoutes(app: Express) {
     try {
       const [playerCount] = await db.select({ count: sql<number>`count(*)::int` }).from(users);
       const [onlineCount] = await db.select({ count: sql<number>`count(*)::int` }).from(users).where(
-        sql`${users.lastLoginAt} > now() - interval '5 minutes'`
+        sql`${users.updatedAt} > now() - interval '5 minutes'`
       ).catch(() => [{ count: 0 }]);
       const [guildCount] = await db.select({ count: sql<number>`count(*)::int` }).from(guilds);
       const [allianceCount] = await db.select({ count: sql<number>`count(*)::int` }).from(alliances);
@@ -66,7 +66,7 @@ export function registerAdminConsoleRoutes(app: Express) {
                (SELECT count(*) FROM information_schema.columns WHERE table_name = tablename) as columns
         FROM pg_tables WHERE schemaname = 'public' ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC
       `);
-      res.json({ tables: result.rows || [] });
+      res.json({ tables: (result as any).rows || [] });
     } catch (error) {
       res.status(500).json({ error: "Failed to list tables" });
     }
@@ -80,8 +80,8 @@ export function registerAdminConsoleRoutes(app: Express) {
     try {
       const safeName = tableName.replace(/[^a-z0-9_]/g, "");
       const result = await db.execute(sql.raw(`SELECT * FROM ${safeName} ORDER BY 1 LIMIT ${limit} OFFSET ${offset}`));
-      const [countResult] = await db.execute(sql.raw(`SELECT count(*)::int as count FROM ${safeName}`));
-      res.json({ rows: result.rows || [], total: (countResult as any)?.rows?.[0]?.count || 0, limit, offset });
+      const countResult = await db.execute(sql.raw(`SELECT count(*)::int as count FROM ${safeName}`));
+      res.json({ rows: (result as any).rows || [], total: (countResult as any)?.rows?.[0]?.count || 0, limit, offset });
     } catch (error: any) {
       res.status(400).json({ error: error.message || "Query failed" });
     }
@@ -116,19 +116,15 @@ export function registerAdminConsoleRoutes(app: Express) {
     const limit = Math.min(Number(req.query.limit) || 50, 200);
     const offset = Number(req.query.offset) || 0;
     try {
-      let query = db.select({
-        id: users.id, username: users.username, email: users.email,
-        createdAt: users.createdAt, lastLoginAt: users.lastLoginAt,
-      }).from(users).orderBy(desc(users.createdAt)).limit(limit).offset(offset);
-
-      if (search) {
-        query = db.select({
-          id: users.id, username: users.username, email: users.email,
-          createdAt: users.createdAt, lastLoginAt: users.lastLoginAt,
-        }).from(users).where(or(like(users.username, `%${search}%`), like(users.email, `%${search}%`))).orderBy(desc(users.createdAt)).limit(limit).offset(offset);
-      }
-
-      const rows = await query;
+      const rows = search
+        ? await db.select({
+            id: users.id, username: users.username, email: users.email,
+            createdAt: users.createdAt,
+          }).from(users).where(or(like(users.username, `%${search}%`), like(users.email, `%${search}%`))).orderBy(desc(users.createdAt)).limit(limit).offset(offset)
+        : await db.select({
+            id: users.id, username: users.username, email: users.email,
+            createdAt: users.createdAt,
+          }).from(users).orderBy(desc(users.createdAt)).limit(limit).offset(offset);
       const [countRow] = await db.select({ count: sql<number>`count(*)::int` }).from(users);
       res.json({ users: rows, total: countRow?.count || 0 });
     } catch (error) {
@@ -146,9 +142,15 @@ export function registerAdminConsoleRoutes(app: Express) {
       const [state] = await db.select().from(playerStates).where(eq(playerStates.userId, userId)).limit(1);
       const [membership] = await db.select().from(guildMembers).where(eq(guildMembers.playerId, userId)).limit(1);
 
+      const turnsData = (state as any)?.turnsData || {};
+      const resources = (state as any)?.resources || {};
       res.json({
-        user: { id: user.id, username: user.username, email: user.email, createdAt: user.createdAt, lastLoginAt: user.lastLoginAt },
-        state: state ? { level: state.level, resources: state.resources, turns: state.turns, credits: state.credits } : null,
+        user: { id: user.id, username: user.username, email: user.email, createdAt: user.createdAt },
+        state: state ? { 
+          resources,
+          turns: turnsData.currentTurn || 0,
+          credits: 0,
+        } : null,
         guild: membership ? { guildId: membership.guildId, role: membership.role } : null,
       });
     } catch (error) {
@@ -171,7 +173,6 @@ export function registerAdminConsoleRoutes(app: Express) {
           crystal: (resources.crystal || 0) + Number(crystal),
           deuterium: (resources.deuterium || 0) + Number(deuterium),
         },
-        credits: (state.credits || 0) + Number(credits),
         updatedAt: new Date(),
       }).where(eq(playerStates.userId, userId));
 
@@ -201,10 +202,7 @@ export function registerAdminConsoleRoutes(app: Express) {
     if (!userId) return res.status(400).json({ error: "userId required" });
     try {
       await db.update(playerStates).set({
-        level: 1,
         resources: { metal: 1000, crystal: 500, deuterium: 200, energy: 100 },
-        credits: 1000,
-        turns: 0,
         updatedAt: new Date(),
       }).where(eq(playerStates.userId, userId));
       logCommand(req.session?.userId || "", `reset ${userId}`, "done");

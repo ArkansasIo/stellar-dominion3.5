@@ -1,6 +1,6 @@
 import { db } from '../db';
-import { sql, eq, and, desc } from 'drizzle-orm';
-import { users, adminUsers } from '../../shared/schema';
+import { sql, and } from 'drizzle-orm';
+import { users } from '../../shared/schema';
 
 export type ForumCategory = 'general' | 'strategy' | 'bugs' | 'suggestions' | 'off-topic';
 

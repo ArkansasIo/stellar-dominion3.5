@@ -670,6 +670,118 @@ export const durabilityDegradationLog = pgTable("durability_degradation_log", {
 
 export type DurabilityDegradationLog = typeof durabilityDegradationLog.$inferSelect;
 
+// Dimensional Contract Tokens
+export const dimensionalContracts = pgTable("dimensional_contracts", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  contractTier: integer("contract_tier").notNull().default(1),
+  tokensEarned: integer("tokens_earned").notNull().default(0),
+  tokensSpent: integer("tokens_spent").notNull().default(0),
+  raidsCompleted: integer("raids_completed").notNull().default(0),
+  chestsOpened: integer("chests_opened").notNull().default(0),
+  lastRaidAt: timestamp("last_raid_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type DimensionalContract = typeof dimensionalContracts.$inferSelect;
+export const insertDimensionalContractSchema = createInsertSchema(dimensionalContracts).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertDimensionalContract = z.infer<typeof insertDimensionalContractSchema>;
+
+// Abyssal Gate Tokens
+export const abyssalGateTokens = pgTable("abyssal_gate_tokens", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  gateTier: integer("gate_tier").notNull().default(1),
+  tokensEarned: integer("tokens_earned").notNull().default(0),
+  tokensSpent: integer("tokens_spent").notNull().default(0),
+  gatesCompleted: integer("gates_completed").notNull().default(0),
+  chestsOpened: integer("chests_opened").notNull().default(0),
+  lastGateAt: timestamp("last_gate_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type AbyssalGateToken = typeof abyssalGateTokens.$inferSelect;
+export const insertAbyssalGateTokenSchema = createInsertSchema(abyssalGateTokens).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertAbyssalGateToken = z.infer<typeof insertAbyssalGateTokenSchema>;
+
+// Player Power Levels
+export const playerPowerLevels = pgTable("player_power_levels", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().unique().references(() => users.id, { onDelete: "cascade" }),
+  totalPower: integer("total_power").notNull().default(0),
+  raidPower: integer("raid_power").notNull().default(0),
+  combatPower: integer("combat_power").notNull().default(0),
+  empirePower: integer("empire_power").notNull().default(0),
+  itemPower: integer("item_power").notNull().default(0),
+  commanderPower: integer("commander_power").notNull().default(0),
+  fleetPower: integer("fleet_power").notNull().default(0),
+  researchPower: integer("research_power").notNull().default(0),
+  buildingPower: integer("building_power").notNull().default(0),
+  raidCareerPower: integer("raid_career_power").notNull().default(0),
+  powerTier: varchar("power_tier").default("Novice"),
+  lastCalculatedAt: timestamp("last_calculated_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type PlayerPowerLevel = typeof playerPowerLevels.$inferSelect;
+export const insertPlayerPowerLevelSchema = createInsertSchema(playerPowerLevels).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertPlayerPowerLevel = z.infer<typeof insertPlayerPowerLevelSchema>;
+
+// Item Levels
+export const itemLevels = pgTable("item_levels", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  itemId: varchar("item_id").notNull(),
+  itemName: varchar("item_name").notNull(),
+  itemType: varchar("item_type").notNull(),
+  itemClass: varchar("item_class").default("common"),
+  baseRank: integer("base_rank").default(1),
+  currentLevel: integer("current_level").notNull().default(1),
+  currentExperience: integer("current_experience").notNull().default(0),
+  experienceToNext: integer("experience_to_next").notNull().default(100),
+  upgradeCount: integer("upgrade_count").notNull().default(0),
+  lastUpgradeAt: timestamp("last_upgrade_at"),
+  upgradeHistory: jsonb("upgrade_history").default("[]"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type ItemLevel = typeof itemLevels.$inferSelect;
+export const insertItemLevelSchema = createInsertSchema(itemLevels).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertItemLevel = z.infer<typeof insertItemLevelSchema>;
+
+// Raid Chest Rewards Log
+export const raidChestRewards = pgTable("raid_chest_rewards", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  contractType: varchar("contract_type").notNull().default("dimensional"),
+  contractTier: integer("contract_tier").notNull(),
+  tokensSpent: integer("tokens_spent").notNull(),
+  rewardsGranted: jsonb("rewards_granted").notNull().default("[]"),
+  openedAt: timestamp("opened_at").defaultNow(),
+});
+
+export type RaidChestReward = typeof raidChestRewards.$inferSelect;
+export const insertRaidChestRewardSchema = createInsertSchema(raidChestRewards).omit({ id: true, openedAt: true });
+export type InsertRaidChestReward = z.infer<typeof insertRaidChestRewardSchema>;
+
+// Abyssal Gate Rewards Log
+export const abyssalGateRewards = pgTable("abyssal_gate_rewards", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  gateTier: integer("gate_tier").notNull(),
+  tokensSpent: integer("tokens_spent").notNull(),
+  rewardsGranted: jsonb("rewards_granted").notNull().default("[]"),
+  completedAt: timestamp("completed_at").defaultNow(),
+});
+
+export type AbyssalGateReward = typeof abyssalGateRewards.$inferSelect;
+export const insertAbyssalGateRewardSchema = createInsertSchema(abyssalGateRewards).omit({ id: true, completedAt: true });
+export type InsertAbyssalGateReward = z.infer<typeof insertAbyssalGateRewardSchema>;
+
 // Research areas and technologies
 export const researchAreas = pgTable("research_areas", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),

@@ -1974,7 +1974,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     if (job) {
        addEvent("Manual Job Trigger", `Manually triggered ${job.name}`, "info");
        setCronJobs(prev => prev.map(j => j.id === id ? { ...j, lastRun: Date.now() } : j));
-       fetch(`/api/cron/jobs/${id}/run`, { method: "POST", credentials: "include" }).catch(() => {});
+       fetch(`/api/cron/jobs/${id}/run`, { method: "POST", credentials: "include" }).catch((err) => console.warn("Failed to trigger cron job:", err));
     }
   };
 

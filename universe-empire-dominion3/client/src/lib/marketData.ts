@@ -4,7 +4,7 @@ import {
   Rocket, Sword, Target, Lock, Eye, Star
 } from "lucide-react";
 
-export type ItemRarity = "common" | "uncommon" | "rare" | "legendary" | "contraband";
+export type ItemRarity = "common" | "uncommon" | "rare" | "epic" | "legendary" | "contraband";
 export type ItemType = "material" | "component" | "blueprint" | "commodity";
 
 export interface MarketItem {

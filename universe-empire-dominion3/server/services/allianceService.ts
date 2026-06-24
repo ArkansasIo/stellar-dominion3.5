@@ -1,6 +1,6 @@
 import { db } from '../db';
-import { sql, eq, and, desc, asc } from 'drizzle-orm';
-import { alliances, allianceMembers, playerStates, users } from '../../shared/schema';
+import { sql, and, desc } from 'drizzle-orm';
+import { alliances, users } from '../../shared/schema';
 
 const ALLIANCE_MEMBER_LIMIT = 150;
 

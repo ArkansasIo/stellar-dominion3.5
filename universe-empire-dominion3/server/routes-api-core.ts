@@ -1,7 +1,7 @@
-import { Router, Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from "express";
 import { z } from "zod";
 import { db } from "./db";
-import { users, playerStates } from "@shared/schema";
+import { users } from "@shared/schema";
 import { eq } from "drizzle-orm";
 import { isAuthenticated } from "./basicAuth";
 

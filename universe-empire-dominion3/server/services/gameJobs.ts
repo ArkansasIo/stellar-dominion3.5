@@ -897,7 +897,7 @@ async function missionProcessingHandler(_job: any, params: any): Promise<CronJob
         missionsProcessed++;
         rewardsDistributed++;
       } catch (e) {
-        // mission processing
+        console.error("Mission processing error for player:", e);
       }
     }
 

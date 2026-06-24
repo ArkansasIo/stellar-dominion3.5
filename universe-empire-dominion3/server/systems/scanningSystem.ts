@@ -2,7 +2,7 @@ import { COMBAT_CONFIG } from "../../shared/config/xenoberage/combatConfig";
 import { FEATURE_FLAGS_CONFIG } from "../../shared/config/xenoberage/featureFlagsConfig";
 import { db } from "../db";
 import { playerStates } from "../../shared/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 export interface ScanResult {
   sectorId: string;

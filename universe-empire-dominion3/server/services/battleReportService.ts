@@ -4,8 +4,8 @@
  */
 
 import { db } from "../db";
-import { battles, battleLogs, missions, playerStates, users } from "@shared/schema";
-import { eq, and, desc, inArray, sql } from "drizzle-orm";
+import { battles, playerStates, users } from "@shared/schema";
+import { eq, and, desc, inArray } from "drizzle-orm";
 
 export interface DetailedBattleReport {
   battleId: string;

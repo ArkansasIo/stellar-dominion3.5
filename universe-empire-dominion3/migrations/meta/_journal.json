@@ -43,6 +43,13 @@
       "when": 1782147535475,
       "tag": "0005_bent_timeslip",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1782269105789,
+      "tag": "0006_known_meteorite",
+      "breakpoints": true
     }
   ]
 }

@@ -1,6 +1,5 @@
 import { db } from "./db";
-import { playerStates } from "../shared/schema";
-import { eq } from "drizzle-orm";
+
 
 // Combat configuration
 export const COMBAT_CONFIG = {

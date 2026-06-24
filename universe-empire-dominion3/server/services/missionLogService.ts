@@ -5,7 +5,7 @@
 
 import { db } from "../db";
 import { missions, playerStates, users } from "@shared/schema";
-import { eq, and, desc, inArray, or, sql } from "drizzle-orm";
+import { eq, and, desc, or } from "drizzle-orm";
 
 export interface MissionLog {
   missionId: string;

@@ -111,6 +111,10 @@ const UnitTaxonomyPage = lazy(() => import("@/pages/UnitTaxonomyPage"));
 const UnitSystemsPage = lazy(() => import("@/pages/UnitSystemsPage"));
 const GovernmentBuildingsPage = lazy(() => import("@/pages/GovernmentBuildingsPage"));
 const GovernmentProgressionPage = lazy(() => import("@/pages/GovernmentProgressionPage"));
+const DimensionalContracts = lazy(() => import("@/pages/DimensionalContracts"));
+const AbyssalGates = lazy(() => import("@/pages/AbyssalGates"));
+const PowerLevelPage = lazy(() => import("@/pages/PowerLevelPage"));
+const ItemLevels = lazy(() => import("@/pages/ItemLevels"));
 const SaveSlotsPage = lazy(() => import("@/pages/SaveSlotsPage"));
 const RealmPickerPage = lazy(() => import("@/pages/RealmPickerPage"));
 const PatchNotes = lazy(() => import("@/pages/PatchNotes"));
@@ -383,6 +387,10 @@ function RouterContent() {
       <Route path="/empire-command-center" component={EmpireCommandCenter} />
       <Route path="/empire-profile" component={EmpireProfile} />
       <Route path="/dimensional-anomalies" component={DimensionalAnomalies} />
+      <Route path="/dimensional-contracts" component={DimensionalContracts} />
+      <Route path="/abyssal-gates" component={AbyssalGates} />
+      <Route path="/power-level" component={PowerLevelPage} />
+      <Route path="/item-levels" component={ItemLevels} />
       <Route path="/resource-refineries" component={ResourceRefineries} />
       <Route path="/cron-dashboard" component={CronDashboard} />
       <Route path="/blueprint-charges" component={BlueprintCharges} />

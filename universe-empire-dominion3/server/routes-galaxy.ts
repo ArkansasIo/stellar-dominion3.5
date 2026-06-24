@@ -1,7 +1,7 @@
 import type { Express, Request, Response } from "express";
 import { db } from "./db";
 import { storage } from "./storage";
-import { playerStates, users, alliances } from "../shared/schema";
+import { playerStates, users } from "../shared/schema";
 import { like, eq } from "drizzle-orm";
 import { isAuthenticated } from "./basicAuth";
 
