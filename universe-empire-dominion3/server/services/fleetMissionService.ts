@@ -1,6 +1,7 @@
 import { db } from "../db";
 import { playerStates, missions, users } from "../../shared/schema";
 import { eq, and, sql } from "drizzle-orm";
+import { fleetDistance, flightDuration } from "../../shared/config/ogameFormulas";
 
 interface DeployResult {
   success: boolean;
@@ -17,12 +18,22 @@ interface DestroyResult {
   attackerLosses?: Record<string, number>;
 }
 
+function parseCoords(s: string): { galaxy: number; system: number; position: number } | null {
+  const parts = s.split(":").map(Number);
+  if (parts.length < 3 || parts.some(isNaN)) return null;
+  return { galaxy: parts[0], system: parts.length >= 3 ? parts[parts.length - 2] : 1, position: parts[parts.length - 1] };
+}
+
 class FleetMissionService {
   async deployFleet(
     userId: string,
     units: Record<string, number>,
     targetCoordinates: string,
-    missionType: "deploy" | "transport" | "attack" | "destroy"
+    missionType: "deploy" | "transport" | "attack" | "destroy",
+    originCoordinates?: string,
+    baseSpeed: number = 1000,
+    driveLevel: number = 5,
+    speedFactor: number = 1,
   ): Promise<DeployResult> {
     const [state] = await db
       .select()
@@ -53,7 +64,17 @@ class FleetMissionService {
       .set({ units: currentFleet, updatedAt: new Date() })
       .where(eq(playerStates.userId, userId));
 
-    const travelTimeMs = 5 * 60 * 1000;
+    const from = parseCoords(originCoordinates || targetCoordinates);
+    const to = parseCoords(targetCoordinates);
+
+    let travelTimeMs = 5 * 60 * 1000;
+    if (from && to) {
+      const dist = fleetDistance(from, to);
+      const spd = baseSpeed + (baseSpeed * driveLevel) / 10;
+      const durationSec = flightDuration(dist, spd, 10, speedFactor);
+      travelTimeMs = Math.max(1000, durationSec * 1000);
+    }
+
     const departureTime = new Date();
     const arrivalTime = new Date(departureTime.getTime() + travelTimeMs);
 
@@ -62,7 +83,7 @@ class FleetMissionService {
       type: missionType,
       status: "outbound",
       target: targetCoordinates,
-      origin: targetCoordinates,
+      origin: originCoordinates || targetCoordinates,
       units,
       departureTime,
       arrivalTime,
