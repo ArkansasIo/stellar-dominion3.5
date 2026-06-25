@@ -120,8 +120,14 @@ export class UniverseResetService {
     const existingUsers = await db.select({ id: users.id }).from(users);
     const resetAt = new Date().toISOString();
 
-    const tableList = GAMEPLAY_TABLES.map((name) => `"${name}"`).join(", ");
-    await db.execute(sql.raw(`TRUNCATE TABLE IF EXISTS ${tableList} RESTART IDENTITY CASCADE`));
+    // Drop gameplay tables individually, skipping any that don't exist.
+    for (const name of GAMEPLAY_TABLES) {
+      try {
+        await db.execute(sql.raw(`TRUNCATE TABLE "${name}" RESTART IDENTITY CASCADE`));
+      } catch {
+        // table doesn't exist, skip
+      }
+    }
 
     await db.execute(sql`
       DELETE FROM system_settings

@@ -25,6 +25,7 @@
     "admin": "tsx server/adminCli.ts",
     "admin:manage": "tsx script/manage-admin.ts",
     "admin:create": "tsx script/create-new-admin.ts",
+    "db:reset": "tsx script/reset-universe.ts",
     "electron:dev": "cross-env NODE_ENV=development electron .",
     "electron:build": "npm run build && electron-builder --win --linux",
     "electron:start": "electron .",

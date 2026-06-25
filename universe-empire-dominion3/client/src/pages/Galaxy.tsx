@@ -372,293 +372,223 @@ export default function Galaxy() {
 
   return (
     <GameLayout>
-      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
-          <img src="/assets/backgrounds/galaxy_map.png" alt="Galaxy" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-900/70 to-transparent" />
-          <div className="relative z-10 p-6 flex items-center gap-6">
-            <img src="/assets/planets/gas_giant.png" alt="Planet" className="w-20 h-20 rounded-full object-cover ring-2 ring-cyan-400/50 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
-            <div>
-              <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow">Galaxy View</h2>
-              <p className="text-cyan-300 font-rajdhani text-lg">Explore star systems with up to 50 orbital positions. Click any planet for a detailed overview.</p>
-            </div>
-          </div>
+      <div className="space-y-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-lg px-4 py-2 flex items-center gap-3 shadow-sm">
+          <Globe className="w-5 h-5 text-cyan-400" />
+          <h2 className="text-lg font-bold text-white">Galaxy</h2>
+          <span className="text-slate-400 text-xs">Spreadsheet · {galaxy}:{sector}:{system}</span>
+          <span className="ml-auto flex gap-2">
+            <Button variant="ghost" size="icon" className="h-6 w-6 text-slate-400 hover:text-white" title="Refresh" onClick={() => window.location.reload()}>
+              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+            </Button>
+          </span>
         </div>
 
-        {/* Navigation Bar */}
-        <div className="bg-white border border-slate-200 p-4 rounded-lg flex flex-wrap justify-center items-center gap-4 shadow-sm">
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground uppercase text-xs font-bold">Universe</span>
-            <Select value={universe} onValueChange={setUniverse}>
-              <SelectTrigger className="w-[140px] bg-slate-50 border-slate-200 text-slate-900 h-8">
-                <SelectValue placeholder="Select Universe" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="uni1">Nexus-Alpha</SelectItem>
-                <SelectItem value="uni2">Cyborg-Beta</SelectItem>
-                <SelectItem value="uni3">Quantum-Gamma</SelectItem>
-              </SelectContent>
-            </Select>
+        {/* Navigation Toolbar */}
+        <div className="bg-white border border-slate-200 rounded-lg px-3 py-1.5 flex items-center gap-3 shadow-sm text-[10px]">
+          <Select value={universe} onValueChange={setUniverse}>
+            <SelectTrigger className="w-[100px] bg-slate-50 border-slate-200 h-7 text-[10px]">
+              <SelectValue placeholder="Universe" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="uni1">Nexus-Alpha</SelectItem>
+              <SelectItem value="uni2">Cyborg-Beta</SelectItem>
+              <SelectItem value="uni3">Quantum-Gamma</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <div className="flex items-center gap-1">
+            <span className="text-slate-500 font-medium">G</span>
+            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setGalaxy(g => Math.max(1, g - 1))}><ChevronLeft className="w-3 h-3" /></Button>
+            <Input className="w-10 h-6 text-center font-mono bg-slate-50 border-slate-200 text-slate-900 text-[10px] p-0" value={galaxy} onChange={(e) => setGalaxy(parseInt(e.target.value) || 1)} />
+            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setGalaxy(g => g + 1)}><ChevronRight className="w-3 h-3" /></Button>
           </div>
 
-          <div className="h-8 w-px bg-slate-200 mx-2 hidden md:block" />
-
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground uppercase text-xs font-bold">Galaxy</span>
-            <div className="flex items-center">
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setGalaxy(g => Math.max(1, g - 1))}><ChevronLeft className="w-4 h-4" /></Button>
-              <Input className="w-14 h-8 text-center font-mono bg-slate-50 border-slate-200 text-slate-900" value={galaxy} onChange={(e) => setGalaxy(parseInt(e.target.value) || 1)} />
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setGalaxy(g => g + 1)}><ChevronRight className="w-4 h-4" /></Button>
-            </div>
+          <div className="flex items-center gap-1">
+            <span className="text-primary font-bold">S</span>
+            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setSector(s => Math.max(1, s - 1))}><ChevronLeft className="w-3 h-3" /></Button>
+            <Input className="w-10 h-6 text-center font-mono bg-slate-50 border-primary/30 text-primary font-bold text-[10px] p-0" value={sector} onChange={(e) => setSector(parseInt(e.target.value) || 1)} />
+            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setSector(s => s + 1)}><ChevronRight className="w-3 h-3" /></Button>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground uppercase text-xs font-bold text-primary">Sector</span>
-            <div className="flex items-center">
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSector(s => Math.max(1, s - 1))}><ChevronLeft className="w-4 h-4" /></Button>
-              <Input className="w-14 h-8 text-center font-mono bg-slate-50 border-primary/30 text-primary font-bold" value={sector} onChange={(e) => setSector(parseInt(e.target.value) || 1)} />
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSector(s => s + 1)}><ChevronRight className="w-4 h-4" /></Button>
-            </div>
+          <div className="flex items-center gap-1">
+            <span className="text-slate-500 font-medium">Sys</span>
+            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setSystem(s => Math.max(1, s - 1))}><ChevronLeft className="w-3 h-3" /></Button>
+            <Input className="w-11 h-6 text-center font-mono bg-slate-50 border-slate-200 text-slate-900 text-[10px] p-0" value={system} onChange={(e) => setSystem(parseInt(e.target.value) || 1)} />
+            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setSystem(s => s + 1)}><ChevronRight className="w-3 h-3" /></Button>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground uppercase text-xs font-bold">System</span>
-            <div className="flex items-center">
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSystem(s => Math.max(1, s - 1))}><ChevronLeft className="w-4 h-4" /></Button>
-              <Input className="w-16 h-8 text-center font-mono bg-slate-50 border-slate-200 text-slate-900" value={system} onChange={(e) => setSystem(parseInt(e.target.value) || 1)} />
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSystem(s => s + 1)}><ChevronRight className="w-4 h-4" /></Button>
-            </div>
-          </div>
-
-          <div className="flex-1" />
+          {systemData?.star && (
+            <span className="text-slate-400 ml-auto truncate max-w-[200px]">
+              {systemData.systemName ?? systemData.star.name} · {systemData.star.type}
+            </span>
+          )}
         </div>
 
-        {/* System Info / Star Display + System Summary */}
+        {/* Compact System Info Bar */}
         {systemData?.star && (
-          <div className="flex gap-4 flex-wrap">
-            <div className="bg-white border border-slate-200 p-4 rounded-lg flex items-center gap-4 shadow-sm flex-[2] min-w-[300px]">
-              <div
-                className={cn("w-12 h-12 rounded-full flex-shrink-0", STAR_INFO[systemData.star.type]?.glow)}
-                style={{ background: `radial-gradient(circle at 35% 35%, white, ${STAR_INFO[systemData.star.type]?.color ?? "#ffe4a0"})` }}
-              />
-              <div className="flex-1 min-w-0">
-                <div className="font-bold text-slate-900 font-orbitron text-lg truncate">
-                  {systemData.systemName ?? systemData.star.name} System
-                </div>
-                <div className="text-sm text-muted-foreground font-rajdhani">
-                  [{systemData.galaxy}:{systemData.sector}:{systemData.system}]
-                  {" · "}Star: <span className="font-semibold text-slate-700">{systemData.star.name}</span>
-                  {" · "}Type <span className="font-semibold text-slate-700">{systemData.star.type}</span>
-                  {" · "}
-                  <span className="italic">{STAR_INFO[systemData.star.type]?.label ?? "Unknown"}</span>
-                </div>
-                {systemData.galaxyClassification && (
-                  <div className="text-[11px] text-slate-500 mt-1">
-                    <span className="font-semibold text-purple-600">{systemData.galaxyClassification.designation}</span>
-                    {" · "}{systemData.galaxyClassification.morphology}
-                    {" · "}Class {systemData.galaxyClassification.class}-{systemData.galaxyClassification.subclass}
-                    {" · "}{systemData.galaxyClassification.category}/{systemData.galaxyClassification.subcategory}
-                  </div>
-                )}
-                {systemData.npcPresence && systemData.npcPresence.length > 0 && (
-                  <div className="text-[11px] text-slate-500 mt-1 flex flex-wrap gap-x-3">
-                    {systemData.npcPresence.map((npc) => (
-                      <span key={npc.raceId} className={cn("font-medium", npc.isHostile ? "text-red-500" : "text-green-600")}>
-                        {npc.raceName} ({npc.faction}) · {npc.diplomaticStance}
-                      </span>
-                    ))}
-                  </div>
-                )}
-                {systemData.pirateActivity && systemData.pirateActivity.length > 0 && (
-                  <div className="text-[11px] text-red-500 mt-1">
-                    <span className="font-semibold">Pirate Activity:</span> {systemData.pirateActivity.map(p => p.name).join(", ")}
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="flex gap-2 flex-wrap">
-              <Card className="bg-white border-slate-200 shadow-sm min-w-[80px]">
-                <CardContent className="p-3 text-center">
-                  <div className="text-lg font-bold text-blue-600">{planetPositions.length}</div>
-                  <div className="text-xs text-slate-500">Planets</div>
-                </CardContent>
-              </Card>
-              <Card className="bg-white border-slate-200 shadow-sm min-w-[80px]">
-                <CardContent className="p-3 text-center">
-                  <div className="text-lg font-bold text-green-600">{habitableCount}</div>
-                  <div className="text-xs text-slate-500">Habitable</div>
-                </CardContent>
-              </Card>
-              <Card className="bg-white border-slate-200 shadow-sm min-w-[80px]">
-                <CardContent className="p-3 text-center">
-                  <div className="text-lg font-bold text-slate-600">{totalMoons}</div>
-                  <div className="text-xs text-slate-500">Moons</div>
-                </CardContent>
-              </Card>
-              {systemData.systemInfo && (
-                <>
-                  <Card className="bg-white border-slate-200 shadow-sm min-w-[80px]">
-                    <CardContent className="p-3 text-center">
-                      <div className="text-lg font-bold text-amber-600">{systemData.systemInfo.asteroidBelts}</div>
-                      <div className="text-xs text-slate-500">Belts</div>
-                    </CardContent>
-                  </Card>
-                  <Card className="bg-white border-slate-200 shadow-sm min-w-[80px]">
-                    <CardContent className="p-3 text-center">
-                      <div className="text-lg font-bold text-purple-600">{systemData.systemInfo.specialObjects}</div>
-                      <div className="text-xs text-slate-500">Anomalies</div>
-                    </CardContent>
-                  </Card>
-                </>
-              )}
-            </div>
+          <div className="bg-gradient-to-r from-slate-800 to-slate-700 rounded-lg px-3 py-1.5 flex items-center gap-3 text-[10px] shadow-sm">
+            <div className={cn("w-5 h-5 rounded-full flex-shrink-0", STAR_INFO[systemData.star.type]?.glow)}
+              style={{ background: `radial-gradient(circle at 35% 35%, white, ${STAR_INFO[systemData.star.type]?.color ?? "#ffe4a0"})` }} />
+            <span className="text-white font-semibold truncate max-w-[150px]">{systemData.systemName ?? systemData.star.name}</span>
+            <span className="text-slate-300">[{systemData.galaxy}:{systemData.sector}:{systemData.system}]</span>
+            <span className="text-slate-400">{systemData.star.type} · {STAR_INFO[systemData.star.type]?.label}</span>
+            {systemData.galaxyClassification && (
+              <span className="text-purple-300 hidden md:inline">{systemData.galaxyClassification.designation}</span>
+            )}
+            <span className="ml-auto flex gap-2">
+              <span className="text-blue-300">{planetPositions.length} planets</span>
+              <span className="text-green-300">{habitableCount} habitable</span>
+              <span className="text-slate-300">{totalMoons} moons</span>
+            </span>
           </div>
         )}
 
-        {/* Main Content: Table + Detail Panel */}
+        {/* Main Content: Galaxy Spreadsheet */}
         <div className="flex gap-4">
-          {/* Galaxy Table - OGame Style 7 columns */}
           <div className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm flex-1">
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs">
-                <thead>
-                  <tr className="bg-slate-100 text-slate-600 font-semibold uppercase tracking-wider text-[10px] border-b border-slate-200">
-                    <th className="text-center w-8 py-2 px-1">Pos</th>
-                    <th className="text-left py-2 px-1">Planet</th>
-                    <th className="text-left py-2 px-1">Moon</th>
-                    <th className="text-left py-2 px-1">Debris</th>
-                    <th className="text-left py-2 px-1">Player</th>
-                    <th className="text-left py-2 px-1">Alliance</th>
-                    <th className="text-right py-2 px-1">Actions</th>
+            <div className="overflow-x-auto" style={{ maxHeight: 'calc(100vh - 320px)' }}>
+              <table className="w-full text-[10px] border-collapse">
+                <thead className="sticky top-0 z-10">
+                  <tr className="bg-slate-800 text-white font-semibold uppercase tracking-wider text-[9px] border-b border-slate-600">
+                    <th className="text-center w-7 py-1.5 px-0.5 border-r border-slate-600">#</th>
+                    <th className="text-center w-7 py-1.5 px-0.5 border-r border-slate-600"></th>
+                    <th className="text-left py-1.5 px-1 border-r border-slate-600 min-w-[100px]">Planet / ID</th>
+                    <th className="text-left py-1.5 px-1 border-r border-slate-600 w-14">Class</th>
+                    <th className="text-right py-1.5 px-1 border-r border-slate-600 w-16">Diameter</th>
+                    <th className="text-left py-1.5 px-1 border-r border-slate-600 min-w-[90px]">Moon</th>
+                    <th className="text-left py-1.5 px-1 border-r border-slate-600 min-w-[75px]">Debris</th>
+                    <th className="text-left py-1.5 px-1 border-r border-slate-600 min-w-[80px]">Player</th>
+                    <th className="text-left py-1.5 px-1 border-r border-slate-600 w-14">Alliance</th>
+                    <th className="text-center py-1.5 px-1 w-16">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {isFetching && !systemData && (
-                    <tr><td colSpan={7} className="text-center py-8 text-muted-foreground text-xs">Loading system data...</td></tr>
+                    <tr><td colSpan={10} className="text-center py-8 text-muted-foreground text-[10px]">Loading system data...</td></tr>
                   )}
-                  {systemData?.positions?.map((data) => {
+                  {systemData?.positions?.map((data, idx) => {
                     const isMe = false;
                     const showPlanetActions = data.type === "planet" || data.type === "station";
+                    const isEven = (data.position - 1) % 2 === 0;
                     return (
                       <tr
                         key={data.position}
                         className={cn(
-                          "border-b border-slate-100 transition-colors cursor-pointer",
-                          selectedPlanet?.position === data.position ? "bg-blue-50" : "hover:bg-slate-50"
+                          "border-b border-slate-200 cursor-pointer transition-colors",
+                          isEven ? "bg-white" : "bg-slate-50/50",
+                          selectedPlanet?.position === data.position ? "bg-blue-100!" : "hover:bg-blue-50"
                         )}
                         onClick={() => data.type !== "empty" && openPlanetDetail(data)}
                       >
-                        <td className="text-center text-slate-400 font-mono w-8 py-1.5 px-1">{data.position}</td>
+                        <td className="text-center text-slate-500 font-mono py-1 px-0.5 border-r border-slate-200 w-7">{data.position}</td>
 
-                        <td className="py-1.5 px-1">
+                        <td className="text-center py-1 px-0.5 border-r border-slate-200 w-7">
+                          {data.type === "planet" && (
+                            <div className={cn("w-4 h-4 rounded-full bg-gradient-to-br border border-slate-300 mx-auto inline-block align-middle", getPlanetGradient(data.class))} />
+                          )}
+                          {data.type === "asteroid" && <div className="w-3 h-3 rounded-sm bg-slate-300 rotate-45 border border-slate-400 mx-auto inline-block align-middle" />}
+                          {data.type === "blackhole" && <div className="w-3 h-3 rounded-full bg-black border border-slate-700 mx-auto inline-block align-middle" />}
+                          {data.type === "nebula" && <div className="w-3 h-3 rounded-full bg-purple-200 blur-sm mx-auto inline-block align-middle" />}
+                          {data.type === "station" && <Hexagon className="w-3.5 h-3.5 text-slate-600 fill-slate-200 mx-auto inline-block align-middle" />}
+                          {data.type === "empty" && <span className="text-slate-300">-</span>}
+                        </td>
+
+                        <td className="py-1 px-1 border-r border-slate-200 min-w-[100px]">
                           {data.type !== "empty" ? (
-                            <div className="flex items-center gap-2">
-                              <div className="flex-shrink-0 w-5 text-center">
-                                {data.type === "planet" && (
-                                  <div className={cn("w-5 h-5 rounded-full bg-gradient-to-br shadow-sm border border-slate-300 mx-auto", getPlanetGradient(data.class))} />
-                                )}
-                                {data.type === "asteroid" && <div className="w-4 h-4 rounded bg-slate-300 rotate-45 border border-slate-400 mx-auto" />}
-                                {data.type === "blackhole" && <div className="w-4 h-4 rounded-full bg-black border border-slate-700 mx-auto" />}
-                                {data.type === "nebula" && <div className="w-4 h-4 rounded-full bg-purple-200 blur-sm mx-auto" />}
-                                {data.type === "station" && <Hexagon className="w-4 h-4 text-slate-600 fill-slate-200 mx-auto" />}
-                              </div>
-                              <div className="min-w-0">
-                                <div className="text-slate-700 font-medium leading-tight truncate max-w-[130px]">{data.name}</div>
-                                {data.planetId && (
-                                  <div className="text-[9px] text-slate-400 font-mono leading-tight">{data.planetId}</div>
-                                )}
-                                {data.diameter && data.type === "planet" && (
-                                  <div className="text-[9px] text-slate-400 leading-tight">{data.diameter.toLocaleString()} km</div>
-                                )}
-                              </div>
-                            </div>
-                          ) : (
-                            <span className="text-slate-300 italic">-- Empty --</span>
-                          )}
-                        </td>
-
-                        <td className="py-1.5 px-1">
-                          {data.moon && data.moonDetails ? (
-                            <div className="flex items-center gap-1.5">
-                              <Moon className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
-                              <div className="min-w-0">
-                                <div className="text-slate-600 font-medium truncate max-w-[100px] leading-tight">{data.moonDetails.name}</div>
-                                {data.moonDetails.diameter && (
-                                  <div className="text-[9px] text-slate-400 leading-tight">{data.moonDetails.diameter.toLocaleString()} km</div>
-                                )}
-                              </div>
-                            </div>
-                          ) : (
-                            <span className="text-slate-300">--</span>
-                          )}
-                        </td>
-
-                        <td className="py-1.5 px-1">
-                          {data.debris ? (
                             <div className="flex items-center gap-1">
-                              <Triangle className="w-3 h-3 fill-yellow-600 rotate-180 flex-shrink-0" />
-                              <div className="leading-tight">
-                                <span className="text-[9px] font-mono text-yellow-700">M: {data.debris.metal.toLocaleString()}</span>
-                                <span className="text-[9px] font-mono text-blue-600 ml-1">C: {data.debris.crystal.toLocaleString()}</span>
-                              </div>
+                              <span className="text-slate-700 font-medium truncate max-w-[80px]">{data.name}</span>
+                              {data.planetId && (
+                                <span className="text-[8px] text-slate-400 font-mono">#{data.planetId.slice(-6)}</span>
+                              )}
+                            </div>
+                          ) : (
+                            <span className="text-slate-300 italic">--</span>
+                          )}
+                        </td>
+
+                        <td className="py-1 px-1 border-r border-slate-200 w-14">
+                          {data.type === "planet" ? (
+                            <span className={cn(
+                              "text-[9px] font-medium px-1 rounded",
+                              data.class && PLANET_CLASS_BADGE[data.class] ? PLANET_CLASS_BADGE[data.class] : "text-slate-500"
+                            )}>
+                              {data.class ?? "-"}
+                            </span>
+                          ) : data.type === "asteroid" ? (
+                            <span className="text-slate-400 text-[9px]">Belt</span>
+                          ) : (
+                            <span className="text-slate-400 text-[9px] capitalize">{data.type}</span>
+                          )}
+                        </td>
+
+                        <td className="text-right py-1 px-1 border-r border-slate-200 w-16 text-slate-500 font-mono text-[9px]">
+                          {data.diameter ? `${(data.diameter / 1000).toFixed(0)}k` : data.type === "planet" ? '--' : '-'}
+                        </td>
+
+                        <td className="py-1 px-1 border-r border-slate-200 min-w-[90px]">
+                          {data.moon && data.moonDetails ? (
+                            <div className="flex items-center gap-1">
+                              <Moon className="w-3 h-3 text-slate-400 flex-shrink-0" />
+                              <span className="text-slate-600 truncate max-w-[50px]">{data.moonDetails.name}</span>
+                              <span className="text-[8px] text-slate-400">{data.moonDetails.diameter ? `${(data.moonDetails.diameter / 1000).toFixed(0)}k` : ''}</span>
                             </div>
                           ) : (
                             <span className="text-slate-300">--</span>
                           )}
                         </td>
 
-                        <td className="py-1.5 px-1">
+                        <td className="py-1 px-1 border-r border-slate-200 min-w-[75px]">
+                          {data.debris ? (
+                            <div className="flex items-center gap-0.5">
+                              <Triangle className="w-2.5 h-2.5 fill-yellow-600 rotate-180 flex-shrink-0" />
+                              <span className="text-[8px] font-mono text-yellow-700">{data.debris.metal >= 1000 ? `${(data.debris.metal / 1000).toFixed(0)}k` : data.debris.metal}</span>
+                              <span className="text-[8px] font-mono text-blue-600">/{data.debris.crystal >= 1000 ? `${(data.debris.crystal / 1000).toFixed(0)}k` : data.debris.crystal}</span>
+                            </div>
+                          ) : (
+                            <span className="text-slate-300">--</span>
+                          )}
+                        </td>
+
+                        <td className="py-1 px-1 border-r border-slate-200 min-w-[80px]">
                           {data.owner ? (
                             <div className="flex items-center gap-1">
-                              <div className={cn(
-                                "w-2 h-2 rounded-full flex-shrink-0",
-                                data.activity && data.activity > 0 ? "bg-green-400" : "bg-yellow-400"
-                              )} />
-                              <span className={cn(
-                                "text-xs leading-tight truncate max-w-[100px]",
-                                isMe ? "text-green-600" : data.type === "station" ? "text-red-600" : "text-slate-700"
-                              )}>
+                              <div className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0", data.activity && data.activity > 0 ? "bg-green-400" : "bg-yellow-400")} />
+                              <span className={cn("text-[10px] truncate max-w-[65px]", isMe ? "text-green-600 font-semibold" : data.type === "station" ? "text-red-600" : "text-slate-700")}>
                                 {data.owner}
                               </span>
                             </div>
                           ) : data.type === "planet" ? (
-                            <span className="text-emerald-600 font-medium text-[10px]">Uncolonized</span>
+                            <span className="text-emerald-600 font-medium text-[9px]">Free</span>
                           ) : (
                             <span className="text-slate-300">--</span>
                           )}
                         </td>
 
-                        <td className="py-1.5 px-1">
+                        <td className="py-1 px-1 border-r border-slate-200 w-14">
                           {data.alliance ? (
-                            <span className="text-blue-600 font-bold text-xs">[{data.alliance}]</span>
+                            <span className="text-blue-600 font-bold text-[9px]">[{data.alliance}]</span>
                           ) : (
                             <span className="text-slate-300">--</span>
                           )}
                         </td>
 
-                        <td className="text-right py-1.5 px-1 whitespace-nowrap">
+                        <td className="text-center py-1 px-0.5 w-16">
                           {data.type !== "empty" && (
-                            <div className="flex justify-end gap-0.5" onClick={(e) => e.stopPropagation()}>
-                              <button className="p-1 rounded hover:bg-blue-50 text-slate-400 hover:text-blue-600" title="Scan"
-                                onClick={() => deepScanMutation.mutate({ position: data.position, name: data.name || `Position ${data.position}`, type: data.type })}
-                                disabled={deepScanMutation.isPending}>
-                                <Search className="w-3 h-3" />
+                            <div className="flex justify-center gap-0.5" onClick={(e) => e.stopPropagation()}>
+                              <button className="p-0.5 rounded hover:bg-blue-50 text-slate-400 hover:text-blue-600" title="Scan"
+                                onClick={() => deepScanMutation.mutate({ position: data.position, name: data.name || `Position ${data.position}`, type: data.type })}>
+                                <Search className="w-2.5 h-2.5" />
                               </button>
-                              <button className="p-1 rounded hover:bg-slate-100 text-slate-400" title="Details"
+                              <button className="p-0.5 rounded hover:bg-slate-100 text-slate-400" title="Details"
                                 onClick={() => openPlanetDetail(data)}>
-                                <Eye className="w-3 h-3" />
+                                <Eye className="w-2.5 h-2.5" />
                               </button>
-                              {showPlanetActions && (
+                              {showPlanetActions && data.owner && (
                                 <>
-                                  <button className="p-1 rounded hover:bg-blue-50 text-slate-400 hover:text-blue-600" title="Message"
-                                    onClick={() => messageActionMutation.mutate({ targetName: data.name || `Position ${data.position}`, recipientName: data.owner || "", destination: `${galaxy}:${system}:${data.position}` })}
-                                    disabled={messageActionMutation.isPending || !data.owner}>
-                                    <MessageSquare className="w-3 h-3" />
-                                  </button>
-                                  <button className="p-1 rounded hover:bg-red-50 text-slate-400 hover:text-red-600" title="Attack"
-                                    onClick={() => fleetActionMutation.mutate({ targetName: data.name || `Position ${data.position}`, destination: `${galaxy}:${system}:${data.position}`, missionType: "attack", ships: { lightFighter: 10, cruiser: 2 } })}
-                                    disabled={fleetActionMutation.isPending}>
-                                    <ShieldAlert className="w-3 h-3" />
+                                  <button className="p-0.5 rounded hover:bg-red-50 text-slate-400 hover:text-red-600" title="Attack"
+                                    onClick={() => fleetActionMutation.mutate({ targetName: data.name || `Position ${data.position}`, destination: `${galaxy}:${system}:${data.position}`, missionType: "attack", ships: { lightFighter: 10, cruiser: 2 } })}>
+                                    <ShieldAlert className="w-2.5 h-2.5" />
                                   </button>
                                 </>
                               )}
@@ -668,28 +598,12 @@ export default function Galaxy() {
                       </tr>
                     );
                   })}
-                  {/* Expedition Slot - Position 16 */}
-                  <tr className="border-b border-slate-200 bg-gradient-to-r from-slate-50/50 to-transparent hover:bg-blue-50/50 transition-colors cursor-pointer">
-                    <td className="text-center text-slate-400 font-mono w-8 py-2 px-1">16</td>
-                    <td className="py-2 px-1" colSpan={6}>
-                      <div className="flex items-center justify-between" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex items-center gap-3">
-                          <div className="w-5 h-5 rounded-full bg-gradient-to-br from-indigo-400 to-purple-600 shadow-sm flex items-center justify-center">
-                            <Rocket className="w-3 h-3 text-white" />
-                          </div>
-                          <div>
-                            <div className="text-slate-600 font-medium text-xs">Expedition</div>
-                            <div className="text-[9px] text-slate-400">Deep space exploration · Up to 16h</div>
-                          </div>
-                        </div>
-                        <Button className="h-7 text-[10px] px-3 bg-indigo-500 hover:bg-indigo-600 text-white mr-1">
-                          <Rocket className="w-3 h-3 mr-1" /> Send Expedition
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
                 </tbody>
               </table>
+            </div>
+            <div className="bg-slate-50 border-t border-slate-200 px-3 py-1.5 flex items-center justify-between text-[9px] text-slate-500">
+              <span>{systemData?.positions?.length ?? 0} positions · {planetPositions.length} planets · {totalMoons} moons</span>
+              <span className="text-slate-400">G{galaxy}:S{sector}:S{system}</span>
             </div>
           </div>
 
