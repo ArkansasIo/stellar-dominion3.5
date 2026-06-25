@@ -12,6 +12,14 @@ import { useEffect, useMemo, useState } from "react";
 
 const SECTOR_ROWS = 5;
 const SECTOR_COLS = 5;
+const GALAXY_NAMES = [
+  "Nexus-Alpha", "Cyborg-Beta", "Quantum-Gamma", "Andromeda-Prime", "Sirius-Delta",
+  "Lyra-Epsilon", "Orion-Zeta", "Taurus-Eta", "Pegasus-Theta", "Vela-Iota",
+];
+
+function sectorNumFromGrid(row: number, col: number): number {
+  return (row - 1) * SECTOR_COLS + col;
+}
 
 interface Planet {
   id: string; name: string; class: string; owner?: string; alliance?: string; coordinates: string;
@@ -19,20 +27,13 @@ interface Planet {
 }
 
 interface System {
-  id: string; name: string; coordinates: string; planets: Planet[]; activity: number;
-  starType?: string; planetCount?: number; habitableCount?: number;
-}
-
-interface Sector {
-  id: string; name: string; coordinates: string; row: number; col: number; systems: System[];
-}
-
-interface Galaxy {
-  id: string; realmId: string; name: string; coordinates: string; sectors: Sector[];
+  id: string; name: string; coordinates: string; planetCount: number; habitableCount: number;
+  activity: number; starType: string;
 }
 
 interface RealmServer {
-  id: string; name: string; region: "NA" | "EU" | "APAC"; status: "online" | "maintenance" | "degraded";
+  id: string; name: string; slug: string; region: "NA" | "EU" | "APAC";
+  status: "online" | "maintenance" | "degraded";
   playersOnline: number; maxPlayers: number; tickRateMs: number; uptimePercent: number; universes: string[];
 }
 
@@ -42,26 +43,16 @@ interface RealmResponse {
 
 interface SeedConfigResponse {
   selected: { seed: string };
-  limits: {
-    galaxies: number;
-    sectorsPerGalaxy: number;
-    systemsPerSector: number;
-  };
+  limits: { galaxies: number; sectorsPerGalaxy: number; systemsPerSector: number; };
 }
 
 interface SectorPreviewSystem {
-  system: number;
-  starType: string;
-  planetCount: number;
-  habitableCount: number;
-  anomalyScore: number;
+  system: number; starType: string; planetCount: number;
+  habitableCount: number; anomalyScore: number;
 }
 
 interface SectorPreviewResponse {
-  preview: {
-    coordinates: { galaxy: number; sector: number };
-    systems: SectorPreviewSystem[];
-  };
+  preview: { coordinates: { galaxy: number; sector: number }; systems: SectorPreviewSystem[]; };
 }
 
 interface SystemDetailResponse {
@@ -108,24 +99,12 @@ const CLASS_COLORS: Record<string, string> = {
   A: "bg-gray-300/20 border-gray-300/40 text-gray-300",
 };
 
-function mapSeedConfigToGalaxies(config: SeedConfigResponse, realmId: string): Galaxy[] {
-  const galaxyCount = Math.min(config.limits.galaxies, 5);
-  const galaxyNames = ["Nexus-Alpha", "Cyborg-Beta", "Quantum-Gamma", "Andromeda-Prime", "Sirius-Delta"];
-  return Array.from({ length: galaxyCount }, (_, i) => ({
-    id: `gal${i + 1}`,
-    realmId: realmId,
-    name: galaxyNames[i] || `Galaxy ${i + 1}`,
-    coordinates: `[${i + 1}:0:0]`,
-    sectors: [],
-  }));
-}
-
 export default function Universe() {
   const { toast } = useToast();
-  const [selectedGalaxy, setSelectedGalaxy] = useState<Galaxy | null>(null);
+  const [selectedGalaxyIdx, setSelectedGalaxyIdx] = useState(0);
   const [selectedSectorRow, setSelectedSectorRow] = useState(3);
   const [selectedSectorCol, setSelectedSectorCol] = useState(3);
-  const [selectedSystem, setSelectedSystem] = useState<System | null>(null);
+  const [selectedSystemNum, setSelectedSystemNum] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
@@ -149,13 +128,9 @@ export default function Universe() {
 
   const selectedRealmId = realmData?.selectedRealmId || "nexus-alpha";
   const selectedRealm = realmData?.selectedRealm;
-
-  const galaxies = useMemo(() => {
-    if (!seedConfig) return [];
-    return mapSeedConfigToGalaxies(seedConfig, selectedRealmId);
-  }, [seedConfig, selectedRealmId]);
-
-  const currentGalaxy = selectedGalaxy || galaxies[0];
+  const galaxyCount = Math.min(seedConfig?.limits.galaxies ?? 256, 10);
+  const currentGalaxyNum = selectedGalaxyIdx + 1;
+  const selectedSectorNum = sectorNumFromGrid(selectedSectorRow, selectedSectorCol);
 
   const selectRealmMutation = useMutation({
     mutationFn: async (realmId: string) => {
@@ -175,147 +150,65 @@ export default function Universe() {
     },
   });
 
-  const galaxyNum = currentGalaxy ? parseInt(currentGalaxy.id.replace("gal", "")) : 1;
-
   const { data: sectorData, isFetching: sectorLoading } = useQuery<SectorPreviewResponse>({
-    queryKey: ["/api/universe/seed/sector", galaxyNum, selectedSectorRow],
+    queryKey: ["/api/universe/seed/sector", currentGalaxyNum, selectedSectorNum],
     queryFn: async () => {
-      const res = await fetch(`/api/universe/seed/sector/${galaxyNum}/${selectedSectorRow}?limit=25`, { credentials: "include" });
+      const res = await fetch(`/api/universe/seed/sector/${currentGalaxyNum}/${selectedSectorNum}?limit=25`, { credentials: "include" });
       if (!res.ok) throw new Error("Failed to load sector data");
       return res.json();
     },
-    enabled: !!currentGalaxy,
+    enabled: currentGalaxyNum > 0 && selectedSectorNum > 0,
   });
 
   const { data: systemDetail } = useQuery<SystemDetailResponse>({
-    queryKey: ["/api/universe/seed/system", galaxyNum, selectedSectorRow, selectedSystem?.id],
+    queryKey: ["/api/universe/seed/system", currentGalaxyNum, selectedSectorNum, selectedSystemNum],
     queryFn: async () => {
-      const sysNum = selectedSystem ? parseInt(selectedSystem.id.split("-").pop() || "1") : 1;
-      const res = await fetch(`/api/universe/seed/system/${galaxyNum}/${selectedSectorRow}/${sysNum}`, { credentials: "include" });
+      const res = await fetch(`/api/universe/seed/system/${currentGalaxyNum}/${selectedSectorNum}/${selectedSystemNum}`, { credentials: "include" });
       if (!res.ok) throw new Error("Failed to load system details");
       return res.json();
     },
-    enabled: !!selectedSystem && !!currentGalaxy,
+    enabled: currentGalaxyNum > 0 && selectedSectorNum > 0 && selectedSystemNum !== null,
   });
 
-  const buildSectorsFromPreview = (): Sector[] => {
+  const systems: System[] = useMemo(() => {
     if (!sectorData?.preview?.systems) return [];
-    const systems = sectorData.preview.systems;
-    const sectors: Sector[] = [];
-    let sysIdx = 0;
-    for (let r = 1; r <= SECTOR_ROWS; r++) {
-      for (let c = 1; c <= SECTOR_COLS; c++) {
-        const sectorSystems: System[] = [];
-        const systemsInSector = Math.min(systems.length - sysIdx, Math.ceil(systems.length / (SECTOR_ROWS * SECTOR_COLS) * 2));
-        for (let s = 0; s < systemsInSector && sysIdx < systems.length; s++) {
-          const sys = systems[sysIdx];
-          const sysNum = sys.system;
-          const planets: Planet[] = [];
-          for (let p = 1; p <= sys.planetCount; p++) {
-            planets.push({
-              id: `${galaxyNum}-${r}-${sysNum}-pl-${p}`,
-              name: `Position ${p}`,
-              class: "M",
-              coordinates: `[${galaxyNum}:${r}:${sysNum}:${p}]`,
-            });
-          }
-          sectorSystems.push({
-            id: `sys-${sysNum}`,
-            name: `System ${galaxyNum}-${r}.${c}.${sysNum}`,
-            coordinates: `[${galaxyNum}:${r}:${sysNum}]`,
-            planets,
-            activity: Math.round((1 - sys.anomalyScore / 100) * 100),
-            starType: sys.starType,
-            planetCount: sys.planetCount,
-            habitableCount: sys.habitableCount,
-          });
-          sysIdx++;
-        }
-        const secName = `Sector ${r}.${c}`;
-        sectors.push({
-          id: `sec-${r}-${c}`,
-          name: secName,
-          coordinates: `[${galaxyNum}:${r}:${c}]`,
-          row: r,
-          col: c,
-          systems: sectorSystems,
-        });
-        if (sysIdx >= systems.length && !(r === SECTOR_ROWS && c === SECTOR_COLS)) break;
-      }
-      if (sysIdx >= systems.length) break;
-    }
-    return sectors;
-  };
+    return sectorData.preview.systems.map(sys => ({
+      id: `sys-${sys.system}`,
+      name: `System ${currentGalaxyNum}-${selectedSectorNum}.${sys.system}`,
+      coordinates: `[${currentGalaxyNum}:${selectedSectorNum}:${sys.system}]`,
+      planetCount: sys.planetCount,
+      habitableCount: sys.habitableCount,
+      activity: Math.round((1 - sys.anomalyScore / 100) * 100),
+      starType: sys.starType,
+    }));
+  }, [sectorData, currentGalaxyNum, selectedSectorNum]);
 
-  const currentSectors = useMemo(() => buildSectorsFromPreview(), [sectorData, galaxyNum, selectedSectorRow]);
-  const selectedSector = currentSectors.find(s => s.row === selectedSectorRow && s.col === selectedSectorCol);
-
-  useEffect(() => {
-    if (sectorData?.preview?.systems && currentSectors.length > 0 && !selectedSector) {
-      setSelectedSectorRow(currentSectors[0]?.row || 1);
-      setSelectedSectorCol(currentSectors[0]?.col || 1);
-    }
-  }, [sectorData, currentSectors, selectedSector]);
-
-  const systemsInRealm = currentSectors.flatMap(s => s.systems);
-  const planetsInRealm = systemsInRealm.flatMap(s => s.planets);
-  const averageActivity = systemsInRealm.length > 0
-    ? Math.round(systemsInRealm.reduce((sum, s) => sum + s.activity, 0) / systemsInRealm.length)
+  const averageActivity = systems.length > 0
+    ? Math.round(systems.reduce((sum, s) => sum + s.activity, 0) / systems.length)
     : 0;
 
   const searchedSystem = useMemo(() => {
     if (!searchQuery.trim()) return null;
-    return systemsInRealm.find(s => s.coordinates.includes(searchQuery) || s.name.toLowerCase().includes(searchQuery.toLowerCase()));
-  }, [searchQuery, systemsInRealm]);
+    return systems.find(s => s.coordinates.includes(searchQuery) || s.name.toLowerCase().includes(searchQuery.toLowerCase()));
+  }, [searchQuery, systems]);
 
-  useEffect(() => {
-    if (selectedGalaxy && !galaxies.find(g => g.id === selectedGalaxy.id)) {
-      const g = galaxies[0];
-      if (g) {
-        setSelectedGalaxy(g);
-        setSelectedSystem(null);
-      }
-    }
-  }, [galaxies, selectedGalaxy]);
-
-  const handleGalaxySelect = (galaxy: Galaxy) => {
-    setSelectedGalaxy(galaxy);
-    setSelectedSystem(null);
+  const handleSectorClick = (row: number, col: number) => {
+    setSelectedSectorRow(row);
+    setSelectedSectorCol(col);
+    setSelectedSystemNum(null);
   };
 
-  const handleSectorClick = (sector: Sector) => {
-    setSelectedSectorRow(sector.row);
-    setSelectedSectorCol(sector.col);
-    setSelectedSystem(null);
-  };
+  const detailPlanets = systemDetail?.generated?.planets;
 
-  const getSectorActivity = (sector: Sector) => {
-    if (!sector.systems.length) return 0;
-    return Math.round(sector.systems.reduce((sum, s) => sum + s.activity, 0) / sector.systems.length);
-  };
-
-  const renderSectorGrid = () => {
-    const grid: (Sector | null)[][] = [];
-    for (let r = 1; r <= SECTOR_ROWS; r++) {
-      const row: (Sector | null)[] = [];
-      for (let c = 1; c <= SECTOR_COLS; c++) {
-        const sector = currentSectors.find(s => s.row === r && s.col === c);
-        row.push(sector || null);
-      }
-      grid.push(row);
-    }
-    return grid;
-  };
-
-  const renderSystemGrid = (sector: Sector) => {
-    if (!sector.systems.length) return null;
-    const gridSize = Math.ceil(Math.sqrt(sector.systems.length));
+  const renderSystemGrid = () => {
+    if (!systems.length) return null;
+    const gridSize = Math.ceil(Math.sqrt(systems.length));
     const grid: (System | null)[][] = [];
     let idx = 0;
     for (let r = 0; r < gridSize; r++) {
       const row: (System | null)[] = [];
       for (let c = 0; c < gridSize; c++) {
-        row.push(sector.systems[idx] || null);
+        row.push(systems[idx] || null);
         idx++;
       }
       grid.push(row);
@@ -323,8 +216,7 @@ export default function Universe() {
     return grid;
   };
 
-  const sectorGrid = renderSectorGrid();
-  const detailPlanets = systemDetail?.generated?.planets;
+  const systemGrid = renderSystemGrid();
 
   return (
     <GameLayout>
@@ -362,13 +254,15 @@ export default function Universe() {
 
               <div className="space-y-1">
                 <label className="text-xs text-slate-400 uppercase tracking-wide">Galaxy</label>
-                <Select value={currentGalaxy?.id} onValueChange={v => handleGalaxySelect(galaxies.find(g => g.id === v)!) }>
+                <Select value={String(currentGalaxyNum)} onValueChange={v => { setSelectedGalaxyIdx(parseInt(v) - 1); setSelectedSystemNum(null); }}>
                   <SelectTrigger className="bg-slate-800 border-slate-600 text-white">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-slate-800 border-slate-600 text-white">
-                    {galaxies.map(g => (
-                      <SelectItem key={g.id} value={g.id}>{g.name} {g.coordinates}</SelectItem>
+                    {Array.from({ length: galaxyCount }, (_, i) => (
+                      <SelectItem key={i + 1} value={String(i + 1)}>
+                        {GALAXY_NAMES[i] || `Galaxy ${i + 1}`} [{i + 1}:0:0]
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -402,19 +296,19 @@ export default function Universe() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Card className="bg-slate-800/30 border-slate-700">
             <CardContent className="pt-6 text-center">
-              <div className="text-2xl font-bold text-white">{galaxies.length}</div>
+              <div className="text-2xl font-bold text-white">{galaxyCount}</div>
               <div className="text-xs text-slate-400">Galaxies</div>
             </CardContent>
           </Card>
           <Card className="bg-slate-800/30 border-slate-700">
             <CardContent className="pt-6 text-center">
-              <div className="text-2xl font-bold text-blue-400">{currentSectors.length}</div>
-              <div className="text-xs text-slate-400">Sectors loaded</div>
+              <div className="text-2xl font-bold text-blue-400">{SECTOR_ROWS * SECTOR_COLS}</div>
+              <div className="text-xs text-slate-400">Sectors in view</div>
             </CardContent>
           </Card>
           <Card className="bg-slate-800/30 border-slate-700">
             <CardContent className="pt-6 text-center">
-              <div className="text-2xl font-bold text-green-400">{systemsInRealm.length}</div>
+              <div className="text-2xl font-bold text-green-400">{sectorLoading ? "..." : systems.length}</div>
               <div className="text-xs text-slate-400">Star Systems</div>
             </CardContent>
           </Card>
@@ -429,7 +323,7 @@ export default function Universe() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-sm text-slate-400">
             <Layers className="w-4 h-4" />
-            <span>{currentGalaxy?.name || "Loading..."} · {selectedSector?.name || "No sector selected"}</span>
+            <span>Galaxy {currentGalaxyNum} · Sector {selectedSectorNum}</span>
           </div>
           <div className="flex gap-1">
             <Button variant={viewMode === "grid" ? "default" : "ghost"} size="sm" className="text-xs" onClick={() => setViewMode("grid")}>
@@ -451,7 +345,7 @@ export default function Universe() {
                   <span className="text-slate-400 text-sm ml-2">{searchedSystem.coordinates}</span>
                 </div>
               </div>
-              <Button size="sm" variant="outline" className="border-indigo-600 text-indigo-300" onClick={() => { setSelectedSystem(searchedSystem); setSearchQuery(""); }}>
+              <Button size="sm" variant="outline" className="border-indigo-600 text-indigo-300" onClick={() => { setSelectedSystemNum(parseInt(searchedSystem.id.split("-").pop() || "1")); setSearchQuery(""); }}>
                 View
               </Button>
             </CardContent>
@@ -466,98 +360,73 @@ export default function Universe() {
                   <Grid3x3 className="w-4 h-4 text-slate-400" />
                   Sectors
                 </CardTitle>
-                <CardDescription className="text-xs text-slate-500">{currentGalaxy?.name || "Universe"} · {SECTOR_ROWS}x{SECTOR_COLS} grid</CardDescription>
+                <CardDescription className="text-xs text-slate-500">Galaxy {currentGalaxyNum} · {SECTOR_ROWS}x{SECTOR_COLS} grid</CardDescription>
               </CardHeader>
               <CardContent>
-                {sectorLoading ? (
-                  <div className="text-xs text-slate-500 text-center py-4">Loading sectors...</div>
-                ) : (
-                  <div className="grid grid-cols-5 gap-1">
-                    {sectorGrid.flat().map((sector, i) => {
-                      const activity = sector ? getSectorActivity(sector) : 0;
-                      const level = getActivityLevel(activity);
-                      return (
-                        <button
-                          key={sector?.id || `empty-${i}`}
-                          onClick={() => sector && handleSectorClick(sector)}
-                          className={`aspect-square rounded text-[9px] font-mono font-bold flex items-center justify-center transition-all border ${
-                            !sector
-                              ? "bg-slate-900/50 border-slate-800/30 text-slate-800 cursor-default"
-                              : selectedSector?.id === sector.id
-                                ? "bg-blue-600/40 border-blue-500 text-white ring-1 ring-blue-400"
-                                : "bg-slate-800/60 border-slate-700 text-slate-300 hover:bg-slate-700/60 hover:border-slate-600 cursor-pointer"
-                          }`}
-                          title={sector ? `${sector.name} (${activity}%)` : "Empty"}
-                        >
-                          {sector ? `${sector.row}.${sector.col}` : ""}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
+                <div className="grid grid-cols-5 gap-1">
+                  {Array.from({ length: SECTOR_ROWS * SECTOR_COLS }, (_, i) => {
+                    const r = Math.floor(i / SECTOR_COLS) + 1;
+                    const c = (i % SECTOR_COLS) + 1;
+                    const secNum = sectorNumFromGrid(r, c);
+                    const isSelected = r === selectedSectorRow && c === selectedSectorCol;
+                    return (
+                      <button
+                        key={`${r}-${c}`}
+                        onClick={() => handleSectorClick(r, c)}
+                        className={`aspect-square rounded text-[9px] font-mono font-bold flex items-center justify-center transition-all border ${
+                          isSelected
+                            ? "bg-blue-600/40 border-blue-500 text-white ring-1 ring-blue-400"
+                            : "bg-slate-800/60 border-slate-700 text-slate-300 hover:bg-slate-700/60 hover:border-slate-600 cursor-pointer"
+                        }`}
+                        title={`Sector ${secNum} (row ${r}, col ${c})`}
+                      >
+                        {secNum}
+                      </button>
+                    );
+                  })}
+                </div>
               </CardContent>
             </Card>
 
             {viewMode === "list" && (
-              <>
-                <Card className="bg-slate-800/30 border-slate-700">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm text-white flex items-center gap-2">
-                      <Globe className="w-4 h-4 text-slate-400" />
-                      Sectors
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-1 max-h-80 overflow-y-auto">
-                    {currentSectors.map(sec => (
-                      <Button key={sec.id} variant={selectedSector?.id === sec.id ? "default" : "ghost"} size="sm"
-                        className="w-full justify-start text-left text-xs h-auto py-2"
-                        onClick={() => handleSectorClick(sec)}>
-                        <div className="flex items-center justify-between w-full">
-                          <span className="truncate">{sec.name}</span>
-                          <span className="text-[10px] text-slate-500 ml-1">{sec.coordinates}</span>
-                        </div>
-                      </Button>
-                    ))}
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-slate-800/30 border-slate-700">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm text-white flex items-center gap-2">
-                      <Orbit className="w-4 h-4 text-slate-400" />
-                      Systems
-                    </CardTitle>
-                    <CardDescription className="text-xs text-slate-500">{selectedSector?.name}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-1 max-h-60 overflow-y-auto">
-                    {selectedSector?.systems.map(sys => (
-                      <Button key={sys.id} variant={selectedSystem?.id === sys.id ? "default" : "ghost"} size="sm"
-                        className="w-full justify-start text-left text-xs h-auto py-2"
-                        onClick={() => setSelectedSystem(sys)}>
-                        <div className="flex items-center justify-between w-full">
-                          <span className="truncate">{sys.name}</span>
-                          <Badge variant="outline" className={`text-[10px] ${getActivityLevel(sys.activity).color}`}>{sys.activity}%</Badge>
-                        </div>
-                      </Button>
-                    ))}
-                  </CardContent>
-                </Card>
-              </>
-            )}
-
-            {selectedSector && (
               <Card className="bg-slate-800/30 border-slate-700">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm text-white">{selectedSector.name}</CardTitle>
-                  <CardDescription className="text-xs text-slate-500">Row {selectedSector.row} · Col {selectedSector.col} · {selectedSector.coordinates}</CardDescription>
+                  <CardTitle className="text-sm text-white flex items-center gap-2">
+                    <Orbit className="w-4 h-4 text-slate-400" />
+                    Systems
+                  </CardTitle>
+                  <CardDescription className="text-xs text-slate-500">Sector {selectedSectorNum}</CardDescription>
                 </CardHeader>
-                <CardContent className="text-xs text-slate-400 space-y-1">
-                  <div className="flex justify-between"><span>Systems</span><span className="text-white">{selectedSector.systems.length}</span></div>
-                  <div className="flex justify-between"><span>Total Planets</span><span className="text-white">{selectedSector.systems.reduce((sum, s) => sum + (s.planetCount || 0), 0)}</span></div>
-                  <div className="flex justify-between"><span>Avg Activity</span><span className={`${getActivityLevel(getSectorActivity(selectedSector)).color}`}>{getSectorActivity(selectedSector)}%</span></div>
+                <CardContent className="space-y-1 max-h-60 overflow-y-auto">
+                  {systems.map(sys => (
+                    <Button
+                      key={sys.id}
+                      variant={selectedSystemNum === parseInt(sys.id.split("-").pop() || "0") ? "default" : "ghost"}
+                      size="sm"
+                      className="w-full justify-start text-left text-xs h-auto py-2"
+                      onClick={() => setSelectedSystemNum(parseInt(sys.id.split("-").pop() || "1"))}
+                    >
+                      <div className="flex items-center justify-between w-full">
+                        <span className="truncate">{sys.name}</span>
+                        <Badge variant="outline" className={`text-[10px] ${getActivityLevel(sys.activity).color}`}>{sys.activity}%</Badge>
+                      </div>
+                    </Button>
+                  ))}
                 </CardContent>
               </Card>
             )}
+
+            <Card className="bg-slate-800/30 border-slate-700">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm text-white">Sector {selectedSectorNum}</CardTitle>
+                <CardDescription className="text-xs text-slate-500">Row {selectedSectorRow} · Col {selectedSectorCol} · Galaxy {currentGalaxyNum}</CardDescription>
+              </CardHeader>
+              <CardContent className="text-xs text-slate-400 space-y-1">
+                <div className="flex justify-between"><span>Systems</span><span className="text-white">{systems.length}</span></div>
+                <div className="flex justify-between"><span>Total Planets</span><span className="text-white">{systems.reduce((sum, s) => sum + s.planetCount, 0)}</span></div>
+                <div className="flex justify-between"><span>Avg Activity</span><span className={`${getActivityLevel(averageActivity).color}`}>{averageActivity}%</span></div>
+              </CardContent>
+            </Card>
           </div>
 
           <div className="xl:col-span-3 space-y-6">
@@ -566,55 +435,51 @@ export default function Universe() {
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-sm text-white flex items-center gap-2">
                     <Hexagon className="w-4 h-4 text-slate-400" />
-                    {selectedSector?.name || "Sector"} — System Grid
+                    Sector {selectedSectorNum} — System Grid
                   </CardTitle>
                   <Badge variant="outline" className="text-xs text-slate-400 border-slate-600">
-                    {selectedSector?.systems.length || 0} systems
+                    {systems.length} systems
                   </Badge>
                 </div>
               </CardHeader>
               <CardContent>
-                {selectedSector && renderSystemGrid(selectedSector) ? (
-                  (() => {
-                    const grid = renderSystemGrid(selectedSector)!;
-                    return (
-                      <div className="space-y-2">
-                        {grid.map((row, ri) => (
-                          <div key={ri} className="flex gap-2 justify-center">
-                            {row.map((sys, ci) => {
-                              if (!sys) return <div key={`empty-${ci}`} className="w-24 h-24 rounded-lg bg-slate-900/30 border border-dashed border-slate-800" />;
-                              const level = getActivityLevel(sys.activity);
-                              return (
-                                <button
-                                  key={sys.id}
-                                  onClick={() => setSelectedSystem(sys)}
-                                  className={`w-24 h-24 rounded-lg border p-2 flex flex-col items-center justify-center text-center transition-all ${
-                                    selectedSystem?.id === sys.id
-                                      ? "bg-blue-600/30 border-blue-500 ring-1 ring-blue-400"
-                                      : "bg-slate-800/50 border-slate-700 hover:bg-slate-700/50 hover:border-slate-600"
-                                  }`}
-                                >
-                                  <Star className={`w-5 h-5 mb-1 ${sys.activity > 50 ? "text-yellow-400" : "text-slate-500"}`} />
-                                  <div className="text-[10px] font-semibold text-white leading-tight truncate w-full">{sys.name.split(" ").slice(-1)[0]}</div>
-                                  <div className={`text-[9px] font-mono ${level.color}`}>{sys.activity}%</div>
-                                  <div className="text-[8px] text-slate-500">{sys.planetCount || "?"}pl</div>
-                                </button>
-                              );
-                            })}
-                          </div>
-                        ))}
+                {sectorLoading ? (
+                  <div className="py-12 text-center text-slate-500 text-sm">Loading systems...</div>
+                ) : systemGrid ? (
+                  <div className="space-y-2">
+                    {systemGrid.map((row, ri) => (
+                      <div key={ri} className="flex gap-2 justify-center">
+                        {row.map((sys, ci) => {
+                          if (!sys) return <div key={`empty-${ci}`} className="w-24 h-24 rounded-lg bg-slate-900/30 border border-dashed border-slate-800" />;
+                          const level = getActivityLevel(sys.activity);
+                          const isSelected = selectedSystemNum === parseInt(sys.id.split("-").pop() || "0");
+                          return (
+                            <button
+                              key={sys.id}
+                              onClick={() => setSelectedSystemNum(parseInt(sys.id.split("-").pop() || "1"))}
+                              className={`w-24 h-24 rounded-lg border p-2 flex flex-col items-center justify-center text-center transition-all ${
+                                isSelected
+                                  ? "bg-blue-600/30 border-blue-500 ring-1 ring-blue-400"
+                                  : "bg-slate-800/50 border-slate-700 hover:bg-slate-700/50 hover:border-slate-600"
+                              }`}
+                            >
+                              <Star className={`w-5 h-5 mb-1 ${sys.activity > 50 ? "text-yellow-400" : "text-slate-500"}`} />
+                              <div className="text-[10px] font-semibold text-white leading-tight truncate w-full">{sys.name.split(" ").slice(-1)[0]}</div>
+                              <div className={`text-[9px] font-mono ${level.color}`}>{sys.activity}%</div>
+                              <div className="text-[8px] text-slate-500">{sys.planetCount}pl</div>
+                            </button>
+                          );
+                        })}
                       </div>
-                    );
-                  })()
-                ) : (
-                  <div className="py-12 text-center text-slate-500 text-sm">
-                    {sectorLoading ? "Loading systems..." : "No systems in this sector."}
+                    ))}
                   </div>
+                ) : (
+                  <div className="py-12 text-center text-slate-500 text-sm">No systems in this sector.</div>
                 )}
               </CardContent>
             </Card>
 
-            {selectedSystem && detailPlanets && (
+            {selectedSystemNum !== null && detailPlanets && (
               <Card className="bg-slate-800/30 border-slate-700">
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
@@ -623,15 +488,17 @@ export default function Universe() {
                         <Star className="w-5 h-5 text-yellow-400" />
                       </div>
                       <div>
-                        <CardTitle className="text-white text-sm">{systemDetail?.generated?.star?.name || selectedSystem.name} System</CardTitle>
-                        <CardDescription className="text-xs text-slate-400">{selectedSystem.coordinates} · {systemDetail?.generated?.star?.type} star</CardDescription>
+                        <CardTitle className="text-white text-sm">{systemDetail?.generated?.star?.name || `System ${selectedSystemNum}`}</CardTitle>
+                        <CardDescription className="text-xs text-slate-400">
+                          [{currentGalaxyNum}:{selectedSectorNum}:{selectedSystemNum}] · {systemDetail?.generated?.star?.type} star
+                        </CardDescription>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="h-2 w-20 bg-slate-700 rounded-full overflow-hidden">
-                        <div className={`h-full ${getActivityLevel(selectedSystem.activity).bar}`} style={{ width: `${selectedSystem.activity}%` }} />
+                        <div className="h-full bg-green-500" style={{ width: `${Math.min(100, averageActivity)}%` }} />
                       </div>
-                      <span className={`text-xs font-mono font-bold ${getActivityLevel(selectedSystem.activity).color}`}>{selectedSystem.activity}%</span>
+                      <span className="text-xs font-mono font-bold text-green-400">{averageActivity}%</span>
                     </div>
                   </div>
                 </CardHeader>
@@ -657,7 +524,7 @@ export default function Universe() {
               </Card>
             )}
 
-            {selectedSystem && detailPlanets && (
+            {selectedSystemNum !== null && detailPlanets && (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <div className="bg-slate-800/30 border border-slate-700 rounded-lg p-3 text-center">
                   <div className="text-xs text-slate-400">Planets</div>
@@ -673,7 +540,7 @@ export default function Universe() {
                 </div>
                 <div className="bg-slate-800/30 border border-slate-700 rounded-lg p-3 text-center">
                   <div className="text-xs text-slate-400">Activity</div>
-                  <div className={`text-lg font-bold ${getActivityLevel(selectedSystem.activity).color}`}>{selectedSystem.activity}%</div>
+                  <div className="text-lg font-bold text-green-400">{averageActivity}%</div>
                 </div>
               </div>
             )}

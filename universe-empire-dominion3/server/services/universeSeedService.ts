@@ -327,7 +327,8 @@ export class UniverseSeedService {
       const mass = Number((planetRng.next() * 8.0 + 0.1).toFixed(3));
       const gravity = Number((planetRng.next() * 3.5 + 0.2).toFixed(2));
       const waterPercent = type === 'ocean' ? Math.round(planetRng.nextInt(60, 95)) : type === 'terran' ? Math.round(planetRng.nextInt(20, 60)) : Math.round(planetRng.nextInt(0, 15));
-      const atmosphere = UNIVERSE_CONFIG.planetTypes[type]?.resources?.length ? 'varies' : 'none';
+      const planetTypeCfg = UNIVERSE_CONFIG.planetTypes[type];
+      const atmosphere = planetTypeCfg && planetRng.next() < (planetTypeCfg.atmosphereChance ?? 0.5) ? 'varies' : 'none';
       const specialFeatures: string[] = [];
       if (habitable) specialFeatures.push('habitable_zone');
       if (planetRng.next() > 0.92) specialFeatures.push('precursor_remnants');

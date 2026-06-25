@@ -28,13 +28,16 @@ export const UNIVERSE_CONFIG = {
     },
     
     planetTypeDistribution: {
-      'rocky': 0.35,
-      'gas_giant': 0.15,
-      'ice_giant': 0.10,
-      'desert': 0.15,
-      'ocean': 0.08,
-      'volcanic': 0.07,
-      'frozen': 0.10,
+      'rocky': 0.30,
+      'gas_giant': 0.12,
+      'ice_giant': 0.08,
+      'desert': 0.12,
+      'ocean': 0.07,
+      'volcanic': 0.06,
+      'frozen': 0.08,
+      'terran': 0.05,
+      'barren': 0.07,
+      'toxic': 0.05,
     },
 
     habitableZone: {

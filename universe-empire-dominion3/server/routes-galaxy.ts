@@ -2,7 +2,7 @@ import type { Express, Request, Response } from "express";
 import { db } from "./db";
 import { storage } from "./storage";
 import { playerStates, users } from "../shared/schema";
-import { like, eq } from "drizzle-orm";
+import { like, eq, inArray } from "drizzle-orm";
 import { isAuthenticated } from "./basicAuth";
 import { PLANET_CATALOG, PLANET_SIZE_CLASSES, type PlanetClassification } from "../shared/config/planetCatalog";
 import { MOON_CATALOG, MOON_SIZE_CLASSES, type MoonClassification } from "../shared/config/moonCatalog";
@@ -90,8 +90,10 @@ type ScanReport = {
 // NMS-style deterministic universe seed system
 // ---------------------------------------------------------------------------
 
+import { UNIVERSE_CONFIG } from "../shared/config/universeConfig";
+
 /** Maximum orbital positions displayed in a system (matches the client table). */
-const MAX_SYSTEM_POSITIONS = 50;
+const MAX_SYSTEM_POSITIONS = UNIVERSE_CONFIG.size.maxPlanetsPerSystem;
 
 /** FNV-1a 32-bit hash of an arbitrary string. */
 function fnv1a(str: string): number {
@@ -264,8 +266,10 @@ function generateSystem(
   const starName = generateName(fnv1a(`${baseKey}:star-name`));
   const systemName = generateName(fnv1a(`${baseKey}:sys-name`));
 
-  // Planet count: 15-50 planets per system
-  const planetCount = Math.floor(seededAt(sysHash, 1) * 36) + 15;
+  // Planet count: configurable range per system
+  const minP = UNIVERSE_CONFIG.size.minPlanetsPerSystem;
+  const maxP = UNIVERSE_CONFIG.size.maxPlanetsPerSystem;
+  const planetCount = Math.floor(seededAt(sysHash, 1) * (maxP - minP + 1)) + minP;
 
   const positions: SystemPosition[] = [];
 
@@ -273,7 +277,8 @@ function generateSystem(
   const galaxyMorphologyIds = GALAXY_MORPHOLOGY_TYPES.map(t => t.id);
   const galaxyMorphologyIdx = Math.floor(seededAt(sysHash, 100) * galaxyMorphologyIds.length);
   const galaxyMorphology = galaxyMorphologyIds[galaxyMorphologyIdx] || 'spiral-normal';
-  const galaxySizeVariant = seededAt(sysHash, 101) > 0.6 ? 'large' : seededAt(sysHash, 101) > 0.3 ? 'medium' : 'small';
+  const szRoll = seededAt(sysHash, 101);
+  const galaxySizeVariant = szRoll > 0.6 ? 'large' : szRoll > 0.3 ? 'medium' : 'small';
   const galaxyHabitability = Math.floor(seededAt(sysHash, 102) * 100);
   const galaxyClassification = classifyGalaxy(galaxyMorphology, galaxySizeVariant, galaxyHabitability);
 
@@ -517,9 +522,6 @@ export function registerGalaxyRoutes(app: Express) {
         const { galaxyClassification, racePresence, planetCount } = generated;
 
         // Overlay real player data from DB.
-        // Player coordinate format in DB: "[galaxy:sector:system:pos]" or "[galaxy:system:pos]"
-        // We match any player whose coordinate starts with [galaxy: and contains :pos].
-        // Pattern: [galaxy:sector:system:pos] where all params match.
         try {
           const coordPrefix = `[${galaxy}:${sector}:${system}:`;
           const players = await db
@@ -534,20 +536,16 @@ export function registerGalaxyRoutes(app: Express) {
 
           const userIds = players.map((p) => p.userId);
 
-          // Fetch usernames and alliance memberships for matched players
           const usernameMap: Record<string, string> = {};
           const allianceMap: Record<string, string> = {};
 
           if (userIds.length > 0) {
-            for (const player of players) {
-              const userRows = await db
-                .select({ id: users.id, username: users.username })
-                .from(users)
-                .where(eq(users.id, player.userId))
-                .limit(1);
-              if (userRows[0]?.username) {
-                usernameMap[player.userId] = userRows[0].username;
-              }
+            const userRows = await db
+              .select({ id: users.id, username: users.username })
+              .from(users)
+              .where(inArray(users.id, userIds));
+            for (const u of userRows) {
+              usernameMap[u.id] = u.username;
             }
           }
 
