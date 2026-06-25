@@ -1,6 +1,7 @@
 import { sql } from 'drizzle-orm';
 import {
   index,
+  uniqueIndex,
   jsonb,
   pgTable,
   timestamp,
@@ -10,7 +11,8 @@ import {
   boolean,
   real,
   serial,
-  bigint
+  bigint,
+  doublePrecision
 } from "drizzle-orm/pg-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -2637,6 +2639,81 @@ export type OgameSystem = typeof ogameSystems.$inferSelect;
 export type InsertOgameSystem = typeof ogameSystems.$inferInsert;
 export type OgamePosition = typeof ogamePositions.$inferSelect;
 export type InsertOgamePosition = typeof ogamePositions.$inferInsert;
+
+// ============================================================
+// Galaxy Activity — "red dots" for player activity tracking
+// ============================================================
+
+export const galaxyActivity = pgTable("galaxy_activity", {
+  id: serial("id").primaryKey(),
+  galaxy: integer("galaxy").notNull(),
+  system: integer("system").notNull(),
+  position: integer("position").notNull(),
+  userId: varchar("user_id"),
+  activityType: integer("activity_type").notNull(), // 1=login, 2=fleet, 3=espionage, 4=combat
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("idx_galaxy_activity_coords").on(table.galaxy, table.system, table.position),
+  index("idx_galaxy_activity_user").on(table.userId),
+  index("idx_galaxy_activity_type").on(table.activityType),
+]);
+
+export type GalaxyActivity = typeof galaxyActivity.$inferSelect;
+export type InsertGalaxyActivity = typeof galaxyActivity.$inferInsert;
+
+// ============================================================
+// Galaxy Cache — pre-aggregated snapshots for performance
+// ============================================================
+
+export const galaxyCache = pgTable("galaxy_cache", {
+  id: serial("id").primaryKey(),
+  galaxy: integer("galaxy").notNull(),
+  system: integer("system").notNull(),
+  cacheJson: jsonb("cache_json").notNull(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  uniqueIndex("idx_galaxy_cache_coords").on(table.galaxy, table.system),
+]);
+
+export type GalaxyCache = typeof galaxyCache.$inferSelect;
+export type InsertGalaxyCache = typeof galaxyCache.$inferInsert;
+
+// ============================================================
+// Espionage Reports — spy mission results
+// ============================================================
+
+export const espionageReports = pgTable("espionage_reports", {
+  id: serial("id").primaryKey(),
+  attackerId: varchar("attacker_id"),
+  targetId: varchar("target_id"),
+  galaxy: integer("galaxy").notNull(),
+  system: integer("system").notNull(),
+  position: integer("position").notNull(),
+  activityType: integer("activity_type").default(3), // espionage
+  reportJson: jsonb("report_json"),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("idx_espionage_attacker").on(table.attackerId),
+  index("idx_espionage_target").on(table.targetId),
+  index("idx_espionage_coords").on(table.galaxy, table.system, table.position),
+]);
+
+export type EspionageReport = typeof espionageReports.$inferSelect;
+export type InsertEspionageReport = typeof espionageReports.$inferInsert;
+
+// ============================================================
+// Universe Config — server-wide settings
+// ============================================================
+
+export const universeConfig = pgTable("universe_config", {
+  id: serial("id").primaryKey(),
+  key: varchar("key", { length: 100 }).notNull().unique(),
+  value: jsonb("value").notNull(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type UniverseConfig = typeof universeConfig.$inferSelect;
+export type InsertUniverseConfig = typeof universeConfig.$inferInsert;
 
 // ============================================================
 // Notes System — player-created notes and reminders
