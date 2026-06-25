@@ -247,6 +247,8 @@ import tradesRoutes from "./routes-trades";
 import messagesRoutes from "./routes-messages";
 import notesRoutes from "./routes-notes";
 import localeRoutes from "./routes-locale";
+import hallOfFameRoutes from "./routes-hall-of-fame";
+import adminCouponRoutes from "./routes-admin-coupons";
 import { seedOgameCatalogIfNeeded } from "./services/ogameCatalogService";
 import { registerPhpMyAdminRoutes } from "./routes-phpmyadmin";
 import { registerMoonRoutes } from "./routes-moons";
@@ -395,6 +397,8 @@ import { eq, ilike, or } from "drizzle-orm";
   app.use('/api/messages', messagesRoutes);
   app.use('/api/notes', notesRoutes);
   app.use('/api', localeRoutes);
+  app.use('/api', hallOfFameRoutes);
+  app.use('/api', adminCouponRoutes);
   app.use(tradesRoutes);
   app.use(worldActionsRoutes);
 

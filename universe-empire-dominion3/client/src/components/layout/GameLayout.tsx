@@ -657,6 +657,7 @@ const menuSections: MenuSection[] = [
         items: [
           { href: "/government", icon: Landmark, label: "Government", description: "Review state structure, laws, and governing bonuses." },
           { href: "/leaderboard", icon: Trophy, label: "Leaderboard", description: "Compare empire performance against other players." },
+          { href: "/hall-of-fame", icon: Award, label: "Hall of Fame", description: "Historical records and achievements." },
         ],
       },
       {
@@ -666,6 +667,7 @@ const menuSections: MenuSection[] = [
           { href: "/messages", icon: Mail, label: "Messages", description: "Read diplomatic, social, and operational communications." },
           { href: "/friends", icon: Users, label: "Friends", description: "Track friends, contacts, and cooperative players." },
           { href: "/leaderboard", icon: Trophy, label: "Universe Rankings", description: "Compare empire performance against other players." },
+          { href: "/hall-of-fame", icon: Award, label: "Hall of Fame", description: "Historical records and achievements." },
         ],
       },
     ],
@@ -713,6 +715,7 @@ const socialItems: NavItem[] = [
   { href: "/notes", icon: StickyNote, label: "Notes", description: "Create and manage personal notes and reminders." },
   { href: "/friends", icon: Users, label: "Friends", description: "Track friends, contacts, and cooperative player lists." },
   { href: "/leaderboard", icon: Trophy, label: "Leaderboard", description: "Compare empire performance against other players." },
+  { href: "/hall-of-fame", icon: Award, label: "Hall of Fame", description: "Historical records and achievements." },
   { href: "/alliance", icon: Shield, label: "Alliance Hub", description: "Coordinate with allies and manage alliance structure." },
 ];
 
@@ -1367,6 +1370,7 @@ export default function GameLayout({ children, title, subtitle }: { children: Re
                           { label: "Open Messages", href: "/messages", icon: Mail, helper: "Read reports, diplomacy, and system mail." },
                           { label: "Alliance Board", href: "/alliance", icon: Shield, helper: "Manage allies, members, and pacts." },
                           { label: "Ranking Feed", href: "/leaderboard", icon: Trophy, helper: "Check prestige, empire, and combat standings." },
+                          { label: "Hall of Fame", href: "/hall-of-fame", icon: Award, helper: "Historical records and achievements." },
                           { label: "Friends List", href: "/friends", icon: Users, helper: "Track trusted pilots and contacts." },
                         ]
                       : activePageContext?.section === "Activities"
