@@ -135,6 +135,15 @@ export class UniverseResetService {
          OR key = 'admin_universe_reset_queue'
     `);
 
+    // Clear galaxy cache (regenerated on-demand)
+    for (const table of ["planets", "star_systems"]) {
+      try {
+        await db.execute(sql.raw(`TRUNCATE TABLE "${table}" RESTART IDENTITY CASCADE`));
+      } catch {
+        // table doesn't exist, skip
+      }
+    }
+
     if (existingUsers.length > 0) {
       await db.insert(playerStates).values(existingUsers.map((user) => buildFreshPlayerState(user.id)));
     }

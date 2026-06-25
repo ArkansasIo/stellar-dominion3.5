@@ -1,8 +1,8 @@
 import type { Express, Request, Response } from "express";
 import { db } from "./db";
 import { storage } from "./storage";
-import { playerStates, users } from "../shared/schema";
-import { like, eq, inArray } from "drizzle-orm";
+import { playerStates, users, starSystems, planets, sectors as sectorsTable } from "../shared/schema";
+import { like, eq, and, inArray } from "drizzle-orm";
 import { isAuthenticated } from "./basicAuth";
 import { PLANET_CATALOG, PLANET_SIZE_CLASSES, type PlanetClassification } from "../shared/config/planetCatalog";
 import { MOON_CATALOG, MOON_SIZE_CLASSES, type MoonClassification } from "../shared/config/moonCatalog";
@@ -438,6 +438,168 @@ function generateSystem(
   return { systemName, star: { type: starType, name: starName }, positions, galaxyClassification, racePresence, planetCount };
 }
 
+async function cacheSystemInDb(
+  universe: string,
+  galaxy: number,
+  sector: number,
+  system: number,
+  generated: GeneratedSystem,
+): Promise<number> {
+  const existing = await db
+    .select({ id: starSystems.id })
+    .from(starSystems)
+    .where(and(
+      eq(starSystems.galaxyId, galaxy),
+      eq(starSystems.sectorId, sector),
+      eq(starSystems.systemNumber, system),
+    ))
+    .limit(1);
+
+  if (existing.length > 0) return existing[0].id;
+
+  const [sys] = await db.insert(starSystems).values({
+    galaxyId: galaxy,
+    sectorId: sector,
+    systemNumber: system,
+    name: generated.systemName,
+    starType: generated.star.type,
+    starName: generated.star.name,
+    temperature: 3000,
+    luminosity: 0.04,
+    planetCount: generated.planetCount,
+    asteroidBelts: generated.positions.filter(p => p.type === "asteroid").length,
+    anomalyScore: 0,
+    classification: generated.galaxyClassification as any,
+    npcPresence: generated.racePresence as any,
+    isGenerated: true,
+  }).returning({ id: starSystems.id });
+
+  const systemId = sys.id;
+
+  for (const pos of generated.positions) {
+    if (pos.type !== "planet") continue;
+
+    await db.insert(planets).values({
+      systemId,
+      orbitPosition: pos.position,
+      name: pos.name || "Unknown",
+      planetType: pos.planetType || "rocky",
+      planetClass: pos.class || "K",
+      sizeClass: pos.subclass?.replace(pos.class || "", "") || "M",
+      category: pos.category || "hostile",
+      subcategory: pos.subcategory || "standard",
+      diameter: pos.diameter || 5000,
+      mass: pos.mass || 1,
+      gravity: pos.gravity || 1,
+      temperature: pos.temperature || 200,
+      atmosphere: pos.atmosphere || "none",
+      waterPercent: pos.waterPercent || 0,
+      habitable: pos.habitable || false,
+      resources: (pos.resources || []) as any,
+      specialFeatures: (pos.specialFeatures || []) as any,
+      hasMoon: pos.moon || false,
+      moonName: pos.moonDetails?.name,
+      moonType: pos.moonDetails?.type,
+      moonClass: pos.moonDetails?.class,
+      moonSubclass: pos.moonDetails?.subclass,
+      moonSize: pos.moonDetails?.size,
+      moonSizeClass: pos.moonDetails?.sizeClass,
+      moonDiameter: pos.moonDetails?.diameter,
+      moonGravity: pos.moonDetails?.gravity,
+      moonHabitable: pos.moonDetails?.habitable,
+      moonAtmosphere: pos.moonDetails?.atmosphere,
+      moonTemperature: pos.moonDetails?.temperature,
+      moonResources: (pos.moonDetails?.resources || []) as any,
+      moonSpecialFeatures: (pos.moonDetails?.specialFeatures || []) as any,
+      hasStation: (pos.stations?.length || 0) > 0,
+      stationName: pos.stations?.[0]?.name,
+      stationLevel: pos.stations?.[0]?.level,
+      stationType: pos.stations?.[0]?.type,
+      planetId: pos.planetId || "",
+    }).onConflictDoNothing();
+  }
+
+  return systemId;
+}
+
+async function loadSystemFromDb(
+  galaxy: number,
+  sector: number,
+  system: number,
+): Promise<GeneratedSystem | null> {
+  const sys = await db
+    .select()
+    .from(starSystems)
+    .where(and(
+      eq(starSystems.galaxyId, galaxy),
+      eq(starSystems.sectorId, sector),
+      eq(starSystems.systemNumber, system),
+    ))
+    .limit(1);
+
+  if (sys.length === 0) return null;
+
+  const planetRows = await db
+    .select()
+    .from(planets)
+    .where(eq(planets.systemId, sys[0].id))
+    .orderBy(planets.orbitPosition);
+
+  const positions: SystemPosition[] = planetRows.map(p => ({
+    position: p.orbitPosition,
+    type: "planet",
+    name: p.name,
+    class: p.planetClass,
+    subclass: p.planetClass + p.sizeClass,
+    category: p.category,
+    subcategory: p.subcategory,
+    planetType: p.planetType,
+    temperature: p.temperature,
+    resources: (p.resources || []) as string[],
+    habitable: p.habitable,
+    gravity: p.gravity,
+    atmosphere: p.atmosphere,
+    diameter: p.diameter,
+    mass: p.mass,
+    waterPercent: p.waterPercent,
+    specialFeatures: (p.specialFeatures || []) as string[],
+    planetId: p.planetId,
+    moon: p.hasMoon,
+    moonDetails: p.hasMoon ? {
+      name: p.moonName || "",
+      type: p.moonType || "rocky",
+      class: p.moonClass || "Rocky",
+      subclass: p.moonSubclass || "Small",
+      size: p.moonSize || "small",
+      sizeClass: p.moonSizeClass || "Small",
+      diameter: p.moonDiameter || 500,
+      gravity: p.moonGravity || 0.5,
+      habitable: p.moonHabitable || false,
+      atmosphere: p.moonAtmosphere || "trace",
+      temperature: p.moonTemperature || 200,
+      resources: (p.moonResources || []) as string[],
+      specialFeatures: (p.moonSpecialFeatures || []) as string[],
+    } : undefined,
+    stations: p.hasStation ? [{
+      name: p.stationName || "",
+      level: p.stationLevel || 1,
+      type: p.stationType || "research",
+    }] : [],
+  }));
+
+  const classification = sys[0].classification as unknown as GalaxyClassification;
+  const racePresence = sys[0].npcPresence as unknown as NPCPresence[];
+
+  return {
+    systemName: sys[0].name,
+    star: { type: sys[0].starType, name: sys[0].starName },
+    positions,
+    galaxyClassification: classification,
+    racePresence,
+    planetCount: sys[0].planetCount,
+  };
+}
+
 function generateScanReport(
   universe: string,
   galaxy: number,
@@ -516,8 +678,15 @@ export function registerGalaxyRoutes(app: Express) {
           return res.status(400).json({ error: "Invalid coordinates" });
         }
 
-        // Generate base system data using NMS-style seeded generation
-        const generated = generateSystem(universe, galaxy, sector, system);
+        // Try loading from DB first
+        let generated = await loadSystemFromDb(galaxy, sector, system);
+
+        // Cache miss: generate and store in DB
+        if (!generated) {
+          generated = generateSystem(universe, galaxy, sector, system);
+          await cacheSystemInDb(universe, galaxy, sector, system, generated);
+        }
+
         const positions: SystemPosition[] = generated.positions;
         const { galaxyClassification, racePresence, planetCount } = generated;
 

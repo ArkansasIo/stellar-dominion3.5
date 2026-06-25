@@ -11,7 +11,7 @@ async function resetUniverse() {
     console.log(`✅ Universe reset complete!`);
     console.log(`   Reset at: ${result.resetAt}`);
     console.log(`   Accounts preserved: ${result.accountCount}`);
-    console.log("\n🌌 The galaxy map is procedurally generated - it will be repopulated on the next request.");
+    console.log("\n🌌 Galaxy map data is cached in the database and has been cleared.");
     await pool.end();
     process.exit(0);
   } catch (error) {

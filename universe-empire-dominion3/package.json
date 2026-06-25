@@ -22,6 +22,7 @@
     "db:push": "drizzle-kit push",
     "db:generate": "drizzle-kit generate",
     "db:seed:ogame": "tsx script/seed-ogame-catalog.ts",
+    "db:seed:universe": "tsx script/seed-universe.ts",
     "admin": "tsx server/adminCli.ts",
     "admin:manage": "tsx script/manage-admin.ts",
     "admin:create": "tsx script/create-new-admin.ts",

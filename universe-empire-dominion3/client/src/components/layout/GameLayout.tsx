@@ -1539,7 +1539,7 @@ export default function GameLayout({ children, title, subtitle }: { children: Re
              <Rocket className="text-white w-6 h-6" />
            </div>
             <div>
-              <h1 className={cn("font-orbitron font-bold tracking-wider text-slate-900", isMobile ? "text-base" : "text-lg xl:text-xl")}>{title || <><span className="text-primary text-xs font-normal xl:text-sm">Universe-</span>Empires-Dominions</>}</h1>
+              <h1 className={cn("font-orbitron font-bold tracking-wider text-slate-900", isMobile ? "text-base" : "text-lg xl:text-xl")}>{title || "UniverseCivilization: Empire At War"}</h1>
               {subtitle && (
                 <p className="font-rajdhani text-[10px] uppercase tracking-[0.2em] text-muted-foreground sm:text-xs">
                   {subtitle}
@@ -2018,7 +2018,7 @@ export default function GameLayout({ children, title, subtitle }: { children: Re
       <footer className="sd-footer-shell sd-footer-shell relative z-10 border-t px-4 py-2 backdrop-blur-md sm:px-6 flex flex-col gap-1 sm:h-10 sm:flex-row sm:items-center sm:justify-between text-[11px] font-mono" data-testid="footer-build-info">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <img src="/assets/stellar-dominion-logo.svg" alt={`${BUILD_INFO.appName}™`} className="h-6 w-6 inline-block" />
-          <span className="font-bold text-slate-800 tracking-wide">{BUILD_INFO.appName}™</span>
+          <span className="font-bold text-slate-800 tracking-wide">UniverseCivilization: Empire At War</span>
           <span className="text-slate-400">|</span>
           <span className="text-[10px]">&copy; {BUILD_INFO.copyright}</span>
           <span className="text-slate-400">|</span>

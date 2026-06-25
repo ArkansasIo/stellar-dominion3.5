@@ -2482,5 +2482,100 @@ export const planetVaultItems = pgTable("planet_vault_items", {
   expiresAt: timestamp("expires_at"),
 });
 
+// ============================================================
+// Galaxy Map Tables
+// ============================================================
+
+export const galaxies = pgTable("galaxies", {
+  id: serial("id").primaryKey(),
+  galaxyId: integer("galaxy_id").notNull().unique(),
+  name: varchar("name", { length: 100 }).notNull(),
+  morphology: varchar("morphology", { length: 50 }).notNull().default("spiral"),
+  sizeClass: varchar("size_class", { length: 20 }).notNull().default("medium"),
+  habitability: integer("habitability").notNull().default(50),
+  starCount: integer("star_count").notNull().default(0),
+  sectorCount: integer("sector_count").notNull().default(0),
+  seed: varchar("seed", { length: 64 }).notNull().default(""),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const sectors = pgTable("sectors", {
+  id: serial("id").primaryKey(),
+  galaxyId: integer("galaxy_id").notNull().references(() => galaxies.galaxyId, { onDelete: "cascade" }),
+  sectorNumber: integer("sector_number").notNull(),
+  systemCount: integer("system_count").notNull().default(128),
+  seed: varchar("seed", { length: 64 }).notNull().default(""),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const starSystems = pgTable("star_systems", {
+  id: serial("id").primaryKey(),
+  galaxyId: integer("galaxy_id").notNull(),
+  sectorId: integer("sector_id").notNull(),
+  systemNumber: integer("system_number").notNull(),
+  name: varchar("name", { length: 100 }).notNull(),
+  starType: varchar("star_type", { length: 10 }).notNull().default("M"),
+  starName: varchar("star_name", { length: 100 }).notNull(),
+  temperature: integer("temperature").notNull().default(3000),
+  luminosity: real("luminosity").notNull().default(0.04),
+  planetCount: integer("planet_count").notNull().default(0),
+  asteroidBelts: integer("asteroid_belts").notNull().default(0),
+  anomalyScore: real("anomaly_score").notNull().default(0),
+  classification: jsonb("classification").notNull().default({}),
+  npcPresence: jsonb("npc_presence").notNull().default([]),
+  isGenerated: boolean("is_generated").notNull().default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const planets = pgTable("planets", {
+  id: serial("id").primaryKey(),
+  systemId: integer("system_id").notNull().references(() => starSystems.id, { onDelete: "cascade" }),
+  orbitPosition: integer("orbit_position").notNull(),
+  name: varchar("name", { length: 100 }).notNull(),
+  planetType: varchar("planet_type", { length: 50 }).notNull(),
+  planetClass: varchar("planet_class", { length: 10 }).notNull().default("K"),
+  sizeClass: varchar("size_class", { length: 20 }).notNull().default("M"),
+  category: varchar("category", { length: 20 }).notNull().default("hostile"),
+  subcategory: varchar("subcategory", { length: 30 }).notNull().default("standard"),
+  diameter: integer("diameter").notNull().default(5000),
+  mass: real("mass").notNull().default(1),
+  gravity: real("gravity").notNull().default(1),
+  temperature: integer("temperature").notNull().default(200),
+  atmosphere: varchar("atmosphere", { length: 100 }).notNull().default("none"),
+  waterPercent: integer("water_percent").notNull().default(0),
+  habitable: boolean("habitable").notNull().default(false),
+  resources: jsonb("resources").notNull().default([]),
+  specialFeatures: jsonb("special_features").notNull().default([]),
+  hasMoon: boolean("has_moon").notNull().default(false),
+  moonName: varchar("moon_name", { length: 100 }),
+  moonType: varchar("moon_type", { length: 50 }),
+  moonClass: varchar("moon_class", { length: 30 }),
+  moonSubclass: varchar("moon_subclass", { length: 30 }),
+  moonSize: varchar("moon_size", { length: 20 }),
+  moonSizeClass: varchar("moon_size_class", { length: 20 }),
+  moonDiameter: integer("moon_diameter"),
+  moonGravity: real("moon_gravity"),
+  moonHabitable: boolean("moon_habitable"),
+  moonAtmosphere: varchar("moon_atmosphere", { length: 100 }),
+  moonTemperature: integer("moon_temperature"),
+  moonResources: jsonb("moon_resources").default([]),
+  moonSpecialFeatures: jsonb("moon_special_features").default([]),
+  hasStation: boolean("has_station").notNull().default(false),
+  stationName: varchar("station_name", { length: 100 }),
+  stationLevel: integer("station_level"),
+  stationType: varchar("station_type", { length: 30 }),
+  planetId: varchar("planet_id", { length: 50 }).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type Galaxy = typeof galaxies.$inferSelect;
+export type InsertGalaxy = typeof galaxies.$inferInsert;
+export type Sector = typeof sectors.$inferSelect;
+export type InsertSector = typeof sectors.$inferInsert;
+export type StarSystem = typeof starSystems.$inferSelect;
+export type InsertStarSystem = typeof starSystems.$inferInsert;
+export type Planet = typeof planets.$inferSelect;
+export type InsertPlanet = typeof planets.$inferInsert;
+
 export type PlanetVaultItem = typeof planetVaultItems.$inferSelect;
 export type InsertPlanetVaultItem = typeof planetVaultItems.$inferInsert;
