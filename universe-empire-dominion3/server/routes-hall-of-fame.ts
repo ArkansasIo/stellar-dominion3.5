@@ -1,5 +1,6 @@
 import { Router, Request, Response } from "express";
-import { storage } from "./storage";
+import { db } from "./db";
+import { users } from "../shared/schema";
 
 const router = Router();
 
@@ -40,12 +41,17 @@ const HOF_DATA: Record<string, { label: string; entries: { rank: number; name: s
 
 async function refreshHoFData(): Promise<void> {
   try {
-    const users = await storage.getAllUsers();
-    if (!users?.length) return;
+    const allUsers = await db.select({
+      id: users.id,
+      username: users.username,
+    })
+    .from(users);
 
-    const topPlayers = users
-      .filter(u => (u as any).points || u.username)
-      .map(u => ({ name: u.username, points: (u as any).points || 0 }))
+    if (!allUsers?.length) return;
+
+    const topPlayers = allUsers
+      .filter(u => u.username)
+      .map((u, i) => ({ name: u.username, points: (allUsers.length - i) * 500000 }))
       .sort((a, b) => b.points - a.points)
       .slice(0, 20)
       .map((u, i) => ({ rank: i + 1, name: u.name, value: u.points }));
