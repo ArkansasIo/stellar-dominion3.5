@@ -1,0 +1,203 @@
+/* ============================================================
+   ADMIN.CSS — Admin Panel (Bans, Settings, Users, Planets)
+   ============================================================ */
+
+.admin-container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.admin-nav {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--sd-panel-border);
+}
+
+.admin-nav-item {
+  padding: 4px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.admin-nav-item.active {
+  filter: brightness(1.3);
+  border-bottom: 2px solid var(--sd-text-highlight);
+}
+
+.admin-section {
+  margin-bottom: 12px;
+}
+
+.admin-section-title {
+  font-size: 15px;
+  font-weight: bold;
+  padding: 4px 0;
+  margin-bottom: 6px;
+  border-bottom: 1px solid var(--sd-panel-border);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 3px 6px;
+  text-align: left;
+}
+
+.admin-table th {
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.admin-table td {
+  vertical-align: middle;
+}
+
+.admin-table tr:hover {
+  filter: brightness(1.08);
+}
+
+.admin-actions-cell {
+  display: flex;
+  gap: 3px;
+}
+
+.admin-form-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: 13px;
+}
+
+.admin-form-row label {
+  min-width: 140px;
+  font-weight: bold;
+}
+
+.admin-form-row input,
+.admin-form-row select {
+  flex: 1;
+  max-width: 300px;
+}
+
+.admin-form-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.admin-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.admin-stat-card {
+  text-align: center;
+  padding: 8px;
+}
+
+.admin-stat-value {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.admin-stat-label {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.admin-module-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  font-size: 13px;
+}
+
+.admin-module-name {
+  flex: 1;
+}
+
+.admin-log-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 11px;
+  font-family: monospace;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.admin-log-entry {
+  padding: 2px 6px;
+  border-bottom: 1px solid var(--sd-panel-border);
+}
+
+.admin-log-entry:hover {
+  filter: brightness(1.05);
+}
+
+.admin-log-date {
+  color: var(--sd-text-secondary);
+  margin-right: 8px;
+}
+
+.admin-planet-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 6px;
+}
+
+.admin-planet-card {
+  padding: 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.admin-planet-card:hover {
+  filter: brightness(1.1);
+}
+
+.admin-planet-name {
+  font-weight: bold;
+}
+
+.admin-planet-coords {
+  opacity: 0.7;
+  font-size: 11px;
+}
+
+.admin-ban-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.admin-ban-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px;
+  font-size: 13px;
+}
+
+.admin-ban-reason {
+  flex: 1;
+  opacity: 0.7;
+  font-size: 12px;
+}
+
+.admin-ban-actions {
+  display: flex;
+  gap: 4px;
+}

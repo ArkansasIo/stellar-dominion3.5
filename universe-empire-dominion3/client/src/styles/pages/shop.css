@@ -1,0 +1,116 @@
+/* ============================================================
+   SHOP.CSS — Premium Shop, Merchant, Officers
+   ============================================================ */
+
+.shop-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.shop-balance {
+  text-align: center;
+  font-size: 16px;
+  padding: 8px;
+  margin-bottom: 8px;
+}
+
+.shop-balance-amount {
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.shop-item-card {
+  text-align: center;
+  padding: 10px 6px;
+}
+
+.shop-item-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 6px;
+}
+
+.shop-item-name {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.shop-item-description {
+  font-size: 11px;
+  opacity: 0.7;
+  line-height: 1.3;
+  margin-top: 4px;
+}
+
+.shop-item-price {
+  font-size: 13px;
+  margin-top: 6px;
+  font-weight: bold;
+}
+
+.shop-item-action {
+  margin-top: 8px;
+}
+
+.shop-officer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px;
+}
+
+.shop-officer-card {
+  text-align: center;
+  padding: 10px;
+}
+
+.shop-officer-portrait {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 6px;
+  border-radius: 50%;
+}
+
+.shop-officer-name {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.shop-officer-bonuses {
+  font-size: 11px;
+  opacity: 0.7;
+  margin-top: 4px;
+  line-height: 1.3;
+}
+
+.shop-officer-duration {
+  font-size: 11px;
+  margin-top: 4px;
+  opacity: 0.6;
+}
+
+.shop-officer-action {
+  margin-top: 8px;
+}
+
+.shop-category-tabs {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.shop-category-tab {
+  padding: 4px 14px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.shop-category-tab.active {
+  filter: brightness(1.3);
+}

@@ -1,0 +1,85 @@
+/* ============================================================
+   CONFIG.CSS — Theme & Feature Configuration Overrides
+   Allows per-user, per-page, and per-feature customization
+   ============================================================ */
+
+/* --- Layout Configuration --- */
+:root {
+  --config-sidebar-width: 190px;
+  --config-topbar-height: 66px;
+  --config-content-padding: 8px 12px;
+  --config-font-size: 14px;
+  --config-font-family: 'Rajdhani', 'Tahoma', Verdana, sans-serif;
+  --config-corner-radius: 2px;
+}
+
+/* --- Sidebar Collapsed Mode --- */
+html[data-sidebar="collapsed"] {
+  --config-sidebar-width: 48px;
+}
+html[data-sidebar="collapsed"] .game-content {
+  margin-left: 48px;
+}
+html[data-sidebar="collapsed"] .game-topbar {
+  left: 48px;
+}
+
+/* --- Compact Mode Overrides --- */
+html.compact-ui {
+  --config-content-padding: 4px 6px;
+  --config-font-size: 12px;
+}
+html.compact-ui .ogame-table th,
+html.compact-ui .ogame-table td {
+  padding: 2px 4px;
+}
+
+/* --- Reduced Motion --- */
+html.reduced-motion-ui .fleet-progress-bar .progress-fill {
+  transition: none;
+}
+
+/* --- Per-Page Background / Theme Tweak Config --- */
+body[data-page="galaxy"] {
+  /* galaxy-specific overrides if needed */
+}
+body[data-page="fleet"] {
+  /* fleet-specific overrides if needed */
+}
+body[data-page="combat"] {
+  /* combat-specific overrides if needed */
+}
+
+/* --- Feature Toggle Visibility --- */
+html[data-feature-missiles="hidden"] .missile-system { display: none; }
+html[data-feature-notes="hidden"] .notes-system { display: none; }
+html[data-feature-expeditions="hidden"] .expedition-system { display: none; }
+html[data-feature-acs="hidden"] .acs-system { display: none; }
+html[data-feature-hall-of-fame="hidden"] .hall-of-fame { display: none; }
+
+/* --- Notification / Message Box Config --- */
+#errorbox {
+  border: 3px solid #ff0000;
+  display: none;
+  padding: 4px 3px;
+  margin: 3px 0;
+}
+#messagebox {
+  border: 1px solid #00ff00;
+  display: none;
+  padding: 4px 3px;
+  margin: 3px 0;
+}
+#debugbox {
+  border: 1px solid gold;
+  display: none;
+  padding: 4px 3px;
+  margin: 3px 0;
+}
+
+/* --- Dark Matter Special Style --- */
+#darkmatter,
+.dark-matter-glow {
+  color: #ff8900;
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.8);
+}

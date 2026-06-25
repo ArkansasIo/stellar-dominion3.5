@@ -1,0 +1,65 @@
+/* ============================================================
+   OVERVIEW.CSS — Dashboard / Imperium Overview
+   ============================================================ */
+
+.overview-planet-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px;
+}
+
+.overview-planet-card {
+  position: relative;
+  padding: 8px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.overview-planet-card.active {
+  filter: brightness(1.2);
+}
+
+.overview-planet-name {
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+
+.overview-planet-coords {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.overview-planet-resources {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.overview-events-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.overview-event-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 6px;
+  border-bottom: 1px solid var(--sd-panel-border);
+  font-size: 13px;
+}
+
+.overview-event-item:last-child {
+  border-bottom: none;
+}
+
+.overview-timer {
+  font-family: 'Orbitron', monospace;
+  font-size: 13px;
+  white-space: nowrap;
+  min-width: 60px;
+}

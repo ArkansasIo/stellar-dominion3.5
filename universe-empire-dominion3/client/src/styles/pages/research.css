@@ -1,0 +1,83 @@
+/* ============================================================
+   RESEARCH.CSS — Research Lab & Technologies
+   ============================================================ */
+
+.research-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 8px;
+}
+
+.research-card {
+  text-align: center;
+  padding: 8px 4px;
+}
+
+.research-card.research-completed {
+  opacity: 0.7;
+}
+
+.research-card.research-available {
+  filter: brightness(1.1);
+}
+
+.research-card.research-locked {
+  opacity: 0.4;
+  filter: grayscale(0.6);
+}
+
+.research-icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 4px;
+}
+
+.research-name {
+  font-weight: bold;
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.research-level {
+  font-size: 11px;
+  opacity: 0.8;
+  margin-top: 1px;
+}
+
+.research-status {
+  font-size: 10px;
+  margin-top: 2px;
+}
+
+.research-status.in-progress {
+  color: var(--sd-text-highlight);
+}
+
+.research-cost {
+  font-size: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.research-dependencies {
+  font-size: 10px;
+  opacity: 0.6;
+  margin-top: 2px;
+}
+
+.research-category-label {
+  font-size: 14px;
+  font-weight: bold;
+  padding: 4px 0;
+  margin-top: 12px;
+  border-bottom: 1px solid var(--sd-panel-border);
+}
+
+.research-in-progress-bar {
+  height: 4px;
+  border-radius: 2px;
+  margin-top: 6px;
+  overflow: hidden;
+}

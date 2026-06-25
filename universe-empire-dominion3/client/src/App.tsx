@@ -124,6 +124,8 @@ const SaveSlotsPage = lazy(() => import("@/pages/SaveSlotsPage"));
 const RealmPickerPage = lazy(() => import("@/pages/RealmPickerPage"));
 const PatchNotes = lazy(() => import("@/pages/PatchNotes"));
 const NewsFeed = lazy(() => import("@/pages/NewsFeed"));
+const Notes = lazy(() => import("@/pages/Notes"));
+const Missiles = lazy(() => import("@/pages/Missiles"));
 const SeasonHub = lazy(() => import("@/pages/SeasonHub"));
 const Diplomacy = lazy(() => import("@/pages/Diplomacy"));
 const SeasonServerPicker = lazy(() => import("@/pages/SeasonServerPicker"));
@@ -457,6 +459,8 @@ function RouterContent() {
       <Route path="/admin/database" component={DatabaseAdmin} />
       <Route path="/server-console" component={ServerConsole} />
       <Route path="/patch-notes" component={PatchNotes} />
+      <Route path="/notes" component={Notes} />
+      <Route path="/missiles" component={Missiles} />
       <Route path="/news-feed" component={NewsFeed} />
       <Route path="/season" component={SeasonHub} />
       <Route path="/season/:tab" component={SeasonHub} />

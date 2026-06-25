@@ -1,0 +1,44 @@
+/* ============================================================
+   FACILITIES.CSS — Facility Buildings (Robotics, Lab, etc.)
+   ============================================================ */
+
+.facilities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px;
+}
+
+.facility-card {
+  text-align: center;
+  padding: 10px 6px;
+}
+
+.facility-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 4px;
+}
+
+.facility-name {
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.facility-level {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.facility-description {
+  font-size: 11px;
+  opacity: 0.7;
+  margin-top: 2px;
+  line-height: 1.3;
+}
+
+.facility-action-row {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 6px;
+}

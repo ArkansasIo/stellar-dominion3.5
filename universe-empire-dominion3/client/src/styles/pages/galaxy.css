@@ -1,0 +1,120 @@
+/* ============================================================
+   GALAXY.CSS — Galaxy View & Planet Grid
+   ============================================================ */
+
+.galaxy-container {
+  overflow-x: auto;
+}
+
+.galaxy-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 8px;
+  margin-bottom: 6px;
+}
+
+.galaxy-nav-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.galaxy-nav-input {
+  width: 60px;
+  text-align: center;
+  font-size: 13px;
+}
+
+.galaxy-grid {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.galaxy-grid th,
+.galaxy-grid td {
+  padding: 2px 4px;
+  text-align: center;
+  font-size: 12px;
+}
+
+.galaxy-grid th {
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.galaxy-position {
+  font-weight: bold;
+  font-size: 11px;
+  width: 30px;
+}
+
+.galaxy-planet-row {
+  cursor: pointer;
+}
+
+.galaxy-planet-row:hover {
+  filter: brightness(1.15);
+}
+
+.galaxy-planet-name {
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.galaxy-planet-activity {
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+.galaxy-action-buttons {
+  display: flex;
+  gap: 2px;
+  justify-content: center;
+}
+
+.galaxy-action-btn {
+  padding: 1px 6px;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.galaxy-moon-indicator {
+  font-size: 10px;
+}
+
+.galaxy-debris-field {
+  font-size: 10px;
+}
+
+.galaxy-legend {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  padding: 4px 0;
+  margin-top: 6px;
+}
+
+.galaxy-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.galaxy-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.galaxy-tooltip {
+  position: absolute;
+  z-index: 200;
+  padding: 6px 10px;
+  font-size: 12px;
+  pointer-events: none;
+  max-width: 250px;
+}

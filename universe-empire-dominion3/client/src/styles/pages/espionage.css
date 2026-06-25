@@ -1,0 +1,118 @@
+/* ============================================================
+   ESPIONAGE.CSS — Espionage Reports & Probe Management
+   ============================================================ */
+
+.espionage-overview {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.espionage-stats {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  font-size: 13px;
+  margin-bottom: 8px;
+  padding: 6px;
+}
+
+.espionage-stat-item {
+  text-align: center;
+}
+
+.espionage-stat-value {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.espionage-stat-label {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.espionage-report-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.espionage-report-card {
+  padding: 6px 8px;
+  cursor: pointer;
+}
+
+.espionage-report-card:hover {
+  filter: brightness(1.1);
+}
+
+.espionage-report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.espionage-report-target {
+  font-weight: bold;
+}
+
+.espionage-report-date {
+  font-size: 11px;
+  opacity: 0.6;
+}
+
+.espionage-report-preview {
+  display: flex;
+  gap: 12px;
+  font-size: 11px;
+  margin-top: 2px;
+  opacity: 0.7;
+}
+
+.espionage-resources {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  margin: 4px 0;
+}
+
+.espionage-fleet-section,
+.espionage-defense-section,
+.espionage-buildings-section,
+.espionage-research-section {
+  margin: 4px 0;
+}
+
+.espionage-section-title {
+  font-size: 12px;
+  font-weight: bold;
+  opacity: 0.8;
+}
+
+.espionage-section-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  font-size: 11px;
+}
+
+.espionage-counter-intel {
+  font-size: 11px;
+  margin-top: 4px;
+  padding: 3px 6px;
+}
+
+.espionage-counter-intel.high {
+  color: #ff4444;
+  font-weight: bold;
+}
+
+.espionage-counter-intel.low {
+  color: #66ff66;
+}
+
+.espionage-action-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}

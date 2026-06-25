@@ -1,0 +1,116 @@
+/* ============================================================
+   EXPEDITIONS.CSS — Expedition / Deep Space Missions
+   ============================================================ */
+
+.expeditions-container {
+  max-width: 850px;
+  margin: 0 auto;
+}
+
+.expedition-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.expedition-form-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.expedition-form-row label {
+  min-width: 100px;
+}
+
+.expedition-form-row input,
+.expedition-form-row select {
+  flex: 1;
+  max-width: 200px;
+}
+
+.expedition-fleet-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.expedition-ship-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  padding: 2px 6px;
+}
+
+.expedition-ship-item input {
+  width: 50px;
+  text-align: center;
+}
+
+.expedition-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.expedition-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.expedition-info {
+  flex: 1;
+}
+
+.expedition-duration {
+  font-size: 12px;
+  font-family: 'Orbitron', monospace;
+}
+
+.expedition-status {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 2px;
+}
+
+.expedition-status.preparing { background: rgba(255, 255, 0, 0.15); color: #ffff00; }
+.expedition-status.in_progress { background: rgba(0, 150, 255, 0.15); color: #4fd4ff; }
+.expedition-status.completed { background: rgba(0, 255, 0, 0.15); color: #66ff66; }
+.expedition-status.failed { background: rgba(255, 0, 0, 0.15); color: #ff4444; }
+
+.expedition-result {
+  padding: 8px;
+  margin-top: 4px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.expedition-result-loot {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+.expedition-history {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.expedition-history-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 6px;
+  font-size: 11px;
+}

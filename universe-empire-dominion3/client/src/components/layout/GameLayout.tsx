@@ -75,6 +75,7 @@ import {
    X,
    Printer,
    Warehouse,
+   StickyNote,
 } from "lucide-react";
 
 interface NavItem {
@@ -380,6 +381,7 @@ const menuSections: MenuSection[] = [
         items: [
           { href: "/orbital-defense", icon: Satellite, label: "Orbital Defense", description: "Build offensive satellites, shield platforms, carriers, and fortresses." },
           { href: "/combat", icon: ShieldAlert, label: "Defense Center", description: "Manage planetary defense systems and combat readiness." },
+          { href: "/missiles", icon: Rocket, label: "Missile Command", description: "Produce and launch interplanetary missiles." },
         ],
       },
       {
@@ -708,6 +710,7 @@ const menuSections: MenuSection[] = [
 
 const socialItems: NavItem[] = [
   { href: "/messages", icon: Mail, label: "Messages", description: "Read diplomatic, social, and operational communications." },
+  { href: "/notes", icon: StickyNote, label: "Notes", description: "Create and manage personal notes and reminders." },
   { href: "/friends", icon: Users, label: "Friends", description: "Track friends, contacts, and cooperative player lists." },
   { href: "/leaderboard", icon: Trophy, label: "Leaderboard", description: "Compare empire performance against other players." },
   { href: "/alliance", icon: Shield, label: "Alliance Hub", description: "Coordinate with allies and manage alliance structure." },
@@ -766,6 +769,7 @@ const getCommandTiles = (context: ActivePageContext | null): CommandTile[] => {
       return [
         { href: "/ground-combat", icon: Swords, label: "Ground Assault", description: "Assemble invasion troops, shock units, and special ops.", kicker: "Army", assetPath: OGAMEX_FEATURED_ASSETS.DEFENSE.path },
         { href: "/combat", icon: ShieldAlert, label: "Combat Center", description: "Launch raids, attacks, and tactical battle actions.", kicker: "Battle", assetPath: OGAMEX_FEATURED_ASSETS.DEFENSE.path },
+        { href: "/missiles", icon: Rocket, label: "Missile Command", description: "Produce and launch interplanetary missiles.", kicker: "Strike", assetPath: OGAMEX_FEATURED_ASSETS.DEFENSE.path },
         { href: "/battle-logs", icon: ScrollText, label: "Action Reports", description: "Inspect logs, after-action reports, and battle summaries.", kicker: "Reports", assetPath: OGAMEX_FEATURED_ASSETS.DEFENSE.path },
         { href: "/planet-occupation", icon: TowerControl, label: "Occupation Ops", description: "Control captured planets, garrisons, and extraction pressure.", kicker: "Control", assetPath: OGAMEX_FEATURED_ASSETS.MOON.path },
       ];

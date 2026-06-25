@@ -1,0 +1,193 @@
+/* ============================================================
+   COMBAT.CSS — Combat Reports & Battle Logs
+   ============================================================ */
+
+.combat-container {
+  max-width: 850px;
+  margin: 0 auto;
+}
+
+.combat-report-header {
+  text-align: center;
+  padding: 10px;
+  margin-bottom: 8px;
+}
+
+.combat-report-title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.combat-report-date {
+  font-size: 12px;
+  opacity: 0.6;
+  margin-top: 2px;
+}
+
+.combat-round-indicator {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin: 8px 0;
+  flex-wrap: wrap;
+}
+
+.combat-round-btn {
+  padding: 2px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.combat-round-btn.active {
+  opacity: 1;
+  filter: brightness(1.2);
+}
+
+.combat-forces {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 8px;
+  align-items: start;
+  margin: 8px 0;
+}
+
+.combat-forces-column {
+  padding: 6px;
+}
+
+.combat-forces-divider {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 6px;
+  min-width: 60px;
+}
+
+.combat-forces-divider .vs {
+  font-size: 24px;
+  font-weight: bold;
+  opacity: 0.4;
+}
+
+.combat-unit-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 4px;
+  font-size: 12px;
+}
+
+.combat-unit-name {
+  flex: 1;
+}
+
+.combat-unit-count {
+  min-width: 40px;
+  text-align: center;
+}
+
+.combat-unit-losses {
+  min-width: 40px;
+  text-align: center;
+  color: #ff4444;
+}
+
+.combat-unit-survivors {
+  min-width: 40px;
+  text-align: center;
+  color: #66ff66;
+}
+
+.combat-summary-bar {
+  display: flex;
+  justify-content: space-around;
+  padding: 8px;
+  margin: 8px 0;
+  font-size: 13px;
+}
+
+.combat-summary-item {
+  text-align: center;
+}
+
+.combat-summary-label {
+  font-size: 10px;
+  opacity: 0.6;
+}
+
+.combat-summary-value {
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.combat-loot-display {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 6px;
+  font-size: 13px;
+}
+
+.combat-debris-display {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 6px;
+  font-size: 13px;
+}
+
+.combat-moon-chance {
+  text-align: center;
+  padding: 6px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.combat-moon-chance.success {
+  color: #66ff66;
+}
+
+.combat-moon-chance.failure {
+  color: #ff4444;
+}
+
+.combat-report-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.combat-report-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.combat-report-row:hover {
+  filter: brightness(1.08);
+}
+
+.combat-report-outcome {
+  font-size: 12px;
+  padding: 1px 6px;
+  border-radius: 2px;
+}
+
+.combat-report-outcome.win {
+  color: #66ff66;
+}
+
+.combat-report-outcome.loss {
+  color: #ff4444;
+}
+
+.combat-report-outcome.draw {
+  color: #ffff00;
+}

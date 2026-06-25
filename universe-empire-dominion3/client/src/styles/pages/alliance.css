@@ -1,0 +1,122 @@
+/* ============================================================
+   ALLIANCE.CSS — Alliance Management & Diplomacy
+   ============================================================ */
+
+.alliance-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.alliance-header {
+  text-align: center;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+
+.alliance-tag {
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 0.15em;
+}
+
+.alliance-name {
+  font-size: 16px;
+  opacity: 0.8;
+  margin-top: 2px;
+}
+
+.alliance-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  font-size: 13px;
+  margin: 8px 0;
+}
+
+.alliance-info-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 8px;
+}
+
+.alliance-info-label {
+  opacity: 0.7;
+}
+
+.alliance-description {
+  padding: 8px;
+  font-size: 13px;
+  line-height: 1.4;
+  margin: 8px 0;
+}
+
+.alliance-member-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.alliance-member-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 8px;
+  font-size: 13px;
+}
+
+.alliance-member-rank {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.alliance-member-points {
+  font-size: 11px;
+  opacity: 0.6;
+}
+
+.alliance-member-activity {
+  font-size: 10px;
+}
+
+.alliance-application-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.alliance-application-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px;
+  font-size: 13px;
+}
+
+.alliance-application-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.alliance-diplomacy-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.alliance-diplomacy-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  font-size: 13px;
+}
+
+.alliance-diplomacy-type {
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 2px;
+}
+
+.alliance-diplomacy-type.ally { background: rgba(0, 255, 0, 0.15); color: #66ff66; }
+.alliance-diplomacy-type.enemy { background: rgba(255, 0, 0, 0.15); color: #ff4444; }
+.alliance-diplomacy-type.nap { background: rgba(255, 255, 0, 0.15); color: #ffff00; }

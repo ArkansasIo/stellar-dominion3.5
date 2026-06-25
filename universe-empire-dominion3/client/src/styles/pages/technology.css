@@ -1,0 +1,101 @@
+/* ============================================================
+   TECHNOLOGY.CSS — Tech Tree / Technology Overview
+   ============================================================ */
+
+.technology-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.technology-category-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.technology-category-tab {
+  padding: 4px 14px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.technology-category-tab.active {
+  filter: brightness(1.3);
+}
+
+.technology-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 6px;
+}
+
+.technology-card {
+  text-align: center;
+  padding: 6px 4px;
+  cursor: pointer;
+  position: relative;
+}
+
+.technology-card:hover {
+  filter: brightness(1.1);
+}
+
+.technology-card.tech-discovered {
+  opacity: 1;
+}
+
+.technology-card.tech-undiscovered {
+  opacity: 0.45;
+  filter: grayscale(0.5);
+}
+
+.technology-card.tech-unavailable {
+  opacity: 0.3;
+  filter: grayscale(0.7);
+}
+
+.technology-icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 4px;
+}
+
+.technology-name {
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 1.2;
+}
+
+.technology-level {
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+.technology-dependency-chain {
+  font-size: 9px;
+  opacity: 0.5;
+  margin-top: 1px;
+}
+
+.technology-requirement {
+  font-size: 9px;
+  margin-top: 1px;
+}
+
+.technology-requirement.met {
+  color: #66ff66;
+}
+
+.technology-requirement.unmet {
+  color: #ff4444;
+}
+
+.tech-tree-svg-container {
+  width: 100%;
+  overflow: auto;
+}
+
+.tech-tree-svg-container svg {
+  min-width: 800px;
+}

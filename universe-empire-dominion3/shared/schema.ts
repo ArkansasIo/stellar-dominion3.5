@@ -2579,3 +2579,23 @@ export type InsertPlanet = typeof planets.$inferInsert;
 
 export type PlanetVaultItem = typeof planetVaultItems.$inferSelect;
 export type InsertPlanetVaultItem = typeof planetVaultItems.$inferInsert;
+
+// ============================================================
+// Notes System — player-created notes and reminders
+// ============================================================
+
+export const notes = pgTable("notes", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  title: varchar("title", { length: 200 }).notNull(),
+  content: text("content").notNull().default(""),
+  category: varchar("category", { length: 50 }).default("general"),
+  tags: jsonb("tags").default([]),
+  isPinned: boolean("is_pinned").default(false),
+  color: varchar("color", { length: 20 }),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type Note = typeof notes.$inferSelect;
+export type InsertNote = typeof notes.$inferInsert;

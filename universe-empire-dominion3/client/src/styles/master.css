@@ -1,0 +1,139 @@
+/* ============================================================
+   MASTER.CSS — Global Game Styles & Layout
+   Complements master-theme.css (variables) with concrete classes
+   ============================================================ */
+
+/* --- Mission / Fleet Event Colors --- */
+.mission-attack      { color: #ff4444; }
+.mission-transport   { color: #66ff66; }
+.mission-deploy      { color: #66ff66; }
+.mission-espionage   { color: #ffaa00; }
+.mission-colonize    { color: #00ccff; }
+.mission-recycle     { color: #88ff88; }
+.mission-destroy     { color: #ffd700; }
+.mission-missile     { color: #ff6600; }
+.mission-expedition  { color: #cc66ff; }
+.mission-hold        { color: #80a0c0; }
+.mission-federation  { color: #33cc00; }
+.mission-phalanx     { color: #66ff66; }
+
+/* --- Player Status Colors --- */
+.status-ally      { color: #66ff66; }
+.status-noob      { color: #a0ffa0; }
+.status-strong    { color: #ffa0a0; }
+.status-vacation  { color: #87ceeb; }
+.status-inactive  { color: #cccccc; }
+.status-long-inactive { color: #999999; }
+.status-banned    { text-decoration: line-through; color: #ff6666; }
+.status-honorable { color: #ffd700; }
+.status-bounty    { color: #ff4444; }
+
+/* --- Resource Display Colors --- */
+.res-metal       { color: #82b1ff; }
+.res-crystal     { color: #ff80ab; }
+.res-deuterium   { color: #40c4ff; }
+.res-energy      { color: #ffd740; }
+.res-dark-matter { color: #ff8900; }
+.res-food        { color: #69f0ae; }
+.res-alloy       { color: #b0bec5; }
+
+/* --- Combat Report Status --- */
+.combat-win       { color: #00b000; }
+.combat-lose      { color: #c00000; }
+.combat-draw      { color: #c0c000; }
+.combat-defended  { color: #00ff00; }
+.combat-raid      { color: #ff8800; }
+.combat-steal     { color: #00ff00; }
+
+/* --- Espionage Report Status --- */
+.spy-no-defenses  { color: #00ff00; }
+.spy-active-defenses { color: #ffaa00; }
+.spy-counter-espionage { color: #ff4444; }
+
+/* --- Text Transform & Typography Utilities --- */
+.text-ogame      { font-family: Tahoma, Verdana, sans-serif; }
+.text-sci-fi     { font-family: 'Orbitron', 'Rajdhani', sans-serif; }
+.text-upper      { text-transform: uppercase; letter-spacing: 0.08em; }
+.text-glow       { text-shadow: 0 0 8px currentColor; }
+.text-glow-strong { text-shadow: 0 0 12px currentColor, 0 0 24px currentColor; }
+.text-strike     { text-decoration: line-through; }
+.text-ellipsis   { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* --- Game Area Layout --- */
+.game-area {
+  position: relative;
+  min-height: 100vh;
+}
+
+.game-content {
+  margin-left: 190px;
+  padding: 8px 12px;
+  min-height: calc(100vh - 66px);
+}
+
+.game-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 190px;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 100;
+}
+
+.game-topbar {
+  position: fixed;
+  top: 0;
+  left: 190px;
+  right: 0;
+  height: 66px;
+  z-index: 90;
+}
+
+/* --- OGame-style Table Layout --- */
+.ogame-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.ogame-table th,
+.ogame-table td {
+  padding: 3px 6px;
+  text-align: center;
+  vertical-align: middle;
+}
+.ogame-table th {
+  font-weight: bold;
+}
+.ogame-table tr:hover {
+  filter: brightness(1.1);
+}
+
+/* --- OGame-style Header Row Categories --- */
+.category-header {
+  text-align: center;
+  font-weight: bold;
+  padding: 4px 3px;
+}
+
+/* --- OGame-style Misc --- */
+.flight-event a {
+  text-decoration: none;
+}
+.flight-event a:hover {
+  text-decoration: underline;
+}
+.fleet-progress-bar {
+  height: 4px;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  transition: width 1s linear;
+}
+.progress-fill.attack      { background: #ff4444; }
+.progress-fill.transport   { background: #66ff66; }
+.progress-fill.espionage   { background: #ffaa00; }
+.progress-fill.colonize    { background: #00ccff; }
+.progress-fill.recycle     { background: #88ff88; }
+.progress-fill.expedition  { background: #cc66ff; }

@@ -1,0 +1,244 @@
+/* ============================================================
+   FLEET.CSS — Fleet Dispatch, ACS, Templates, Missions
+   ============================================================ */
+
+.fleet-dispatch-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.fleet-step-indicator {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.fleet-step {
+  padding: 4px 16px;
+  font-size: 13px;
+  opacity: 0.6;
+  border-bottom: 2px solid transparent;
+}
+
+.fleet-step.active {
+  opacity: 1;
+  border-bottom-color: var(--sd-text-highlight);
+}
+
+.fleet-step.completed {
+  opacity: 0.8;
+}
+
+.fleet-target-inputs {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  margin: 8px 0;
+}
+
+.fleet-target-input {
+  width: 50px;
+  text-align: center;
+  font-size: 13px;
+}
+
+.fleet-coord-separator {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.fleet-ship-selector {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 6px;
+  margin: 8px 0;
+}
+
+.fleet-ship-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 6px;
+  font-size: 12px;
+}
+
+.fleet-ship-name {
+  flex: 1;
+}
+
+.fleet-ship-input {
+  width: 60px;
+  text-align: center;
+  font-size: 12px;
+}
+
+.fleet-ship-max {
+  font-size: 11px;
+  opacity: 0.7;
+  cursor: pointer;
+  padding: 0 2px;
+}
+
+.fleet-mission-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin: 8px 0;
+}
+
+.fleet-mission-btn {
+  padding: 6px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  text-align: center;
+  min-width: 100px;
+}
+
+.fleet-mission-btn.selected {
+  filter: brightness(1.3);
+}
+
+.fleet-mission-btn.mission-attack { border-color: #ff4444; }
+.fleet-mission-btn.mission-transport { border-color: #66ff66; }
+.fleet-mission-btn.mission-espionage { border-color: #ffaa00; }
+.fleet-mission-btn.mission-colonize { border-color: #00ccff; }
+.fleet-mission-btn.mission-recycle { border-color: #88ff88; }
+.fleet-mission-btn.mission-deploy { border-color: #66ff66; }
+.fleet-mission-btn.mission-destroy { border-color: #ffd700; }
+.fleet-mission-btn.mission-expedition { border-color: #cc66ff; }
+.fleet-mission-btn.mission-missile { border-color: #ff6600; }
+
+.fleet-speed-slider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.fleet-speed-slider input {
+  flex: 1;
+}
+
+.fleet-launch-btn {
+  display: block;
+  margin: 12px auto;
+  padding: 8px 32px;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.fleet-resources-summary {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  font-size: 12px;
+  margin: 6px 0;
+}
+
+.fleet-active-missions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fleet-mission-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  font-size: 13px;
+}
+
+.fleet-mission-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fleet-mission-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.fleet-mission-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.fleet-template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px;
+}
+
+.fleet-template-card {
+  padding: 8px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.fleet-template-name {
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.fleet-template-mission {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.fleet-template-ships {
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+/* ACS specific */
+.acs-group-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.acs-group-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+}
+
+.acs-member-list {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.acs-member-badge {
+  font-size: 11px;
+  padding: 2px 6px;
+}
+
+/* Fleet report / flight list */
+.flight-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.flight-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 4px;
+  font-size: 12px;
+  border-bottom: 1px solid var(--sd-panel-border);
+}
+
+.flight-item:last-child {
+  border-bottom: none;
+}

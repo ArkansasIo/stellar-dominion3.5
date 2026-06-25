@@ -1,0 +1,188 @@
+/* ============================================================
+   NOTES.CSS — Player Notes System
+   ============================================================ */
+
+.notes-container {
+  max-width: 750px;
+  margin: 0 auto;
+}
+
+.notes-toolbar {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.notes-toolbar input[type="text"] {
+  flex: 1;
+  max-width: 300px;
+  font-size: 13px;
+}
+
+.notes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 8px;
+}
+
+.notes-card {
+  padding: 10px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.notes-card.pinned {
+  border-color: var(--sd-text-highlight);
+}
+
+.notes-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 6px;
+}
+
+.notes-card-title {
+  font-weight: bold;
+  font-size: 14px;
+  flex: 1;
+  word-break: break-word;
+}
+
+.notes-card-date {
+  font-size: 10px;
+  opacity: 0.5;
+  white-space: nowrap;
+  margin-left: 6px;
+}
+
+.notes-card-content {
+  font-size: 13px;
+  line-height: 1.4;
+  flex: 1;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+.notes-card-content.collapsed {
+  max-height: 80px;
+  overflow: hidden;
+  position: relative;
+}
+
+.notes-card-content.collapsed::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 24px;
+  background: linear-gradient(transparent, var(--sd-panel-top));
+}
+
+.notes-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px solid var(--sd-panel-border);
+}
+
+.notes-card-tags {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+}
+
+.notes-tag {
+  font-size: 9px;
+  padding: 1px 5px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--sd-text-secondary);
+}
+
+.notes-card-actions {
+  display: flex;
+  gap: 3px;
+}
+
+.notes-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.notes-editor input[type="text"] {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.notes-editor textarea {
+  min-height: 150px;
+  font-size: 13px;
+  line-height: 1.4;
+  resize: vertical;
+}
+
+.notes-editor-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.notes-editor-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.notes-empty {
+  text-align: center;
+  padding: 30px;
+  opacity: 0.5;
+  font-size: 14px;
+}
+
+.notes-filter-bar {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.notes-filter-tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  cursor: pointer;
+  border-radius: 2px;
+  opacity: 0.6;
+}
+
+.notes-filter-tag.active {
+  opacity: 1;
+  filter: brightness(1.2);
+}
+
+.notes-category-indicator {
+  display: inline-block;
+  width: 4px;
+  height: 100%;
+  min-height: 20px;
+  border-radius: 1px;
+  margin-right: 6px;
+  flex-shrink: 0;
+}
+
+.notes-category-general { background: #888; }
+.notes-category-research { background: #64b5f6; }
+.notes-category-fleet { background: #81c784; }
+.notes-category-alliance { background: #ffb74d; }
+.notes-category-trade { background: #e57373; }
+.notes-category-other { background: #ba68c8; }

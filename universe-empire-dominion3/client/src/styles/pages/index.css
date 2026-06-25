@@ -1,0 +1,28 @@
+/* ============================================================
+   PAGES INDEX — Barrel import for all per-page CSS files
+   Import only what's needed. Each page component can also
+   import its specific CSS file individually.
+   ============================================================ */
+
+@import "./overview.css";
+@import "./resources.css";
+@import "./facilities.css";
+@import "./research.css";
+@import "./shipyard.css";
+@import "./fleet.css";
+@import "./galaxy.css";
+@import "./defense.css";
+@import "./alliance.css";
+@import "./messages.css";
+@import "./espionage.css";
+@import "./shop.css";
+@import "./technology.css";
+@import "./admin.css";
+@import "./imperium.css";
+@import "./expeditions.css";
+@import "./friends.css";
+@import "./combat.css";
+@import "./settings.css";
+@import "./hall-of-fame.css";
+@import "./missiles.css";
+@import "./notes.css";

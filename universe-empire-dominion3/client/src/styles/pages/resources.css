@@ -1,0 +1,73 @@
+/* ============================================================
+   RESOURCES.CSS — Resource Buildings & Production
+   ============================================================ */
+
+.resources-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 8px;
+}
+
+.resource-building-card {
+  position: relative;
+  text-align: center;
+  padding: 8px 6px;
+}
+
+.resource-building-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 4px;
+}
+
+.resource-building-name {
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.resource-building-level {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.resource-building-production {
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.resource-progress-bar {
+  height: 3px;
+  margin-top: 4px;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.resource-progress-fill {
+  height: 100%;
+  transition: width 0.5s;
+}
+
+.resource-button-row {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.resource-cost-display {
+  font-size: 11px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.resource-cost-item {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.resource-cost-item.insufficient {
+  color: #ff4444;
+}

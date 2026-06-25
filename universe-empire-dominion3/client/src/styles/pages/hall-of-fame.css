@@ -1,0 +1,176 @@
+/* ============================================================
+   HALL-OF-FAME.CSS — Leaderboards, Rankings, Records
+   ============================================================ */
+
+.hall-of-fame-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.hall-of-fame-tabs {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.hall-of-fame-tab {
+  padding: 4px 14px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.hall-of-fame-tab.active {
+  filter: brightness(1.3);
+}
+
+.hall-of-fame-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.hall-of-fame-table th,
+.hall-of-fame-table td {
+  padding: 3px 6px;
+  text-align: center;
+}
+
+.hall-of-fame-table th {
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.hall-of-fame-table tr:hover {
+  filter: brightness(1.08);
+}
+
+.hall-rank {
+  font-weight: bold;
+  width: 40px;
+}
+
+.hall-rank.gold {
+  color: #ffd700;
+}
+
+.hall-rank.silver {
+  color: #c0c0c0;
+}
+
+.hall-rank.bronze {
+  color: #cd7f32;
+}
+
+.hall-player-name {
+  font-weight: bold;
+  text-align: left;
+}
+
+.hall-alliance-tag {
+  font-size: 10px;
+  opacity: 0.6;
+}
+
+.hall-points {
+  font-weight: bold;
+}
+
+.hall-change {
+  font-size: 11px;
+}
+
+.hall-change.up {
+  color: #66ff66;
+}
+
+.hall-change.down {
+  color: #ff4444;
+}
+
+.hall-change.same {
+  color: #999999;
+}
+
+.hall-pagination {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.hall-page-btn {
+  padding: 2px 8px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.hall-page-btn.active {
+  filter: brightness(1.3);
+}
+
+.hall-search-bar {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.hall-search-bar input {
+  width: 250px;
+  font-size: 13px;
+}
+
+.hall-records-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 8px;
+}
+
+.hall-record-card {
+  padding: 8px;
+  text-align: center;
+}
+
+.hall-record-label {
+  font-size: 11px;
+  opacity: 0.6;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.hall-record-value {
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 2px;
+}
+
+.hall-record-player {
+  font-size: 12px;
+  opacity: 0.7;
+  margin-top: 2px;
+}
+
+.hall-stat-summary {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 8px;
+  margin-bottom: 8px;
+}
+
+.hall-stat-item {
+  text-align: center;
+}
+
+.hall-stat-number {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.hall-stat-label {
+  font-size: 10px;
+  opacity: 0.6;
+}

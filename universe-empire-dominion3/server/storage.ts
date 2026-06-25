@@ -176,10 +176,13 @@ import {
   type InsertScanCooldown,
   type PlanetVaultItem,
   type InsertPlanetVaultItem,
+  type Note,
+  type InsertNote,
   xpHistory,
   providerConnections,
   scanCooldowns,
-  planetVaultItems
+  planetVaultItems,
+  notes
 } from "@shared/schema";
 import { db } from "./db/index";
 import { eq, and, or, desc, asc, sql, inArray } from "drizzle-orm";
@@ -346,6 +349,13 @@ export interface IStorage {
   getPlayerFriendRequests(userId: string): Promise<FriendRequest[]>;
   setFavorite(playerId: string, friendId: string, isFavorite: boolean): Promise<Friend>;
   updateFriendNickname(playerId: string, friendId: string, nickname: string): Promise<Friend>;
+  
+  // Notes operations
+  getNotes(userId: string): Promise<Note[]>;
+  getNoteById(id: string): Promise<Note | undefined>;
+  createNote(userId: string, note: InsertNote): Promise<Note>;
+  updateNote(id: string, userId: string, updates: Partial<Note>): Promise<Note>;
+  deleteNote(id: string, userId: string): Promise<void>;
   
   // Guild operations
   createGuild(guild: InsertGuild): Promise<Guild>;
@@ -1654,6 +1664,34 @@ export class DatabaseStorage implements IStorage {
       .where(and(eq(friends.playerId, playerId), eq(friends.friendId, friendId)))
       .returning();
     return updated;
+  }
+  
+  async getNotes(userId: string): Promise<Note[]> {
+    return await db.select().from(notes)
+      .where(eq(notes.userId, userId))
+      .orderBy(desc(notes.isPinned), desc(notes.updatedAt));
+  }
+
+  async getNoteById(id: string): Promise<Note | undefined> {
+    const [note] = await db.select().from(notes).where(eq(notes.id, id));
+    return note;
+  }
+
+  async createNote(userId: string, note: InsertNote): Promise<Note> {
+    const [created] = await db.insert(notes).values({ ...note, userId }).returning();
+    return created;
+  }
+
+  async updateNote(id: string, userId: string, updates: Partial<Note>): Promise<Note> {
+    const [updated] = await db.update(notes)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(and(eq(notes.id, id), eq(notes.userId, userId)))
+      .returning();
+    return updated;
+  }
+
+  async deleteNote(id: string, userId: string): Promise<void> {
+    await db.delete(notes).where(and(eq(notes.id, id), eq(notes.userId, userId)));
   }
   
   // Guild operations

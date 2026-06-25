@@ -1,0 +1,89 @@
+/* ============================================================
+   SHIPYARD.CSS — Shipyard & Defense Construction
+   ============================================================ */
+
+.shipyard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 8px;
+}
+
+.shipyard-card {
+  text-align: center;
+  padding: 8px 4px;
+}
+
+.shipyard-card.shipyard-locked {
+  opacity: 0.4;
+  filter: grayscale(0.5);
+}
+
+.shipyard-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 4px;
+}
+
+.shipyard-name {
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.shipyard-description {
+  font-size: 11px;
+  opacity: 0.7;
+  line-height: 1.3;
+  margin-top: 2px;
+}
+
+.shipyard-count {
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.shipyard-cost-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.shipyard-action-row {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.shipyard-quantity-input {
+  width: 50px;
+  text-align: center;
+  font-size: 12px;
+}
+
+.shipyard-total-cost {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  font-size: 11px;
+  margin-top: 4px;
+  padding: 4px;
+  border-top: 1px solid var(--sd-panel-border);
+}
+
+.shipyard-category-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.shipyard-category-tab {
+  padding: 4px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.shipyard-category-tab.active {
+  filter: brightness(1.3);
+}

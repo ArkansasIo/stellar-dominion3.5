@@ -1,0 +1,105 @@
+/* ============================================================
+   IMPERIUM.CSS — Empire Overview (All Planets Summary)
+   ============================================================ */
+
+.imperium-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.imperium-summary-bar {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  padding: 8px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  flex-wrap: wrap;
+}
+
+.imperium-summary-item {
+  text-align: center;
+}
+
+.imperium-summary-label {
+  font-size: 10px;
+  opacity: 0.6;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.imperium-summary-value {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.imperium-planet-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr 1fr;
+  gap: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  align-items: center;
+  cursor: pointer;
+}
+
+.imperium-planet-row:hover {
+  filter: brightness(1.08);
+}
+
+.imperium-planet-row.header {
+  font-weight: bold;
+  opacity: 0.7;
+  font-size: 11px;
+  cursor: default;
+}
+
+.imperium-planet-row.header:hover {
+  filter: none;
+}
+
+.imperium-planet-name {
+  font-weight: bold;
+}
+
+.imperium-planet-coords {
+  opacity: 0.7;
+  font-size: 11px;
+}
+
+.imperium-planet-resources {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.imperium-planet-buildings {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.imperium-planet-status {
+  text-align: center;
+}
+
+.imperium-planet-status.constructing {
+  color: var(--sd-text-highlight);
+}
+
+.imperium-total-resources {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  padding: 8px;
+  margin: 4px 0;
+  font-size: 14px;
+}
+
+.imperium-total-label {
+  font-size: 11px;
+  opacity: 0.6;
+}
+
+.imperium-total-value {
+  font-weight: bold;
+}
