@@ -2581,6 +2581,64 @@ export type PlanetVaultItem = typeof planetVaultItems.$inferSelect;
 export type InsertPlanetVaultItem = typeof planetVaultItems.$inferInsert;
 
 // ============================================================
+// OGame Galaxy Tables — classic G:S:P coordinate system
+// ============================================================
+
+export const ogameGalaxies = pgTable("ogame_galaxies", {
+  id: serial("id").primaryKey(),
+  galaxyNumber: integer("galaxy_number").notNull().unique(), // 1-9
+  name: varchar("name", { length: 100 }).notNull(),
+  systemCount: integer("system_count").notNull().default(499),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const ogameSystems = pgTable("ogame_systems", {
+  id: serial("id").primaryKey(),
+  galaxyNumber: integer("galaxy_number").notNull(), // 1-9
+  systemNumber: integer("system_number").notNull(), // 1-499
+  name: varchar("name", { length: 100 }).notNull(),
+  starType: varchar("star_type", { length: 10 }).notNull().default("M"),
+  starName: varchar("star_name", { length: 100 }).notNull(),
+  temperature: integer("temperature").notNull().default(3000),
+  luminosity: real("luminosity").notNull().default(0.04),
+  isGenerated: boolean("is_generated").notNull().default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const ogamePositions = pgTable("ogame_positions", {
+  id: serial("id").primaryKey(),
+  systemId: integer("system_id").notNull().references(() => ogameSystems.id, { onDelete: "cascade" }),
+  position: integer("position").notNull(), // 1-15
+  celestialType: varchar("celestial_type", { length: 20 }).notNull().default("planet"), // planet, moon, debris, empty
+  planetName: varchar("planet_name", { length: 100 }),
+  planetType: varchar("planet_type", { length: 50 }),
+  planetClass: varchar("planet_class", { length: 10 }),
+  planetDiameter: integer("planet_diameter"),
+  planetTemperature: integer("planet_temperature"),
+  planetTemperatureMin: integer("planet_temperature_min"),
+  planetTemperatureMax: integer("planet_temperature_max"),
+  playerName: varchar("player_name", { length: 100 }),
+  playerRank: integer("player_rank"),
+  allianceTag: varchar("alliance_tag", { length: 10 }),
+  allianceName: varchar("alliance_name", { length: 100 }),
+  status: varchar("status", { length: 20 }).default("active"), // active, inactive, vacation, banned
+  moonExists: boolean("moon_exists").notNull().default(false),
+  moonName: varchar("moon_name", { length: 100 }),
+  moonSize: integer("moon_size"),
+  debrisMetal: integer("debris_metal").notNull().default(0),
+  debrisCrystal: integer("debris_crystal").notNull().default(0),
+  lastScan: timestamp("last_scan"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type OgameGalaxy = typeof ogameGalaxies.$inferSelect;
+export type InsertOgameGalaxy = typeof ogameGalaxies.$inferInsert;
+export type OgameSystem = typeof ogameSystems.$inferSelect;
+export type InsertOgameSystem = typeof ogameSystems.$inferInsert;
+export type OgamePosition = typeof ogamePositions.$inferSelect;
+export type InsertOgamePosition = typeof ogamePositions.$inferInsert;
+
+// ============================================================
 // Notes System — player-created notes and reminders
 // ============================================================
 

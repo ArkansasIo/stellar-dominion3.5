@@ -3,17 +3,25 @@ export const UNIVERSE_CONFIG = {
     default: 'STELLAR_DOMINION_2024',
     maxLength: 64,
   },
-  
+
   size: {
-    galaxyCount: 256,
-    sectorsPerGalaxy: 64,
-    systemsPerSector: 128,
+    galaxyCount: 9,
+    systemsPerGalaxy: 499,
+    positionsPerSystem: 15,
     minPlanetsPerSystem: 15,
-    maxPlanetsPerSystem: 50,
+    maxPlanetsPerSystem: 15,
     minMoonsPerPlanet: 0,
-    maxMoonsPerPlanet: 82,
+    maxMoonsPerPlanet: 1,
     asteroidBeltChance: 0.3,
     cometChance: 0.1,
+  },
+
+  positionZones: {
+    veryHot: { positions: [1, 2, 3], tempMin: 200, tempMax: 400, label: "Very Hot" },
+    warm: { positions: [4, 5, 6], tempMin: 140, tempMax: 260, label: "Warm" },
+    moderate: { positions: [7, 8, 9], tempMin: 80, tempMax: 200, label: "Moderate" },
+    cold: { positions: [10, 11, 12], tempMin: 40, tempMax: 140, label: "Cold" },
+    veryCold: { positions: [13, 14, 15], tempMin: 10, tempMax: 80, label: "Very Cold" },
   },
 
   generation: {
@@ -26,7 +34,7 @@ export const UNIVERSE_CONFIG = {
       'K': 0.121,
       'M': 0.765,
     },
-    
+
     planetTypeDistribution: {
       'rocky': 0.30,
       'gas_giant': 0.12,
@@ -53,12 +61,12 @@ export const UNIVERSE_CONFIG = {
         'Antares', 'Deneb', 'Arcturus', 'Aldebaran', 'Regulus', 'Spica',
         'Tau', 'Sigma', 'Omega', 'Kappa', 'Lambda', 'Mu', 'Nu', 'Xi', 'Pi', 'Rho',
       ],
-      
+
       suffixes: [
         'Prime', 'Major', 'Minor', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X',
         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
       ],
-      
+
       syllables: [
         'al', 'an', 'ar', 'as', 'at', 'ax', 'az',
         'be', 'bi', 'bo', 'bu',
@@ -85,13 +93,13 @@ export const UNIVERSE_CONFIG = {
         'ya', 'ye', 'yi', 'yo', 'yu',
         'za', 'ze', 'zi', 'zo', 'zu',
       ],
-      
+
       greekLetters: [
         'Alpha', 'Beta', 'Gamma', 'Delta', 'Epsilon', 'Zeta', 'Eta', 'Theta',
         'Iota', 'Kappa', 'Lambda', 'Mu', 'Nu', 'Xi', 'Omicron', 'Pi',
         'Rho', 'Sigma', 'Tau', 'Upsilon', 'Phi', 'Chi', 'Psi', 'Omega',
       ],
-      
+
       constellations: [
         'Andromeda', 'Aquarius', 'Aquila', 'Aries', 'Auriga', 'Bootes', 'Cancer',
         'Canis Major', 'Capricornus', 'Cassiopeia', 'Centaurus', 'Cepheus', 'Cetus',
@@ -136,32 +144,12 @@ export const UNIVERSE_CONFIG = {
   },
 
   specialObjects: {
-    blackHole: {
-      chance: 0.001,
-      massRange: [3, 1000000000],
-      eventHorizonMultiplier: 2.95,
-    },
-    neutronStar: {
-      chance: 0.005,
-      massRange: [1.4, 3],
-      pulsarChance: 0.3,
-    },
-    whiteDwarf: {
-      chance: 0.02,
-      massRange: [0.5, 1.4],
-    },
-    nebula: {
-      chance: 0.01,
-      types: ['emission', 'reflection', 'dark', 'planetary', 'supernova_remnant'],
-    },
-    wormhole: {
-      chance: 0.0001,
-      stable: false,
-    },
-    dysonStructure: {
-      chance: 0.00001,
-      types: ['swarm', 'ring', 'sphere'],
-    },
+    blackHole: { chance: 0.001, massRange: [3, 1000000000], eventHorizonMultiplier: 2.95 },
+    neutronStar: { chance: 0.005, massRange: [1.4, 3], pulsarChance: 0.3 },
+    whiteDwarf: { chance: 0.02, massRange: [0.5, 1.4] },
+    nebula: { chance: 0.01, types: ['emission', 'reflection', 'dark', 'planetary', 'supernova_remnant'] },
+    wormhole: { chance: 0.0001, stable: false },
+    dysonStructure: { chance: 0.00001, types: ['swarm', 'ring', 'sphere'] },
   },
 
   resourceMultipliers: {
