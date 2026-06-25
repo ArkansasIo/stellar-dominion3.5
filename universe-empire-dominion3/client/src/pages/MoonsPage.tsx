@@ -92,6 +92,23 @@ export default function MoonsPage() {
     onError: (e: Error) => { toast({ title: "Rename Failed", description: e.message, variant: "destructive" }); },
   });
 
+  const { data: facilitiesData, isLoading: facilitiesLoading } = useQuery({
+    queryKey: ["moon-facilities", selectedMoonId],
+    queryFn: () => fetchJson(`/api/ogame/moon/facilities/${selectedMoonId}`),
+    enabled: !!selectedMoonId,
+  });
+
+  const buildFacilityMutation = useMutation({
+    mutationFn: ({ moonId, facilityId }: { moonId: string; facilityId: string }) =>
+      fetchJson(`/api/ogame/moon/build/${moonId}/${facilityId}`, { method: "POST" }),
+    onSuccess: () => {
+      toast({ title: "Facility upgraded!" });
+      queryClient.invalidateQueries({ queryKey: ["moon-facilities", selectedMoonId] });
+      queryClient.invalidateQueries({ queryKey: ["game-state"] });
+    },
+    onError: (e: Error) => { toast({ title: "Failed", description: e.message, variant: "destructive" }); },
+  });
+
   const buildBaseMutation = useMutation({
     mutationFn: ({ moonId, baseType }: { moonId: string; baseType: string }) =>
       fetchJson(`/api/moons/${moonId}/build-base`, { method: "POST", body: JSON.stringify({ baseType, baseClass: "small" }), headers: { "Content-Type": "application/json" } }),
@@ -777,6 +794,83 @@ export default function MoonsPage() {
     </div>
   );
 
+  const renderMoonFacilities = (moon: any) => {
+    const facilities = (facilitiesData as any)?.facilities || [];
+
+    const formatTime = (seconds: number) => {
+      if (seconds < 60) return `${seconds}s`;
+      if (seconds < 3600) return `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
+      const h = Math.floor(seconds / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      return `${h}h ${m}m`;
+    };
+
+    if (facilitiesLoading) {
+      return <div className="flex items-center justify-center h-32 text-slate-400">Loading facilities...</div>;
+    }
+
+    if (facilities.length === 0) {
+      return <div className="text-center py-8 text-slate-400 text-sm">No facilities available for this moon.</div>;
+    }
+
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {facilities.map((facility: any) => {
+          const cost = facility.nextCost || {};
+          const canAfford =
+            (cost.metal || 0) <= (resources?.metal || 0) &&
+            (cost.crystal || 0) <= (resources?.crystal || 0) &&
+            (cost.deuterium || 0) <= (resources?.deuterium || 0);
+
+          return (
+            <Card key={facility.id} className="bg-slate-800/80 border-slate-700">
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm text-white">{facility.name}</CardTitle>
+                  <Badge variant="outline" className="text-xs">Lv.{facility.level}</Badge>
+                </div>
+                <p className="text-xs text-slate-400">{facility.description}</p>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="grid grid-cols-3 gap-2 text-xs">
+                  <div className="text-center p-1.5 bg-amber-900/20 rounded border border-amber-800/50">
+                    <Box className="w-3 h-3 text-amber-400 mx-auto mb-0.5" />
+                    <div className="text-amber-300 font-medium">{cost.metal?.toLocaleString() || 0}</div>
+                    <div className="text-amber-500">Metal</div>
+                  </div>
+                  <div className="text-center p-1.5 bg-blue-900/20 rounded border border-blue-800/50">
+                    <Gem className="w-3 h-3 text-blue-400 mx-auto mb-0.5" />
+                    <div className="text-blue-300 font-medium">{cost.crystal?.toLocaleString() || 0}</div>
+                    <div className="text-blue-500">Crystal</div>
+                  </div>
+                  <div className="text-center p-1.5 bg-green-900/20 rounded border border-green-800/50">
+                    <Database className="w-3 h-3 text-green-400 mx-auto mb-0.5" />
+                    <div className="text-green-300 font-medium">{cost.deuterium?.toLocaleString() || 0}</div>
+                    <div className="text-green-500">Deuterium</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-slate-400 flex items-center gap-1">
+                    <Clock className="w-3 h-3" /> {formatTime(facility.buildTime || 0)}
+                  </span>
+                  <Button
+                    size="sm"
+                    className="h-7 text-xs"
+                    onClick={() => buildFacilityMutation.mutate({ moonId: moon.id, facilityId: facility.id })}
+                    disabled={!canAfford || buildFacilityMutation.isPending}
+                  >
+                    <ArrowUp className="w-3 h-3 mr-1" /> Upgrade
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+    );
+  };
+
   return (
     <GameLayout>
       <div className="space-y-6">
@@ -965,11 +1059,15 @@ export default function MoonsPage() {
                       <TabsTrigger value="base" className="text-xs data-[state=active]:bg-slate-700">
                         <Building2 className="w-3 h-3 mr-1" /> Base
                       </TabsTrigger>
+                      <TabsTrigger value="facilities" className="text-xs data-[state=active]:bg-slate-700">
+                        <Building2 className="w-3 h-3 mr-1" /> Facilities
+                      </TabsTrigger>
                     </TabsList>
                     <TabsContent value="overview" className="mt-4">{renderMoonOverview(selectedMoon)}</TabsContent>
                     <TabsContent value="details" className="mt-4">{renderMoonDetails(selectedMoon)}</TabsContent>
                     <TabsContent value="status" className="mt-4">{renderMoonStatus(selectedMoon)}</TabsContent>
                     <TabsContent value="base" className="mt-4">{renderMoonBase(selectedMoon)}</TabsContent>
+                    <TabsContent value="facilities" className="mt-4">{renderMoonFacilities(selectedMoon)}</TabsContent>
                   </Tabs>
                 </CardContent>
               </Card>

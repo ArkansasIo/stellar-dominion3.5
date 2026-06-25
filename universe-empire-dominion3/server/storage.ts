@@ -2964,11 +2964,26 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Forum operations
-  async getForumThreads(category?: string): Promise<any[]> {
-    if (category && category !== "all") {
-      return db.select().from(forumThreads).where(eq(forumThreads.category, category)).orderBy(desc(forumThreads.pinned), desc(forumThreads.lastReplyAt ?? forumThreads.createdAt));
+  async getForumThreads(category?: string, allianceId?: string): Promise<any[]> {
+    let query = db.select().from(forumThreads);
+
+    if (allianceId) {
+      query = query.where(
+        and(
+          category && category !== "all"
+            ? eq(forumThreads.category, category)
+            : eq(forumThreads.allianceId, allianceId),
+          eq(forumThreads.allianceId, allianceId)
+        )
+      ) as any;
+    } else {
+      query = query.where(sql`${forumThreads.allianceId} IS NULL`) as any;
+      if (category && category !== "all") {
+        query = (query as any).where(eq(forumThreads.category, category));
+      }
     }
-    return db.select().from(forumThreads).orderBy(desc(forumThreads.pinned), desc(forumThreads.lastReplyAt ?? forumThreads.createdAt));
+
+    return (query as any).orderBy(desc(forumThreads.pinned), desc(forumThreads.lastReplyAt ?? forumThreads.createdAt));
   }
 
   async getForumThread(threadId: string): Promise<any | null> {
@@ -2976,7 +2991,7 @@ export class DatabaseStorage implements IStorage {
     return thread || null;
   }
 
-  async createForumThread(data: { title: string; category: string; authorId: string; authorName: string; content: string }): Promise<any> {
+  async createForumThread(data: { title: string; category: string; authorId: string; authorName: string; content: string; allianceId?: string }): Promise<any> {
     const [thread] = await db.insert(forumThreads).values(data).returning();
     return thread;
   }

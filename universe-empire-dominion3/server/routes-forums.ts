@@ -2,8 +2,8 @@ import type { Express } from "express";
 import { isAuthenticated } from "./basicAuth";
 import { storage } from "./storage";
 import { db } from "./db";
-import { adminUsers } from "../shared/schema";
-import { eq } from "drizzle-orm";
+import { adminUsers, forumThreads } from "../shared/schema";
+import { eq, and, or } from "drizzle-orm";
 
 async function isAdminUser(userId: string) {
   if (!userId) return false;
@@ -19,7 +19,8 @@ export function registerForumRoutes(app: Express) {
   app.get("/api/forums/threads", async (req, res) => {
     try {
       const category = (req.query.category as string) || "all";
-      const threads = await storage.getForumThreads(category);
+      const allianceId = (req.query.allianceId as string) || undefined;
+      const threads = await storage.getForumThreads(category, allianceId);
       const threadsWithReplies = await Promise.all(
         threads.map(async (thread: any) => {
           const replies = await storage.getForumReplies(thread.id);
@@ -52,6 +53,7 @@ export function registerForumRoutes(app: Express) {
       const title = String((req.body?.title || "").trim());
       const category = String((req.body?.category || "General").trim());
       const content = String((req.body?.content || "").trim());
+      const allianceId = (req.body?.allianceId as string) || undefined;
 
       if (!userId) {
         return res.status(401).json({ success: false, message: "Not authenticated" });
@@ -63,7 +65,7 @@ export function registerForumRoutes(app: Express) {
         return res.status(400).json({ success: false, message: "Thread content must be at least 8 characters" });
       }
 
-      const thread = await storage.createForumThread({ title, category, authorId: userId, authorName: username, content });
+      const thread = await storage.createForumThread({ title, category, authorId: userId, authorName: username, content, allianceId });
       return res.json({ success: true, thread: { ...thread, replies: [] } });
     } catch (error) {
       res.status(500).json({ success: false, message: "Failed to create thread" });

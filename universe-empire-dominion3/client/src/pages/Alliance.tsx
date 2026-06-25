@@ -9,6 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   Shield, Users, LogOut, Search, Plus, Trophy, MessageSquare, Globe, 
   Swords, Handshake, Flag, Crown, Star, Target, TrendingUp, Award, 
@@ -130,6 +132,23 @@ type GuildChatResponse = {
    messages: GuildChatMessage[];
 };
 
+type ForumReply = {
+   id: string;
+   authorName: string;
+   content: string;
+   createdAt: number;
+};
+
+type ForumThread = {
+   id: string;
+   title: string;
+   category: string;
+   authorName: string;
+   content: string;
+   createdAt: number;
+   replies: ForumReply[];
+};
+
 async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
    const response = await fetch(url, {
       credentials: "include",
@@ -170,6 +189,11 @@ export default function Alliance() {
    const [operationTarget, setOperationTarget] = useState("1:1:1");
    const [operationType, setOperationType] = useState<AllianceOperationType>("raid");
    const [operationPower, setOperationPower] = useState("1000");
+   const [boardTitle, setBoardTitle] = useState("");
+   const [boardContent, setBoardContent] = useState("");
+   const [boardCategory, setBoardCategory] = useState("General");
+   const [expandedThreads, setExpandedThreads] = useState<Record<string, boolean>>({});
+   const [replyDrafts, setReplyDrafts] = useState<Record<string, string>>({});
 
    const { data: myGuild } = useQuery<GuildInfo | null>({
       queryKey: ["guild-mine"],
@@ -230,6 +254,47 @@ export default function Alliance() {
       },
       onError: (error: Error) => {
          toast({ title: "Message failed", description: error.message, variant: "destructive" });
+      },
+   });
+
+   const { data: boardData } = useQuery<{ success: boolean; threads: ForumThread[] }>({
+      queryKey: ["alliance-board", alliance?.id],
+      queryFn: () => fetchJson(`/api/forums/threads?allianceId=${alliance!.id}&category=all`),
+      enabled: !!alliance?.id,
+      refetchInterval: 15000,
+   });
+
+   const createBoardThreadMutation = useMutation({
+      mutationFn: () =>
+         fetchJson("/api/forums/threads", {
+            method: "POST",
+            body: JSON.stringify({ title: boardTitle, content: boardContent, category: boardCategory, allianceId: alliance!.id }),
+         }),
+      onSuccess: () => {
+         setBoardTitle("");
+         setBoardContent("");
+         setBoardCategory("General");
+         queryClient.invalidateQueries({ queryKey: ["alliance-board", alliance?.id] });
+         toast({ title: "Thread posted", description: "Your forum thread is now live." });
+      },
+      onError: (error: Error) => {
+         toast({ title: "Post failed", description: error.message, variant: "destructive" });
+      },
+   });
+
+   const replyToThreadMutation = useMutation({
+      mutationFn: ({ threadId, content }: { threadId: string; content: string }) =>
+         fetchJson(`/api/forums/threads/${threadId}/reply`, {
+            method: "POST",
+            body: JSON.stringify({ content }),
+         }),
+      onSuccess: (_, variables) => {
+         setReplyDrafts((prev) => ({ ...prev, [variables.threadId]: "" }));
+         queryClient.invalidateQueries({ queryKey: ["alliance-board", alliance?.id] });
+         toast({ title: "Reply posted", description: "Your response has been added." });
+      },
+      onError: (error: Error) => {
+         toast({ title: "Reply failed", description: error.message, variant: "destructive" });
       },
    });
 
@@ -443,8 +508,9 @@ export default function Alliance() {
                     <TabsTrigger value="operations" className="font-orbitron" data-testid="tab-operations"><Target className="w-4 h-4 mr-2" /> Operations</TabsTrigger>
                     <TabsTrigger value="diplomacy" className="font-orbitron" data-testid="tab-diplomacy"><Handshake className="w-4 h-4 mr-2" /> Diplomacy</TabsTrigger>
                     <TabsTrigger value="wars" className="font-orbitron" data-testid="tab-wars"><Swords className="w-4 h-4 mr-2" /> Wars</TabsTrigger>
-                    <TabsTrigger value="comms" className="font-orbitron" data-testid="tab-comms"><MessageSquare className="w-4 h-4 mr-2" /> Comms</TabsTrigger>
-                 </TabsList>
+                     <TabsTrigger value="comms" className="font-orbitron" data-testid="tab-comms"><MessageSquare className="w-4 h-4 mr-2" /> Comms</TabsTrigger>
+                     <TabsTrigger value="board" className="font-orbitron" data-testid="tab-board"><MessageSquare className="w-4 h-4 mr-2" /> Board</TabsTrigger>
+                  </TabsList>
 
                  <TabsContent value="overview" className="mt-6">
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -961,8 +1027,120 @@ export default function Alliance() {
                                        )}
                        </CardContent>
                     </Card>
-                 </TabsContent>
-              </Tabs>
+                  </TabsContent>
+
+                  <TabsContent value="board" className="mt-6">
+                     <Card className="bg-white border-slate-200">
+                        <CardHeader>
+                           <CardTitle className="flex items-center gap-2 text-slate-900">
+                              <MessageSquare className="w-5 h-5 text-indigo-600" /> Alliance Board
+                           </CardTitle>
+                           <CardDescription>Post strategy discussions, war plans, and announcements for your alliance.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                           <div className="rounded border border-slate-200 bg-slate-50 p-4 space-y-3">
+                              <div className="font-semibold text-sm text-slate-900">New Thread</div>
+                              <Input
+                                 value={boardTitle}
+                                 onChange={(event) => setBoardTitle(event.target.value)}
+                                 placeholder="Thread title"
+                              />
+                              <Textarea
+                                 value={boardContent}
+                                 onChange={(event) => setBoardContent(event.target.value)}
+                                 placeholder="What's on your mind, commander?"
+                                 rows={3}
+                              />
+                              <div className="flex items-center justify-between gap-3">
+                                 <div className="flex items-center gap-2">
+                                    <span className="text-xs text-slate-500">Category:</span>
+                                    <Select value={boardCategory} onValueChange={setBoardCategory}>
+                                       <SelectTrigger className="w-36 h-8 text-xs bg-white">
+                                          <SelectValue />
+                                       </SelectTrigger>
+                                       <SelectContent>
+                                          <SelectItem value="General">General</SelectItem>
+                                          <SelectItem value="Announcements">Announcements</SelectItem>
+                                          <SelectItem value="War Plans">War Plans</SelectItem>
+                                          <SelectItem value="Diplomacy">Diplomacy</SelectItem>
+                                       </SelectContent>
+                                    </Select>
+                                 </div>
+                                 <Button
+                                    onClick={() => createBoardThreadMutation.mutate()}
+                                    disabled={createBoardThreadMutation.isPending || boardTitle.trim().length < 3 || boardContent.trim().length < 3}
+                                    size="sm"
+                                 >
+                                    {createBoardThreadMutation.isPending ? "Posting..." : "Post Thread"}
+                                 </Button>
+                              </div>
+                           </div>
+
+                           <div className="space-y-3">
+                              {(boardData?.threads || []).length === 0 && (
+                                 <div className="text-center py-10 text-slate-400 border border-dashed border-slate-200 rounded">
+                                    <MessageSquare className="w-10 h-10 mx-auto mb-3 opacity-30" />
+                                    <p className="text-sm">No threads yet. Start the first discussion.</p>
+                                 </div>
+                              )}
+                              {(boardData?.threads || []).map((thread) => {
+                                 const isExpanded = expandedThreads[thread.id] || false;
+                                 return (
+                                 <div key={thread.id} className="rounded border border-slate-200 bg-slate-50 p-4 space-y-2">
+                                    <div
+                                       className="flex items-center justify-between cursor-pointer select-none"
+                                       onClick={() => setExpandedThreads((prev) => ({ ...prev, [thread.id]: !prev[thread.id] }))}
+                                    >
+                                       <div className="flex items-center gap-2 min-w-0">
+                                          <div className="font-semibold text-slate-900 truncate">{thread.title}</div>
+                                          <Badge variant="outline" className="text-[10px] shrink-0">{thread.category}</Badge>
+                                       </div>
+                                       <div className="text-xs text-slate-500 shrink-0 ml-2">
+                                          {thread.replies?.length || 0} replies • {thread.authorName || "Commander"} • {new Date(thread.createdAt).toLocaleDateString()}
+                                       </div>
+                                    </div>
+                                    {isExpanded && (
+                                       <div className="space-y-3 pt-2 border-t border-slate-200">
+                                          <div className="text-sm text-slate-700 bg-white rounded border border-slate-200 p-3">{thread.content}</div>
+                                          {(thread.replies || []).length > 0 && (
+                                             <div className="space-y-2">
+                                                <div className="text-xs font-semibold text-slate-500 uppercase">Replies</div>
+                                                {thread.replies.map((reply) => (
+                                                   <div key={reply.id} className="bg-white rounded border border-slate-200 p-3">
+                                                      <div className="flex items-center justify-between mb-1">
+                                                         <span className="text-xs font-semibold text-slate-700">{reply.authorName || "Commander"}</span>
+                                                         <span className="text-[10px] text-slate-400">{new Date(reply.createdAt).toLocaleString()}</span>
+                                                      </div>
+                                                      <p className="text-sm text-slate-600">{reply.content}</p>
+                                                   </div>
+                                                ))}
+                                             </div>
+                                          )}
+                                          <div className="flex gap-2">
+                                             <Input
+                                                value={replyDrafts[thread.id] || ""}
+                                                onChange={(event) => setReplyDrafts((prev) => ({ ...prev, [thread.id]: event.target.value }))}
+                                                placeholder="Write a reply..."
+                                                className="bg-white text-sm"
+                                             />
+                                             <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => replyToThreadMutation.mutate({ threadId: thread.id, content: (replyDrafts[thread.id] || "").trim() })}
+                                                disabled={replyToThreadMutation.isPending || (replyDrafts[thread.id] || "").trim().length < 2}
+                                             >
+                                                Reply
+                                             </Button>
+                                          </div>
+                                       </div>
+                                    )}
+                                 </div>
+                              )})}
+                           </div>
+                        </CardContent>
+                     </Card>
+                  </TabsContent>
+               </Tabs>
            </div>
         </GameLayout>
      );

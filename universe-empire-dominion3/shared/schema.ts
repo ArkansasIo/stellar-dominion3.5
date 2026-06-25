@@ -109,6 +109,9 @@ export const playerStates = pgTable("player_states", {
   
   // Commander data
   commander: jsonb("commander").notNull(),
+
+  // Active OGame officers (purchased with dark matter)
+  activeOfficers: jsonb("active_officers").notNull().default({}),
   
   // Government data
   government: jsonb("government").notNull(),
@@ -2197,6 +2200,7 @@ export const forumThreads = pgTable("forum_threads", {
   replyCount: integer("reply_count").notNull().default(0),
   pinned: boolean("pinned").notNull().default(false),
   locked: boolean("locked").notNull().default(false),
+  allianceId: varchar("alliance_id"),
   lastReplyAt: timestamp("last_reply_at"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),

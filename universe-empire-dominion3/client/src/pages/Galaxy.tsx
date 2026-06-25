@@ -37,11 +37,26 @@ import { useLocation } from "wouter";
 
 type SystemObjectType = "planet" | "asteroid" | "nebula" | "blackhole" | "station" | "empty";
 
+interface NPCPresence {
+  raceId: string;
+  raceName: string;
+  faction: string;
+  fleetPower: number;
+  diplomaticStance: string;
+  isHostile: boolean;
+}
+
 interface MoonDetail {
   name: string;
   type: string;
   size: string;
+  diameter: number;
+  gravity: number;
   habitable: boolean;
+  atmosphere: string;
+  temperature: number;
+  resources: string[];
+  specialFeatures: string[];
 }
 
 interface SystemPosition {
@@ -54,6 +69,9 @@ interface SystemPosition {
   moon?: boolean;
   moonDetails?: MoonDetail;
   class?: string;
+  subclass?: string;
+  category?: string;
+  subcategory?: string;
   planetType?: string;
   temperature?: number;
   resources?: string[];
@@ -62,6 +80,42 @@ interface SystemPosition {
   atmosphere?: string;
   activity?: number;
   stations?: { name: string; level: number; type: string }[];
+  diameter?: number;
+  mass?: number;
+  waterPercent?: number;
+  specialFeatures?: string[];
+  planetId?: string;
+  npcs?: NPCPresence[];
+}
+
+interface GalaxyClassification {
+  morphology: string;
+  class: string;
+  subclass: string;
+  category: string;
+  subcategory: string;
+  designation: string;
+}
+
+interface SystemInfo {
+  totalPlanets: number;
+  habitablePlanets: number;
+  asteroidBelts: number;
+  specialObjects: number;
+}
+
+interface SystemData {
+  universe: string;
+  galaxy: number;
+  sector: number;
+  system: number;
+  systemName?: string;
+  star?: { type: string; name: string };
+  positions: SystemPosition[];
+  galaxyClassification?: GalaxyClassification;
+  npcPresence?: NPCPresence[];
+  pirateActivity?: { id: string; name: string; aggression: number; controlledSectors: string[] }[];
+  systemInfo?: SystemInfo;
 }
 
 interface SystemData {
@@ -383,43 +437,82 @@ export default function Galaxy() {
 
         {/* System Info / Star Display + System Summary */}
         {systemData?.star && (
-          <div className="flex gap-4">
-            <div className="bg-white border border-slate-200 p-4 rounded-lg flex items-center gap-4 shadow-sm flex-1">
+          <div className="flex gap-4 flex-wrap">
+            <div className="bg-white border border-slate-200 p-4 rounded-lg flex items-center gap-4 shadow-sm flex-[2] min-w-[300px]">
               <div
                 className={cn("w-12 h-12 rounded-full flex-shrink-0", STAR_INFO[systemData.star.type]?.glow)}
                 style={{ background: `radial-gradient(circle at 35% 35%, white, ${STAR_INFO[systemData.star.type]?.color ?? "#ffe4a0"})` }}
               />
-              <div>
-                <div className="font-bold text-slate-900 font-orbitron text-lg">
+              <div className="flex-1 min-w-0">
+                <div className="font-bold text-slate-900 font-orbitron text-lg truncate">
                   {systemData.systemName ?? systemData.star.name} System
                 </div>
                 <div className="text-sm text-muted-foreground font-rajdhani">
-                  Star: <span className="font-semibold text-slate-700">{systemData.star.name}</span>
+                  [{systemData.galaxy}:{systemData.sector}:{systemData.system}]
+                  {" · "}Star: <span className="font-semibold text-slate-700">{systemData.star.name}</span>
                   {" · "}Type <span className="font-semibold text-slate-700">{systemData.star.type}</span>
                   {" · "}
                   <span className="italic">{STAR_INFO[systemData.star.type]?.label ?? "Unknown"}</span>
                 </div>
+                {systemData.galaxyClassification && (
+                  <div className="text-[11px] text-slate-500 mt-1">
+                    <span className="font-semibold text-purple-600">{systemData.galaxyClassification.designation}</span>
+                    {" · "}{systemData.galaxyClassification.morphology}
+                    {" · "}Class {systemData.galaxyClassification.class}-{systemData.galaxyClassification.subclass}
+                    {" · "}{systemData.galaxyClassification.category}/{systemData.galaxyClassification.subcategory}
+                  </div>
+                )}
+                {systemData.npcPresence && systemData.npcPresence.length > 0 && (
+                  <div className="text-[11px] text-slate-500 mt-1 flex flex-wrap gap-x-3">
+                    {systemData.npcPresence.map((npc) => (
+                      <span key={npc.raceId} className={cn("font-medium", npc.isHostile ? "text-red-500" : "text-green-600")}>
+                        {npc.raceName} ({npc.faction}) · {npc.diplomaticStance}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                {systemData.pirateActivity && systemData.pirateActivity.length > 0 && (
+                  <div className="text-[11px] text-red-500 mt-1">
+                    <span className="font-semibold">Pirate Activity:</span> {systemData.pirateActivity.map(p => p.name).join(", ")}
+                  </div>
+                )}
               </div>
             </div>
-            <div className="flex gap-3">
-              <Card className="bg-white border-slate-200 shadow-sm min-w-[100px]">
+            <div className="flex gap-2 flex-wrap">
+              <Card className="bg-white border-slate-200 shadow-sm min-w-[80px]">
                 <CardContent className="p-3 text-center">
-                  <div className="text-xl font-bold text-blue-600">{planetPositions.length}</div>
+                  <div className="text-lg font-bold text-blue-600">{planetPositions.length}</div>
                   <div className="text-xs text-slate-500">Planets</div>
                 </CardContent>
               </Card>
-              <Card className="bg-white border-slate-200 shadow-sm min-w-[100px]">
+              <Card className="bg-white border-slate-200 shadow-sm min-w-[80px]">
                 <CardContent className="p-3 text-center">
-                  <div className="text-xl font-bold text-green-600">{habitableCount}</div>
+                  <div className="text-lg font-bold text-green-600">{habitableCount}</div>
                   <div className="text-xs text-slate-500">Habitable</div>
                 </CardContent>
               </Card>
-              <Card className="bg-white border-slate-200 shadow-sm min-w-[100px]">
+              <Card className="bg-white border-slate-200 shadow-sm min-w-[80px]">
                 <CardContent className="p-3 text-center">
-                  <div className="text-xl font-bold text-slate-600">{totalMoons}</div>
+                  <div className="text-lg font-bold text-slate-600">{totalMoons}</div>
                   <div className="text-xs text-slate-500">Moons</div>
                 </CardContent>
               </Card>
+              {systemData.systemInfo && (
+                <>
+                  <Card className="bg-white border-slate-200 shadow-sm min-w-[80px]">
+                    <CardContent className="p-3 text-center">
+                      <div className="text-lg font-bold text-amber-600">{systemData.systemInfo.asteroidBelts}</div>
+                      <div className="text-xs text-slate-500">Belts</div>
+                    </CardContent>
+                  </Card>
+                  <Card className="bg-white border-slate-200 shadow-sm min-w-[80px]">
+                    <CardContent className="p-3 text-center">
+                      <div className="text-lg font-bold text-purple-600">{systemData.systemInfo.specialObjects}</div>
+                      <div className="text-xs text-slate-500">Anomalies</div>
+                    </CardContent>
+                  </Card>
+                </>
+              )}
             </div>
           </div>
         )}
@@ -428,150 +521,190 @@ export default function Galaxy() {
         <div className="flex gap-4">
           {/* Galaxy Table */}
           <div className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm flex-1">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-slate-50 border-slate-200 hover:bg-slate-50">
-                  <TableHead className="text-center w-[50px] text-slate-700 text-xs">Pos</TableHead>
-                  <TableHead className="w-[50px] text-slate-700 text-xs"></TableHead>
-                  <TableHead className="text-slate-700 text-xs">Name</TableHead>
-                  <TableHead className="text-slate-700 text-xs hidden lg:table-cell">Type</TableHead>
-                  <TableHead className="text-slate-700 text-xs hidden md:table-cell">Moon</TableHead>
-                  <TableHead className="text-slate-700 text-xs hidden lg:table-cell">Player</TableHead>
-                  <TableHead className="text-right text-slate-700 text-xs">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {isFetching && !systemData && (
-                  <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Loading system data...</TableCell></TableRow>
-                )}
-                {systemData?.positions?.map((data) => {
-                  const isMe = false;
-                  return (
-                    <TableRow
-                      key={data.position}
-                      className={cn(
-                        "border-slate-100 transition-colors cursor-pointer",
-                        selectedPlanet?.position === data.position ? "bg-blue-50 border-blue-200" : "hover:bg-slate-50"
-                      )}
-                      onClick={() => data.type !== "empty" && openPlanetDetail(data)}
-                    >
-                      <TableCell className="text-center font-mono text-muted-foreground text-xs">{data.position}</TableCell>
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-slate-50 border-slate-200 hover:bg-slate-50">
+                    <TableHead className="text-center w-[36px] text-slate-700 text-xs">Pos</TableHead>
+                    <TableHead className="w-[36px] text-slate-700 text-xs"></TableHead>
+                    <TableHead className="text-slate-700 text-xs min-w-[160px]">Name / ID</TableHead>
+                    <TableHead className="text-slate-700 text-xs">Class</TableHead>
+                    <TableHead className="text-slate-700 text-xs">Moon (km)</TableHead>
+                    <TableHead className="text-slate-700 text-xs">Debris</TableHead>
+                    <TableHead className="text-slate-700 text-xs">Player</TableHead>
+                    <TableHead className="text-slate-700 text-xs">Alliance</TableHead>
+                    <TableHead className="text-right text-slate-700 text-xs">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {isFetching && !systemData && (
+                    <TableRow><TableCell colSpan={9} className="text-center py-8 text-muted-foreground">Loading system data...</TableCell></TableRow>
+                  )}
+                  {systemData?.positions?.map((data) => {
+                    const isMe = false;
+                    return (
+                      <TableRow
+                        key={data.position}
+                        className={cn(
+                          "border-slate-100 transition-colors cursor-pointer",
+                          selectedPlanet?.position === data.position ? "bg-blue-50 border-blue-200" : "hover:bg-slate-50"
+                        )}
+                        onClick={() => data.type !== "empty" && openPlanetDetail(data)}
+                      >
+                        <TableCell className="text-center font-mono text-muted-foreground text-xs">{data.position}</TableCell>
 
-                      <TableCell>
-                        {data.type === "planet" && (
-                          <div className={cn("w-8 h-8 rounded-full bg-gradient-to-br shadow-sm border border-slate-200", getPlanetGradient(data.class))}></div>
-                        )}
-                        {data.type === "asteroid" && (
-                          <div className="w-8 h-8 flex items-center justify-center">
-                            <div className="w-6 h-6 rounded bg-slate-300 rotate-45 border border-slate-400"></div>
-                          </div>
-                        )}
-                        {data.type === "blackhole" && (
-                          <div className="w-8 h-8 rounded-full bg-black shadow-[0_0_10px_rgba(0,0,0,0.5)] border border-slate-800 flex items-center justify-center">
-                            <div className="w-7 h-7 rounded-full border border-white/20"></div>
-                          </div>
-                        )}
-                        {data.type === "nebula" && (
-                          <div className="w-8 h-8 rounded-full bg-purple-100 blur-sm opacity-80"></div>
-                        )}
-                        {data.type === "station" && (
-                          <div className="w-8 h-8 flex items-center justify-center">
-                            <Hexagon className="w-6 h-6 text-slate-600 fill-slate-200" />
-                          </div>
-                        )}
-                      </TableCell>
-
-                      <TableCell>
-                        {data.type !== "empty" ? (
-                          <div className="font-medium text-slate-700 text-sm">{data.name}</div>
-                        ) : (
-                          <span className="text-muted-foreground/30 italic text-xs">-- Empty --</span>
-                        )}
-                      </TableCell>
-
-                      <TableCell className="hidden lg:table-cell">
-                        {data.type === "planet" && (
-                          <div className="flex items-center gap-1.5">
-                            <Badge variant="secondary" className={cn("text-xs", data.class && PLANET_CLASS_BADGE[data.class] ? PLANET_CLASS_BADGE[data.class] : "bg-blue-100 text-blue-700")}>
-                              {data.class}
-                            </Badge>
-                            {data.planetType && (
-                              <span className="text-xs text-slate-500">{PLANET_TYPE_LABEL[data.planetType] || data.planetType}</span>
-                            )}
-                          </div>
-                        )}
-                        {data.type === "asteroid" && <Badge variant="outline" className="border-slate-400 text-slate-600 text-xs">Asteroid</Badge>}
-                        {data.type === "blackhole" && <Badge variant="destructive" className="bg-black hover:bg-black text-white text-xs">Singularity</Badge>}
-                        {data.type === "nebula" && <Badge variant="secondary" className="bg-purple-100 text-purple-700 hover:bg-purple-100 text-xs">Nebula</Badge>}
-                        {data.type === "station" && <Badge variant="outline" className="border-red-400 text-red-600 text-xs">Pirate Base</Badge>}
-                      </TableCell>
-
-                      <TableCell className="hidden md:table-cell">
-                        <div className="flex items-center gap-1.5">
-                          {data.moon && (
-                            <div className="flex items-center gap-1">
-                              <Moon className="w-3.5 h-3.5 text-slate-400" />
-                              {data.moonDetails && <span className="text-xs text-slate-500">{data.moonDetails.type}</span>}
+                        <TableCell>
+                          {data.type === "planet" && (
+                            <div className={cn("w-7 h-7 rounded-full bg-gradient-to-br shadow-sm border border-slate-200", getPlanetGradient(data.class))}></div>
+                          )}
+                          {data.type === "asteroid" && (
+                            <div className="w-7 h-7 flex items-center justify-center">
+                              <div className="w-5 h-5 rounded bg-slate-300 rotate-45 border border-slate-400"></div>
                             </div>
                           )}
-                          {data.debris && (
-                            <div className="flex items-center text-xs text-yellow-600 font-mono">
-                              <Triangle className="w-3 h-3 mr-0.5 fill-yellow-600 rotate-180" />
-                              D-Field
+                          {data.type === "blackhole" && (
+                            <div className="w-7 h-7 rounded-full bg-black shadow-[0_0_10px_rgba(0,0,0,0.5)] border border-slate-800 flex items-center justify-center">
+                              <div className="w-6 h-6 rounded-full border border-white/20"></div>
                             </div>
                           )}
-                          {data.stations && data.stations.length > 0 && (
-                            <div className="flex items-center gap-0.5">
-                              <Factory className="w-3 h-3 text-slate-500" />
-                              <span className="text-xs text-slate-500">Lv.{data.stations[0].level}</span>
+                          {data.type === "nebula" && (
+                            <div className="w-7 h-7 rounded-full bg-purple-100 blur-sm opacity-80"></div>
+                          )}
+                          {data.type === "station" && (
+                            <div className="w-7 h-7 flex items-center justify-center">
+                              <Hexagon className="w-5 h-5 text-slate-600 fill-slate-200" />
                             </div>
                           )}
-                        </div>
-                      </TableCell>
+                        </TableCell>
 
-                      <TableCell className="hidden lg:table-cell">
-                        {data.owner && (
-                          <span className={cn("font-medium text-sm", isMe ? "text-green-600" : data.type === "station" ? "text-red-600" : "text-red-500")}>
-                            {data.owner}
-                          </span>
-                        )}
-                        {data.alliance && <span className="text-blue-500 font-bold text-xs ml-1">[{data.alliance}]</span>}
-                      </TableCell>
+                        <TableCell>
+                          {data.type !== "empty" ? (
+                            <div>
+                              <div className="font-medium text-slate-700 text-sm leading-tight">{data.name}</div>
+                              {data.planetId && (
+                                <div className="text-[10px] text-slate-400 font-mono leading-tight">{data.planetId}</div>
+                              )}
+                              {data.diameter && data.type === "planet" && (
+                                <div className="text-[10px] text-slate-400 leading-tight">{data.diameter.toLocaleString()} km</div>
+                              )}
+                            </div>
+                          ) : (
+                            <span className="text-muted-foreground/30 italic text-xs">-- Empty --</span>
+                          )}
+                        </TableCell>
 
-                      <TableCell className="text-right">
-                        {data.type !== "empty" && !isMe && (
-                          <div className="flex justify-end gap-1" onClick={(e) => e.stopPropagation()}>
-                            <Button size="icon" variant="ghost" className="h-7 w-7 hover:bg-blue-50 hover:text-blue-600"
-                              onClick={() => deepScanMutation.mutate({ position: data.position, name: data.name || `Position ${data.position}`, type: data.type })}
-                              disabled={deepScanMutation.isPending}>
-                              <Search className="w-3.5 h-3.5" />
-                            </Button>
-                            <Button size="icon" variant="ghost" className="h-7 w-7 hover:bg-slate-100"
-                              onClick={() => openPlanetDetail(data)}>
-                              <Eye className="w-3.5 h-3.5" />
-                            </Button>
-                            {(data.type === "planet" || data.type === "station") && (
-                              <>
-                                <Button size="icon" variant="ghost" className="h-7 w-7 hover:bg-blue-50 hover:text-blue-600"
-                                  onClick={() => messageActionMutation.mutate({ targetName: data.name || `Position ${data.position}`, recipientName: data.owner || "", destination: `${galaxy}:${system}:${data.position}` })}
-                                  disabled={messageActionMutation.isPending || !data.owner}>
-                                  <MessageSquare className="w-3.5 h-3.5" />
-                                </Button>
-                                <Button size="icon" variant="ghost" className="h-7 w-7 hover:bg-red-50 hover:text-red-600"
-                                  onClick={() => fleetActionMutation.mutate({ targetName: data.name || `Position ${data.position}`, destination: `${galaxy}:${system}:${data.position}`, missionType: "attack", ships: { lightFighter: 10, cruiser: 2 } })}
-                                  disabled={fleetActionMutation.isPending}>
-                                  <ShieldAlert className="w-3.5 h-3.5" />
-                                </Button>
-                              </>
-                            )}
-                          </div>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
+                        <TableCell>
+                          {data.type === "planet" && (
+                            <div className="flex flex-col gap-0.5">
+                              <Badge variant="secondary" className={cn("text-[10px] px-1.5 py-0 w-fit", data.class && PLANET_CLASS_BADGE[data.class] ? PLANET_CLASS_BADGE[data.class] : "bg-blue-100 text-blue-700")}>
+                                Class {data.class}
+                              </Badge>
+                              {data.planetType && (
+                                <span className="text-[10px] text-slate-500">{PLANET_TYPE_LABEL[data.planetType] || data.planetType}</span>
+                              )}
+                              {data.temperature && (
+                                <span className="text-[10px] text-slate-400">{data.temperature}K</span>
+                              )}
+                              {data.gravity && (
+                                <span className="text-[10px] text-slate-400">{data.gravity}g</span>
+                              )}
+                            </div>
+                          )}
+                          {data.type === "asteroid" && <Badge variant="outline" className="border-slate-400 text-slate-600 text-[10px]">Asteroid</Badge>}
+                          {data.type === "blackhole" && <Badge variant="destructive" className="bg-black hover:bg-black text-white text-[10px]">Singularity</Badge>}
+                          {data.type === "nebula" && <Badge variant="secondary" className="bg-purple-100 text-purple-700 hover:bg-purple-100 text-[10px]">Nebula</Badge>}
+                          {data.type === "station" && <Badge variant="outline" className="border-red-400 text-red-600 text-[10px]">Pirate Base</Badge>}
+                        </TableCell>
+
+                        <TableCell>
+                          {data.moon && data.moonDetails ? (
+                            <div className="flex flex-col gap-0.5">
+                              <div className="flex items-center gap-1">
+                                <Moon className="w-3 h-3 text-slate-400 flex-shrink-0" />
+                                <span className="text-xs text-slate-600 font-medium truncate max-w-[80px]">{data.moonDetails.name}</span>
+                              </div>
+                              {data.moonDetails.diameter && (
+                                <span className="text-[10px] text-slate-400 ml-4">{data.moonDetails.diameter.toLocaleString()} km</span>
+                              )}
+                              <span className="text-[10px] text-slate-400 ml-4 capitalize">{data.moonDetails.size}</span>
+                            </div>
+                          ) : (
+                            <span className="text-muted-foreground/30 text-[10px]">--</span>
+                          )}
+                        </TableCell>
+
+                        <TableCell>
+                          {data.debris ? (
+                            <div className="flex flex-col gap-0.5">
+                              <div className="flex items-center gap-1">
+                                <Triangle className="w-3 h-3 fill-yellow-600 rotate-180 flex-shrink-0" />
+                                <span className="text-[10px] font-mono text-yellow-700">M: {data.debris.metal.toLocaleString()}</span>
+                              </div>
+                              <span className="text-[10px] font-mono text-blue-600 ml-4">C: {data.debris.crystal.toLocaleString()}</span>
+                            </div>
+                          ) : (
+                            <span className="text-muted-foreground/30 text-[10px]">--</span>
+                          )}
+                        </TableCell>
+
+                        <TableCell>
+                          {data.owner ? (
+                            <div className="flex flex-col gap-0.5">
+                              <span className={cn("text-xs font-medium", isMe ? "text-green-600" : data.type === "station" ? "text-red-600" : "text-slate-700")}>
+                                {data.owner}
+                              </span>
+                              {data.activity !== undefined && data.activity > 0 && (
+                                <span className="text-[10px] text-green-500 font-medium">Active</span>
+                              )}
+                            </div>
+                          ) : data.type === "planet" ? (
+                            <span className="text-[10px] text-emerald-600 font-medium">Uncolonized</span>
+                          ) : (
+                            <span className="text-muted-foreground/30 text-[10px]">--</span>
+                          )}
+                        </TableCell>
+
+                        <TableCell>
+                          {data.alliance ? (
+                            <span className="text-blue-600 font-bold text-xs">[{data.alliance}]</span>
+                          ) : (
+                            <span className="text-muted-foreground/30 text-[10px]">--</span>
+                          )}
+                        </TableCell>
+
+                        <TableCell className="text-right">
+                          {data.type !== "empty" && !isMe && (
+                            <div className="flex justify-end gap-1" onClick={(e) => e.stopPropagation()}>
+                              <Button size="icon" variant="ghost" className="h-7 w-7 hover:bg-blue-50 hover:text-blue-600"
+                                onClick={() => deepScanMutation.mutate({ position: data.position, name: data.name || `Position ${data.position}`, type: data.type })}
+                                disabled={deepScanMutation.isPending}>
+                                <Search className="w-3.5 h-3.5" />
+                              </Button>
+                              <Button size="icon" variant="ghost" className="h-7 w-7 hover:bg-slate-100"
+                                onClick={() => openPlanetDetail(data)}>
+                                <Eye className="w-3.5 h-3.5" />
+                              </Button>
+                              {(data.type === "planet" || data.type === "station") && (
+                                <>
+                                  <Button size="icon" variant="ghost" className="h-7 w-7 hover:bg-blue-50 hover:text-blue-600"
+                                    onClick={() => messageActionMutation.mutate({ targetName: data.name || `Position ${data.position}`, recipientName: data.owner || "", destination: `${galaxy}:${system}:${data.position}` })}
+                                    disabled={messageActionMutation.isPending || !data.owner}>
+                                    <MessageSquare className="w-3.5 h-3.5" />
+                                  </Button>
+                                  <Button size="icon" variant="ghost" className="h-7 w-7 hover:bg-red-50 hover:text-red-600"
+                                    onClick={() => fleetActionMutation.mutate({ targetName: data.name || `Position ${data.position}`, destination: `${galaxy}:${system}:${data.position}`, missionType: "attack", ships: { lightFighter: 10, cruiser: 2 } })}
+                                    disabled={fleetActionMutation.isPending}>
+                                    <ShieldAlert className="w-3.5 h-3.5" />
+                                  </Button>
+                                </>
+                              )}
+                            </div>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
           </div>
 
           {/* Planet Overview Panel (OGame-style sidebar) */}
@@ -613,6 +746,14 @@ export default function Galaxy() {
                         </div>
                       </div>
 
+                      {/* Planet ID */}
+                      {selectedPlanet.planetId && (
+                        <div className="p-2 bg-slate-50 rounded border border-slate-200">
+                          <div className="text-xs text-slate-500">Planet ID</div>
+                          <div className="font-mono text-xs font-bold text-slate-700">{selectedPlanet.planetId}</div>
+                        </div>
+                      )}
+
                       {/* Physical Properties */}
                       <div className="space-y-2">
                         <h4 className="text-xs font-bold text-slate-600 uppercase tracking-wider">Physical Properties</h4>
@@ -627,10 +768,25 @@ export default function Galaxy() {
                             <span className="text-slate-500">Gravity:</span>
                             <span className="font-medium">{selectedPlanet.gravity}g</span>
                           </div>
-                          <div className="flex items-center gap-1.5 col-span-2">
+                          <div className="flex items-center gap-1.5">
+                            <CircleDot className="w-3.5 h-3.5 text-slate-400" />
+                            <span className="text-slate-500">Diameter:</span>
+                            <span className="font-medium">{selectedPlanet.diameter?.toLocaleString()} km</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <Star className="w-3.5 h-3.5 text-amber-400" />
+                            <span className="text-slate-500">Mass:</span>
+                            <span className="font-medium">{selectedPlanet.mass} M⊕</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <Droplets className="w-3.5 h-3.5 text-blue-400" />
+                            <span className="text-slate-500">Water:</span>
+                            <span className="font-medium">{selectedPlanet.waterPercent ?? 0}%</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
                             <Wind className="w-3.5 h-3.5 text-blue-400" />
                             <span className="text-slate-500">Atmosphere:</span>
-                            <span className="font-medium">{selectedPlanet.atmosphere}</span>
+                            <span className="font-medium truncate">{selectedPlanet.atmosphere}</span>
                           </div>
                         </div>
                         {selectedPlanet.habitable !== undefined && (
@@ -639,6 +795,20 @@ export default function Galaxy() {
                           </div>
                         )}
                       </div>
+
+                      {/* Special Features */}
+                      {selectedPlanet.specialFeatures && selectedPlanet.specialFeatures.length > 0 && (
+                        <div className="space-y-2">
+                          <h4 className="text-xs font-bold text-slate-600 uppercase tracking-wider">Special Features</h4>
+                          <div className="flex flex-wrap gap-1">
+                            {selectedPlanet.specialFeatures.map((feat) => (
+                              <Badge key={feat} variant="outline" className="text-[10px] bg-amber-50 text-amber-700 border-amber-200 capitalize">
+                                {feat.replace(/_/g, ' ')}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
 
                       {/* Resources */}
                       {selectedPlanet.resources && selectedPlanet.resources.length > 0 && (
@@ -671,6 +841,34 @@ export default function Galaxy() {
                                 <span className="text-slate-500">Size:</span>{" "}
                                 <span className="font-medium capitalize">{selectedPlanet.moonDetails.size}</span>
                               </div>
+                              <div>
+                                <span className="text-slate-500">Diameter:</span>{" "}
+                                <span className="font-medium">{selectedPlanet.moonDetails.diameter?.toLocaleString()} km</span>
+                              </div>
+                              <div>
+                                <span className="text-slate-500">Gravity:</span>{" "}
+                                <span className="font-medium">{selectedPlanet.moonDetails.gravity}g</span>
+                              </div>
+                              <div className="col-span-2">
+                                <span className="text-slate-500">Atmosphere:</span>{" "}
+                                <span className="font-medium">{selectedPlanet.moonDetails.atmosphere}</span>
+                              </div>
+                              <div className="col-span-2">
+                                <span className="text-slate-500">Temperature:</span>{" "}
+                                <span className="font-medium">{selectedPlanet.moonDetails.temperature}K</span>
+                              </div>
+                              {selectedPlanet.moonDetails.resources && selectedPlanet.moonDetails.resources.length > 0 && (
+                                <div className="col-span-2">
+                                  <span className="text-slate-500">Resources:</span>{" "}
+                                  <span className="font-medium">{selectedPlanet.moonDetails.resources.join(", ")}</span>
+                                </div>
+                              )}
+                              {selectedPlanet.moonDetails.specialFeatures && selectedPlanet.moonDetails.specialFeatures.length > 0 && (
+                                <div className="col-span-2">
+                                  <span className="text-slate-500">Features:</span>{" "}
+                                  <span className="font-medium">{selectedPlanet.moonDetails.specialFeatures.join(", ")}</span>
+                                </div>
+                              )}
                             </div>
                             {selectedPlanet.moonDetails.habitable && (
                               <div className="text-xs bg-green-50 text-green-700 px-2 py-1 rounded border border-green-200">
@@ -711,6 +909,21 @@ export default function Galaxy() {
                               <div className="text-xs text-blue-500 font-bold mt-0.5">[{selectedPlanet.alliance}]</div>
                             )}
                           </div>
+                        </div>
+                      )}
+
+                      {/* NPC Presence */}
+                      {selectedPlanet.npcs && selectedPlanet.npcs.length > 0 && (
+                        <div className="space-y-2">
+                          <h4 className="text-xs font-bold text-slate-600 uppercase tracking-wider">NPC Presence</h4>
+                          {selectedPlanet.npcs.map((npc) => (
+                            <div key={npc.raceId} className={cn("p-3 rounded border", npc.isHostile ? "bg-red-50 border-red-200" : "bg-green-50 border-green-200")}>
+                              <div className="font-medium text-sm">{npc.raceName}</div>
+                              <div className="text-xs text-slate-500 mt-0.5">
+                                {npc.faction} · Fleet: {npc.fleetPower.toLocaleString()} · {npc.diplomaticStance}
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       )}
 

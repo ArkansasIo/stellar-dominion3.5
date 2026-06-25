@@ -90,6 +90,7 @@ const ResearchAnalyticsDashboard = lazy(() => import("@/pages/ResearchAnalyticsD
 const ConfigExplorer = lazy(() => import("@/pages/ConfigExplorer"));
 const PlanetDetail = lazy(() => import("@/pages/PlanetDetail"));
 const PlanetCommand = lazy(() => import("@/pages/PlanetCommand"));
+const Premium = lazy(() => import("@/pages/Premium"));
 const PlanetaryOccupation = lazy(() => import("@/pages/PlanetaryOccupation"));
 const OgameCompendium = lazy(() => import("@/pages/OgameCompendium"));
 const Leaderboard = lazy(() => import("@/pages/Leaderboard"));
@@ -442,6 +443,7 @@ function RouterContent() {
       <Route path="/government-progression" component={GovernmentProgressionPage} />
       <Route path="/planet/:id" component={PlanetDetail} />
       <Route path="/planet-command" component={PlanetCommand} />
+      <Route path="/premium" component={Premium} />
       <Route path="/planet-occupation" component={PlanetaryOccupation} />
       <Route path="/research-lab" component={ResearchLab} />
       <Route path="/knowledge-library" component={KnowledgeLibrary} />

@@ -26,6 +26,7 @@ import {
   resolveCommanderRaidCareer,
   type RaidRole,
 } from "./services/raidOperationsService";
+import { gateTokensService } from "./services/gateTokensService";
 
 // Augment express-session types
 declare module "express-session" {
@@ -332,6 +333,21 @@ export function registerRoutes(app: any) {
       const player = await storage.getPlayerState(userId);
       if (!player) return res.status(404).json({ message: "Player state not found" });
 
+      // Check raid gate token
+      const tokenResult = await gateTokensService.consumeToken(
+        userId,
+        'raid',
+        'raid_entry',
+        { bossId, bossName: boss.name }
+      );
+
+      if (!tokenResult.success) {
+        return res.status(400).json({
+          message: tokenResult.error || "Failed to consume raid token",
+          error: tokenResult.error
+        });
+      }
+
       const currentResources = (player.resources as any) || { metal: 0, crystal: 0, deuterium: 0, energy: 0 };
       const challengeCost = 500;
       if (Number(currentResources.deuterium || 0) < challengeCost) {
@@ -386,6 +402,13 @@ export function registerRoutes(app: any) {
         raidCareer: progression.career,
       } as any);
 
+      // Award token reward on victory
+      const tokenReward = await gateTokensService.awardTokensFromCompletion(
+        userId,
+        'raid',
+        { bossId, bossName: boss.name, victory }
+      );
+
       res.json({
         success: true,
         bossId,
@@ -398,6 +421,10 @@ export function registerRoutes(app: any) {
         casualties: attackerLosses,
         rewards: victory ? progression.rewards : { credits: 0, metal: 0, crystal: 0, experience: progression.rewards.experience },
         raidCareer: progression.career,
+        tokenReward: tokenReward.awarded ? {
+          tokenType: tokenReward.tokenType,
+          quantity: tokenReward.quantity,
+        } : null,
         message: victory ? `${boss.name} defeated` : `${boss.name} repelled the assault`,
       });
     } catch (error: any) {

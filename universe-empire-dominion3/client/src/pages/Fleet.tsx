@@ -12,16 +12,17 @@ import { Slider } from "@/components/ui/slider";
 import {
   Rocket, Swords, Truck, Eye, Globe, Shield, Target, Clock, Zap,
   BarChart3, History, Users, Plus, Save, Download, AlertTriangle,
-  RotateCcw, ChevronDown, ChevronUp, Trophy, Skull, Send, Gauge
+  RotateCcw, ChevronDown, ChevronUp, Trophy, Skull, Send, Gauge, Link2
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { unitData } from "@/lib/unitData";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-type FleetTab = "overview" | "dispatch" | "active" | "templates" | "reports" | "stats";
+type FleetTab = "overview" | "dispatch" | "active" | "templates" | "reports" | "stats" | "acs";
 type MissionType = "attack" | "transport" | "espionage" | "colonize" | "deploy" | "recycle";
+type AcsMissionType = "attack" | "transport" | "defense";
 
 const MISSION_CONFIG: Record<MissionType, { label: string; icon: any; color: string; bg: string }> = {
   attack: { label: "Attack", icon: Swords, color: "text-red-400", bg: "bg-red-500/20 border-red-500/40" },
@@ -64,6 +65,11 @@ export default function Fleet() {
   const [rFilter, setRFilter] = useState<"all" | "victories" | "defeats" | "raids">("all");
   const [customTpls, setCustomTpls] = useState<{ name: string; ships: Record<string, number> }[]>([]);
   const [tplName, setTplName] = useState("");
+  const [acsTgtG, setAcsTgtG] = useState("1"); const [acsTgtS, setAcsTgtS] = useState("1"); const [acsTgtP, setAcsTgtP] = useState("1");
+  const [acsMission, setAcsMission] = useState<AcsMissionType>("attack");
+  const [acsJoinGroupId, setAcsJoinGroupId] = useState("");
+  const [acsJoinSel, setAcsJoinSel] = useState<Record<string, number>>({});
+  const queryClient = useQueryClient();
 
   const sendMut = useMutation({
     mutationFn: async (p: { destination: string; missionType: string; ships: Record<string, number> }) => {
@@ -74,6 +80,58 @@ export default function Fleet() {
     },
     onSuccess: (_, v) => { setSel({}); setTab("active"); toast({ title: "Fleet launched", description: `${v.missionType} dispatched to ${v.destination}.` }); },
     onError: (e: Error) => { toast({ title: "Launch failed", description: e.message, variant: "destructive" }); },
+  });
+
+  const acsGroupsQuery = useQuery({
+    queryKey: ["acs-groups"],
+    queryFn: async () => { const r = await fetch("/api/ogame/acs/my-groups", { credentials: "include" }); if (!r.ok) throw new Error("Failed to fetch ACS groups"); return r.json(); },
+  });
+  const acsCreateMut = useMutation({
+    mutationFn: async (p: { targetCoordinates: string; targetType: string; missionType: string }) => {
+      const r = await fetch("/api/ogame/acs/create", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify(p) });
+      const d = await r.json().catch(() => null);
+      if (!r.ok) throw new Error(d?.error || d?.message || "Failed to create ACS group");
+      return d;
+    },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["acs-groups"] }); toast({ title: "ACS group created" }); },
+    onError: (e: Error) => { toast({ title: "Create failed", description: e.message, variant: "destructive" }); },
+  });
+  const acsLaunchMut = useMutation({
+    mutationFn: async (groupId: string) => {
+      const r = await fetch(`/api/ogame/acs/launch/${groupId}`, { method: "POST", credentials: "include" });
+      if (!r.ok) { const d = await r.json().catch(() => null); throw new Error(d?.error || d?.message || "Failed to launch"); }
+      return r.json();
+    },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["acs-groups"] }); toast({ title: "ACS group launched" }); },
+    onError: (e: Error) => { toast({ title: "Launch failed", description: e.message, variant: "destructive" }); },
+  });
+  const acsCancelMut = useMutation({
+    mutationFn: async (groupId: string) => {
+      const r = await fetch(`/api/ogame/acs/cancel/${groupId}`, { method: "POST", credentials: "include" });
+      if (!r.ok) { const d = await r.json().catch(() => null); throw new Error(d?.error || d?.message || "Failed to cancel"); }
+      return r.json();
+    },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["acs-groups"] }); toast({ title: "ACS group cancelled" }); },
+    onError: (e: Error) => { toast({ title: "Cancel failed", description: e.message, variant: "destructive" }); },
+  });
+  const acsLeaveMut = useMutation({
+    mutationFn: async (groupId: string) => {
+      const r = await fetch(`/api/ogame/acs/leave/${groupId}`, { method: "POST", credentials: "include" });
+      if (!r.ok) { const d = await r.json().catch(() => null); throw new Error(d?.error || d?.message || "Failed to leave"); }
+      return r.json();
+    },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["acs-groups"] }); toast({ title: "Left ACS group" }); },
+    onError: (e: Error) => { toast({ title: "Leave failed", description: e.message, variant: "destructive" }); },
+  });
+  const acsJoinMut = useMutation({
+    mutationFn: async (p: { groupId: string; ships: Record<string, number> }) => {
+      const r = await fetch(`/api/ogame/acs/join/${p.groupId}`, { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ships: p.ships }) });
+      const d = await r.json().catch(() => null);
+      if (!r.ok) throw new Error(d?.error || d?.message || "Failed to join ACS group");
+      return d;
+    },
+    onSuccess: () => { setAcsJoinSel({}); queryClient.invalidateQueries({ queryKey: ["acs-groups"] }); toast({ title: "Joined ACS group" }); },
+    onError: (e: Error) => { toast({ title: "Join failed", description: e.message, variant: "destructive" }); },
   });
 
   const totalCount = useMemo(() => Object.values(units).reduce((a, b) => a + b, 0), [units]);
@@ -95,6 +153,8 @@ export default function Fleet() {
   const saveCustom = () => { const filled = Object.entries(sel).filter(([, c]) => c > 0); if (!filled.length) { toast({ title: "No ships", variant: "destructive" }); return; } const n = tplName.trim() || `Custom ${customTpls.length + 1}`; setCustomTpls((p) => [...p, { name: n, ships: { ...sel } }]); setTplName(""); toast({ title: "Saved", description: n }); };
   const dispatch = () => { const comp: Record<string, number> = {}; let n = 0; Object.entries(sel).forEach(([id, c]) => { if (c > 0) { comp[id] = c; n += c; } }); if (!n) { toast({ title: "No ships selected", variant: "destructive" }); return; } if (mission === "colonize" && !comp["colonist"] && !comp["colonyShip"]) { toast({ title: "Colonist required", variant: "destructive" }); return; } sendMut.mutate({ destination: `${tgtG}:${tgtS}:${tgtP}`, missionType: mission, ships: comp }); };
 
+  const setAcsJoinUnit = (id: string, v: number) => setAcsJoinSel((p) => ({ ...p, [id]: Math.max(0, Math.min(v, units[id] || 0)) }));
+  const setAcsJoinPct = (id: string, pct: number) => setAcsJoinSel((p) => ({ ...p, [id]: Math.floor(((units[id] || 0) * pct) / 100) }));
   const TabBtn = ({ v, icon: Icon, label, badge }: { v: FleetTab; icon: any; label: string; badge?: number }) => (
     <TabsTrigger value={v} className="text-slate-300 data-[state=active]:bg-slate-700 data-[state=active]:text-white">
       <Icon className="w-4 h-4 mr-2" /> {label}{badge ? <Badge className="ml-2 bg-blue-600 text-white h-5">{badge}</Badge> : null}
@@ -143,6 +203,7 @@ export default function Fleet() {
             <TabBtn v="templates" icon={Save} label="Templates" />
             <TabBtn v="reports" icon={History} label="Combat Reports" />
             <TabBtn v="stats" icon={Trophy} label="Fleet Stats" />
+            <TabBtn v="acs" icon={Users} label="ACS" />
           </TabsList>
 
           <TabsContent value="overview" className="mt-6 space-y-6">
@@ -407,6 +468,95 @@ export default function Fleet() {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          <TabsContent value="acs" className="mt-6 space-y-6">
+            <Card className="bg-slate-900 border-slate-700/50">
+              <CardHeader><CardTitle className="text-white flex items-center gap-2"><Users className="w-5 h-5 text-cyan-400" /> Create ACS Group</CardTitle></CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-3 gap-2">
+                  <div><label className="text-xs text-slate-400 uppercase">Galaxy</label><Input value={acsTgtG} onChange={(e) => setAcsTgtG(e.target.value)} className="bg-slate-800 border-slate-700 text-white font-mono" /></div>
+                  <div><label className="text-xs text-slate-400 uppercase">System</label><Input value={acsTgtS} onChange={(e) => setAcsTgtS(e.target.value)} className="bg-slate-800 border-slate-700 text-white font-mono" /></div>
+                  <div><label className="text-xs text-slate-400 uppercase">Position</label><Input value={acsTgtP} onChange={(e) => setAcsTgtP(e.target.value)} className="bg-slate-800 border-slate-700 text-white font-mono" /></div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs text-slate-400 uppercase">Mission Type</label>
+                  <div className="flex gap-2">
+                    {(["attack", "transport", "defense"] as const).map((mt) => (
+                      <Button key={mt} variant="outline" size="sm" className={cn("border-slate-700 capitalize", acsMission === mt ? "bg-slate-700 text-white" : "text-slate-400 hover:text-white")} onClick={() => setAcsMission(mt)}>{mt}</Button>
+                    ))}
+                  </div>
+                </div>
+                <Button className="w-full bg-cyan-600 hover:bg-cyan-700 text-white" disabled={acsCreateMut.isPending} onClick={() => acsCreateMut.mutate({ targetCoordinates: `${acsTgtG}:${acsTgtS}:${acsTgtP}`, targetType: "planet", missionType: acsMission })}>
+                  <Plus className="w-4 h-4 mr-2" /> {acsCreateMut.isPending ? "CREATING..." : "CREATE ACS GROUP"}
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-slate-900 border-slate-700/50">
+              <CardHeader><CardTitle className="text-white flex items-center gap-2"><Users className="w-5 h-5 text-cyan-400" /> My ACS Groups</CardTitle></CardHeader>
+              <CardContent className="space-y-4">
+                {acsGroupsQuery.isLoading ? (
+                  <div className="text-center py-8 text-slate-400">Loading...</div>
+                ) : acsGroupsQuery.data?.length ? (
+                  acsGroupsQuery.data.map((group: any) => (
+                    <div key={group.id} className="bg-slate-800/50 p-4 rounded-lg border border-slate-700/50">
+                      <div className="flex items-center justify-between mb-2">
+                        <div>
+                          <div className="text-white font-medium">Group #{group.id}</div>
+                          <div className="text-xs text-slate-400">Target: [{group.target}] · {group.missionType} · {group.status}</div>
+                          <div className="text-xs text-slate-400">{group.fleetCount || group.fleets?.length || 0} fleets</div>
+                        </div>
+                        <div className="flex gap-2">
+                          {group.isOwner && (
+                            <>
+                              <Button variant="outline" size="sm" className="border-green-500/50 text-green-400 hover:bg-green-500/10" onClick={() => acsLaunchMut.mutate(group.id)} disabled={acsLaunchMut.isPending}>Launch</Button>
+                              <Button variant="outline" size="sm" className="border-red-500/50 text-red-400 hover:bg-red-500/10" onClick={() => acsCancelMut.mutate(group.id)} disabled={acsCancelMut.isPending}>Cancel</Button>
+                            </>
+                          )}
+                          {!group.isOwner && (
+                            <Button variant="outline" size="sm" className="border-yellow-500/50 text-yellow-400 hover:bg-yellow-500/10" onClick={() => acsLeaveMut.mutate(group.id)} disabled={acsLeaveMut.isPending}>Leave</Button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-8 text-slate-500">No ACS groups</div>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card className="bg-slate-900 border-slate-700/50">
+              <CardHeader><CardTitle className="text-white flex items-center gap-2"><Link2 className="w-5 h-5 text-cyan-400" /> Join ACS Group</CardTitle></CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <label className="text-xs text-slate-400 uppercase">Group ID</label>
+                  <Input value={acsJoinGroupId} onChange={(e) => setAcsJoinGroupId(e.target.value)} className="bg-slate-800 border-slate-700 text-white font-mono" placeholder="Enter group ID..." />
+                </div>
+                <div>
+                  <label className="text-xs text-slate-400 uppercase mb-2 block">Select Units</label>
+                  <ScrollArea className="h-[200px]">
+                    <div className="space-y-3">
+                      {Object.entries(units).map(([id, count]) => { if (!count) return null; const u = unitGet(id); if (!u) return null; const s = acsJoinSel[id] || 0; return (
+                        <div key={id} className="bg-slate-800/50 p-3 rounded-lg border border-slate-700/50">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="text-white font-medium text-sm">{u.name}</div>
+                            <div className="text-right text-xs text-slate-400">{count.toLocaleString()} avail</div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Slider value={[s]} max={count} step={1} onValueChange={(v) => setAcsJoinUnit(id, v[0])} className="flex-1" />
+                            <div className="flex gap-1">{[25, 50, 75, 100].map((p) => <Button key={p} variant="ghost" size="sm" className="h-6 px-2 text-xs text-slate-400 hover:text-white" onClick={() => setAcsJoinPct(id, p)}>{p}%</Button>)}</div>
+                          </div>
+                        </div>); })}
+                    </div>
+                  </ScrollArea>
+                </div>
+                <Button className="w-full bg-cyan-600 hover:bg-cyan-700 text-white" disabled={!acsJoinGroupId || acsJoinMut.isPending} onClick={() => acsJoinMut.mutate({ groupId: acsJoinGroupId, ships: Object.fromEntries(Object.entries(acsJoinSel).filter(([, c]) => c > 0)) })}>
+                  <Users className="w-4 h-4 mr-2" /> {acsJoinMut.isPending ? "JOINING..." : "JOIN GROUP"}
+                </Button>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>

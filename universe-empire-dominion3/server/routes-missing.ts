@@ -27,6 +27,7 @@ import {
   setRaidSpecialization,
   type RaidRole,
 } from "./services/raidOperationsService";
+import { gateTokensService } from "./services/gateTokensService";
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
@@ -774,6 +775,20 @@ export function registerMissingRoutes(app: Express) {
     if (!gateId || !action) return res.status(400).json({ error: "gateId and action are required" });
 
     try {
+      // Consume exploration gate token
+      const tokenResult = await gateTokensService.consumeToken(
+        userId,
+        'exploration',
+        'exploration_entry',
+        { gateId, gateName, action }
+      );
+
+      if (!tokenResult.success) {
+        return res.status(400).json({
+          error: tokenResult.error || "Failed to consume exploration token",
+        });
+      }
+
       const playerState = await requirePlayerState(userId);
       const currentResources = normalizeResources(playerState.resources);
       if (energyCost > 0 && currentResources.deuterium < energyCost) {
