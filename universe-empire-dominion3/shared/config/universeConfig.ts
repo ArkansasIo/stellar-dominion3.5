@@ -9,7 +9,7 @@ export const UNIVERSE_CONFIG = {
     sectorsPerGalaxy: 64,
     systemsPerSector: 128,
     minPlanetsPerSystem: 15,
-    maxPlanetsPerSystem: 45,
+    maxPlanetsPerSystem: 50,
     minMoonsPerPlanet: 0,
     maxMoonsPerPlanet: 82,
     asteroidBeltChance: 0.3,

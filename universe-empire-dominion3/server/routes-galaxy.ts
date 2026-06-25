@@ -91,7 +91,7 @@ type ScanReport = {
 // ---------------------------------------------------------------------------
 
 /** Maximum orbital positions displayed in a system (matches the client table). */
-const MAX_SYSTEM_POSITIONS = 45;
+const MAX_SYSTEM_POSITIONS = 50;
 
 /** FNV-1a 32-bit hash of an arbitrary string. */
 function fnv1a(str: string): number {
@@ -264,8 +264,8 @@ function generateSystem(
   const starName = generateName(fnv1a(`${baseKey}:star-name`));
   const systemName = generateName(fnv1a(`${baseKey}:sys-name`));
 
-  // Planet count: 15-45 planets per system
-  const planetCount = Math.floor(seededAt(sysHash, 1) * 31) + 15;
+  // Planet count: 15-50 planets per system
+  const planetCount = Math.floor(seededAt(sysHash, 1) * 36) + 15;
 
   const positions: SystemPosition[] = [];
 
@@ -564,6 +564,7 @@ export function registerGalaxyRoutes(app: Express) {
             const owner = usernameMap[player.userId] || `Player-${player.userId.slice(0, 6)}`;
             const alliance = allianceMap[player.userId];
             const entry: SystemPosition = {
+              ...(existingPos || {}),
               position: pos,
               type: "planet",
               name: player.planetName || `${owner}'s World`,
@@ -571,7 +572,7 @@ export function registerGalaxyRoutes(app: Express) {
               alliance,
               moon: existingPos?.moon,
               class: existingPos?.class || "M",
-            };
+            } as SystemPosition;
             const idx = positions.findIndex((p) => p.position === pos);
             if (idx >= 0) {
               positions[idx] = entry;

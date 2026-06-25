@@ -326,7 +326,7 @@ export default function Galaxy() {
             <img src="/assets/planets/gas_giant.png" alt="Planet" className="w-20 h-20 rounded-full object-cover ring-2 ring-cyan-400/50 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
             <div>
               <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow">Galaxy View</h2>
-              <p className="text-cyan-300 font-rajdhani text-lg">Explore star systems with up to 45 orbital positions. Click any planet for a detailed overview.</p>
+              <p className="text-cyan-300 font-rajdhani text-lg">Explore star systems with up to 50 orbital positions. Click any planet for a detailed overview.</p>
             </div>
           </div>
         </div>
