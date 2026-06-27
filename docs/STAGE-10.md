@@ -1,9 +1,24 @@
 # Stage 10: Game Loop, AI, and Events
 
-This stage scaffolds the main game loop, AI logic, and event system for periodic updates and dynamic gameplay.
+Main game loop, AI systems, and event mechanics.
 
-- Backend: Game loop tick, AI actions, event triggers
-- API endpoints for triggering or querying events
-- Frontend: GameLoop and EventLog components
+## Backend
 
-This completes the staged scaffolding for a full MMO game foundation.
+- Game loop tick processing
+- Turn system
+- Event triggers and live operations
+
+> **Source:** server/services/turnSystemService.ts
+> **Source:** server/routes-turnsystem.ts
+> **Source:** server/routes-liveops.ts
+> **Source:** server/routes-gameactions.ts
+
+## Frontend
+
+- Game loop status
+- Event log
+- Real-time updates
+
+## Completion
+
+This stage completes the staged scaffolding for the full MMO game foundation.

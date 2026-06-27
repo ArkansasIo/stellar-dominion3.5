@@ -141,6 +141,24 @@ export const playerStates = pgTable("player_states", {
   currentTurns: integer("current_turns").notNull().default(0),
   lastTurnUpdate: timestamp("last_turn_update").defaultNow(),
   
+  // OGame-specific fields
+  missileSilo: jsonb("missile_silo").notNull().default({ level: 0, abms: 0, ipms: 0 }),
+  moonsData: jsonb("moons_data").notNull().default({}),
+  deathstar: jsonb("deathstar").notNull().default({ count: 0 }),
+  terraformer: jsonb("terraformer").notNull().default({ level: 0 }),
+  activeOfficers: jsonb("active_officers").notNull().default({}),
+  intergalacticResearchNetwork: jsonb("intergalactic_research_network").notNull().default({ level: 0 }),
+  gravitonTech: jsonb("graviton_tech").notNull().default({ level: 0 }),
+  gravitonProjects: jsonb("graviton_projects").notNull().default([]),
+  allianceDepot: jsonb("alliance_depot").notNull().default({ level: 0 }),
+  
+  // Occupation system
+  occupations: jsonb("occupations").notNull().default([]),
+  occupying: jsonb("occupying").notNull().default([]),
+
+  // Ship fittings - fitted modules per ship
+  shipFittings: jsonb("ship_fittings").notNull().default({}),
+
   // Last resource update timestamp
   lastResourceUpdate: timestamp("last_resource_update").defaultNow(),
   
@@ -2018,3 +2036,313 @@ export const ogameCatalogEntries = pgTable("ogame_catalog_entries", {
 export type OgameCatalogEntry = typeof ogameCatalogEntries.$inferSelect;
 export const insertOgameCatalogEntrySchema = createInsertSchema(ogameCatalogEntries).omit({ createdAt: true, updatedAt: true });
 export type InsertOgameCatalogEntry = z.infer<typeof insertOgameCatalogEntrySchema>;
+
+// Moons - OGame moon system
+export const moons = pgTable("moons", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: varchar("name").notNull(),
+  planetId: varchar("planet_id"),
+  size: integer("size").default(5000),
+  temperature: integer("temperature").default(0),
+  coordinates: varchar("coordinates"),
+  ownerId: varchar("owner_id").references(() => users.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type Moon = typeof moons.$inferSelect;
+
+// Dimensional Anomalies
+export const dimensionalAnomalies = pgTable("dimensional_anomalies", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  anomalyId: varchar("anomaly_id").notNull(),
+  name: varchar("name"),
+  type: varchar("type"),
+  location: varchar("location"),
+  discovered: boolean("discovered").default(false),
+  explored: boolean("explored").default(false),
+  data: jsonb("data").default({}),
+  cooldownUntil: timestamp("cooldown_until"),
+  explorationCount: integer("exploration_count").default(0),
+  totalRewardsEarned: jsonb("total_rewards_earned").default({}),
+  lastExploredAt: timestamp("last_explored_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type DimensionalAnomaly = typeof dimensionalAnomalies.$inferSelect;
+
+// Dimensional Contracts
+export const dimensionalContracts = pgTable("dimensional_contracts", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  contractTier: integer("contract_tier").notNull(),
+  tokensEarned: integer("tokens_earned").default(0),
+  tokensSpent: integer("tokens_spent").default(0),
+  raidsCompleted: integer("raids_completed").default(0),
+  chestsOpened: integer("chests_opened").default(0),
+  lastRaidAt: timestamp("last_raid_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type DimensionalContract = typeof dimensionalContracts.$inferSelect;
+
+// Abyssal Gate Tokens
+export const abyssalGateTokens = pgTable("abyssal_gate_tokens", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  gateTier: integer("gate_tier").notNull(),
+  tokensEarned: integer("tokens_earned").default(0),
+  tokensSpent: integer("tokens_spent").default(0),
+  gatesCompleted: integer("gates_completed").default(0),
+  chestsOpened: integer("chests_opened").default(0),
+  lastGateAt: timestamp("last_gate_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type AbyssalGateToken = typeof abyssalGateTokens.$inferSelect;
+
+// Raid Chest Rewards
+export const raidChestRewards = pgTable("raid_chest_rewards", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  contractType: varchar("contract_type"),
+  contractTier: integer("contract_tier"),
+  tokensSpent: integer("tokens_spent"),
+  rewardsGranted: jsonb("rewards_granted").default([]),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type RaidChestReward = typeof raidChestRewards.$inferSelect;
+
+// Abyssal Gate Rewards
+export const abyssalGateRewards = pgTable("abyssal_gate_rewards", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  gateTier: integer("gate_tier"),
+  tokensSpent: integer("tokens_spent"),
+  rewardsGranted: jsonb("rewards_granted").default([]),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type AbyssalGateReward = typeof abyssalGateRewards.$inferSelect;
+
+// Gate Tokens
+export const gateTokens = pgTable("gate_tokens", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  tokenType: varchar("token_type").notNull(),
+  quantity: integer("quantity").default(0),
+  lastUpdated: timestamp("last_updated").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type GateToken = typeof gateTokens.$inferSelect;
+
+// Gate Token History
+export const gateTokenHistory = pgTable("gate_token_history", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  tokenType: varchar("token_type").notNull(),
+  action: varchar("action").notNull(),
+  quantity: integer("quantity").default(0),
+  source: varchar("source"),
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type GateTokenHistoryEntry = typeof gateTokenHistory.$inferSelect;
+
+// Player Power Levels
+export const playerPowerLevels = pgTable("player_power_levels", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  totalPower: integer("total_power").default(0),
+  powerTier: varchar("power_tier"),
+  attackPower: integer("attack_power").default(0),
+  defensePower: integer("defense_power").default(0),
+  researchPower: integer("research_power").default(0),
+  buildingPower: integer("building_power").default(0),
+  lastCalculatedAt: timestamp("last_calculated_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type PlayerPowerLevel = typeof playerPowerLevels.$inferSelect;
+
+// Item Levels
+export const itemLevels = pgTable("item_levels", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  itemId: varchar("item_id").notNull(),
+  itemName: varchar("item_name").notNull(),
+  itemType: varchar("item_type").notNull(),
+  itemClass: varchar("item_class").default("common"),
+  baseRank: integer("base_rank").default(1),
+  currentLevel: integer("current_level").default(1),
+  currentExperience: integer("current_experience").default(0),
+  experienceToNext: integer("experience_to_next").default(100),
+  upgradeCount: integer("upgrade_count").default(0),
+  lastUpgradeAt: timestamp("last_upgrade_at"),
+  upgradeHistory: jsonb("upgrade_history").default([]),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type ItemLevel = typeof itemLevels.$inferSelect;
+
+// Empire Profiles
+export const empireProfiles = pgTable("empire_profiles", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().unique().references(() => users.id, { onDelete: "cascade" }),
+  empireName: varchar("empire_name"),
+  empireTitle: varchar("empire_title"),
+  profileData: jsonb("profile_data").default({}),
+  attributePoints: jsonb("attribute_points").default({}),
+  availablePoints: integer("available_points").default(0),
+  totalPointsEarned: integer("total_points_earned").default(0),
+  powerRating: integer("power_rating").default(0),
+  military: integer("military").default(1),
+  economy: integer("economy").default(1),
+  research: integer("research").default(1),
+  industry: integer("industry").default(1),
+  diplomacy: integer("diplomacy").default(1),
+  espionage: integer("espionage").default(1),
+  exploration: integer("exploration").default(1),
+  governance: integer("governance").default(1),
+  innovation: integer("innovation").default(1),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type EmpireProfile = typeof empireProfiles.$inferSelect;
+
+// Player Refineries
+export const playerRefineries = pgTable("player_refineries", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  refineryType: varchar("refinery_type").notNull(),
+  level: integer("level").default(1),
+  efficiency: real("efficiency").default(1.0),
+  throughput: integer("throughput").default(100),
+  isActive: boolean("is_active").default(false),
+  activeRecipe: varchar("active_recipe"),
+  totalProcessed: integer("total_processed").default(0),
+  lastCollectedAt: timestamp("last_collected_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type PlayerRefinery = typeof playerRefineries.$inferSelect;
+
+// Provider Connections - external service integrations
+export const providerConnections = pgTable("provider_connections", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  provider: varchar("provider").notNull(),
+  label: varchar("label").notNull(),
+  status: varchar("status").default("active"),
+  accessToken: varchar("access_token"),
+  metadata: jsonb("metadata").default({}),
+  lastUsedAt: timestamp("last_used_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type ProviderConnection = typeof providerConnections.$inferSelect;
+
+// Espionage Scans
+export const espionageScans = pgTable("espionage_scans", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  playerId: varchar("player_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  targetId: varchar("target_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  scanType: varchar("scan_type").notNull(),
+  success: boolean("success").default(false),
+  detected: boolean("detected").default(false),
+  scanData: jsonb("scan_data").default({}),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type EspionageScan = typeof espionageScans.$inferSelect;
+
+// Planet Vault Items
+export const planetVaultItems = pgTable("planet_vault_items", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  planetId: varchar("planet_id"),
+  vaultType: varchar("vault_type").default("resource"),
+  itemType: varchar("item_type").notNull(),
+  itemName: varchar("item_name").notNull(),
+  quantity: integer("quantity").default(1),
+  rarity: varchar("rarity").default("common"),
+  metadata: jsonb("metadata").default({}),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type PlanetVaultItem = typeof planetVaultItems.$inferSelect;
+
+// Scan Cooldowns
+export const scanCooldowns = pgTable("scan_cooldowns", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  scanType: varchar("scan_type").notNull(),
+  targetId: varchar("target_id"),
+  targetCoordinates: varchar("target_coordinates"),
+  result: jsonb("result").default({}),
+  cooldownUntil: timestamp("cooldown_until").notNull(),
+  scansRemaining: integer("scans_remaining").default(0),
+  maxScans: integer("max_scans").default(1),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type ScanCooldown = typeof scanCooldowns.$inferSelect;
+
+// Weekly Mission Progress
+export const weeklyMissionProgress = pgTable("weekly_mission_progress", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  weekId: varchar("week_id").notNull(),
+  missions: jsonb("missions").default([]),
+  bonusPool: integer("bonus_pool").default(0),
+  completedCount: integer("completed_count").default(0),
+  totalCount: integer("total_count").default(0),
+  streak: integer("streak").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type WeeklyMissionProgress = typeof weeklyMissionProgress.$inferSelect;
+
+// XP History
+export const xpHistory = pgTable("xp_history", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  amount: integer("amount").notNull(),
+  source: varchar("source").notNull(),
+  category: varchar("category"),
+  page: varchar("page"),
+  subPage: varchar("sub_page"),
+  action: varchar("action"),
+  label: varchar("label"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type XpHistory = typeof xpHistory.$inferSelect;
+
+// Bounties
+export const bounties = pgTable("bounties", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  placerId: varchar("placer_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  targetId: varchar("target_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  amount: integer("amount").notNull().default(0),
+  active: boolean("active").notNull().default(true),
+  claimedBy: varchar("claimed_by"),
+  claimedAt: timestamp("claimed_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type Bounty = typeof bounties.$inferSelect;

@@ -320,8 +320,8 @@ export function registerSporeDriveRoutes(app: Express) {
         };
         drive.status.currentCooldown = drive.stats.jumpCooldown;
         
-        jump.status = 'completed';
-        jump.completedAt = Date.now();
+        (jump as any).status = 'completed';
+        (jump as any).completedAt = Date.now();
         
         drive.details.totalJumps += 1;
         drive.details.totalDistanceTraveled += jumpMetrics.distance;
@@ -478,7 +478,7 @@ export function registerSporeDriveRoutes(app: Express) {
 
       // Recalculate stats
       const typeConfig = SPORE_DRIVE_TYPES[drive.class];
-      drive.stats = calculateSporeDriveStats(typeConfig.baseSubStats, drive.tier, drive.level);
+      drive.stats = calculateSporeDriveStats(typeConfig.baseSubStats as any, drive.tier, drive.level);
       drive.subStats = calculateSporeDriveSubStats(typeConfig.baseSubStats, drive.tier, drive.level);
       drive.attributes = calculateSporeDriveAttributes(typeConfig.baseAttributes, drive.tier, drive.level);
       drive.details = generateSporeDriveDetails(drive.name, drive.tier, drive.level);
@@ -518,7 +518,7 @@ export function registerSporeDriveRoutes(app: Express) {
         level: level || 1,
         class: driveType as SporeDrive['class'],
         rarity: calculateSporeDriveRarity(driveType, tier || 1, typeConfig.specialProperties),
-        stats: calculateSporeDriveStats(typeConfig.baseSubStats, tier || 1, level || 1),
+        stats: calculateSporeDriveStats(typeConfig.baseSubStats as any, tier || 1, level || 1),
         subStats: calculateSporeDriveSubStats(typeConfig.baseSubStats, tier || 1, level || 1),
         attributes: calculateSporeDriveAttributes(typeConfig.baseAttributes, tier || 1, level || 1),
         details: generateSporeDriveDetails(`${typeConfig.name} ${driveId.slice(-6).toUpperCase()}`, tier || 1, level || 1),

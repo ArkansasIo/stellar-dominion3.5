@@ -1,6 +1,8 @@
 # Stage 2: Core Data Models & Types
 
-This stage defines the main data models/entities for the game, shared between backend and frontend.
+Main data models and TypeScript interfaces shared between backend and frontend.
+
+## Core Models
 
 - Player
 - Ship
@@ -12,6 +14,18 @@ This stage defines the main data models/entities for the game, shared between ba
 - Alliance
 - Session
 
-Each model should have a TypeScript interface (in shared/types.ts) and a backend model (e.g., Python class or TypeScript class).
+## Schema Definition
 
-Next: Stage 3 will implement player management features.
+> **Source:** shared/schema.ts
+
+Drizzle ORM schema defines all database tables with TypeScript types.
+
+## Configuration
+
+> **Source:** shared/config/
+
+Game configuration files define technology trees, item definitions, and admin settings.
+
+## Next Stage
+
+Stage 3: Player Management

@@ -74,6 +74,7 @@ export default function Fitting() {
   const [selectedShip, setSelectedShip] = useState<string>("");
   const [shipFitting, setShipFitting] = useState<ShipFitting | null>(null);
   const [loading, setLoading] = useState(false);
+  const [backendAvailable, setBackendAvailable] = useState(true);
 
   useEffect(() => {
     loadModules();
@@ -83,8 +84,11 @@ export default function Fitting() {
     try {
       const response = await apiCall("/api/fitting/modules");
       setModules(response);
+      setBackendAvailable(true);
     } catch (error) {
       console.error("Failed to load modules:", error);
+      setBackendAvailable(false);
+      setModules(getLocalModules());
     }
   };
 
@@ -94,8 +98,10 @@ export default function Fitting() {
     try {
       const response = await apiCall(`/api/fitting/ship/${shipId}`);
       setShipFitting(response);
+      setBackendAvailable(true);
     } catch (error) {
       console.error("Failed to load ship fitting:", error);
+      setShipFitting(getDefaultFitting(shipId));
     } finally {
       setLoading(false);
     }
@@ -321,4 +327,38 @@ export default function Fitting() {
       </div>
     </GameLayout>
   );
+}
+
+function getLocalModules(): { [key: string]: Module } {
+  return {};
+}
+
+function getDefaultFitting(shipId: string): ShipFitting {
+  const defaultSlots: Record<string, { high: number; mid: number; low: number; rig: number }> = {
+    sf_002: { high: 3, mid: 2, low: 2, rig: 2 },
+    cr_001: { high: 5, mid: 4, low: 4, rig: 3 },
+    bs_001: { high: 8, mid: 6, low: 6, rig: 4 },
+  };
+  const defaultNames: Record<string, string> = {
+    sf_002: "Hornet Strike Fighter",
+    cr_001: "Viper Cruiser",
+    bs_001: "Titan Battleship",
+  };
+  const defaultCpu: Record<string, number> = {
+    sf_002: 150, cr_001: 350, bs_001: 700,
+  };
+  const defaultPg: Record<string, number> = {
+    sf_002: 40, cr_001: 200, bs_001: 800,
+  };
+  const slots = defaultSlots[shipId] || { high: 3, mid: 2, low: 2, rig: 2 };
+  return {
+    shipId,
+    name: defaultNames[shipId] || shipId,
+    size: shipId === "sf_002" ? "small" : shipId === "cr_001" ? "medium" : "large",
+    slots,
+    cpu: { total: defaultCpu[shipId] || 200, used: 0 },
+    powergrid: { total: defaultPg[shipId] || 100, used: 0 },
+    calibration: { total: 100, used: 0 },
+    fitted_modules: {},
+  };
 }

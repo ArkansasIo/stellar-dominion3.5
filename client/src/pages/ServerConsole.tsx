@@ -52,7 +52,7 @@ function buildBootLines(m: Metrics): TLine[] {
   const disk = fmtNum(s?.disk.usage);
 
   const checks = h?.checks || {};
-  const checkLines = Object.entries(checks).map(([k, v]) =>
+  const checkLines = Object.entries(checks).map(([k, v]: [string, any]) =>
     mkLine(`  * ${k.padEnd(12)}: ${v.status === "ok" ? "OK" : v.status?.toUpperCase() ?? "?"} (${Math.round(v.value)}/${Math.round(v.threshold)})`,
       v.status === "ok" ? "text-green-400" : "text-yellow-400")
   );
@@ -767,7 +767,7 @@ export default function ServerConsole() {
               {sidebarItems.map((item) => (
                 <button
                   key={item.key}
-                  onClick={() => { if (phase !== "boot" && phase !== "login") goPage(item.page as Phase); }}
+                  onClick={() => goPage(item.page as Phase)}
                   className={`text-left px-2 py-1 rounded text-xs flex items-center gap-1.5 ${phase === item.page ? "bg-green-900/40 text-green-300 font-bold" : "text-green-800 hover:text-green-400 hover:bg-green-900/20"}`}
                 >
                   <span>{item.icon}</span>

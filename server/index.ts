@@ -1,5 +1,6 @@
 import "./loadEnv";
 import express, { type Request, Response, NextFunction } from "express";
+import rateLimit from "express-rate-limit";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
@@ -24,6 +25,39 @@ import { registerDatabaseAdminRoutes } from "./routes-database-admin";
 import { registerCoreApiRoutes } from "./routes-api-core";
 import { ServerStatusService } from "./services/serverStatusService";
 import { registerGameAssetLibraryRoutes } from "./routes-game-asset-library";
+import { registerStarbaseRoutes } from "./routes-starbase";
+import { registerEmpireProfileRoutes } from "./routes-empire-profile";
+import { registerDimensionalAnomalyRoutes } from "./routes-dimensional-anomalies";
+import { registerDimensionalAbyssalRoutes } from "./routes-dimensional-abyssal";
+import { registerResourceRefineryRoutes } from "./routes-resource-refineries";
+import { registerCronRoutes } from "./routes-cron";
+import { registerBlueprintChargeRoutes } from "./routes-blueprint-charges";
+import { registerMissingApiRoutes } from "./routes-missing-api";
+import { UpdateManager } from "./update-manager";
+import { registerNewsRoutes } from "./routes-news";
+import { registerAdminConsoleRoutes } from "./routes-admin-console";
+import { registerFittingRoutes } from "./routes-fitting";
+import { registerOGameDebrisRoutes } from "./routes-ogame-debris";
+import { registerOGameACSRoutes } from "./routes-ogame-acs";
+import { registerOGamePhalanxRoutes } from "./routes-ogame-phalanx";
+import { registerOGameJumpGateRoutes } from "./routes-ogame-jumpgate";
+import { registerOGameFleetRoutes } from "./routes-ogame-fleet";
+import { registerOGameOutlawRoutes } from "./routes-ogame-outlaw";
+import { registerOGameVacationRoutes } from "./routes-ogame-vacation";
+import { registerOGameExpeditionRoutes } from "./routes-ogame-expedition";
+import { registerOGameOfficerRoutes } from "./routes-ogame-officers";
+import { registerOGameMoonFacilityRoutes } from "./routes-ogame-moon-facilities";
+import { registerOGameMissileRoutes } from "./routes-ogame-missile";
+import { registerOGameMoonDestructionRoutes } from "./routes-ogame-moon-destruction";
+import { registerOGameResearchNetworkRoutes } from "./routes-ogame-research-network";
+import { registerOGameTerraformerRoutes } from "./routes-ogame-terraformer";
+import { registerOGameOccupationRoutes } from "./routes-ogame-occupation";
+import { registerOGameAllianceDepotRoutes } from "./routes-ogame-alliance-depot";
+import { registerOGameGravitonRoutes } from "./routes-ogame-graviton";
+import { registerOGamePushProtectionRoutes } from "./routes-ogame-push-protection";
+import connectProviderRouter from "./routes-connect-provider";
+import universeScanRouter from "./routes-universe-scan";
+import planetVaultRouter from "./routes-planet-vault";
 
 const runtimeNodeEnv = process.env.NODE_ENV ?? "production";
 
@@ -46,6 +80,26 @@ app.use(
 );
 
 app.use(express.urlencoded({ extended: false }));
+
+const apiLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 120,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Too many requests, please try again later" },
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Too many auth attempts, please try again later" },
+});
+
+app.use("/api/auth", authLimiter);
+app.use("/api/admin", authLimiter);
+app.use("/api", apiLimiter);
 
 export function log(message: string, source = "express", level: "info" | "success" | "error" | "warn" = "info") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
@@ -181,6 +235,7 @@ import { registerUnitTaxonomyRoutes } from "./routes-unit-taxonomy";
 import { registerConstructorYardRoutes } from "./routes-constructor-yard";
 import turnSystemRoutes from "./routes-turnsystem";
 import researchXPRoutes from "./routes-researchxp";
+import playerXpRoutes from "./routes-player-xp";
 import recommendationsRoutes from "./routes-recommendations";
 import multiplayerBonusesRoutes from "./routes-multiplayerbonuses";
 import customLabRoutes from "./routes-customlabs";
@@ -197,6 +252,10 @@ import { seedOgameCatalogIfNeeded } from "./services/ogameCatalogService";
 import { registerPhpMyAdminRoutes } from "./routes-phpmyadmin";
 import { registerMoonRoutes } from "./routes-moons";
 import { registerSporeDriveRoutes } from "./routes-spore-drive";
+import { registerWeeklyMissionRoutes } from "./routes-weekly-missions";
+import { registerGateTokenRoutes } from "./routes-gate-tokens";
+import { registerOGameCombatRoutes } from "./routes-ogame-combat";
+import seasonRoutes from "./routes-season";
 import { db, pool } from "./db";
 import { adminUsers, users } from "../shared/schema";
 import { eq, ilike, or } from "drizzle-orm";
@@ -271,6 +330,48 @@ import { eq, ilike, or } from "drizzle-orm";
   registerGameAssetLibraryRoutes(app);
   registerMoonRoutes(app);
   registerSporeDriveRoutes(app);
+  registerStarbaseRoutes(app);
+  registerEmpireProfileRoutes(app);
+  registerDimensionalAnomalyRoutes(app);
+  registerDimensionalAbyssalRoutes(app);
+  registerResourceRefineryRoutes(app);
+  registerCronRoutes(app);
+  registerBlueprintChargeRoutes(app);
+  registerMissingApiRoutes(app);
+  registerWeeklyMissionRoutes(app);
+  registerGateTokenRoutes(app);
+  registerNewsRoutes(app);
+  registerAdminConsoleRoutes(app);
+  registerFittingRoutes(app);
+  try {
+    const updateManager = UpdateManager.getInstance();
+    updateManager.setupRoutes(app);
+  } catch (e) {
+    log(`UpdateManager skipped: ${(e as Error).message}`, "startup", "warn");
+  }
+  registerOGameCombatRoutes(app);
+  registerOGameDebrisRoutes(app);
+  registerOGameACSRoutes(app);
+  registerOGamePhalanxRoutes(app);
+  registerOGameJumpGateRoutes(app);
+  registerOGameFleetRoutes(app);
+  registerOGameOutlawRoutes(app);
+  registerOGameVacationRoutes(app);
+  registerOGameExpeditionRoutes(app);
+  registerOGameOfficerRoutes(app);
+  registerOGameMoonFacilityRoutes(app);
+  registerOGameMissileRoutes(app);
+  registerOGameMoonDestructionRoutes(app);
+  registerOGameResearchNetworkRoutes(app);
+  registerOGameTerraformerRoutes(app);
+  registerOGameOccupationRoutes(app);
+  registerOGameAllianceDepotRoutes(app);
+  registerOGameGravitonRoutes(app);
+  registerOGamePushProtectionRoutes(app);
+  app.use(connectProviderRouter);
+  app.use(universeScanRouter);
+  app.use(planetVaultRouter);
+  app.use('/api/season', seasonRoutes);
   const viewerRoot = path.resolve(process.cwd(), "threejs_galaxy_viewer_project");
   app.get("/api/viewer/status", (_req, res) => {
     res.json({
@@ -283,6 +384,7 @@ import { eq, ilike, or } from "drizzle-orm";
   app.use("/viewer-3d", express.static(viewerRoot));
   app.use(turnSystemRoutes);
   app.use(researchXPRoutes);
+  app.use(playerXpRoutes);
   app.use(recommendationsRoutes);
   app.use('/api/alliances', multiplayerBonusesRoutes);
   app.use('/api/labs', customLabRoutes);
@@ -296,13 +398,27 @@ import { eq, ilike, or } from "drizzle-orm";
   app.use(tradesRoutes);
   app.use(worldActionsRoutes);
 
+  // Start cron jobs
+  try {
+    const { shutdownAllCronJobs } = await import("./services/cronService");
+    const { registerAllGameJobs } = await import("./services/gameJobs");
+    await registerAllGameJobs();
+    log("Cron job system initialized", "startup", "success");
+    process.on("SIGTERM", async () => { shutdownAllCronJobs(); const { shutdownDb } = await import("./db"); await shutdownDb(); process.exit(0); });
+    process.on("SIGINT", async () => { shutdownAllCronJobs(); const { shutdownDb } = await import("./db"); await shutdownDb(); process.exit(0); });
+  } catch (error) {
+    log(`Cron job init skipped: ${(error as Error).message}`, "startup", "warn");
+  }
+
   // Error handling middleware
-  app.use((err: any, req: any, res: any, next: any) => {
+  app.use((err: any, req: any, res: any, _next: any) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
 
     if (!res.headersSent) {
       res.status(status).json({ message });
+    } else {
+      log(`Error after headers sent: ${message}`, "server", "error");
     }
   });
 

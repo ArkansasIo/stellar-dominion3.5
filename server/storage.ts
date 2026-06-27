@@ -153,7 +153,19 @@ import {
   type InsertItem,
   type PlayerItem,
   type InsertPlayerItem,
-  adminUsers
+  adminUsers,
+  providerConnections,
+  espionageScans,
+  planetVaultItems,
+  scanCooldowns,
+  type ProviderConnection,
+  type EspionageScan,
+  type PlanetVaultItem,
+  type ScanCooldown,
+  weeklyMissionProgress,
+  type WeeklyMissionProgress,
+  xpHistory,
+  type XpHistory
 } from "@shared/schema";
 import { db } from "./db/index";
 import { eq, and, or, desc, asc, sql, inArray } from "drizzle-orm";
@@ -447,6 +459,37 @@ export interface IStorage {
   cancelTradeOffer(tradeId: string, senderId: string): Promise<{ success: boolean; error?: string }>;
   counterTradeOffer(originalTradeId: string, counterOffer: InsertTradeOffer): Promise<{ success: boolean; trade?: TradeOffer; error?: string }>;
   getTradeHistory(userId: string): Promise<TradeHistory[]>;
+
+  // Provider Connection operations
+  getProviderConnections(userId: string): Promise<ProviderConnection[]>;
+  createProviderConnection(data: any): Promise<ProviderConnection>;
+  updateProviderConnection(id: string, data: any): Promise<ProviderConnection>;
+  deleteProviderConnection(id: string): Promise<void>;
+
+  // Espionage scan operations
+  getLastScanTime(userId: string): Promise<number>;
+  createEspionageScan(data: any): Promise<EspionageScan>;
+
+  // Planet vault operations
+  getPlanetVaultItems(userId: string, planetId?: string, vaultType?: string): Promise<PlanetVaultItem[]>;
+  updatePlanetVaultItemQuantity(id: string, quantity: number): Promise<PlanetVaultItem>;
+  addPlanetVaultItem(data: any): Promise<PlanetVaultItem>;
+  removePlanetVaultItem(id: string): Promise<void>;
+
+  // Scan cooldown operations
+  getScanCooldowns(userId: string, scanType?: string): Promise<ScanCooldown[]>;
+  getActiveScanCooldown(userId: string, scanType: string): Promise<ScanCooldown | undefined>;
+  createScanCooldown(data: any): Promise<ScanCooldown>;
+
+  // Weekly Mission Progress operations
+  getWeeklyMissionProgress(userId: string, weekId: string): Promise<WeeklyMissionProgress | undefined>;
+  createWeeklyMissionProgress(data: any): Promise<WeeklyMissionProgress>;
+  updateWeeklyMissionProgress(userId: string, weekId: string, data: any): Promise<WeeklyMissionProgress>;
+
+  // XP History operations
+  addXpHistory(data: any): Promise<XpHistory>;
+  getRecentXpHistory(userId: string, limit: number): Promise<XpHistory[]>;
+  getXpBreakdown(userId: string): Promise<any>;
 
   // System Settings operations
   getSetting(key: string): Promise<SystemSettings | undefined>;
@@ -2476,6 +2519,123 @@ export class DatabaseStorage implements IStorage {
         )
       )
       .orderBy(desc(tradeHistory.completedAt));
+  }
+
+  // Provider Connection operations
+  async getProviderConnections(userId: string): Promise<ProviderConnection[]> {
+    return await db.select().from(providerConnections).where(eq(providerConnections.userId, userId));
+  }
+
+  async createProviderConnection(data: any): Promise<ProviderConnection> {
+    const [connection] = await db.insert(providerConnections).values(data).returning();
+    return connection;
+  }
+
+  async updateProviderConnection(id: string, data: any): Promise<ProviderConnection> {
+    const [connection] = await db.update(providerConnections).set(data).where(eq(providerConnections.id, id)).returning();
+    return connection;
+  }
+
+  async deleteProviderConnection(id: string): Promise<void> {
+    await db.delete(providerConnections).where(eq(providerConnections.id, id));
+  }
+
+  // Espionage scan operations
+  async getLastScanTime(userId: string): Promise<number> {
+    const [scan] = await db.select().from(espionageScans).where(eq(espionageScans.playerId, userId)).orderBy(desc(espionageScans.createdAt)).limit(1);
+    if (!scan || !scan.createdAt) return 0;
+    return new Date(scan.createdAt).getTime();
+  }
+
+  async createEspionageScan(data: any): Promise<EspionageScan> {
+    const [scan] = await db.insert(espionageScans).values(data).returning();
+    return scan;
+  }
+
+  // Planet vault operations
+  async getPlanetVaultItems(userId: string, planetId?: string, vaultType?: string): Promise<PlanetVaultItem[]> {
+    const conditions = [eq(planetVaultItems.userId, userId)];
+    if (planetId) conditions.push(eq(planetVaultItems.planetId, planetId));
+    if (vaultType) conditions.push(eq(planetVaultItems.vaultType, vaultType));
+    return await db.select().from(planetVaultItems).where(and(...conditions));
+  }
+
+  async updatePlanetVaultItemQuantity(id: string, quantity: number): Promise<PlanetVaultItem> {
+    const [item] = await db.update(planetVaultItems).set({ quantity, updatedAt: new Date() }).where(eq(planetVaultItems.id, id)).returning();
+    return item;
+  }
+
+  async addPlanetVaultItem(data: any): Promise<PlanetVaultItem> {
+    const [item] = await db.insert(planetVaultItems).values(data).returning();
+    return item;
+  }
+
+  async removePlanetVaultItem(id: string): Promise<void> {
+    await db.delete(planetVaultItems).where(eq(planetVaultItems.id, id));
+  }
+
+  // Scan cooldown operations
+  async getScanCooldowns(userId: string, scanType?: string): Promise<ScanCooldown[]> {
+    const conditions = [eq(scanCooldowns.userId, userId)];
+    if (scanType) conditions.push(eq(scanCooldowns.scanType, scanType));
+    return await db.select().from(scanCooldowns).where(and(...conditions)).orderBy(desc(scanCooldowns.createdAt));
+  }
+
+  async getActiveScanCooldown(userId: string, scanType: string): Promise<ScanCooldown | undefined> {
+    const now = new Date();
+    const [cooldown] = await db.select().from(scanCooldowns).where(
+      and(
+        eq(scanCooldowns.userId, userId),
+        eq(scanCooldowns.scanType, scanType),
+        sql`${scanCooldowns.cooldownUntil} > ${now}`
+      )
+    ).limit(1);
+    return cooldown;
+  }
+
+  async createScanCooldown(data: any): Promise<ScanCooldown> {
+    const [cooldown] = await db.insert(scanCooldowns).values(data).returning();
+    return cooldown;
+  }
+
+  // Weekly Mission Progress operations
+  async getWeeklyMissionProgress(userId: string, weekId: string): Promise<WeeklyMissionProgress | undefined> {
+    const [progress] = await db.select().from(weeklyMissionProgress).where(
+      and(eq(weeklyMissionProgress.userId, userId), eq(weeklyMissionProgress.weekId, weekId))
+    ).limit(1);
+    return progress;
+  }
+
+  async createWeeklyMissionProgress(data: any): Promise<WeeklyMissionProgress> {
+    const [progress] = await db.insert(weeklyMissionProgress).values(data).returning();
+    return progress;
+  }
+
+  async updateWeeklyMissionProgress(userId: string, weekId: string, data: any): Promise<WeeklyMissionProgress> {
+    const [progress] = await db.update(weeklyMissionProgress).set({ ...data, updatedAt: new Date() }).where(
+      and(eq(weeklyMissionProgress.userId, userId), eq(weeklyMissionProgress.weekId, weekId))
+    ).returning();
+    return progress;
+  }
+
+  // XP History operations
+  async addXpHistory(data: any): Promise<XpHistory> {
+    const [record] = await db.insert(xpHistory).values(data).returning();
+    return record;
+  }
+
+  async getRecentXpHistory(userId: string, limit: number = 20): Promise<XpHistory[]> {
+    return await db.select().from(xpHistory).where(eq(xpHistory.userId, userId)).orderBy(desc(xpHistory.createdAt)).limit(limit);
+  }
+
+  async getXpBreakdown(userId: string): Promise<any> {
+    const rows = await db.select().from(xpHistory).where(eq(xpHistory.userId, userId));
+    const breakdown: Record<string, number> = {};
+    for (const row of rows) {
+      const cat = row.source || "other";
+      breakdown[cat] = (breakdown[cat] || 0) + row.amount;
+    }
+    return breakdown;
   }
 
   // System Settings operations

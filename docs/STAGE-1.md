@@ -1,9 +1,30 @@
 # Stage 1: Project Scaffold & Configuration
 
-- server/ : Backend code (API, logic, models)
-- client/ : Frontend code (React, components, pages)
-- shared/ : Shared types/interfaces
-- config/ : Game, universe, and ship configuration
-- docs/ : Documentation, GDD, ERD, API, etc.
+Initial project structure and configuration setup.
 
-Next: Stage 2 will add core data models and types.
+## Directory Structure
+
+```
+server/          Backend code (API, logic, models)
+client/          Frontend code (React, components, pages)
+shared/          Shared types/interfaces and configuration
+config/          Game, universe, and deployment configuration
+docs/            Documentation
+script/          Build and utility scripts
+scripts/         Patch and image generation scripts
+```
+
+## Key Configuration Files
+
+| File | Purpose |
+|------|---------|
+| `package.json` | Dependencies, scripts, engine requirements |
+| `tsconfig.json` | TypeScript configuration |
+| `components.json` | UI component configuration |
+
+> **Source:** package.json
+> **Source:** tsconfig.json
+
+## Next Stage
+
+Stage 2: Core Data Models & Types

@@ -1,8 +1,22 @@
 # Stage 3: Player Management
 
-This stage implements player CRUD (Create, Read, Update, Delete) operations in the backend and integrates them with the frontend.
+Player CRUD operations and authentication.
 
-- Backend: API endpoints for player management
-- Frontend: PlayerList component and player management UI
+## Backend
 
-Next: Stage 4 will cover universe/sector/planet generation and management.
+- Player creation, reading, updating, deletion
+- Session-based authentication
+- Admin user management
+
+> **Source:** server/routes-account.ts
+> **Source:** server/routes-admin.ts
+
+## Frontend
+
+- Registration and login pages
+- Player profile management
+- Admin panel
+
+## Next Stage
+
+Stage 4: Universe, Sector, and Planet Generation

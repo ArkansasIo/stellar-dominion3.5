@@ -1,9 +1,23 @@
 # Stage 5: Ship Management & Shipyard
 
-This stage scaffolds ship creation, management, and shipyard features.
+Ship creation, management, and shipyard features.
 
-- Backend: Logic for creating, listing, and managing ships
-- API endpoints for ship CRUD
-- Frontend: ShipList and Shipyard components
+## Backend
 
-Next: Stage 6 will cover the combat system.
+- Ship CRUD operations
+- Shipyard construction and management
+- Fleet composition
+
+> **Source:** server/services/fleetService.ts
+> **Source:** server/routes-travel.ts
+> **Source:** server/routes-orbital-stations.ts
+
+## Frontend
+
+- Ship list and details
+- Shipyard interface
+- Fleet management
+
+## Next Stage
+
+Stage 6: Combat System

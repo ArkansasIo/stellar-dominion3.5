@@ -1,8 +1,27 @@
 # Stage 9: Admin Tools & Dashboards
 
-This stage scaffolds admin tools and dashboards for monitoring, management, and analytics.
+Server administration, monitoring, and analytics.
 
-- Backend: API endpoints for admin actions and stats
-- Frontend: AdminPanel and Dashboard components
+## Backend
 
-Next: Stage 10 will cover the game loop, AI, and event systems.
+- Admin API endpoints
+- Database management
+- Server status and monitoring
+
+> **Source:** server/routes-admin.ts
+> **Source:** server/routes-database-admin.ts
+> **Source:** server/routes-diagnostics.ts
+> **Source:** server/routes-status.ts
+> **Source:** server/admin-manager.ts
+> **Source:** server/adminCli.ts
+> **Source:** server/adminPermissions.ts
+
+## Frontend
+
+- Admin panel
+- Dashboard views
+- Database admin interface
+
+## Next Stage
+
+Stage 10: Game Loop, AI, and Events

@@ -16,7 +16,6 @@ import {
   Github,
   FileText,
   Crown,
-  Globe2,
   Activity,
   Server,
   Gauge,
@@ -31,155 +30,6 @@ import { MENU_ASSETS } from "@shared/config";
 const GAME_VERSION = "Alpha 1.5.0";
 const UNIVERSE_ID = "Nexus-Alpha";
 const TEMP_THEME_IMAGE = "/theme-temp.png";
-
-const TEN_REALMS = [
-  {
-    id: "realm-01",
-    name: "Asgard Prime",
-    rank: "Sovereign Tier I",
-    universe: "Nexus Crown",
-    detail: "Capital command realm anchoring diplomacy, governance, and apex fleet command.",
-    population: "14.2M online citizens",
-  },
-  {
-    id: "realm-02",
-    name: "Midgard Frontier",
-    rank: "Dominion Tier II",
-    universe: "Nexus Crown",
-    detail: "Balanced empire realm focused on colonization lanes, civilian growth, and trade corridors.",
-    population: "11.8M online citizens",
-  },
-  {
-    id: "realm-03",
-    name: "Alfheim Radiant",
-    rank: "Ascendant Tier III",
-    universe: "Aurora Reach",
-    detail: "High-research realm driving laboratory breakthroughs, relic discovery, and science bonuses.",
-    population: "9.4M online citizens",
-  },
-  {
-    id: "realm-04",
-    name: "Jotunheim Bastion",
-    rank: "Warfront Tier IV",
-    universe: "Aurora Reach",
-    detail: "Heavy-industry and siege realm built for defense grids, armories, and assault fleets.",
-    population: "8.9M online citizens",
-  },
-  {
-    id: "realm-05",
-    name: "Vanaheim Bloom",
-    rank: "Prosperity Tier V",
-    universe: "Verdant Expanse",
-    detail: "Economic powerhouse realm with premium food, water, logistics, and merchant throughput.",
-    population: "10.6M online citizens",
-  },
-  {
-    id: "realm-06",
-    name: "Svartalf Forge",
-    rank: "Industrial Tier VI",
-    universe: "Verdant Expanse",
-    detail: "Blueprint, fabrication, and shipyard realm responsible for elite hull and module output.",
-    population: "7.7M online citizens",
-  },
-  {
-    id: "realm-07",
-    name: "Muspel Pyre",
-    rank: "Strike Tier VII",
-    universe: "Crimson Verge",
-    detail: "Aggressive combat realm specialized in raids, planetary occupation, and thermal warfare.",
-    population: "6.3M online citizens",
-  },
-  {
-    id: "realm-08",
-    name: "Niflheim Veil",
-    rank: "Shadow Tier VIII",
-    universe: "Crimson Verge",
-    detail: "Espionage and stealth-operations realm covering probes, sabotage, and covert lanes.",
-    population: "5.8M online citizens",
-  },
-  {
-    id: "realm-09",
-    name: "Hel Nexus",
-    rank: "Endgame Tier IX",
-    universe: "Oblivion Gate",
-    detail: "Late-cycle realm for veterans contesting world bosses, ascension loops, and final sectors.",
-    population: "4.9M online citizens",
-  },
-  {
-    id: "realm-10",
-    name: "Bifrost Ascension",
-    rank: "Mythic Tier X",
-    universe: "Oblivion Gate",
-    detail: "Transcendent relay realm linking late-game ascension fleets, dimensional transit, and prestige campaigns.",
-    population: "4.2M online citizens",
-  },
-] as const;
-
-const REALM_COLUMNS = [TEN_REALMS.slice(0, 5), TEN_REALMS.slice(5)] as const;
-
-const PUBLIC_REALM_SERVER_MAP: Record<(typeof TEN_REALMS)[number]["id"], string> = {
-  "realm-01": "nexus-alpha",
-  "realm-02": "nexus-alpha",
-  "realm-03": "cygnus-eu",
-  "realm-04": "cygnus-eu",
-  "realm-05": "orion-apac",
-  "realm-06": "orion-apac",
-  "realm-07": "nexus-alpha",
-  "realm-08": "cygnus-eu",
-  "realm-09": "orion-apac",
-  "realm-10": "nexus-alpha",
-};
-
-type RealmItem = typeof TEN_REALMS[number] & { universes?: string[] };
-type RealmDetailModalProps = {
-  realm: RealmItem | null;
-  open: boolean;
-  onClose: () => void;
-  onSelect?: (realmId: string) => void;
-};
-
-function RealmDetailModal({ realm, open, onClose, onSelect }: RealmDetailModalProps) {
-  if (!realm || !open) return null;
-  // Support both 'universe' (string) and 'universes' (array) for compatibility
-  const universeList: string[] = Array.isArray((realm as any).universes)
-    ? (realm as any).universes
-    : (realm as any).universe
-      ? [(realm as any).universe]
-      : [];
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 relative">
-        <button onClick={onClose} className="absolute top-3 right-3 text-slate-500 hover:text-slate-900" aria-label="Close">✕</button>
-        <div className="mb-2 text-xs uppercase tracking-widest text-cyan-700 font-bold">{realm.rank}</div>
-        <div className="font-orbitron text-2xl font-bold text-slate-900 mb-1">{realm.name}</div>
-        <div className="text-xs text-slate-500 mb-2">
-          Universes:
-          {universeList.length > 0 ? (
-            <ul className="ml-2 list-disc text-xs text-slate-700">
-              {universeList.map((u: string) => (
-                <li key={u}>{u}</li>
-              ))}
-            </ul>
-          ) : (
-            <span className="ml-1 font-semibold">None</span>
-          )}
-        </div>
-        <div className="mb-3 text-slate-700 text-sm">{realm.detail}</div>
-        <div className="flex items-center gap-4 mb-3">
-          <div className="bg-slate-100 rounded px-2 py-1 text-xs text-slate-700">{realm.population}</div>
-        </div>
-        {onSelect && (
-          <button
-            className="w-full bg-cyan-700 hover:bg-cyan-800 text-white py-2 rounded font-semibold transition-colors mt-2"
-            onClick={() => onSelect(realm.id)}
-          >
-            Enter {realm.name}
-          </button>
-        )}
-      </div>
-    </div>
-  );
-}
 
 type PublicHealthCheck = {
   status: "ok" | "warning" | "critical";
@@ -246,26 +96,7 @@ function formatTimeAgo(timestamp?: number) {
 }
 
 export default function Auth() {
-  const { isLoading, login, switchRealm } = useGame();
-  const [realmDetail, setRealmDetail] = useState<typeof TEN_REALMS[number] | null>(null);
-  const [realmModalOpen, setRealmModalOpen] = useState(false);
-
-  // Handler for selecting/entering a realm from the modal
-  const handleSelectRealm = async (realmId: string) => {
-    setRealmModalOpen(false);
-    const serverRealmId = PUBLIC_REALM_SERVER_MAP[realmId as keyof typeof PUBLIC_REALM_SERVER_MAP];
-    if (!serverRealmId) {
-      setError("This realm does not have an available deployment server.");
-      return;
-    }
-
-    try {
-      await switchRealm(serverRealmId);
-      localStorage.setItem("stellar_public_realm", realmId);
-    } catch (error) {
-      setError(error instanceof Error ? error.message : "Unable to select this realm.");
-    }
-  };
+  const { isLoading, login } = useGame();
   const queryClient = useQueryClient();
   const [isLogin, setIsLogin] = useState(true);
   const [isForgot, setIsForgot] = useState(false);
@@ -422,66 +253,8 @@ export default function Auth() {
         </div>
       )}
 
-      <div className="relative z-10 w-full max-w-[1600px]">
-        <div className="grid gap-4 xl:grid-cols-3 items-stretch">
-          <aside className="flex min-h-0 flex-col rounded-2xl border border-slate-200 bg-white shadow-lg overflow-hidden xl:max-h-[calc(100vh-8rem)]">
-            <div className="border-b border-slate-200 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 px-4 py-4 text-white">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-cyan-400/10 ring-1 ring-cyan-200/20">
-                  <Globe2 className="h-5 w-5 text-cyan-200" />
-                </div>
-                <div>
-                  <div className="text-[10px] uppercase tracking-[0.24em] text-cyan-200/80">Universe Grid</div>
-                  <h2 className="font-orbitron text-lg font-bold">Ten Realms</h2>
-                </div>
-              </div>
-              <p className="text-xs leading-5 text-slate-300">
-                Ten linked universe realms arranged in two command columns for ranked progression, frontier identity, and deployment focus.
-              </p>
-            </div>
-            <div className="grid min-h-0 flex-1 gap-2 overflow-y-auto p-3 md:grid-cols-2">
-              {REALM_COLUMNS.map((column, columnIndex) => (
-                <div key={`realm-column-${columnIndex + 1}`} className="space-y-2">
-                  {column.map((realm, realmIndex) => {
-                    const displayIndex = columnIndex * 5 + realmIndex + 1;
-                    return (
-                      <div key={realm.id} className="rounded-xl border border-slate-200 bg-slate-50 p-2.5">
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <div className="text-[10px] uppercase tracking-[0.24em] text-slate-500">Realm {displayIndex}</div>
-                            <div className="font-orbitron text-xs font-bold text-slate-900 sm:text-sm">{realm.name}</div>
-                          </div>
-                          <div className="rounded-full border border-cyan-200 bg-cyan-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.18em] text-cyan-700">
-                            {realm.rank}
-                          </div>
-                        </div>
-                        <div className="mt-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500">{realm.universe}</div>
-                        <p className="mt-1.5 text-xs leading-4 text-slate-600">{realm.detail}</p>
-                        <div className="mt-2 flex items-center justify-between text-[11px] text-slate-500">
-                          <span>{realm.population}</span>
-                          <span className="font-mono">Gate {displayIndex}/10</span>
-                        </div>
-                        <button
-                          className="mt-2 w-full bg-cyan-100 hover:bg-cyan-200 text-cyan-900 rounded px-2 py-1 text-xs font-semibold transition-colors"
-                          onClick={() => { setRealmDetail(realm); setRealmModalOpen(true); }}
-                        >
-                          View Details
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
-              ))}
-            </div>
-
-            <RealmDetailModal
-              realm={realmDetail}
-              open={realmModalOpen}
-              onClose={() => setRealmModalOpen(false)}
-              onSelect={handleSelectRealm}
-            />
-          </aside>
-
+      <div className="relative z-10 w-full max-w-5xl mx-auto">
+        <div className="grid gap-4 xl:grid-cols-2 items-stretch">
           <Card className="flex min-h-0 w-full flex-col border border-slate-300 bg-white text-slate-900 shadow-lg transition-shadow duration-300 hover:shadow-xl xl:max-h-[calc(100vh-8rem)]">
             <CardHeader className="pb-2 text-center">
               <div className="w-16 h-16 bg-gradient-to-br from-slate-800 to-slate-900 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg overflow-hidden">

@@ -1,256 +1,259 @@
 import GameLayout from "@/components/layout/GameLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
-import { apiRequest, queryClient } from "@/lib/queryClient";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { PLANET_ASSETS } from "@shared/config";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 import {
-  Globe,
-  MapPin,
-  Zap,
-  Users,
-  Clock,
-  ChevronRight,
+  Globe, 
+  ChevronLeft, 
+  ChevronRight, 
+  MessageSquare, 
+  ShieldAlert, 
+  Hexagon, 
+  Triangle, 
+  Search,
+  Rocket,
+  Orbit,
   Map,
-  Grid3x3,
-  Hexagon
+  Users
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
 
-interface Planet {
-  id: string;
+type SystemObjectType = "planet" | "asteroid" | "nebula" | "blackhole" | "station" | "empty";
+
+interface SystemPosition {
+  position: number;
+  type: SystemObjectType;
   name: string;
-  class: string;
   owner?: string;
   alliance?: string;
-  coordinates: string;
+  debris?: { metal: number; crystal: number };
+  moon?: boolean;
+  class?: string;
 }
 
-interface System {
-  id: string;
-  name: string;
-  coordinates: string;
-  planets: Planet[];
-  activity: number;
+interface SystemData {
+  universe: string;
+  galaxy: number;
+  sector: number;
+  system: number;
+  systemName?: string;
+  star?: { type: string; name: string };
+  positions: SystemPosition[];
 }
 
-interface Sector {
-  id: string;
-  name: string;
-  coordinates: string;
-  systems: System[];
+interface ScanResponse {
+   success: boolean;
+   message: string;
+   report: {
+      targetName: string;
+      targetType: SystemObjectType;
+      threatLevel: "low" | "medium" | "high";
+      anomalies: string[];
+      estimatedResources: { metal: number; crystal: number; deuterium: number };
+      timestamp: number;
+   };
 }
 
-interface Galaxy {
-  id: string;
-  realmId: string;
-  name: string;
-  coordinates: string;
-  sectors: Sector[];
+interface FleetActionPayload {
+   targetName: string;
+   destination: string;
+   missionType: "attack" | "espionage";
+   ships: Record<string, number>;
 }
 
-interface RealmServer {
-  id: string;
-  name: string;
-  region: "NA" | "EU" | "APAC";
-  status: "online" | "maintenance" | "degraded";
-  playersOnline: number;
-  maxPlayers: number;
-  tickRateMs: number;
-  uptimePercent: number;
-  universes: string[];
+interface MessageActionPayload {
+   targetName: string;
+   recipientName: string;
+   destination: string;
 }
 
-interface RealmResponse {
-  realms: RealmServer[];
-  selectedRealmId: string;
-  selectedRealm: RealmServer;
-}
+const PLANET_GRADIENT: Record<string, string> = {
+  M: "from-blue-400 to-emerald-600",
+  H: "from-yellow-500 to-orange-700",
+  L: "from-lime-500 to-emerald-700",
+  K: "from-red-700 to-stone-500",
+  Y: "from-red-500 to-orange-900",
+  D: "from-slate-400 to-stone-600",
+  J: "from-amber-400 to-orange-700",
+  T: "from-sky-300 to-indigo-600",
+};
 
-const TEMP_THEME_IMAGE = "/theme-temp.png";
+const getPlanetGradient = (cls?: string) =>
+  cls && PLANET_GRADIENT[cls] ? PLANET_GRADIENT[cls] : "from-blue-500 to-purple-800";
 
-const GALAXIES: Galaxy[] = [
-  {
-    id: "gal1",
-    realmId: "nexus-alpha",
-    name: "Nexus-Alpha",
-    coordinates: "[1:0:0]",
-    sectors: [
-      {
-        id: "sec1",
-        name: "Sector 1",
-        coordinates: "[1:1:0]",
-        systems: [
-          {
-            id: "sys1",
-            name: "Sol System",
-            coordinates: "[1:1:100]",
-            activity: 95,
-            planets: [
-              { id: "pl1", name: "Mercury", class: "R", coordinates: "[1:1:100:1]", owner: "Neutral" },
-              { id: "pl2", name: "Venus", class: "V", coordinates: "[1:1:100:2]", owner: "Neutral" },
-              { id: "pl3", name: "Earth", class: "M", coordinates: "[1:1:100:3]", owner: "Commander", alliance: "ADMIN" },
-              { id: "pl4", name: "Mars", class: "D", coordinates: "[1:1:100:4]", owner: "Player_412", alliance: "SETTLERS" },
-            ]
-          },
-          {
-            id: "sys2",
-            name: "Kepler System",
-            coordinates: "[1:1:205]",
-            activity: 72,
-            planets: [
-              { id: "pl5", name: "Kepler-452b", class: "M", coordinates: "[1:1:205:1]", owner: "Player_891", alliance: "EXPLORERS" },
-              { id: "pl6", name: "Kepler-186f", class: "G", coordinates: "[1:1:205:2]", owner: "NPC_Station" },
-            ]
-          }
-        ]
-      },
-      {
-        id: "sec2",
-        name: "Sector 2",
-        coordinates: "[1:2:0]",
-        systems: [
-          {
-            id: "sys3",
-            name: "Andromeda Crossing",
-            coordinates: "[1:2:156]",
-            activity: 45,
-            planets: [
-              { id: "pl7", name: "Andromeda Prime", class: "M", coordinates: "[1:2:156:1]", owner: "Pirate Gang" },
-              { id: "pl8", name: "Andromeda Minor", class: "A", coordinates: "[1:2:156:2]" },
-            ]
-          }
-        ]
-      }
-    ]
-  },
-  {
-    id: "gal2",
-    realmId: "cygnus-eu",
-    name: "Cyborg-Beta",
-    coordinates: "[2:0:0]",
-    sectors: [
-      {
-        id: "sec3",
-        name: "Sector 1",
-        coordinates: "[2:1:0]",
-        systems: [
-          {
-            id: "sys4",
-            name: "Binary Star",
-            coordinates: "[2:1:98]",
-            activity: 88,
-            planets: [
-              { id: "pl9", name: "Twin Alpha", class: "T", coordinates: "[2:1:98:1]", owner: "TechCorp", alliance: "INDUSTRIAL" },
-            ]
-          }
-        ]
-      }
-    ]
-  }
-];
+const PLANET_CLASS_BADGE: Record<string, string> = {
+  M: "bg-green-100 text-green-700",
+  H: "bg-yellow-100 text-yellow-700",
+  L: "bg-lime-100 text-lime-700",
+  K: "bg-stone-100 text-stone-600",
+  Y: "bg-red-100 text-red-700",
+  D: "bg-slate-100 text-slate-600",
+  J: "bg-orange-100 text-orange-700",
+  T: "bg-sky-100 text-sky-700",
+};
+
+const STAR_INFO: Record<string, { label: string; color: string; glow: string }> = {
+  O: { label: "Blue Giant",    color: "#9bb0ff", glow: "shadow-[0_0_16px_#9bb0ff]" },
+  B: { label: "Blue-White",    color: "#aabfff", glow: "shadow-[0_0_14px_#aabfff]" },
+  A: { label: "White Star",    color: "#e0e8ff", glow: "shadow-[0_0_12px_#cad7ff]" },
+  F: { label: "Yellow-White",  color: "#fff8dc", glow: "shadow-[0_0_12px_#f8f7ff]" },
+  G: { label: "Yellow Dwarf",  color: "#fff4ea", glow: "shadow-[0_0_12px_#ffe4a0]" },
+  K: { label: "Orange Dwarf",  color: "#ffd2a1", glow: "shadow-[0_0_12px_#ffa060]" },
+  M: { label: "Red Dwarf",     color: "#ffcc6f", glow: "shadow-[0_0_12px_#ff6040]" },
+};
 
 export default function Universe() {
-  const { toast } = useToast();
-  const [selectedGalaxy, setSelectedGalaxy] = useState<Galaxy | null>(GALAXIES[0]);
-  const [selectedSector, setSelectedSector] = useState<Sector | null>(GALAXIES[0].sectors[0]);
-  const [selectedSystem, setSelectedSystem] = useState<System | null>(GALAXIES[0].sectors[0].systems[0]);
-  const [searchCoordinates, setSearchCoordinates] = useState("");
+   const { toast } = useToast();
+   const [, setLocation] = useLocation();
+   const searchParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams();
+   const parsePositiveInt = (value: string | null, fallback: number) => {
+      const parsed = Number.parseInt(value ?? "", 10);
+      return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+   };
 
-  const { data: realmData } = useQuery<RealmResponse>({
-    queryKey: ["/api/universe/realms"],
-    queryFn: async () => {
-      const res = await fetch("/api/universe/realms", { credentials: "include" });
-      if (!res.ok) throw new Error("Failed to load realm servers");
-      return res.json();
-    },
-  });
-
-  const selectRealmMutation = useMutation({
-    mutationFn: async (realmId: string) => {
-      const res = await apiRequest("POST", "/api/universe/realms/select", { realmId });
-      return res.json();
-    },
-    onSuccess: (data: RealmResponse) => {
-      queryClient.setQueryData<RealmResponse>(["/api/universe/realms"], (current) => ({
-        realms: current?.realms || data.realms || [],
-        selectedRealmId: data.selectedRealmId,
-        selectedRealm: data.selectedRealm,
-      }));
-      toast({ title: "Realm switched", description: "Universe server realm updated." });
-    },
-    onError: (error: any) => {
-      toast({ title: "Realm switch failed", description: error?.message || "Unknown error", variant: "destructive" });
-    },
-  });
-
-  const selectedRealmId = realmData?.selectedRealmId || "nexus-alpha";
-  const selectedRealm = realmData?.selectedRealm;
-  const filteredGalaxies = GALAXIES.filter((galaxy) => galaxy.realmId === selectedRealmId);
-  const systemsInRealm = filteredGalaxies.flatMap((galaxy) => galaxy.sectors.flatMap((sector) => sector.systems));
-  const planetsInRealm = systemsInRealm.flatMap((system) => system.planets);
-  const averageActivity = systemsInRealm.length > 0
-    ? Math.round(systemsInRealm.reduce((sum, system) => sum + system.activity, 0) / systemsInRealm.length)
-    : 0;
-
-  const handleGalaxySelect = (galaxy: Galaxy) => {
-    setSelectedGalaxy(galaxy);
-    setSelectedSector(galaxy.sectors[0]);
-    setSelectedSystem(galaxy.sectors[0].systems[0]);
-  };
-
-  const handleSectorSelect = (sector: Sector) => {
-    setSelectedSector(sector);
-    setSelectedSystem(sector.systems[0]);
-  };
-
-  const getPlanetColor = (planetClass: string) => {
-    const colors: Record<string, string> = {
-      M: "bg-emerald-500",
-      G: "bg-amber-400",
-      D: "bg-slate-400",
-      R: "bg-orange-600",
-      V: "bg-yellow-500",
-      T: "bg-cyan-500",
-      A: "bg-gray-300"
-    };
-    return colors[planetClass] || "bg-blue-400";
-  };
-
-  const getActivityColor = (activity: number) => {
-    if (activity > 75) return "text-red-600";
-    if (activity > 50) return "text-yellow-600";
-    return "text-green-600";
-  };
-
-  const getPlanetImagePath = (planetClass: string) => {
-    const normalized = planetClass.toUpperCase();
-    if (normalized === "M") return PLANET_ASSETS.TERRESTRIAL.EARTH_LIKE.path;
-    if (normalized === "D") return PLANET_ASSETS.TERRESTRIAL.DESERT.path;
-    if (normalized === "R") return PLANET_ASSETS.TERRESTRIAL.VOLCANIC.path;
-    if (normalized === "V") return PLANET_ASSETS.TERRESTRIAL.VOLCANIC.path;
-    if (normalized === "T") return PLANET_ASSETS.TERRESTRIAL.ICE.path;
-    if (normalized === "G") return PLANET_ASSETS.GAS_GIANTS.JUPITER_CLASS.path;
-    if (normalized === "A") return PLANET_ASSETS.EXOTIC.RING_WORLD.path;
-    return PLANET_ASSETS.TERRESTRIAL.EARTH_LIKE.path;
-  };
+   const [universe, setUniverse] = useState(searchParams.get("universe") || "uni1");
+   const [galaxy, setGalaxy] = useState(parsePositiveInt(searchParams.get("galaxy"), 1));
+   const [sector, setSector] = useState(parsePositiveInt(searchParams.get("sector"), 1));
+   const [system, setSystem] = useState(parsePositiveInt(searchParams.get("system"), 1));
 
   useEffect(() => {
-    if (!filteredGalaxies.length) {
-      return;
-    }
+    const handlePopState = () => {
+      const params = new URLSearchParams(window.location.search);
+      setUniverse(params.get("universe") || "uni1");
+      setGalaxy(parsePositiveInt(params.get("galaxy"), 1));
+      setSector(parsePositiveInt(params.get("sector"), 1));
+      setSystem(parsePositiveInt(params.get("system"), 1));
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
 
-    if (!selectedGalaxy || selectedGalaxy.realmId !== selectedRealmId) {
-      const fallbackGalaxy = filteredGalaxies[0];
-      setSelectedGalaxy(fallbackGalaxy);
-      setSelectedSector(fallbackGalaxy.sectors[0]);
-      setSelectedSystem(fallbackGalaxy.sectors[0].systems[0]);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    params.set("universe", universe);
+    params.set("galaxy", String(galaxy));
+    params.set("sector", String(sector));
+    params.set("system", String(system));
+
+    const nextUrl = `/universe?${params.toString()}`;
+    const currentUrl = `${window.location.pathname}${window.location.search}`;
+
+    if (currentUrl !== nextUrl) {
+      window.history.replaceState(null, "", nextUrl);
     }
-  }, [filteredGalaxies, selectedGalaxy, selectedRealmId]);
+  }, [universe, galaxy, sector, system]);
+
+  const { data: systemData, isFetching } = useQuery<SystemData>({
+    queryKey: ["universe", universe, galaxy, sector, system],
+    queryFn: async () => {
+      const res = await fetch(`/api/galaxy/${universe}/${galaxy}/${sector}/${system}`, { credentials: "include" });
+      if (!res.ok) throw new Error("Failed to load system data");
+      return res.json();
+    },
+    staleTime: 30_000,
+  });
+
+   const deepScanMutation = useMutation({
+      mutationFn: async (target: { position: number; name: string; type: SystemObjectType }) => {
+         const response = await fetch(`/api/galaxy/${universe}/${galaxy}/${sector}/${system}/scan`, {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+               position: target.position,
+               targetName: target.name,
+               targetType: target.type,
+            }),
+         });
+         const payload = await response.json().catch(() => null);
+         if (!response.ok) {
+            throw new Error(payload?.error || payload?.message || "Deep scan failed");
+         }
+         return payload as ScanResponse;
+      },
+      onSuccess: (result) => {
+         const report = result.report;
+         toast({
+            title: `Scan Complete · ${report.targetName}`,
+            description: `${report.threatLevel.toUpperCase()} threat | M ${report.estimatedResources.metal.toLocaleString()} · C ${report.estimatedResources.crystal.toLocaleString()} · D ${report.estimatedResources.deuterium.toLocaleString()} | ${report.anomalies.join(", ")}`,
+         });
+      },
+      onError: (error: Error) => {
+         toast({ title: "Deep scan failed", description: error.message, variant: "destructive" });
+      },
+   });
+
+   const fleetActionMutation = useMutation({
+      mutationFn: async (payload: FleetActionPayload) => {
+         const response = await fetch("/api/game/send-fleet", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+               destination: payload.destination,
+               missionType: payload.missionType,
+               ships: payload.ships,
+            }),
+         });
+         const data = await response.json().catch(() => null);
+         if (!response.ok) {
+            throw new Error(data?.error || data?.message || "Fleet dispatch failed");
+         }
+         return { ...data, payload };
+      },
+      onSuccess: (result) => {
+         toast({
+            title: "Fleet dispatched",
+            description: result?.message || `${result.payload.missionType} mission launched toward ${result.payload.targetName}.`,
+         });
+         setLocation("/fleet?tab=active");
+      },
+      onError: (error: Error) => {
+         toast({ title: "Fleet dispatch failed", description: error.message, variant: "destructive" });
+      },
+   });
+
+   const messageActionMutation = useMutation({
+      mutationFn: async (payload: MessageActionPayload) => {
+         const response = await fetch("/api/messages", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+               to: payload.recipientName,
+               subject: `Transmission from ${universe} ${galaxy}:${sector}:${system}`,
+               body: `Scouting transmission for ${payload.targetName} at coordinates ${payload.destination}. Requesting diplomatic channel confirmation.`,
+               type: "player",
+            }),
+         });
+         const data = await response.json().catch(() => null);
+         if (!response.ok) {
+            throw new Error(data?.error || data?.message || "Message send failed");
+         }
+         return { ...data, payload };
+      },
+      onSuccess: (result) => {
+         toast({
+            title: "Message sent",
+            description: `Transmission delivered to ${result.payload.recipientName}.`,
+         });
+      },
+      onError: (error: Error) => {
+         toast({ title: "Message failed", description: error.message, variant: "destructive" });
+      },
+   });
+
+  const positions = systemData?.positions || [];
+  const occupiedCount = positions.filter(p => p.type !== "empty").length;
+  const playerCount = positions.filter(p => p.owner).length;
+  const moonCount = positions.filter(p => p.moon).length;
 
   return (
     <GameLayout>
@@ -262,283 +265,304 @@ export default function Universe() {
             <img src="/assets/planets/star.png" alt="Star" className="w-20 h-20 rounded-full object-cover ring-2 ring-yellow-400/60 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
             <div>
               <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow">Universe Map</h2>
-              <p className="text-slate-300 font-rajdhani text-lg">Navigate galaxies, sectors, systems, and planets across the known universe.</p>
+              <p className="text-slate-300 font-rajdhani text-lg">Navigate and survey all known systems across the universe.</p>
             </div>
           </div>
         </div>
 
-        {/* Search Bar */}
-        <div className="bg-white border border-slate-200 p-4 rounded-lg shadow-sm">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 items-center">
-            <div className="flex flex-col gap-2">
-              <span className="text-xs text-slate-500 uppercase tracking-wide">Realm Server</span>
-              <Select
-                value={selectedRealmId}
-                onValueChange={(value) => selectRealmMutation.mutate(value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select Realm" />
+        {/* Universe Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <Card className="bg-white border-slate-200">
+            <CardContent className="pt-4 pb-3">
+              <div className="flex items-center gap-2 text-xs uppercase text-slate-500 font-bold mb-1">
+                <Map className="w-3 h-3" /> System Slots
+              </div>
+              <div className="text-xl font-bold text-slate-900">{positions.length}</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-white border-slate-200">
+            <CardContent className="pt-4 pb-3">
+              <div className="flex items-center gap-2 text-xs uppercase text-slate-500 font-bold mb-1">
+                <Globe className="w-3 h-3" /> Occupied
+              </div>
+              <div className="text-xl font-bold text-green-700">{occupiedCount}</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-white border-slate-200">
+            <CardContent className="pt-4 pb-3">
+              <div className="flex items-center gap-2 text-xs uppercase text-slate-500 font-bold mb-1">
+                <Users className="w-3 h-3" /> Players
+              </div>
+              <div className="text-xl font-bold text-blue-700">{playerCount}</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-white border-slate-200">
+            <CardContent className="pt-4 pb-3">
+              <div className="flex items-center gap-2 text-xs uppercase text-slate-500 font-bold mb-1">
+                <Orbit className="w-3 h-3" /> Moons
+              </div>
+              <div className="text-xl font-bold text-amber-700">{moonCount}</div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Navigation Bar */}
+        <div className="bg-white border border-slate-200 p-4 rounded-lg flex flex-wrap justify-center items-center gap-4 shadow-sm">
+           
+           {/* Universe Selector */}
+           <div className="flex items-center gap-2">
+              <span className="text-muted-foreground uppercase text-xs font-bold">Universe</span>
+              <Select value={universe} onValueChange={setUniverse}>
+                <SelectTrigger className="w-[140px] bg-slate-50 border-slate-200 text-slate-900 h-8">
+                  <SelectValue placeholder="Select Universe" />
                 </SelectTrigger>
                 <SelectContent>
-                  {(realmData?.realms || []).map((realm) => (
-                    <SelectItem key={realm.id} value={realm.id}>
-                      {realm.name} · {realm.region}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="uni1">Nexus-Alpha</SelectItem>
+                  <SelectItem value="uni2">Cyborg-Beta</SelectItem>
+                  <SelectItem value="uni3">Quantum-Gamma</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
+           </div>
 
-            <div className="flex flex-col gap-2 lg:col-span-2">
-              <span className="text-xs text-slate-500 uppercase tracking-wide">Search Coordinates</span>
-              <div className="flex gap-2 items-center">
-            <MapPin className="w-5 h-5 text-slate-600" />
-            <Input
-              placeholder="Search by coordinates (e.g., [1:1:100:3])"
-              value={searchCoordinates}
-              onChange={(e) => setSearchCoordinates(e.target.value)}
-              className="flex-1 bg-slate-50 border-slate-200"
-              data-testid="input-search-coordinates"
+           <div className="h-8 w-px bg-slate-200 mx-2 hidden md:block" />
+
+           {/* Galaxy Nav */}
+           <div className="flex items-center gap-2">
+              <span className="text-muted-foreground uppercase text-xs font-bold">Galaxy</span>
+              <div className="flex items-center">
+                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setGalaxy(g => Math.max(1, g - 1))}><ChevronLeft className="w-4 h-4" /></Button>
+                 <Input className="w-14 h-8 text-center font-mono bg-slate-50 border-slate-200 text-slate-900" value={galaxy} onChange={(e) => setGalaxy(parseInt(e.target.value) || 1)} />
+                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setGalaxy(g => g + 1)}><ChevronRight className="w-4 h-4" /></Button>
+              </div>
+           </div>
+           
+           {/* Sector Nav */}
+           <div className="flex items-center gap-2">
+              <span className="text-muted-foreground uppercase text-xs font-bold text-primary">Sector</span>
+              <div className="flex items-center">
+                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSector(s => Math.max(1, s - 1))}><ChevronLeft className="w-4 h-4" /></Button>
+                 <Input className="w-14 h-8 text-center font-mono bg-slate-50 border-primary/30 text-primary font-bold" value={sector} onChange={(e) => setSector(parseInt(e.target.value) || 1)} />
+                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSector(s => s + 1)}><ChevronRight className="w-4 h-4" /></Button>
+              </div>
+           </div>
+
+           {/* System Nav */}
+           <div className="flex items-center gap-2">
+              <span className="text-muted-foreground uppercase text-xs font-bold">System</span>
+              <div className="flex items-center">
+                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSystem(s => Math.max(1, s - 1))}><ChevronLeft className="w-4 h-4" /></Button>
+                 <Input className="w-16 h-8 text-center font-mono bg-slate-50 border-slate-200 text-slate-900" value={system} onChange={(e) => setSystem(parseInt(e.target.value) || 1)} />
+                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSystem(s => s + 1)}><ChevronRight className="w-4 h-4" /></Button>
+              </div>
+           </div>
+           
+           <Button className="ml-auto bg-primary/10 text-primary hover:bg-primary/20 border border-primary/30 h-8 text-xs uppercase tracking-wider">
+              <Orbit className="w-3 h-3 mr-2" /> Expedition
+           </Button>
+        </div>
+
+        {/* System Info / Star Display */}
+        {systemData?.star && (
+          <div className="bg-white border border-slate-200 p-4 rounded-lg flex items-center gap-4 shadow-sm">
+            <div
+              className={cn(
+                "w-12 h-12 rounded-full flex-shrink-0",
+                STAR_INFO[systemData.star.type]?.glow,
+              )}
+              style={{ background: `radial-gradient(circle at 35% 35%, white, ${STAR_INFO[systemData.star.type]?.color ?? "#ffe4a0"})` }}
             />
+            <div>
+              <div className="font-bold text-slate-900 font-orbitron text-lg">
+                {systemData.systemName ?? systemData.star.name} System
+              </div>
+              <div className="text-sm text-muted-foreground font-rajdhani">
+                Star: <span className="font-semibold text-slate-700">{systemData.star.name}</span>
+                {" · "}Type <span className="font-semibold text-slate-700">{systemData.star.type}</span>
+                {" · "}
+                <span className="italic">{STAR_INFO[systemData.star.type]?.label ?? "Unknown"}</span>
+                {" · "}
+                <span className="font-semibold text-slate-700">{universe}</span>
+                {" · "}
+                <span className="font-mono text-xs">{galaxy}:{sector}:{system}</span>
               </div>
             </div>
           </div>
-          {selectedRealm && (
-            <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
-              <div className="bg-slate-50 border border-slate-200 rounded p-2">Region: <span className="font-semibold">{selectedRealm.region}</span></div>
-              <div className="bg-slate-50 border border-slate-200 rounded p-2">Players: <span className="font-semibold">{selectedRealm.playersOnline.toLocaleString()} / {selectedRealm.maxPlayers.toLocaleString()}</span></div>
-              <div className="bg-slate-50 border border-slate-200 rounded p-2">Tick: <span className="font-semibold">{selectedRealm.tickRateMs}ms</span></div>
-              <div className="bg-slate-50 border border-slate-200 rounded p-2">Status: <span className="font-semibold uppercase">{selectedRealm.status}</span></div>
-            </div>
-          )}
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="bg-white border-slate-200">
-            <CardContent className="pt-6">
-              <div className="text-xs uppercase text-slate-500">Realm Galaxies</div>
-              <div className="text-2xl font-bold text-slate-900">{filteredGalaxies.length}</div>
-            </CardContent>
-          </Card>
-          <Card className="bg-white border-slate-200">
-            <CardContent className="pt-6">
-              <div className="text-xs uppercase text-slate-500">Systems Visible</div>
-              <div className="text-2xl font-bold text-blue-700">{systemsInRealm.length}</div>
-            </CardContent>
-          </Card>
-          <Card className="bg-white border-slate-200">
-            <CardContent className="pt-6">
-              <div className="text-xs uppercase text-slate-500">Planet Nodes</div>
-              <div className="text-2xl font-bold text-green-700">{planetsInRealm.length}</div>
-            </CardContent>
-          </Card>
-          <Card className="bg-white border-slate-200">
-            <CardContent className="pt-6">
-              <div className="text-xs uppercase text-slate-500">Avg System Activity</div>
-              <div className="text-2xl font-bold text-amber-700">{averageActivity}%</div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <Card className="bg-white border-slate-200">
-          <CardHeader>
-            <CardTitle className="text-base">Navigation Doctrine</CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm text-slate-600">
-            <div className="rounded border border-slate-200 bg-slate-50 p-3">High-activity systems are ideal for diplomacy, trade, and conflict scouting.</div>
-            <div className="rounded border border-slate-200 bg-slate-50 p-3">Track ownership clusters to identify alliance influence corridors.</div>
-            <div className="rounded border border-slate-200 bg-slate-50 p-3">Coordinate search lets you fast-route to known objectives and fleet rally points.</div>
-          </CardContent>
-        </Card>
-
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Galaxies List */}
-          <Card className="bg-white border-slate-200">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Globe className="w-5 h-5 text-slate-600" />
-                Galaxies
-              </CardTitle>
-              <CardDescription>Known Galaxies in Universe</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {filteredGalaxies.map(gal => (
-                <Button
-                  key={gal.id}
-                  variant={selectedGalaxy?.id === gal.id ? "default" : "outline"}
-                  className="w-full justify-between text-left h-auto py-3"
-                  onClick={() => handleGalaxySelect(gal)}
-                  data-testid={`button-galaxy-${gal.id}`}
-                >
-                  <div>
-                    <p className="font-semibold">{gal.name}</p>
-                    <p className="text-xs opacity-75">{gal.coordinates}</p>
-                  </div>
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
-              ))}
-            </CardContent>
-          </Card>
-
-          {/* Sectors List */}
-          <Card className="bg-white border-slate-200">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Grid3x3 className="w-5 h-5 text-slate-600" />
-                Sectors
-              </CardTitle>
-              <CardDescription>{selectedGalaxy?.name}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {selectedGalaxy?.sectors.map(sec => (
-                <Button
-                  key={sec.id}
-                  variant={selectedSector?.id === sec.id ? "default" : "outline"}
-                  className="w-full justify-between text-left h-auto py-3"
-                  onClick={() => handleSectorSelect(sec)}
-                  data-testid={`button-sector-${sec.id}`}
-                >
-                  <div>
-                    <p className="font-semibold">{sec.name}</p>
-                    <p className="text-xs opacity-75">{sec.coordinates}</p>
-                  </div>
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
-              ))}
-            </CardContent>
-          </Card>
-
-          {/* Systems List */}
-          <Card className="bg-white border-slate-200">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Hexagon className="w-5 h-5 text-slate-600" />
-                Systems
-              </CardTitle>
-              <CardDescription>{selectedSector?.name}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {selectedSector?.systems.map(sys => (
-                <Button
-                  key={sys.id}
-                  variant={selectedSystem?.id === sys.id ? "default" : "outline"}
-                  className="w-full justify-between text-left h-auto py-3"
-                  onClick={() => setSelectedSystem(sys)}
-                  data-testid={`button-system-${sys.id}`}
-                >
-                  <div className="flex-1">
-                    <p className="font-semibold">{sys.name}</p>
-                    <div className="flex items-center gap-2 text-xs opacity-75">
-                      <MapPin className="w-3 h-3" />
-                      {sys.coordinates}
-                    </div>
-                  </div>
-                  <div className={`text-xs font-bold ${getActivityColor(sys.activity)}`}>
-                    {sys.activity}%
-                  </div>
-                </Button>
-              ))}
-            </CardContent>
-          </Card>
-
-          {/* Planets in Selected System */}
-          <Card className="bg-white border-slate-200">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Map className="w-5 h-5 text-slate-600" />
-                Planets
-              </CardTitle>
-              <CardDescription>{selectedSystem?.name}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {selectedSystem?.planets.map(planet => (
-                <div
-                  key={planet.id}
-                  className="p-3 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-colors cursor-pointer"
-                  data-testid={`card-planet-${planet.id}`}
-                >
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <img
-                        src={getPlanetImagePath(planet.class)}
-                        alt={planet.name}
-                        className="w-12 h-12 rounded object-cover border border-slate-200 bg-slate-100"
-                        onError={(event) => {
-                          event.currentTarget.onerror = null;
-                          event.currentTarget.src = TEMP_THEME_IMAGE;
-                        }}
-                      />
-                      <div>
-                        <p className="font-semibold text-sm">{planet.name}</p>
-                        <p className="text-xs text-slate-500 flex items-center gap-1">
-                          <span className={`inline-block w-2 h-2 rounded-full ${getPlanetColor(planet.class)}`} />
-                          {planet.class}-Class
-                        </p>
-                      </div>
-                    </div>
-                    <Badge variant="outline" className="text-xs">{planet.class}</Badge>
-                  </div>
-                  <div className="text-xs space-y-1">
-                    <p className="text-slate-600 flex items-center gap-2">
-                      <MapPin className="w-3 h-3" />
-                      {planet.coordinates}
-                    </p>
-                    {planet.owner && (
-                      <p className="text-slate-600">
-                        Owner: <span className="font-semibold">{planet.owner}</span>
-                      </p>
-                    )}
-                    {planet.alliance && (
-                      <p className="text-slate-600">
-                        Alliance: <span className="font-semibold text-primary">{planet.alliance}</span>
-                      </p>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Detailed Information Panel */}
-        {selectedSystem && (
-          <Card className="bg-gradient-to-r from-slate-50 to-blue-50 border-slate-200">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Zap className="w-5 h-5" />
-                System Information
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <div>
-                  <p className="text-xs text-slate-600 uppercase font-bold mb-1">System Name</p>
-                  <p className="text-lg font-bold text-slate-900">{selectedSystem.name}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-slate-600 uppercase font-bold mb-1">Coordinates</p>
-                  <p className="text-lg font-mono text-slate-900">{selectedSystem.coordinates}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-slate-600 uppercase font-bold mb-1">Activity Level</p>
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full ${selectedSystem.activity > 75 ? "bg-red-500" : selectedSystem.activity > 50 ? "bg-yellow-500" : "bg-green-500"}`}
-                        style={{ width: `${selectedSystem.activity}%` }}
-                      />
-                    </div>
-                    <span className="font-bold text-slate-900">{selectedSystem.activity}%</span>
-                  </div>
-                </div>
-                <div>
-                  <p className="text-xs text-slate-600 uppercase font-bold mb-1">Planets</p>
-                  <p className="text-lg font-bold text-slate-900">{selectedSystem.planets.length}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         )}
+
+        {/* Universe Table */}
+        <div className="bg-white border border-slate-200 rounded-lg shadow-sm">
+           <div className="max-h-[600px] overflow-y-auto">
+           <Table>
+             <TableHeader className="sticky top-0 bg-slate-50 z-10">
+               <TableRow className="bg-slate-50 border-slate-200 hover:bg-slate-50">
+                 <TableHead className="text-center w-[60px] text-slate-700">Pos</TableHead>
+                 <TableHead className="w-[80px] text-slate-700">Visual</TableHead>
+                 <TableHead className="text-slate-700">Name</TableHead>
+                 <TableHead className="text-slate-700">Class</TableHead>
+                 <TableHead className="text-slate-700">Moon/Debris</TableHead>
+                 <TableHead className="text-slate-700">Player / Status</TableHead>
+                 <TableHead className="text-slate-700">Alliance</TableHead>
+                 <TableHead className="text-right text-slate-700">Actions</TableHead>
+               </TableRow>
+             </TableHeader>
+             <TableBody>
+               {isFetching && !systemData && (
+                 <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">Loading system data...</TableCell></TableRow>
+               )}
+               {Array.from({ length: 50 }).map((_, i) => {
+                 const pos = i + 1;
+                 const data: SystemPosition = systemData?.positions?.find(p => p.position === pos) ||
+                   { position: pos, type: "empty", name: "" };
+                 const isMe = false;
+                 
+                 return (
+                   <TableRow key={pos} className="border-slate-100 hover:bg-slate-50 transition-colors">
+                      <TableCell className="text-center font-mono text-muted-foreground">{pos}</TableCell>
+                      
+                      {/* Visual Column */}
+                      <TableCell>
+                         {data.type === "planet" && (
+                           <div className={cn("w-10 h-10 rounded-full bg-gradient-to-br shadow-sm border border-slate-200", getPlanetGradient(data.class))}></div>
+                         )}
+                         {data.type === "asteroid" && (
+                           <div className="w-10 h-10 flex items-center justify-center">
+                             <div className="w-8 h-8 rounded bg-slate-300 rotate-45 border border-slate-400"></div>
+                           </div>
+                         )}
+                         {data.type === "blackhole" && (
+                           <div className="w-10 h-10 rounded-full bg-black shadow-[0_0_10px_rgba(0,0,0,0.5)] border border-slate-800 flex items-center justify-center">
+                             <div className="w-9 h-9 rounded-full border border-white/20"></div>
+                           </div>
+                         )}
+                         {data.type === "nebula" && (
+                           <div className="w-10 h-10 rounded-full bg-purple-100 blur-sm opacity-80"></div>
+                         )}
+                         {data.type === "station" && (
+                            <div className="w-10 h-10 flex items-center justify-center">
+                              <Hexagon className="w-8 h-8 text-slate-600 fill-slate-200" />
+                            </div>
+                         )}
+                      </TableCell>
+                      
+                      {/* Name Column */}
+                      <TableCell>
+                         {data.type !== "empty" ? (
+                            <div className={cn("font-medium", isMe ? "text-primary" : "text-slate-700")}>
+                               {data.name}
+                            </div>
+                         ) : (
+                            <span className="text-muted-foreground/30 italic">-- Empty Space --</span>
+                         )}
+                      </TableCell>
+
+                      {/* Class/Type Column */}
+                      <TableCell>
+                         {data.type === "asteroid" && <Badge variant="outline" className="border-slate-400 text-slate-600">Asteroid</Badge>}
+                         {data.type === "blackhole" && <Badge variant="destructive" className="bg-black hover:bg-black text-white">Singularity</Badge>}
+                         {data.type === "nebula" && <Badge variant="secondary" className="bg-purple-100 text-purple-700 hover:bg-purple-100">Nebula</Badge>}
+                         {data.type === "station" && <Badge variant="outline" className="border-red-400 text-red-600">Pirate Base</Badge>}
+                         {data.type === "planet" && <Badge variant="secondary" className={cn(
+                            data.class && PLANET_CLASS_BADGE[data.class]
+                              ? PLANET_CLASS_BADGE[data.class]
+                              : "bg-blue-100 text-blue-700"
+                         )}>Class {data.class}</Badge>}
+                      </TableCell>
+                      
+                      {/* Moon/Debris Column */}
+                      <TableCell>
+                         <div className="flex items-center gap-2">
+                            {data.moon && <div className="w-4 h-4 rounded-full bg-slate-300 border border-slate-400" title="Moon"></div>}
+                            {data.debris && (
+                               <div className="flex items-center text-xs text-yellow-600 font-mono" title={`Metal: ${data.debris.metal}, Crystal: ${data.debris.crystal}`}>
+                                  <Triangle className="w-3 h-3 mr-1 fill-yellow-600 rotate-180" /> 
+                                  <span>D-Field</span>
+                               </div>
+                            )}
+                         </div>
+                      </TableCell>
+                      
+                      {/* Player Column */}
+                      <TableCell>
+                         {data.owner && (
+                            <span className={cn(
+                              "font-medium",
+                              isMe ? "text-green-600" : data.type === "station" ? "text-red-600" : "text-red-500"
+                            )}>
+                               {data.owner}
+                               {data.type === "station" && " (Hostile)"}
+                            </span>
+                         )}
+                      </TableCell>
+                      
+                      {/* Alliance Column */}
+                      <TableCell>
+                         {data.alliance && <span className="text-blue-500 font-bold">[{data.alliance}]</span>}
+                      </TableCell>
+                      
+                      {/* Actions Column */}
+                      <TableCell className="text-right">
+                         {data.type !== "empty" && !isMe && (
+                            <div className="flex justify-end gap-2">
+                               <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  className="h-8 w-8 hover:bg-blue-50 hover:text-blue-600"
+                                  onClick={() => deepScanMutation.mutate({ position: pos, name: data.name || `Position ${pos}`, type: data.type })}
+                                  disabled={deepScanMutation.isPending}
+                               >
+                                 <Search className="w-4 h-4" />
+                               </Button>
+                               {(data.type === "planet" || data.type === "station") && (
+                                 <>
+                                   <Button
+                                      size="icon"
+                                      variant="ghost"
+                                      className="h-8 w-8 hover:bg-blue-50 hover:text-blue-600"
+                                      onClick={() => messageActionMutation.mutate({
+                                         targetName: data.name || `Position ${pos}`,
+                                         recipientName: data.owner || "",
+                                         destination: `${galaxy}:${system}:${pos}`,
+                                      })}
+                                      disabled={messageActionMutation.isPending || !data.owner}
+                                   ><MessageSquare className="w-4 h-4" /></Button>
+                                   <Button
+                                      size="icon"
+                                      variant="ghost"
+                                      className="h-8 w-8 hover:bg-red-50 hover:text-red-600"
+                                      onClick={() => fleetActionMutation.mutate({
+                                         targetName: data.name || `Position ${pos}`,
+                                         destination: `${galaxy}:${system}:${pos}`,
+                                         missionType: "attack",
+                                         ships: { lightFighter: 10, cruiser: 2 },
+                                      })}
+                                      disabled={fleetActionMutation.isPending}
+                                   ><ShieldAlert className="w-4 h-4" /></Button>
+                                 </>
+                               )}
+                               {(data.type === "asteroid" || data.type === "blackhole") && (
+                                 <Button
+                                    size="icon"
+                                    variant="ghost"
+                                    className="h-8 w-8 hover:bg-yellow-50 hover:text-yellow-600"
+                                    onClick={() => fleetActionMutation.mutate({
+                                       targetName: data.name || `Position ${pos}`,
+                                       destination: `${galaxy}:${system}:${pos}`,
+                                       missionType: "espionage",
+                                       ships: { espionageProbe: 3, smallCargo: 1 },
+                                    })}
+                                    disabled={fleetActionMutation.isPending}
+                                 ><Rocket className="w-4 h-4" /></Button>
+                               )}
+                            </div>
+                         )}
+                      </TableCell>
+                   </TableRow>
+                 );
+               })}
+             </TableBody>
+           </Table>
+           </div>
+        </div>
       </div>
     </GameLayout>
   );

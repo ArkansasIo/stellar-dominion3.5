@@ -16,6 +16,7 @@ const Facilities = lazy(() => import("@/pages/Facilities"));
 const Research = lazy(() => import("@/pages/Research"));
 const Skills = lazy(() => import("@/pages/Skills"));
 const Fitting = lazy(() => import("@/pages/Fitting"));
+const FittingEnhanced = lazy(() => import("@/pages/FittingEnhanced"));
 const Shipyard = lazy(() => import("@/pages/Shipyard"));
 const Fleet = lazy(() => import("@/pages/Fleet"));
 const Galaxy = lazy(() => import("@/pages/Galaxy"));
@@ -209,6 +210,7 @@ function RouterContent() {
       <Route path="/research" component={Research} />
       <Route path="/skills" component={Skills} />
       <Route path="/fitting" component={Fitting} />
+      <Route path="/fitting-enhanced" component={FittingEnhanced} />
       <Route path="/artifacts" component={Artifacts} />
       <Route path="/shipyard" component={Shipyard} />
       <Route path="/fleet" component={Fleet} />

@@ -1,59 +1,137 @@
-# Missing Systems TODO (Source Audit)
+# Missing Systems Todo
 
-This checklist captures systems that are still stubbed, mocked, or UI-placeholder-only in the current codebase.
+Tracking incomplete or placeholder systems with file references.
 
-## Priority P0 — Core game loop and persistence
+---
 
-- [x] Persist combat history instead of mock response in `server/routes-combat.ts` (`/api/combat/battle-history` now reads from `battles`).
-- [x] Implement mining operations persistence currently marked stubbed in `server/storage.ts` (`mining_operations` table auto-created and used).
-- [x] Replace remaining critical gameplay placeholders with API-backed mutations for:
-  - [x] `client/src/pages/Fleet.tsx` (mission dispatch now posts to `/api/game/send-fleet` with coordinate/colonist validation)
-  - [x] `client/src/pages/Combat.tsx` (inline error state + stricter launch validation)
-  - [x] `client/src/pages/Colonies.tsx` (colonization now queues mission via `/api/game/send-fleet`)
-  - [x] `client/src/pages/Galaxy.tsx` (scan/message/attack/launch wired to API-backed actions)
+## Placeholder Systems
 
-## Priority P1 — Backend systems marked as stubs
+These systems have route stubs or `missingFeatureService` placeholders but incomplete implementations.
 
-- [x] Complete research achievement logic in `server/services/achievementService.ts`.
-- [x] Complete custom lab creation and progression in `server/services/customLabService.ts`.
-- [x] Complete multiplayer research bonus logic in `server/services/multiplayerBonusesService.ts`.
-- [ ] Replace all trade mocks in `server/services/researchTradingService.ts` with DB-backed flows:
-  - listing, details, status updates, cancel/settle, history, rating/reputation,
-  - disputes, blocking, bulk accept, eligibility checks, recommendations.
-- [ ] Replace asset-management stubs in `server/services/gameAssetsService.ts` with production storage flows:
-  - asset CRUD, bundle CRUD, manifest generation/versioning,
-  - CDN sync, integrity validation, cache control, rollback, stats/reporting.
-- [ ] Replace placeholder DB connection metrics in `server/services/serverStatusService.ts` with real live metrics.
+| System | Route File | Service | Status |
+|--------|-----------|---------|--------|
+| Espionage | `server/routes-espionage.ts` | — | Stub only |
+| Forums | `server/routes-forums.ts` | — | Basic |
+| Messages | `server/routes-messages.ts` | — | Basic |
+| Friends | `server/routes-friends.ts` | — | Basic |
+| Realms | `server/routes-realms.ts` | — | Stub |
+| phpMyAdmin | `server/routes-phpmyadmin.ts` | — | Proxy |
 
-## Priority P1 — Frontend features still placeholder-only
+> **Source:** `server/routes-espionage.ts`
+> **Source:** `server/routes-forums.ts`
+> **Source:** `server/routes-messages.ts`
+> **Source:** `server/routes-friends.ts`
+> **Source:** `server/routes-realms.ts`
+> **Source:** `server/routes-phpmyadmin.ts`
 
-- [x] Implement alliance diplomacy/chat actions now wired to API mutations in `client/src/pages/Alliance.tsx`.
-- [x] Implement army equipment/deploy workflows in `client/src/pages/Army.tsx`.
-- [x] Implement celestial browser detail/system navigation actions in `client/src/pages/CelestialBrowser.tsx`.
-- [x] Implement exploration anomaly scan and gate capture/jump actions in `client/src/pages/Exploration.tsx`.
-- [x] Implement friend request accept/reject backend actions in `client/src/pages/FriendsList.tsx`.
-- [x] Implement market exchange action in `client/src/pages/Market.tsx`.
-- [x] Implement raid boss challenge action in `client/src/pages/RaidBosses.tsx`.
-- [x] Replace admin panel placeholder actions (`Export CSV`, `View user`) in `client/src/pages/Admin.tsx`.
-- [x] Replace settings admin-tool placeholder actions (`Backup snapshot`, `Reset universe`, `Restart server`) in `client/src/pages/Settings.tsx`.
+---
 
-## Priority P2 — Content/system completeness
+## Missing Feature Service
 
-- [x] Replace Galaxy page synthetic data generation with server-side canonical universe data (`client/src/pages/Galaxy.tsx`).
-  - New route `GET /api/galaxy/:universe/:galaxy/:sector/:system` added (`server/routes-galaxy.ts`).
-  - Client now uses `useQuery` instead of local `getSystemData()`.
-- [x] Replace static troop roster seed (`MOCK_TROOPS`) with account/fleet-backed unit persistence (`client/src/pages/Army.tsx`).
-- [x] Implement planet defense systems panel (`client/src/pages/PlanetDetail.tsx`) — full upgrade UI with `defenseUpgradeMutation`.
-- [x] Implement alliance real-time chat (`client/src/pages/Alliance.tsx`) — polling + typing/send wiring present.
+The `missingFeatureService` tracks features that are planned but not yet implemented.
 
-## P0 carried-forward fixes (session)
+| File | Purpose |
+|------|---------|
+| `server/services/missingFeatureService.ts` | Feature placeholder tracking |
+| `server/routes-missing.ts` | Missing feature API |
 
-- [x] Replace `alert()` calls in `client/src/lib/gameContext.tsx` (`craftItem`, `activateArtifact`, `travelTo`) with `toast()` notifications.
+> **Source:** `server/services/missingFeatureService.ts`
+> **Source:** `server/routes-missing.ts`
 
-## Suggested implementation order
+---
 
-1. Combat and mining persistence (P0)
-2. Research trading + achievements/custom labs/multiplayer bonuses (P1 backend)
-3. Replace gameplay `alert(...)` handlers with API actions (P0/P1 frontend)
-4. Asset pipeline and server status hardening (P1)
-5. Remaining content completeness tasks (P2)
+## Systems Needing Completion
+
+### Espionage System
+- Route: `server/routes-espionage.ts`
+- No dedicated service
+- No client-side library
+- No config files
+
+> **Source:** `server/routes-espionage.ts`
+
+### Forums System
+- Route: `server/routes-forums.ts`
+- Basic implementation
+- No moderation tools
+- No thread management config
+
+> **Source:** `server/routes-forums.ts`
+
+### Messages System
+- Route: `server/routes-messages.ts`
+- Basic implementation
+- No real-time updates
+- No message templates
+
+> **Source:** `server/routes-messages.ts`
+
+### Friends System
+- Route: `server/routes-friends.ts`
+- Basic implementation
+- No friend recommendations
+- No online status
+
+> **Source:** `server/routes-friends.ts`
+
+### Realms System
+- Route: `server/routes-realms.ts`
+- Stub implementation
+- No realm-specific logic
+
+> **Source:** `server/routes-realms.ts`
+
+---
+
+## Client-Side Gaps
+
+### Missing Client Libraries
+
+These server systems lack corresponding client-side logic libraries:
+
+| Server System | Client Library Status |
+|---------------|----------------------|
+| Espionage | No `client/src/lib/espionage.ts` |
+| Forums | No `client/src/lib/forumSystems.ts` |
+| Messages | No `client/src/lib/messageSystems.ts` |
+| Friends | No `client/src/lib/friendsSystems.ts` |
+| Realms | No `client/src/lib/realmSystems.ts` |
+
+### Missing Config Files
+
+| System | Missing Config |
+|--------|---------------|
+| Espionage | No `shared/config/espionageConfig.ts` |
+| Forums | No `shared/config/forumConfig.ts` |
+| Messages | No `shared/config/messageConfig.ts` |
+| Friends | No `shared/config/friendsConfig.ts` |
+| Realms | No `shared/config/realmConfig.ts` |
+
+---
+
+## Pages Needing Enhancement
+
+| Page | Current State | Needed |
+|------|--------------|--------|
+| `client/src/pages/OgameCompendium.tsx` | Basic | Full OGame integration |
+| `client/src/pages/ThreeDViewerPortal.tsx` | Basic | Full 3D viewer |
+| `client/src/pages/TrainingCenter.tsx` | Basic | Training mechanics |
+| `client/src/pages/UniverseEvents.tsx` | Basic | Event system |
+
+> **Source:** `client/src/pages/OgameCompendium.tsx`
+> **Source:** `client/src/pages/ThreeDViewerPortal.tsx`
+> **Source:** `client/src/pages/TrainingCenter.tsx`
+> **Source:** `client/src/pages/UniverseEvents.tsx`
+
+---
+
+## Priority Todo
+
+1. **Espionage** — Full implementation with config, service, and client logic
+2. **Forums** — Thread management, moderation, categories
+3. **Messages** — Real-time messaging, templates, notifications
+4. **Friends** — Online status, recommendations, social features
+5. **Realms** — Realm-specific game logic
+6. **3D Viewer** — Full Three.js integration
+7. **Training Center** — Training mechanics and progression
+8. **Universe Events** — Event trigger system and rewards

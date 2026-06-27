@@ -28,3 +28,16 @@ pool.connect()
   });
 
 export const db = drizzle({ client: pool, schema });
+
+export async function runTransaction<T>(fn: (tx: any) => Promise<T>): Promise<T> {
+  return await db.transaction(fn);
+}
+
+export async function shutdownDb() {
+  try {
+    await pool.end();
+    console.log('🔌 Database connection closed');
+  } catch (error) {
+    console.error('❌ Error closing database connection:', error);
+  }
+}

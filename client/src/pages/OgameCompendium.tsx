@@ -7,7 +7,25 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, Calculator, Database } from "lucide-react";
+import { Search, Calculator, Database, ImageIcon } from "lucide-react";
+
+const OGame_ENTRY_IMAGES: Record<string, string> = {
+  metalMine: "/assets/ogamex/objects/buildings/metal_mine_small.jpg",
+  crystalMine: "/assets/ogamex/objects/buildings/crystal_mine_small.jpg",
+  deuteriumSynthesizer: "/assets/ogamex/objects/buildings/deuterium_synthesizer_small.jpg",
+  energyTechnology: "/assets/ogamex/objects/research/energy_technology_small.jpg",
+  hyperspaceDrive: "/assets/ogamex/objects/research/hyperspace_drive_small.jpg",
+};
+
+const CATEGORY_FALLBACK_IMAGES: Record<string, string> = {
+  economy: "/assets/ogamex/content/ships_200.jpg",
+  infrastructure: "/assets/ogamex/content/ships_200.jpg",
+  research: "/assets/ogamex/content/research_200.jpg",
+  fleet: "/assets/ogamex/content/ships_200.jpg",
+  defense: "/assets/ogamex/content/defense_80.png",
+  moon: "/assets/ogamex/planets/normal_moon_view.jpg",
+  officers: "/assets/ogamex/content/sprite.jpg",
+};
 
 type CatalogCost = {
   metal: number;
@@ -297,13 +315,29 @@ export default function OgameCompendium() {
                       </Card>
                     )}
 
-                    {entries.map((entry) => (
+                    {entries.map((entry) => {
+                      const entryImage = OGame_ENTRY_IMAGES[entry.id] || CATEGORY_FALLBACK_IMAGES[entry.categoryId];
+                      return (
                       <Card key={entry.id} className="bg-white border-slate-200" data-testid={`ogame-entry-${entry.id}`}>
                         <CardHeader className="pb-3">
                           <div className="flex items-start justify-between gap-2">
-                            <div>
-                              <CardTitle className="text-base text-slate-900">{entry.name}</CardTitle>
-                              <CardDescription>{entry.id}</CardDescription>
+                            <div className="flex items-center gap-3">
+                              {entryImage ? (
+                                <img
+                                  src={entryImage}
+                                  alt={entry.name}
+                                  className="w-12 h-12 rounded object-cover border border-slate-200"
+                                  onError={(e) => { e.currentTarget.style.display = "none"; }}
+                                />
+                              ) : (
+                                <div className="w-12 h-12 rounded bg-slate-100 flex items-center justify-center">
+                                  <ImageIcon className="w-5 h-5 text-slate-400" />
+                                </div>
+                              )}
+                              <div>
+                                <CardTitle className="text-base text-slate-900">{entry.name}</CardTitle>
+                                <CardDescription>{entry.id}</CardDescription>
+                              </div>
                             </div>
                             <Badge className={typeColor(entry.entryType)}>{entry.entryType}</Badge>
                           </div>
@@ -316,7 +350,6 @@ export default function OgameCompendium() {
                             <div className="rounded border border-slate-200 p-2">D: {formatNumber(entry.baseCost.deuterium)}</div>
                             <div className="rounded border border-slate-200 p-2">T: {formatNumber(entry.baseTimeSeconds)}s</div>
                           </div>
-
                           <Button
                             variant="outline"
                             className="w-full"
@@ -328,7 +361,8 @@ export default function OgameCompendium() {
                           </Button>
                         </CardContent>
                       </Card>
-                    ))}
+                      );
+                    })}
                   </div>
                 </TabsContent>
               );

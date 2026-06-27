@@ -620,6 +620,22 @@ export async function setupAuth(app: Express) {
   });
 }
 
+export const isAdmin: RequestHandler = async (req, res, next) => {
+  const userId = (req.session as any)?.userId || (req as any)?.user?.id;
+  if (!userId) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  try {
+    const adminStatus = await resolveAdminStatus(userId);
+    if (!adminStatus.isAdmin) {
+      return res.status(403).json({ message: "Admin access required" });
+    }
+    next();
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
   // First try session
   let userId = (req.session as any)?.userId;

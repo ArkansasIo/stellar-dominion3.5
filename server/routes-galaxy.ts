@@ -38,7 +38,7 @@ type ScanReport = {
 // ---------------------------------------------------------------------------
 
 /** Maximum orbital positions displayed in a system (matches the client table). */
-const MAX_SYSTEM_POSITIONS = 15;
+const MAX_SYSTEM_POSITIONS = 50;
 
 /** FNV-1a 32-bit hash of an arbitrary string. */
 function fnv1a(str: string): number {

@@ -360,9 +360,10 @@ export default function Galaxy() {
         )}
 
         {/* Galaxy Table */}
-        <div className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
+        <div className="bg-white border border-slate-200 rounded-lg shadow-sm">
+           <div className="max-h-[600px] overflow-y-auto">
            <Table>
-             <TableHeader>
+             <TableHeader className="sticky top-0 bg-slate-50 z-10">
                <TableRow className="bg-slate-50 border-slate-200 hover:bg-slate-50">
                  <TableHead className="text-center w-[60px] text-slate-700">Pos</TableHead>
                  <TableHead className="w-[80px] text-slate-700">Visual</TableHead>
@@ -378,7 +379,7 @@ export default function Galaxy() {
                {isFetching && !systemData && (
                  <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">Loading system data...</TableCell></TableRow>
                )}
-               {Array.from({ length: 15 }).map((_, i) => {
+               {Array.from({ length: 50 }).map((_, i) => {
                  const pos = i + 1;
                  const data: SystemPosition = systemData?.positions?.find(p => p.position === pos) ||
                    { position: pos, type: "empty", name: "" };
@@ -529,9 +530,10 @@ export default function Galaxy() {
                  );
                })}
              </TableBody>
-           </Table>
-        </div>
-      </div>
-    </GameLayout>
+            </Table>
+           </div>
+         </div>
+       </div>
+     </GameLayout>
   );
 }

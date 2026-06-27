@@ -1,9 +1,30 @@
 # Stage 8: Economy & Market
 
-This stage scaffolds the economy and market system, including backend logic for resource production, trading, and market orders, API endpoints, and frontend stubs for market and resource management.
+Resource production, trading, and market operations.
 
-- Backend: Logic for resource production, trading, and market orders
-- API endpoints for market actions
-- Frontend: Market and ResourceManager components
+## Backend
 
-Next: Stage 9 will cover admin tools and dashboards.
+- Resource production and management
+- Market orders and trading
+- Bank system
+
+> **Source:** server/routes-trading.ts
+> **Source:** server/routes-trades.ts
+> **Source:** server/routes-resource-trading.ts
+> **Source:** server/routes-bank-vault.ts
+> **Source:** server/services/resourceService.ts
+> **Source:** server/services/autoBuyResourcesService.ts
+
+## Configuration
+
+> **Source:** shared/config/economyConfig.ts (if exists)
+
+## Frontend
+
+- Market interface
+- Resource management
+- Bank and currency views
+
+## Next Stage
+
+Stage 9: Admin Tools & Dashboards
