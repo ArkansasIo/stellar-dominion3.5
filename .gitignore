@@ -81,6 +81,7 @@ replit.nix
 .local
 server/public
 vite.config.ts.*
+dev-server.*
 
 # Archives
 *.tar.gz
