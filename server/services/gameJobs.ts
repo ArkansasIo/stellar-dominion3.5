@@ -1,10 +1,11 @@
 import { pool } from "../db";
-import { registerCronJob, recordGameTick, registerTimerFireHandler, startTimerPoller, cronLog, type CronJobResult } from "./cronService";
+import { registerCronJob, recordGameTick, registerTimerFireHandler, startTimerPoller, cronLog, ensureCronTables, type CronJobResult } from "./cronService";
 import { GAME_SETTINGS } from "../config/gameSettings";
 
 const { intervals: INT, loginBonus: BONUS, resourceProduction: PROD } = GAME_SETTINGS;
 
 export async function registerAllGameJobs(): Promise<void> {
+  await ensureCronTables();
   // ========== CORE RESOURCE & PRODUCTION JOBS ==========
   
   await registerCronJob({

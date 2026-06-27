@@ -57,6 +57,76 @@ export interface CronJobRecord {
 const activeTimers: Map<string, NodeJS.Timeout> = new Map();
 const jobHandlers: Map<string, (job: CronJobRecord, params: Record<string, any>) => Promise<CronJobResult>> = new Map();
 
+export async function ensureCronTables(): Promise<void> {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS server_cron_jobs (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      description TEXT,
+      job_type TEXT NOT NULL,
+      schedule_type TEXT NOT NULL DEFAULT 'interval',
+      interval_ms INTEGER NOT NULL DEFAULT 60000,
+      cron_expression TEXT,
+      enabled BOOLEAN NOT NULL DEFAULT true,
+      last_run_at TIMESTAMP,
+      last_run_duration_ms INTEGER DEFAULT 0,
+      last_run_status TEXT DEFAULT 'pending',
+      last_run_error TEXT,
+      run_count INTEGER DEFAULT 0,
+      consecutive_failures INTEGER DEFAULT 0,
+      max_failures INTEGER DEFAULT 10,
+      params JSONB DEFAULT '{}',
+      created_at TIMESTAMP DEFAULT now(),
+      updated_at TIMESTAMP DEFAULT now()
+    )
+  `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS server_cron_logs (
+      id SERIAL PRIMARY KEY,
+      job_id TEXT NOT NULL REFERENCES server_cron_jobs(id),
+      started_at TIMESTAMP NOT NULL DEFAULT now(),
+      finished_at TIMESTAMP,
+      duration_ms INTEGER DEFAULT 0,
+      status TEXT NOT NULL DEFAULT 'running',
+      records_processed INTEGER DEFAULT 0,
+      records_affected INTEGER DEFAULT 0,
+      error_message TEXT,
+      metadata JSONB DEFAULT '{}'
+    )
+  `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS server_game_ticks (
+      id SERIAL PRIMARY KEY,
+      tick_type TEXT NOT NULL,
+      started_at TIMESTAMP NOT NULL DEFAULT now(),
+      finished_at TIMESTAMP,
+      duration_ms INTEGER DEFAULT 0,
+      players_processed INTEGER DEFAULT 0,
+      resources_updated INTEGER DEFAULT 0,
+      constructions_completed INTEGER DEFAULT 0,
+      turns_generated INTEGER DEFAULT 0,
+      errors INTEGER DEFAULT 0,
+      metadata JSONB DEFAULT '{}'
+    )
+  `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS server_timers (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      timer_type TEXT NOT NULL,
+      end_time TIMESTAMP NOT NULL,
+      interval_ms INTEGER DEFAULT 0,
+      max_repeats INTEGER DEFAULT -1,
+      current_repeat INTEGER DEFAULT 0,
+      last_fired_at TIMESTAMP,
+      enabled BOOLEAN DEFAULT true,
+      params JSONB DEFAULT '{}',
+      created_at TIMESTAMP DEFAULT now()
+    )
+  `);
+  cronLog("Cron tables ensured", "cron", "success");
+}
+
 export async function registerCronJob(config: CronJobConfig): Promise<void> {
   jobHandlers.set(config.id, config.handler);
 
