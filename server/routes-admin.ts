@@ -210,7 +210,7 @@ async function requireAdminActorId(req: Request, res: Response): Promise<string 
   return actorId;
 }
 
-async function requireAdminPermission(
+export async function requireAdminPermission(
   req: Request,
   res: Response,
   permission: AdminPermission,

@@ -7,6 +7,7 @@ declare module "express-session" {
     adminAuthenticatedAt?: number;
     impersonatorId?: string;
     realmId?: string;
+    language?: string;
   }
 }
 

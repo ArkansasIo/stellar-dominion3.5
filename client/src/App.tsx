@@ -89,6 +89,11 @@ const OgameCompendium = lazy(() => import("@/pages/OgameCompendium"));
 const Leaderboard = lazy(() => import("@/pages/Leaderboard"));
 const ThreeDViewerPortal = lazy(() => import("@/pages/ThreeDViewerPortal"));
 const DatabaseAdmin = lazy(() => import("@/pages/DatabaseAdmin"));
+const AdminMods = lazy(() => import("@/pages/AdminMods"));
+const AdminI18n = lazy(() => import("@/pages/AdminI18n"));
+const AdminBotAI = lazy(() => import("@/pages/AdminBotAI"));
+const AdminFeed = lazy(() => import("@/pages/AdminFeed"));
+const AdminIntegrity = lazy(() => import("@/pages/AdminIntegrity"));
 const PowerGrid = lazy(() => import("@/pages/PowerGrid"));
 const OrbitalDefense = lazy(() => import("@/pages/OrbitalDefense"));
 const DimensionalHub = lazy(() => import("@/pages/DimensionalHub"));
@@ -175,6 +180,11 @@ function RouterContent() {
         <Route path="/admin-login" component={AdminLogin} />
         <Route path="/admin" component={Admin} />
         <Route path="/admin/database" component={DatabaseAdmin} />
+        <Route path="/admin/mods" component={AdminMods} />
+        <Route path="/admin/i18n" component={AdminI18n} />
+        <Route path="/admin/bot-ai" component={AdminBotAI} />
+        <Route path="/admin/feed" component={AdminFeed} />
+        <Route path="/admin/integrity" component={AdminIntegrity} />
         <Route path="/about" component={About} />
         <Route path="/forums" component={Forums} />
         <Route path="/terms" component={Terms} />
@@ -191,6 +201,11 @@ function RouterContent() {
         <Route path="/admin-login" component={AdminLogin} />
         <Route path="/admin" component={Admin} />
         <Route path="/admin/database" component={DatabaseAdmin} />
+        <Route path="/admin/mods" component={AdminMods} />
+        <Route path="/admin/i18n" component={AdminI18n} />
+        <Route path="/admin/bot-ai" component={AdminBotAI} />
+        <Route path="/admin/feed" component={AdminFeed} />
+        <Route path="/admin/integrity" component={AdminIntegrity} />
         <Route path="/about" component={About} />
         <Route path="/forums" component={Forums} />
         <Route path="/terms" component={Terms} />
@@ -282,6 +297,11 @@ function RouterContent() {
       <Route path="/settings" component={Settings} />
       <Route path="/admin" component={Admin} />
       <Route path="/admin/database" component={DatabaseAdmin} />
+      <Route path="/admin/mods" component={AdminMods} />
+      <Route path="/admin/i18n" component={AdminI18n} />
+      <Route path="/admin/bot-ai" component={AdminBotAI} />
+      <Route path="/admin/feed" component={AdminFeed} />
+      <Route path="/admin/integrity" component={AdminIntegrity} />
       <Route path="/server-console" component={ServerConsole} />
       <Route component={NotFound} />
     </Switch>

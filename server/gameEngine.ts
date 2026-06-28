@@ -519,72 +519,72 @@ class GameEngine {
 
   public getResourceProductionService() {
     // Resource production and economic systems
-    return require('../services/resourceProductionService');
+    return require('./services/resourceProductionService');
   }
 
   public getEconomyService() {
     // Economy, trading, and financial systems
-    return require('../services/tradingService');
+    return require('./services/tradingService');
   }
 
   public getResearchService() {
     // Research management and technology trees
-    return require('../services/researchLabService');
+    return require('./services/researchLabService');
   }
 
   public getBuildingSystem() {
     // Construction and building management
-    return require('../services/armyBuildingStructuresService');
+    return require('./services/armyBuildingStructuresService');
   }
 
   public getFleetSystem() {
     // Fleet composition, management, and combat
-    return require('../services/armySystemService');
+    return require('./services/armySystemService');
   }
 
   public getRealmSystem() {
     // Realm configuration and universe selection
-    return require('../services/universeSeedService');
+    return require('./services/universeSeedService');
   }
 
   public getEventSystem() {
     // Dynamic event scheduling and rewards
-    return require('../services/seasonService');
+    return require('./services/seasonService');
   }
 
   public getMissionSystem() {
     // Campaign and mission management
-    return require('../services/missionLogService');
+    return require('./services/missionLogService');
   }
 
   public getGovernmentSystem() {
     // Governance, diplomacy, and alliances
-    return require('../services/civilizationSystemService');
+    return require('./services/civilizationSystemService');
   }
 
   public getPopulationSystem() {
     // Population management and civics
-    return require('../services/realmSystemService');
+    return require('./services/realmSystemService');
   }
 
   public getMegastructureSystem() {
     // MegaStructures like Dyson spheres and ring worlds
-    return require('../services/megastructureService');
+    return require('./services/megastructureService');
   }
 
   public getGroundCombatSystem() {
     // Planetary invasion and ground warfare
-    return require('../services/combatService');
+    return require('./services/combatService');
   }
 
   public getCyberWarfareSystem() {
     // Hacking, sabotage, and cyber operations
-    return require('../services/espionageService');
+    return require('./services/espionageService');
   }
 
   public getAnalyticsService() {
     // Performance tracking and player analytics
-    return require('../services/analyticsService');
+    return require('./services/analyticsService');
   }
 
   // Core game loop orchestrator

@@ -5,7 +5,7 @@ import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
 import path from "path";
-import { logger } from "./logger";
+import { logger, type LogCategory } from "./logger";
 import { ConsoleMenu } from "./consoleMenu";
 import { setupAuth } from "./basicAuth";
 import { displayStartupBanner, displayServerStatus, displayLiveStatus, displayRequestLog, displayAuthLog } from "./terminalUI";
@@ -57,6 +57,16 @@ import { registerOGameAllianceDepotRoutes } from "./routes-ogame-alliance-depot"
 import { registerOGameGravitonRoutes } from "./routes-ogame-graviton";
 import { registerOGamePushProtectionRoutes } from "./routes-ogame-push-protection";
 import connectProviderRouter from "./routes-connect-provider";
+
+// New feature imports
+import { ModManager } from "./systems/modSystem";
+import { registerAdminModRoutes } from "./routes-admin-mods";
+import { registerAdminI18nRoutes } from "./routes-admin-i18n";
+import { I18nService } from "./services/i18nService";
+import { BotAIService } from "./services/botAIService";
+import { EventQueueService } from "./services/eventQueueService";
+import { IntegrityService } from "./services/integrityService";
+import { FeedService, createFeedRouter } from "./services/feedService";
 import universeScanRouter from "./routes-universe-scan";
 import planetVaultRouter from "./routes-planet-vault";
 
@@ -102,32 +112,26 @@ app.use("/api/auth", authLimiter);
 app.use("/api/admin", authLimiter);
 app.use("/api", apiLimiter);
 
+const sourceToCategory: Record<string, LogCategory> = {
+  startup: "SERVER",
+  server: "SERVER",
+  express: "SERVER",
+  api: "API",
+  auth: "AUTH",
+  db: "DB",
+};
+
 export function log(message: string, source = "express", level: "info" | "success" | "error" | "warn" = "info") {
-  const formattedTime = new Date().toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: true,
-  });
+  const category: LogCategory = sourceToCategory[source] ?? "SERVER";
 
-  const icons = {
-    info: "[i]",
-    success: "[ok]",
-    error: "[x]",
-    warn: "[!]",
-  };
-
-  console.log(`${formattedTime} [${source}] ${icons[level]} ${message}`);
-  
-  // Also log to the structured logger
   if (level === "error") {
-    logger.error("SERVER" as any, message);
+    logger.error(category, message);
   } else if (level === "warn") {
-    logger.warn("SERVER" as any, message);
+    logger.warn(category, message);
   } else if (level === "success") {
-    logger.info("SERVER" as any, message);
+    logger.info(category, message);
   } else {
-    logger.info("SERVER" as any, message);
+    logger.info(category, message);
   }
 }
 
@@ -351,6 +355,68 @@ import { eq, ilike, or } from "drizzle-orm";
   } catch (e) {
     log(`UpdateManager skipped: ${(e as Error).message}`, "startup", "warn");
   }
+  // Initialize new services
+  try {
+    const modManager = ModManager.getInstance();
+    await modManager.loadMods();
+    log(`Mod system initialized with ${(await modManager.listMods()).installed.length} mod(s)`, "startup", "success");
+  } catch (error) {
+    log(`Mod system init skipped: ${(error as Error).message}`, "startup", "warn");
+  }
+
+  try {
+    const i18n = I18nService.getInstance();
+    await i18n.loadAllLanguages();
+    app.use(i18n.middleware());
+    log("I18n system initialized", "startup", "success");
+  } catch (error) {
+    log(`I18n init skipped: ${(error as Error).message}`, "startup", "warn");
+  }
+
+  try {
+    const eventQueue = EventQueueService.getInstance();
+    eventQueue.registerDefaultHandlers();
+    // Queue is processed on each API request via middleware below
+    log("Event queue system initialized", "startup", "success");
+  } catch (error) {
+    log(`Event queue init skipped: ${(error as Error).message}`, "startup", "warn");
+  }
+
+  try {
+    const botAI = BotAIService.getInstance();
+    await botAI.resumeAllBots();
+    log("Bot AI system initialized", "startup", "success");
+  } catch (error) {
+    log(`Bot AI init skipped: ${(error as Error).message}`, "startup", "warn");
+  }
+
+  try {
+    const feedService = FeedService.getInstance();
+    await feedService.loadEntries();
+    log("Feed system initialized", "startup", "success");
+  } catch (error) {
+    log(`Feed init skipped: ${(error as Error).message}`, "startup", "warn");
+  }
+
+  // Register new admin routes
+  registerAdminModRoutes(app);
+  registerAdminI18nRoutes(app);
+
+  // Register feed routes
+  const baseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 5001}`;
+  app.use(createFeedRouter(baseUrl));
+
+  // Event queue middleware - process queue on each API request
+  app.use("/api", async (req, res, next) => {
+    try {
+      const eventQueue = EventQueueService.getInstance();
+      await eventQueue.update();
+    } catch {
+      // Queue processing errors are non-fatal
+    }
+    next();
+  });
+
   registerOGameCombatRoutes(app);
   registerOGameDebrisRoutes(app);
   registerOGameACSRoutes(app);

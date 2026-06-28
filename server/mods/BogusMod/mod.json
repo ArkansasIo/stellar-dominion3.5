@@ -1,0 +1,8 @@
+{
+  "name": "BogusMod",
+  "version": "1.0.0",
+  "author": "OGame Open Source Team",
+  "description": "Example/demo mod that adds a 'Tritium' resource and 'Tip of the Day' feature",
+  "website": "https://github.com/ogamespec/ogame-opensource",
+  "bg_image": "/mods/BogusMod/img/bg.png"
+}

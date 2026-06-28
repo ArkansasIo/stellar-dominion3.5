@@ -403,4 +403,5 @@ export class TurnSystemService {
   }
 }
 
+export const turnSystemService = new TurnSystemService();
 export default TurnSystemService;
