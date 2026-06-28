@@ -5,6 +5,7 @@
  */
 
 import React, { useMemo, useState } from 'react';
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
 import GameLayout from '@/components/layout/GameLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -34,6 +35,8 @@ import {
   useCompleteCampaign,
 } from '@/hooks/useCivilizationArmy';
 import type { ArmyUnit, ArmySubsystem } from '@shared/types/civilization';
+
+const TEMP_THEME_IMAGE = "/theme-temp.png";
 
 type SortBy = 'tier' | 'type' | 'cost' | 'power';
 
@@ -155,21 +158,32 @@ export default function ArmyManagement() {
     <GameLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-orbitron font-bold text-slate-900">Military Command</h1>
-            <p className="text-sm text-slate-600">
-              Manage your military forces and operations
-            </p>
+        <section className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.78), rgba(15,23,42,0.92)), url(${BACKGROUND_ASSETS.COMBAT.path})` }}>
+          <div className="p-5 lg:p-6 space-y-4 text-white">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <img src={MENU_ASSETS.NAVIGATION.EMPIRE.path} alt="Icon" className="w-8 h-8 rounded-lg border border-white/10 bg-white/10 p-1.5 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                <h1 className="text-2xl font-bold">Military Command</h1>
+              </div>
+              <Button
+                onClick={() => setTrainModalOpen(true)}
+                className="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700"
+              >
+                <Sword className="w-4 h-4 mr-2" />
+                Train Unit
+              </Button>
+            </div>
+            <p className="text-sm leading-6 text-slate-300">Manage your military forces and operations</p>
+            <div className="flex flex-wrap gap-3">
+              {[{ label: "Ground Forces", image: SHIP_ASSETS.CAPITALS.BATTLECRUISER.path }, { label: "Combat Ops", image: MENU_ASSETS.BUILDINGS.SHIPYARD.path }, { label: "Strategic Command", image: OGAMEX_FEATURED_ASSETS.BACKGROUND.path }].map((item) => (
+                <div key={item.label} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                  <img src={item.image} alt={item.label} className="w-10 h-10 rounded-lg border border-white/10 bg-black/10 p-1.5 object-contain" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                  <div className="text-sm font-semibold">{item.label}</div>
+                </div>
+              ))}
+            </div>
           </div>
-          <Button
-            onClick={() => setTrainModalOpen(true)}
-            className="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700"
-          >
-            <Sword className="w-4 h-4 mr-2" />
-            Train Unit
-          </Button>
-        </div>
+        </section>
 
         {/* Military Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

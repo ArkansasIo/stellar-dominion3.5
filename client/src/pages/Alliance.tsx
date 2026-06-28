@@ -1,6 +1,6 @@
 import GameLayout from "@/components/layout/GameLayout";
 import { useGame } from "@/lib/gameContext";
-import { TECH_BRANCH_ASSETS } from "@shared/config";
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS, TECH_BRANCH_ASSETS } from "@shared/config";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -353,18 +353,28 @@ export default function Alliance() {
      return (
         <GameLayout>
            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500" data-alliance-systems-version={allianceSystemsVersion}>
-              <div className="flex justify-between items-start">
-                 <div>
-                    <div className="flex items-center gap-3 mb-1">
-                       <Shield className="w-8 h-8 text-primary" />
-                       <h2 className="text-3xl font-orbitron font-bold text-slate-900">[{alliance.tag}] {alliance.name}</h2>
+              <section className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.78), rgba(15,23,42,0.92)), url(${BACKGROUND_ASSETS.STAR_FIELD.path})` }}>
+                <div className="p-5 lg:p-6 space-y-4 text-white">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <img src={MENU_ASSETS.NAVIGATION.DIPLOMACY.path} alt="Icon" className="w-8 h-8 rounded-lg border border-white/10 bg-white/10 p-1.5 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                      <h1 className="text-2xl font-bold">[{alliance.tag}] {alliance.name}</h1>
                     </div>
-                    <p className="text-muted-foreground font-rajdhani text-lg">Alliance Command Center</p>
-                 </div>
-                 <Button variant="destructive" onClick={leaveAlliance} data-testid="button-leave-alliance">
-                    <LogOut className="w-4 h-4 mr-2" /> Leave Alliance
-                 </Button>
-              </div>
+                    <Button variant="destructive" onClick={leaveAlliance} data-testid="button-leave-alliance">
+                      <LogOut className="w-4 h-4 mr-2" /> Leave Alliance
+                    </Button>
+                  </div>
+                  <p className="text-sm leading-6 text-slate-300">Alliance Command Center</p>
+                  <div className="flex flex-wrap gap-3">
+                    {[{ label: "Diplomacy", image: MENU_ASSETS.NAVIGATION.DIPLOMACY.path }, { label: "Trade Station", image: MENU_ASSETS.BUILDINGS.TRADE_STATION.path }, { label: "Defense", image: OGAMEX_FEATURED_ASSETS.DEFENSE.path }].map((item) => (
+                      <div key={item.label} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                        <img src={item.image} alt={item.label} className="w-10 h-10 rounded-lg border border-white/10 bg-black/10 p-1.5 object-contain" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                        <div className="text-sm font-semibold">{item.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
 
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200" data-testid="card-stats-members">

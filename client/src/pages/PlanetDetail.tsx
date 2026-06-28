@@ -15,6 +15,9 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 import { useEffect, useState } from "react";
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
+
+const TEMP_THEME_IMAGE = "/theme-temp.png";
 import { createHabitatConditionProfile } from "@/lib/environmentSystems";
 import { createPlanetDossier } from "@/lib/planetDossier";
 
@@ -274,43 +277,52 @@ export default function PlanetDetail() {
   return (
     <GameLayout>
       <div className="space-y-6 animate-in fade-in duration-500">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/celestial-browser">
-              <Button variant="outline" size="sm">
-                <ArrowLeft className="w-4 h-4 mr-2" /> Back
-              </Button>
-            </Link>
-            <div>
-              <div className="flex items-center gap-3">
-                <h2 className="text-3xl font-orbitron font-bold text-slate-900">{planet.name}</h2>
-                <Badge className={classColors[planet.class] || "bg-slate-100"}>
-                  Class {planet.class}
-                </Badge>
-                {planet.colonized && (
-                  <Badge className="bg-green-100 text-green-800">
-                    <Flag className="w-3 h-3 mr-1" /> Colonized
-                  </Badge>
-                )}
+        <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
+          <img src={BACKGROUND_ASSETS.GALAXY_MAP.path} alt={planet.name} className="absolute inset-0 w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-blue-950/60 to-transparent" />
+          <div className="relative z-10 p-6 flex items-center justify-between">
+            <div className="flex items-center gap-6">
+              <div className="flex gap-2 items-center">
+                <img src={SHIP_ASSETS.SPECIAL.COLONIZER.path} alt="Colonizer" className="w-12 h-12 object-contain" />
+                <img src={OGAMEX_FEATURED_ASSETS.MOON.path} alt="Moon" className="w-12 h-12 object-contain" />
+                <img src={MENU_ASSETS.NAVIGATION.EMPIRE.path} alt="Empire" className="w-12 h-12 object-contain" />
               </div>
-              <p className="text-muted-foreground font-rajdhani">
-                {planet.coordinates} • {planet.type} • {planet.size}
-              </p>
+              <div>
+                <div className="flex items-center gap-3">
+                  <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow">{planet.name}</h2>
+                  <Badge className={classColors[planet.class] || "bg-slate-100"}>
+                    Class {planet.class}
+                  </Badge>
+                  {planet.colonized && (
+                    <Badge className="bg-green-100 text-green-800">
+                      <Flag className="w-3 h-3 mr-1" /> Colonized
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-blue-300 font-rajdhani">
+                  {planet.coordinates} • {planet.type} • {planet.size}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Link href="/celestial-browser">
+                <Button variant="outline" size="sm" className="border-white/30 text-white hover:bg-white/10">
+                  <ArrowLeft className="w-4 h-4 mr-2" /> Back
+                </Button>
+              </Link>
+              {!planet.colonized && (
+                <Button
+                  onClick={() => colonizeMutation.mutate()}
+                  disabled={colonizeMutation.isPending}
+                  size="lg"
+                  className="font-orbitron"
+                >
+                  <Flag className="w-4 h-4 mr-2" />
+                  {colonizeMutation.isPending ? "Colonizing..." : "Colonize Planet"}
+                </Button>
+              )}
             </div>
           </div>
-
-          {!planet.colonized && (
-            <Button 
-              onClick={() => colonizeMutation.mutate()}
-              disabled={colonizeMutation.isPending}
-              size="lg"
-              className="font-orbitron"
-            >
-              <Flag className="w-4 h-4 mr-2" />
-              {colonizeMutation.isPending ? "Colonizing..." : "Colonize Planet"}
-            </Button>
-          )}
         </div>
 
         {/* Stats Grid */}

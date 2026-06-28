@@ -24,7 +24,7 @@ import {
   Gauge
 } from "lucide-react";
 import { useState } from "react";
-import { PLANET_ASSETS } from "@shared/config";
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS, PLANET_ASSETS } from "@shared/config";
 import { 
   generateSystem, 
   generateGalaxy, 
@@ -153,13 +153,17 @@ export default function UniverseGeneratorPage() {
     <GameLayout>
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
-          <img src="/assets/backgrounds/galaxy_map.png" alt="Universe Generator" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-indigo-950/60 to-transparent" />
+          <img src={BACKGROUND_ASSETS.GALAXY_MAP.path} alt="Universe Generator" className="absolute inset-0 w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-blue-950/60 to-transparent" />
           <div className="relative z-10 p-6 flex items-center gap-6">
-            <img src="/assets/planets/volcanic.png" alt="Planet" className="w-20 h-20 rounded-full object-cover ring-2 ring-indigo-400/60 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
+            <div className="flex gap-2 items-center">
+              <img src={SHIP_ASSETS.FIGHTERS.SCOUT.path} alt="Scout" className="w-12 h-12 object-contain" />
+              <img src={MENU_ASSETS.NAVIGATION.EXPLORATION.path} alt="Exploration" className="w-12 h-12 object-contain" />
+              <img src={OGAMEX_FEATURED_ASSETS.BACKGROUND.path} alt="Featured" className="w-12 h-12 object-contain" />
+            </div>
             <div>
               <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow">Universe Generator</h2>
-              <p className="text-indigo-300 font-rajdhani text-lg">Procedurally generate entire star systems and galaxies with deterministic seeding.</p>
+              <p className="text-blue-300 font-rajdhani text-lg">Procedurally generate entire star systems and galaxies with deterministic seeding.</p>
             </div>
           </div>
         </div>

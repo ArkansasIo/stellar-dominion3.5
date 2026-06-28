@@ -8,6 +8,9 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Award, Gift } from "lucide-react";
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
+
+const TEMP_THEME_IMAGE = "/theme-temp.png";
 
 interface SeasonPassReward {
   tier: number;
@@ -117,13 +120,17 @@ export default function SeasonPass() {
     <GameLayout>
       <div className="space-y-6">
         <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
-          <img src="/assets/backgrounds/nebula.png" alt="Season Pass" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-yellow-950/60 to-transparent" />
+          <img src={BACKGROUND_ASSETS.STAR_FIELD.path} alt="Season Pass" className="absolute inset-0 w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-blue-950/60 to-transparent" />
           <div className="relative z-10 p-6 flex items-center gap-6">
-            <img src="/assets/ships/carrier.png" alt="Carrier" className="w-20 h-20 rounded-xl object-cover ring-2 ring-yellow-400/60 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
+            <div className="flex gap-2 items-center">
+              <img src={SHIP_ASSETS.FIGHTERS.SCOUT.path} alt="Scout" className="w-12 h-12 object-contain" />
+              <img src={MENU_ASSETS.BUILDINGS.SPACEPORT.path} alt="Spaceport" className="w-12 h-12 object-contain" />
+              <img src={OGAMEX_FEATURED_ASSETS.RESEARCH.path} alt="Research" className="w-12 h-12 object-contain" />
+            </div>
             <div>
               <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow">Season Pass</h2>
-              <p className="text-yellow-300 font-rajdhani text-lg">Advance through 100 tiers and claim Free, Gold, and Platinum rewards.</p>
+              <p className="text-blue-300 font-rajdhani text-lg">Advance through 100 tiers and claim Free, Gold, and Platinum rewards.</p>
             </div>
           </div>
         </div>

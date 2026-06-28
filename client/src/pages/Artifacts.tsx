@@ -15,6 +15,7 @@ import {
   Sparkles,
   Wrench,
 } from "lucide-react";
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
 import { useArtifactRelicSystems } from "@/lib/artifactRelicSystems";
 
 const rarityClass = {
@@ -34,6 +35,8 @@ function msToProgress(startedAt?: number, endsAt?: number) {
   return Math.max(0, Math.min(100, Math.floor((elapsed / total) * 100)));
 }
 
+const TEMP_THEME_IMAGE = "/theme-temp.png";
+
 export default function Artifacts() {
   const {
     state,
@@ -51,44 +54,55 @@ export default function Artifacts() {
   return (
     <GameLayout>
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
-          <img src="/assets/backgrounds/asteroid_field.png" alt="Artifacts" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-amber-950/60 to-transparent" />
-          <div className="relative z-10 p-6 flex items-center justify-between">
-            <div className="flex items-center gap-6">
-              <img src="/assets/planets/ice.png" alt="Relic" className="w-20 h-20 rounded-xl object-cover ring-2 ring-amber-400/60 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
-              <div>
-                <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow">Artifact & Relic Command</h2>
-                <p className="text-amber-300 font-rajdhani text-lg">Upgrade artifacts, run archaeology digs, and launch recovery expeditions.</p>
-              </div>
+        <section className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.78), rgba(15,23,42,0.92)), url(${BACKGROUND_ASSETS.ASTEROID_FIELD.path})` }}>
+          <div className="p-5 lg:p-6 space-y-4 text-white">
+            <div className="flex items-center gap-2">
+              <img src={MENU_ASSETS.NAVIGATION.EMPIRE.path} alt="Artifacts" className="w-8 h-8 rounded-lg border border-white/10 bg-white/10 p-1.5 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+              <h1 className="text-2xl font-bold">Artifact & Relic Command</h1>
             </div>
-            <Button variant="outline" className="border-white/30 text-white hover:bg-white/10" onClick={resetSystems} data-testid="button-reset-artifact-systems">
-              Reset System
-            </Button>
+            <p className="text-sm leading-6 text-slate-300">Excavate ancient artifacts, research lost technologies, and launch recovery expeditions.</p>
+            <div className="flex flex-wrap gap-3">
+              {[{ label: "Artifacts", image: SHIP_ASSETS.CAPITALS.BATTLECRUISER.path }, { label: "Research", image: MENU_ASSETS.BUILDINGS.SHIPYARD.path }, { label: "Expeditions", image: OGAMEX_FEATURED_ASSETS.BACKGROUND.path }].map((item) => (
+                <div key={item.label} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                  <img src={item.image} alt={item.label} className="w-10 h-10 rounded-lg border border-white/10 bg-black/10 p-1.5 object-contain" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                  <div className="text-sm font-semibold">{item.label}</div>
+                </div>
+              ))}
+            </div>
           </div>
+        </section>
+
+        <div className="flex justify-end">
+          <Button variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-100" onClick={resetSystems} data-testid="button-reset-artifact-systems">
+            Reset System
+          </Button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card className="bg-white border-slate-200">
             <CardContent className="pt-4">
+              <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mx-auto mb-2"><img src={SHIP_ASSETS.CAPITALS.BATTLECRUISER.path} alt="Relic Shards" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} /></div>
               <div className="text-xs uppercase text-slate-500">Relic Shards</div>
               <div className="text-2xl font-bold text-slate-900">{state.resources.relicShards}</div>
             </CardContent>
           </Card>
           <Card className="bg-white border-slate-200">
             <CardContent className="pt-4">
+              <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mx-auto mb-2"><img src={SHIP_ASSETS.CAPITALS.DESTROYER.path} alt="Relic Essence" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} /></div>
               <div className="text-xs uppercase text-slate-500">Relic Essence</div>
               <div className="text-2xl font-bold text-slate-900">{state.resources.relicEssence}</div>
             </CardContent>
           </Card>
           <Card className="bg-white border-slate-200">
             <CardContent className="pt-4">
+              <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mx-auto mb-2"><img src={SHIP_ASSETS.CAPITALS.BATTLESHIP.path} alt="Research Data" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} /></div>
               <div className="text-xs uppercase text-slate-500">Research Data</div>
               <div className="text-2xl font-bold text-slate-900">{state.resources.researchData}</div>
             </CardContent>
           </Card>
           <Card className="bg-white border-slate-200">
             <CardContent className="pt-4">
+              <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mx-auto mb-2"><img src={SHIP_ASSETS.CAPITALS.CORVETTE.path} alt="Archaeology Crews" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} /></div>
               <div className="text-xs uppercase text-slate-500">Archaeology Crews</div>
               <div className="text-2xl font-bold text-slate-900">{state.resources.archaeologyCrews}</div>
             </CardContent>

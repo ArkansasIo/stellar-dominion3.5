@@ -1,3 +1,4 @@
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
 import GameLayout from "@/components/layout/GameLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -72,6 +73,7 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
+const TEMP_THEME_IMAGE = "/theme-temp.png";
 const STORAGE_KEY = "ued_interplanetary_power_grid_v2";
 
 const priorityLabels: Record<GridPriority, string> = {
@@ -248,44 +250,23 @@ export default function PowerGrid() {
   return (
     <GameLayout>
       <div className="space-y-6">
-        <Card className="relative overflow-hidden border-slate-800 bg-slate-950 text-white shadow-xl">
-          <div className="absolute inset-0 opacity-35 [background-image:radial-gradient(circle_at_20%_20%,#22d3ee_0,transparent_28%),radial-gradient(circle_at_80%_10%,#f59e0b_0,transparent_23%),linear-gradient(115deg,transparent_40%,#1e40af44_50%,transparent_60%)]" />
-          <CardContent className="relative grid gap-8 p-7 xl:grid-cols-[1.35fr_0.85fr]">
-            <div>
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-200">
-                <BrainCircuit className="h-3.5 w-3.5" /> AIC Interplanetary Utility Command
-              </div>
-              <h1 className="max-w-4xl text-3xl font-orbitron font-bold md:text-4xl">Stellar Power Grid & Autonomous Resource Network</h1>
-              <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300">
-                A persistent strategic simulation for generation, transmission, storage, extraction, maintenance, incidents, construction, research, and AI load dispatch across planets, moons, stations, and resource fields.
-              </p>
-              <div className="mt-5 flex flex-wrap gap-2">
-                <Badge className={state.metrics.coverage >= 100 ? "bg-emerald-500/20 text-emerald-200" : "bg-red-500/25 text-red-200"}>
-                  {state.metrics.coverage >= 100 ? "Demand fully covered" : `${Math.round(state.metrics.coverage)}% demand coverage`}
-                </Badge>
-                <Badge className="bg-blue-500/20 text-blue-200">Cycle {state.cycle}</Badge>
-                <Badge className="bg-white/10 text-slate-200">{healthyNodes}/{state.nodes.length} nominal nodes</Badge>
-                <Badge className={criticalIncidents ? "bg-red-500/30 text-red-100" : "bg-white/10 text-slate-200"}>{activeIncidents.length} active incidents</Badge>
-              </div>
+        <section className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.78), rgba(15,23,42,0.92)), url(${BACKGROUND_ASSETS.SHIPYARD.path})` }}>
+          <div className="p-5 lg:p-6 space-y-4 text-white">
+            <div className="flex items-center gap-2">
+              <img src={MENU_ASSETS.NAVIGATION.EMPIRE.path} alt="Icon" className="w-8 h-8 rounded-lg border border-white/10 bg-white/10 p-1.5 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+              <h1 className="text-2xl font-bold">Stellar Power Grid & Autonomous Resource Network</h1>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-sm">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-[10px] uppercase tracking-[0.2em] text-slate-400">AIC Doctrine</div>
-                  <div className="mt-1 font-orbitron text-lg font-bold text-cyan-200">{doctrineInfo.label}</div>
+            <p className="text-sm leading-6 text-slate-300">A persistent strategic simulation for generation, transmission, storage, extraction, maintenance, incidents, construction, research, and AI load dispatch across planets, moons, stations, and resource fields.</p>
+            <div className="flex flex-wrap gap-3">
+              {[{ label: "Grid Operations", image: SHIP_ASSETS.CAPITALS.BATTLECRUISER.path }, { label: "Energy Systems", image: MENU_ASSETS.BUILDINGS.SHIPYARD.path }, { label: "Power Distribution", image: OGAMEX_FEATURED_ASSETS.BACKGROUND.path }].map((item) => (
+                <div key={item.label} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                  <img src={item.image} alt={item.label} className="w-10 h-10 rounded-lg border border-white/10 bg-black/10 p-1.5 object-contain" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                  <div className="text-sm font-semibold">{item.label}</div>
                 </div>
-                <Bot className="h-8 w-8 text-cyan-300" />
-              </div>
-              <p className="mt-3 text-sm text-slate-300">{doctrineInfo.description}</p>
-              <div className="mt-4 flex items-center justify-between text-xs text-slate-400"><span>Network efficiency</span><span>{state.metrics.efficiency}%</span></div>
-              <Progress value={state.metrics.efficiency} className="mt-2 h-2" />
-              <div className="mt-5 grid grid-cols-2 gap-2">
-                <Button onClick={() => runCycle()} className="bg-cyan-600 hover:bg-cyan-500" data-testid="button-run-grid-cycle"><Play className="mr-2 h-4 w-4" /> Run cycle</Button>
-                <Button onClick={() => runCycle(5)} variant="outline" className="border-white/20 bg-white/5 text-white hover:bg-white/10"><RefreshCw className="mr-2 h-4 w-4" /> Run 5</Button>
-              </div>
+              ))}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
           <StatCard label="Delivered Power" value={`${formatAmount(state.metrics.delivered)} PW`} helper={`${formatAmount(state.metrics.generation)} PW generated`} icon={Zap} tone="border-amber-200 bg-amber-50 text-amber-700" />

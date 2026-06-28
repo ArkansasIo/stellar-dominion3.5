@@ -16,6 +16,9 @@ import type {
 } from "@shared/types/expeditions";
 import { useArtifactRelicSystems } from "@/lib/artifactRelicSystems";
 import { useToast } from "@/hooks/use-toast";
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
+
+const TEMP_THEME_IMAGE = "/theme-temp.png";
 
 interface Expedition {
   id: string;
@@ -230,18 +233,23 @@ export default function Expeditions() {
   return (
     <GameLayout>
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        {/* Header */}
-        <div className="relative rounded-xl overflow-hidden shadow-lg" style={{ minHeight: 140 }}>
-          <img src="/assets/backgrounds/deep_space.png" alt="Expeditions" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-violet-950/60 to-transparent" />
-          <div className="relative z-10 p-6 flex items-center gap-6">
-            <img src="/assets/ships/scout.png" alt="Scout" className="w-20 h-20 rounded-xl object-cover ring-2 ring-violet-400/60 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
-            <div>
-              <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow">Expeditions</h2>
-              <p className="text-violet-300 font-rajdhani text-lg">Send fleets and troops to explore worlds and conquer interstellar objects</p>
+        <section className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.78), rgba(15,23,42,0.92)), url(${BACKGROUND_ASSETS.GALAXY_MAP.path})` }}>
+          <div className="p-5 lg:p-6 space-y-4 text-white">
+            <div className="flex items-center gap-2">
+              <img src={MENU_ASSETS.NAVIGATION.EXPLORATION.path} alt="Icon" className="w-8 h-8 rounded-lg border border-white/10 bg-white/10 p-1.5 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+              <h1 className="text-2xl font-bold">Expeditions</h1>
+            </div>
+            <p className="text-sm leading-6 text-slate-300">Send fleets and troops to explore worlds and conquer interstellar objects.</p>
+            <div className="flex flex-wrap gap-3">
+              {[{ label: "Scout Ships", image: SHIP_ASSETS.FIGHTERS.SCOUT.path }, { label: "Supply Transport", image: SHIP_ASSETS.SPECIAL.TRANSPORT.path }, { label: "Expedition Ops", image: MENU_ASSETS.NAVIGATION.EXPLORATION.path }].map((item) => (
+                <div key={item.label} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                  <img src={item.image} alt={item.label} className="w-10 h-10 rounded-lg border border-white/10 bg-black/10 p-1.5 object-contain" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                  <div className="text-sm font-semibold">{item.label}</div>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
+        </section>
 
         {/* System Stats Bar */}
         {catalogData && (
@@ -510,19 +518,31 @@ export default function Expeditions() {
         {/* Overview Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-white border border-slate-200 rounded-lg p-4">
-            <div className="text-xs uppercase text-slate-500">Total Expeditions</div>
+            <div className="flex items-center gap-2 mb-1">
+              <img src={SHIP_ASSETS.SPECIAL.TRANSPORT.path} alt="Total" className="w-5 h-5 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+              <div className="text-xs uppercase text-slate-500">Total Expeditions</div>
+            </div>
             <div className="text-2xl font-bold text-slate-900">{expeditions.length}</div>
           </div>
           <div className="bg-white border border-slate-200 rounded-lg p-4">
-            <div className="text-xs uppercase text-slate-500">Active</div>
+            <div className="flex items-center gap-2 mb-1">
+              <img src={SHIP_ASSETS.FIGHTERS.SCOUT.path} alt="Active" className="w-5 h-5 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+              <div className="text-xs uppercase text-slate-500">Active</div>
+            </div>
             <div className="text-2xl font-bold text-blue-700">{activeCount}</div>
           </div>
           <div className="bg-white border border-slate-200 rounded-lg p-4">
-            <div className="text-xs uppercase text-slate-500">Completed</div>
+            <div className="flex items-center gap-2 mb-1">
+              <img src={MENU_ASSETS.NAVIGATION.EXPLORATION.path} alt="Completed" className="w-5 h-5 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+              <div className="text-xs uppercase text-slate-500">Completed</div>
+            </div>
             <div className="text-2xl font-bold text-green-700">{completedCount}</div>
           </div>
           <div className="bg-white border border-slate-200 rounded-lg p-4">
-            <div className="text-xs uppercase text-slate-500">Failed</div>
+            <div className="flex items-center gap-2 mb-1">
+              <img src={MENU_ASSETS.NAVIGATION.MILITARY.path} alt="Failed" className="w-5 h-5 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+              <div className="text-xs uppercase text-slate-500">Failed</div>
+            </div>
             <div className="text-2xl font-bold text-rose-700">{failedCount}</div>
           </div>
         </div>

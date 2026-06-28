@@ -29,7 +29,7 @@ import Navigation from "./Navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { PLANET_ASSETS } from "@shared/config";
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS, PLANET_ASSETS } from "@shared/config";
 import {
   applyManagementProfile,
   COLONIES_PER_PAGE,
@@ -279,61 +279,82 @@ export default function Colonies() {
       <div className="space-y-6 animate-in fade-in duration-500">
         <Navigation />
 
-        <div className="relative rounded-xl overflow-hidden shadow-lg" style={{ minHeight: 140 }}>
-          <img src="/assets/planets/terra.png" alt="Colony" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-blue-950/65 to-transparent" />
-          <div className="relative z-10 p-6 flex items-center gap-6">
-            <img src="/assets/planets/terra.png" alt="Terra Planet" className="w-20 h-20 rounded-full object-cover ring-2 ring-blue-400/50 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
-            <div>
-              <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow">Planetary Empire Command</h2>
-              <p className="text-blue-300 font-rajdhani text-lg">Planet and moon management with sub-stats, solar system overview, and unified control.</p>
-              <p className="text-xs text-slate-400 mt-1">{COLONIES_PER_PAGE} per page • {empireOverview.totalColonies.toLocaleString()} total colonies/moons</p>
+        <section className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.78), rgba(15,23,42,0.92)), url(${BACKGROUND_ASSETS.GALAXY_MAP.path})` }}>
+          <div className="p-5 lg:p-6 space-y-4 text-white">
+            <div className="flex items-center gap-2">
+              <img src={SHIP_ASSETS.SPECIAL.COLONIZER.path} alt="Icon" className="w-8 h-8 rounded-lg border border-white/10 bg-white/10 p-1.5 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+              <h1 className="text-2xl font-bold">Planetary Empire Command</h1>
+            </div>
+            <p className="text-sm leading-6 text-slate-300">Planet and moon management with sub-stats, solar system overview, and unified control.</p>
+            <div className="flex flex-wrap gap-3">
+              {[{ label: "Colonizer", image: SHIP_ASSETS.SPECIAL.COLONIZER.path }, { label: "Empire", image: MENU_ASSETS.NAVIGATION.EMPIRE.path }, { label: "Featured", image: OGAMEX_FEATURED_ASSETS.BACKGROUND.path }].map((item) => (
+                <div key={item.label} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                  <img src={item.image} alt={item.label} className="w-10 h-10 rounded-lg border border-white/10 bg-black/10 p-1.5 object-contain" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                  <div className="text-sm font-semibold">{item.label}</div>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
+        </section>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="bg-white border-slate-200">
+          <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
             <CardContent className="p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Globe className="w-5 h-5 text-blue-600" />
-                <span className="text-xs uppercase text-slate-600 font-bold">Owned Colonies</span>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden">
+                  <img src={SHIP_ASSETS.SPECIAL.COLONIZER.path} alt="Colonies" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                </div>
+                <div>
+                  <div className="text-xs text-blue-600 uppercase">Owned Colonies</div>
+                  <div className="text-xl font-orbitron font-bold text-blue-900">{empireOverview.ownedColonies.toLocaleString()}</div>
+                </div>
               </div>
-              <div className="text-2xl font-orbitron font-bold">{empireOverview.ownedColonies.toLocaleString()}</div>
-              <div className="text-xs text-slate-500">Current page: {ownedColonies.length}</div>
+              <div className="text-xs text-slate-500 mt-1">Current page: {ownedColonies.length}</div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-slate-200">
+          <Card className="bg-gradient-to-br from-indigo-50 to-indigo-100 border-indigo-200">
             <CardContent className="p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Moon className="w-5 h-5 text-indigo-600" />
-                <span className="text-xs uppercase text-slate-600 font-bold">Moon Bodies</span>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-indigo-500/10 flex items-center justify-center overflow-hidden">
+                  <img src={OGAMEX_FEATURED_ASSETS.MOON.path} alt="Moons" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                </div>
+                <div>
+                  <div className="text-xs text-indigo-600 uppercase">Moon Bodies</div>
+                  <div className="text-xl font-orbitron font-bold text-indigo-900">{empireOverview.totalMoonBodies.toLocaleString()}</div>
+                </div>
               </div>
-              <div className="text-2xl font-orbitron font-bold">{empireOverview.totalMoonBodies.toLocaleString()}</div>
-              <div className="text-xs text-slate-500">In empire records</div>
+              <div className="text-xs text-slate-500 mt-1">In empire records</div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-slate-200">
+          <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
             <CardContent className="p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Users className="w-5 h-5 text-green-600" />
-                <span className="text-xs uppercase text-slate-600 font-bold">Population (Page)</span>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center overflow-hidden">
+                  <img src={MENU_ASSETS.RESOURCES.SCIENCE.path} alt="Population" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                </div>
+                <div>
+                  <div className="text-xs text-green-600 uppercase">Population (Page)</div>
+                  <div className="text-xl font-orbitron font-bold text-green-900">{(totalPopulationOnPage / 1_000_000).toFixed(1)}M</div>
+                </div>
               </div>
-              <div className="text-2xl font-orbitron font-bold">{(totalPopulationOnPage / 1_000_000).toFixed(1)}M</div>
-              <div className="text-xs text-slate-500">{totalPopulationOnPage.toLocaleString()} residents</div>
+              <div className="text-xs text-slate-500 mt-1">{totalPopulationOnPage.toLocaleString()} residents</div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-slate-200">
+          <Card className="bg-gradient-to-br from-red-50 to-red-100 border-red-200">
             <CardContent className="p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Shield className="w-5 h-5 text-red-600" />
-                <span className="text-xs uppercase text-slate-600 font-bold">Defense (Page)</span>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center overflow-hidden">
+                  <img src={MENU_ASSETS.BUILDINGS.DEFENSE_TURRET.path} alt="Defense" className="w-7 h-7 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                </div>
+                <div>
+                  <div className="text-xs text-red-600 uppercase">Defense (Page)</div>
+                  <div className="text-xl font-orbitron font-bold text-red-900">{totalDefensesOnPage.toLocaleString()}</div>
+                </div>
               </div>
-              <div className="text-2xl font-orbitron font-bold">{totalDefensesOnPage.toLocaleString()}</div>
-              <div className="text-xs text-slate-500">Same systems, individual, or bulk control</div>
+              <div className="text-xs text-slate-500 mt-1">Same systems, individual, or bulk control</div>
             </CardContent>
           </Card>
         </div>

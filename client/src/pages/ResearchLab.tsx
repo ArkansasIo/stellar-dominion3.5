@@ -35,6 +35,9 @@ import {
   getDomainForUnitClass,
 } from "@/lib/unitPersonnelGenClone";
 import { buildResearchLabAdministrationState } from "@/lib/researchLabAdministration";
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
+
+const TEMP_THEME_IMAGE = "/theme-temp.png";
 
 interface ResearchItem {
   id: string;
@@ -250,25 +253,34 @@ export default function ResearchLabPage() {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
 
         {/* Page Header */}
-        <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
-          <img src="/assets/backgrounds/nebula.png" alt="Research Lab" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-blue-950/65 to-transparent" />
-          <div className="relative z-10 p-6 flex items-center gap-6">
-            <img src="/assets/buildings/research_lab.png" alt="Research Lab" className="w-20 h-20 rounded-xl object-cover ring-2 ring-blue-400/60 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
-            <div>
-              <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow">Research Lab Administration</h2>
-              <p className="text-blue-300 font-rajdhani text-lg">
-                {labData?.lab?.name ? `${labData.lab.name} — Type: ${labData.lab.type}` : "Manage your research queue, bonuses, and lab performance."}
-              </p>
+        <section className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.78), rgba(15,23,42,0.92)), url(${BACKGROUND_ASSETS.RESEARCH_LAB.path})` }}>
+          <div className="p-5 lg:p-6 space-y-4 text-white">
+            <div className="flex items-center gap-2">
+              <img src={MENU_ASSETS.BUILDINGS.RESEARCH_LAB.path} alt="Icon" className="w-8 h-8 rounded-lg border border-white/10 bg-white/10 p-1.5 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+              <h1 className="text-2xl font-bold">Research Lab Administration</h1>
+            </div>
+            <p className="text-sm leading-6 text-slate-300">
+              {labData?.lab?.name ? `${labData.lab.name} — Type: ${labData.lab.type}` : "Manage your research queue, bonuses, and lab performance."}
+            </p>
+            <div className="flex flex-wrap gap-3">
+              {[{ label: "Research Lab", image: MENU_ASSETS.BUILDINGS.RESEARCH_LAB.path }, { label: "Research Nav", image: MENU_ASSETS.NAVIGATION.RESEARCH.path }, { label: "Featured Research", image: OGAMEX_FEATURED_ASSETS.RESEARCH.path }].map((item) => (
+                <div key={item.label} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                  <img src={item.image} alt={item.label} className="w-10 h-10 rounded-lg border border-white/10 bg-black/10 p-1.5 object-contain" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                  <div className="text-sm font-semibold">{item.label}</div>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
+        </section>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card className="bg-white border-slate-200 shadow-sm">
             <CardContent className="pt-4">
               <div className="flex items-center gap-2 mb-1">
+                <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden">
+                  <img src={SHIP_ASSETS.CAPITALS.BATTLECRUISER.path} alt="Active Research" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                </div>
                 <TrendingUp className="w-4 h-4 text-blue-600" />
                 <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Active Research</span>
               </div>
@@ -284,6 +296,9 @@ export default function ResearchLabPage() {
           <Card className="bg-white border-slate-200 shadow-sm">
             <CardContent className="pt-4">
               <div className="flex items-center gap-2 mb-1">
+                <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden">
+                  <img src={SHIP_ASSETS.CAPITALS.BATTLECRUISER.path} alt="Queue Length" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                </div>
                 <Layers className="w-4 h-4 text-blue-600" />
                 <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Queue Length</span>
               </div>
@@ -297,6 +312,9 @@ export default function ResearchLabPage() {
           <Card className="bg-white border-slate-200 shadow-sm">
             <CardContent className="pt-4">
               <div className="flex items-center gap-2 mb-1">
+                <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden">
+                  <img src={SHIP_ASSETS.CAPITALS.BATTLECRUISER.path} alt="Speed Multiplier" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                </div>
                 <Zap className="w-4 h-4 text-yellow-500" />
                 <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Speed Multiplier</span>
               </div>
@@ -310,6 +328,9 @@ export default function ResearchLabPage() {
           <Card className="bg-white border-slate-200 shadow-sm">
             <CardContent className="pt-4">
               <div className="flex items-center gap-2 mb-1">
+                <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden">
+                  <img src={SHIP_ASSETS.CAPITALS.BATTLECRUISER.path} alt="Lab Durability" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                </div>
                 <AlertCircle className="w-4 h-4 text-green-600" />
                 <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Lab Durability</span>
               </div>

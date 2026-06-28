@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Building2, Factory, Shield, Users } from "lucide-react";
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
 import { useEffect, useMemo, useState } from "react";
 
 type Domain = "troop" | "civilian" | "government" | "military";
@@ -91,6 +92,8 @@ async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
 function formatResources(cost: { metal: number; crystal: number; deuterium: number }) {
   return `${cost.metal.toLocaleString()}M / ${cost.crystal.toLocaleString()}C / ${cost.deuterium.toLocaleString()}D`;
 }
+
+const TEMP_THEME_IMAGE = "/theme-temp.png";
 
 export default function Army() {
   const { toast } = useToast();
@@ -214,23 +217,29 @@ export default function Army() {
   return (
     <GameLayout>
       <div className="space-y-6" data-testid="army-page">
-        <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
-          <img src="/assets/backgrounds/combat_battle.png" alt="Army" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-orange-950/60 to-transparent" />
-          <div className="relative z-10 p-6 flex items-center gap-6">
-            <img src="/assets/ships/fleet_formation.png" alt="Army" className="w-20 h-20 rounded-xl object-cover ring-2 ring-orange-400/60 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
-            <div>
-              <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow">Unit Systems Command</h2>
-              <p className="text-orange-300 font-rajdhani text-lg">Train, field, and supervise troop, civilian, government, and military systems.</p>
+        <section className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.78), rgba(15,23,42,0.92)), url(${BACKGROUND_ASSETS.COMBAT.path})` }}>
+          <div className="p-5 lg:p-6 space-y-4 text-white">
+            <div className="flex items-center gap-2">
+              <img src={MENU_ASSETS.NAVIGATION.EMPIRE.path} alt="Army" className="w-8 h-8 rounded-lg border border-white/10 bg-white/10 p-1.5 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+              <h1 className="text-2xl font-bold">Unit Systems Command</h1>
+            </div>
+            <p className="text-sm leading-6 text-slate-300">Train, field, and command military forces across troop, civilian, government, and military domains.</p>
+            <div className="flex flex-wrap gap-3">
+              {[{ label: "Troops", image: SHIP_ASSETS.CAPITALS.BATTLECRUISER.path }, { label: "Training", image: MENU_ASSETS.BUILDINGS.SHIPYARD.path }, { label: "Military", image: OGAMEX_FEATURED_ASSETS.BACKGROUND.path }].map((item) => (
+                <div key={item.label} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                  <img src={item.image} alt={item.label} className="w-10 h-10 rounded-lg border border-white/10 bg-black/10 p-1.5 object-contain" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                  <div className="text-sm font-semibold">{item.label}</div>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
+        </section>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card><CardContent className="pt-6"><div className="text-xs text-slate-500">Troops</div><div className="text-3xl font-bold">{domainTotals.troop}</div></CardContent></Card>
-          <Card><CardContent className="pt-6"><div className="text-xs text-slate-500">Civil</div><div className="text-3xl font-bold">{domainTotals.civilian}</div></CardContent></Card>
-          <Card><CardContent className="pt-6"><div className="text-xs text-slate-500">Government</div><div className="text-3xl font-bold">{domainTotals.government}</div></CardContent></Card>
-          <Card><CardContent className="pt-6"><div className="text-xs text-slate-500">Military</div><div className="text-3xl font-bold">{domainTotals.military}</div></CardContent></Card>
+          <Card><CardContent className="pt-6"><div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mx-auto mb-2"><img src={SHIP_ASSETS.CAPITALS.BATTLECRUISER.path} alt="Troops" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} /></div><div className="text-xs text-slate-500">Troops</div><div className="text-3xl font-bold">{domainTotals.troop}</div></CardContent></Card>
+          <Card><CardContent className="pt-6"><div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mx-auto mb-2"><img src={SHIP_ASSETS.CAPITALS.DESTROYER.path} alt="Civil" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} /></div><div className="text-xs text-slate-500">Civil</div><div className="text-3xl font-bold">{domainTotals.civilian}</div></CardContent></Card>
+          <Card><CardContent className="pt-6"><div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mx-auto mb-2"><img src={SHIP_ASSETS.CAPITALS.BATTLESHIP.path} alt="Government" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} /></div><div className="text-xs text-slate-500">Government</div><div className="text-3xl font-bold">{domainTotals.government}</div></CardContent></Card>
+          <Card><CardContent className="pt-6"><div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mx-auto mb-2"><img src={SHIP_ASSETS.CAPITALS.CORVETTE.path} alt="Military" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} /></div><div className="text-xs text-slate-500">Military</div><div className="text-3xl font-bold">{domainTotals.military}</div></CardContent></Card>
         </div>
 
         <Card>

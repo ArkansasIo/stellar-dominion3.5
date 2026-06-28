@@ -11,6 +11,9 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BookOpen, CheckCircle2, Compass, Zap } from "lucide-react";
 import { Link } from "wouter";
 import { createHabitatConditionProfile } from "@/lib/environmentSystems";
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
+
+const TEMP_THEME_IMAGE = "/theme-temp.png";
 
 interface StoryCampaignData {
   currentAct: number;
@@ -160,12 +163,23 @@ export default function StoryMode() {
   return (
     <GameLayout>
       <div className="space-y-6">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-slate-900 mb-2 flex items-center gap-2">
-            <BookOpen className="w-8 h-8 text-primary" />
-            Story Mode
-          </h1>
-          <p className="text-muted-foreground">Play through 12 acts, 5 chapters per act, and 50 missions per act including side directives.</p>
+        <section className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.78), rgba(15,23,42,0.92)), url(${BACKGROUND_ASSETS.STAR_FIELD.path})` }}>
+          <div className="p-5 lg:p-6 space-y-4 text-white">
+            <div className="flex items-center gap-2">
+              <img src={MENU_ASSETS.NAVIGATION.EMPIRE.path} alt="Icon" className="w-8 h-8 rounded-lg border border-white/10 bg-white/10 p-1.5 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+              <h1 className="text-2xl font-bold">Story Mode</h1>
+            </div>
+            <p className="text-sm leading-6 text-slate-300">Play through 12 acts, 5 chapters per act, and 50 missions per act including side directives.</p>
+            <div className="flex flex-wrap gap-3">
+              {[{ label: "Battlecruiser", image: SHIP_ASSETS.CAPITALS.BATTLECRUISER.path }, { label: "Research Lab", image: MENU_ASSETS.BUILDINGS.RESEARCH_LAB.path }, { label: "Ships", image: OGAMEX_FEATURED_ASSETS.SHIPS.path }].map((item) => (
+                <div key={item.label} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                  <img src={item.image} alt={item.label} className="w-10 h-10 rounded-lg border border-white/10 bg-black/10 p-1.5 object-contain" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                  <div className="text-sm font-semibold">{item.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
           <div className="mt-3 flex flex-wrap gap-2">
             <Link href="/season-pass">
               <Button variant="outline" size="sm">Open Season Pass</Button>
@@ -174,7 +188,6 @@ export default function StoryMode() {
               <Button variant="outline" size="sm">Open Storefront</Button>
             </Link>
           </div>
-        </div>
 
         {/* Campaign Progress */}
         <Card className="bg-white border-slate-200 mb-6">

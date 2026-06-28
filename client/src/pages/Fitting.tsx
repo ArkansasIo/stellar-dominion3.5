@@ -18,6 +18,9 @@ import {
   Microscope,
   Users
 } from "lucide-react";
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS } from "@shared/config";
+
+const TEMP_THEME_IMAGE = "/theme-temp.png";
 
 interface Module {
   name: string;
@@ -180,9 +183,20 @@ export default function Fitting() {
   return (
     <GameLayout>
       <div className="space-y-6">
-        <div className="flex items-center gap-2">
-          <Settings className="h-6 w-6" />
-          <h1 className="text-2xl font-bold">Ship Fitting</h1>
+        <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
+          <img src={BACKGROUND_ASSETS.SHIPYARD.path} alt="Ship Fitting" className="absolute inset-0 w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-blue-950/60 to-transparent" />
+          <div className="relative z-10 p-6 flex items-center gap-6">
+            <div className="flex gap-2 items-center">
+              <img src={SHIP_ASSETS.CAPITALS.DESTROYER.path} alt="Destroyer" className="w-12 h-12 object-contain" />
+              <img src={SHIP_ASSETS.FIGHTERS.INTERCEPTOR.path} alt="Interceptor" className="w-12 h-12 object-contain" />
+              <img src={MENU_ASSETS.BUILDINGS.SHIPYARD.path} alt="Shipyard" className="w-12 h-12 object-contain" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-orbitron font-bold text-white drop-shadow">Ship Fitting</h1>
+              <p className="text-blue-300 font-rajdhani text-lg">Configure ships with weapons, defenses, and support modules</p>
+            </div>
+          </div>
         </div>
 
         {/* Ship Selection */}

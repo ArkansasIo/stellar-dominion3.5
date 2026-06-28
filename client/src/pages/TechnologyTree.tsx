@@ -15,8 +15,11 @@ import {
   getResearchTreeUpgradeSnapshot,
 } from "@/lib/researchTechnologyTreeCatalog";
 import { cn } from "@/lib/utils";
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
 import { Atom, Cog, FlaskConical, Microscope, Search, Sparkles, TrendingUp } from "lucide-react";
 import { useMemo, useState } from "react";
+
+const TEMP_THEME_IMAGE = "/theme-temp.png";
 
 const CATEGORY_ICONS = {
   physics: Atom,
@@ -73,17 +76,23 @@ export default function TechnologyTree() {
   return (
     <GameLayout>
       <div className="space-y-6">
-        <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
-          <img src="/assets/backgrounds/deep_space.png" alt="Technology Tree" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-teal-950/60 to-transparent" />
-          <div className="relative z-10 p-6 flex items-center gap-6">
-            <img src="/assets/research/astrophysics.png" alt="Research" className="w-20 h-20 rounded-xl object-cover ring-2 ring-teal-400/60 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
-            <div>
-              <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow">Research Technology Tree</h2>
-              <p className="text-teal-300 font-rajdhani text-lg">90 upgrade nodes per category — hull doctrine, capital command, logistics, and covert fleets.</p>
+        <section className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.78), rgba(15,23,42,0.92)), url(${BACKGROUND_ASSETS.RESEARCH_LAB.path})` }}>
+          <div className="p-5 lg:p-6 space-y-4 text-white">
+            <div className="flex items-center gap-2">
+              <img src={MENU_ASSETS.BUILDINGS.RESEARCH_LAB.path} alt="Icon" className="w-8 h-8 rounded-lg border border-white/10 bg-white/10 p-1.5 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+              <h1 className="text-2xl font-bold">Research Technology Tree</h1>
+            </div>
+            <p className="text-sm leading-6 text-slate-300">90 upgrade nodes per category — hull doctrine, capital command, logistics, and covert fleets.</p>
+            <div className="flex flex-wrap gap-3">
+              {[{ label: "Research Lab", image: MENU_ASSETS.BUILDINGS.RESEARCH_LAB.path }, { label: "Research Nav", image: MENU_ASSETS.NAVIGATION.RESEARCH.path }, { label: "Featured Research", image: OGAMEX_FEATURED_ASSETS.RESEARCH.path }].map((item) => (
+                <div key={item.label} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                  <img src={item.image} alt={item.label} className="w-10 h-10 rounded-lg border border-white/10 bg-black/10 p-1.5 object-contain" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                  <div className="text-sm font-semibold">{item.label}</div>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
+        </section>
 
         <Card className="overflow-hidden border-slate-200 bg-white shadow-sm">
           <CardContent className="grid gap-6 p-6 lg:grid-cols-[1.3fr_0.9fr]">
@@ -112,16 +121,25 @@ export default function TechnologyTree() {
 
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
               <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mb-2">
+                  <img src={SHIP_ASSETS.CAPITALS.BATTLECRUISER.path} alt="Tree Nodes" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                </div>
                 <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500">Tree Nodes</div>
                 <div className="mt-1 text-2xl font-orbitron font-bold text-slate-900">{RESEARCH_TREE_COUNTS.totalNodes}</div>
                 <div className="text-xs text-slate-500">{RESEARCH_TREE_COUNTS.nodesPerCategory} per category</div>
               </div>
               <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mb-2">
+                  <img src={SHIP_ASSETS.CAPITALS.BATTLECRUISER.path} alt="Completed Nodes" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                </div>
                 <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500">Completed Nodes</div>
                 <div className="mt-1 text-2xl font-orbitron font-bold text-emerald-700">{completedNodes}</div>
                 <div className="text-xs text-slate-500">Total tree levels {totalTreeLevels}</div>
               </div>
               <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mb-2">
+                  <img src={SHIP_ASSETS.CAPITALS.BATTLECRUISER.path} alt="Kardashev Gate" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                </div>
                 <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500">Kardashev Gate</div>
                 <div className="mt-1 text-2xl font-orbitron font-bold text-amber-700">Level {kardashevLevel}</div>
                 <div className="text-xs text-slate-500">Advanced nodes unlock with empire progression</div>

@@ -66,7 +66,10 @@ import {
   Zap,
   type LucideIcon,
 } from "lucide-react";
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
 import { useEffect, useMemo, useState } from "react";
+
+const TEMP_THEME_IMAGE = "/theme-temp.png";
 
 const STORAGE_KEY = "ued_orbital_defense_v1";
 
@@ -160,8 +163,8 @@ export default function OrbitalDefense() {
   return (
     <GameLayout>
       <div className="space-y-6">
-        <Card className="relative overflow-hidden border-slate-800 bg-slate-950 text-white">
-          <div className="absolute inset-0 opacity-40 [background-image:radial-gradient(circle_at_18%_20%,#2563eb_0,transparent_25%),radial-gradient(circle_at_82%_25%,#dc2626_0,transparent_20%),linear-gradient(125deg,transparent_30%,#0891b244_50%,transparent_70%)]" />
+        <Card className="relative overflow-hidden border-slate-800 bg-slate-950 text-white bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.85), rgba(15,23,42,0.92)), url(${BACKGROUND_ASSETS.SHIPYARD.path})` }}>
+          <div className="absolute inset-0 opacity-30 [background-image:radial-gradient(circle_at_18%_20%,#2563eb_0,transparent_25%),radial-gradient(circle_at_82%_25%,#dc2626_0,transparent_20%),linear-gradient(125deg,transparent_30%,#0891b244_50%,transparent_70%)]" />
           <CardContent className="relative grid gap-7 p-7 xl:grid-cols-[1.4fr_0.8fr]">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-200"><Satellite className="h-3.5 w-3.5" /> Orbital Warfare Command</div>
@@ -169,7 +172,8 @@ export default function OrbitalDefense() {
               <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300">
                 Construct autonomous satellites, missile platforms, shield projectors, carriers, command stations, and orbital fortresses. Fit weapons and defensive modules, advance tiers and levels, research combat technologies, select doctrines, and defend planetary orbit.
               </p>
-              <div className="mt-5 flex flex-wrap gap-2">
+              <div className="mt-5 flex flex-wrap gap-3 items-center">
+                <img src={SHIP_ASSETS.SPECIAL.CARRIER.path} alt="Defense" className="w-10 h-10 rounded-lg border border-white/10 bg-black/10 p-1.5 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
                 <Badge className="bg-blue-500/20 text-blue-100">{fleet.platforms} active platforms</Badge>
                 <Badge className="bg-red-500/20 text-red-100">{compact(fleet.combatPower)} firepower</Badge>
                 <Badge className="bg-emerald-500/20 text-emerald-100">{fleet.readiness}% readiness</Badge>
@@ -192,6 +196,12 @@ export default function OrbitalDefense() {
           <Metric label="Interception" value={compact(fleet.interception)} helper="Missile and drone defense" icon={Rocket} tone="border-orange-200 bg-orange-50 text-orange-700" />
           <Metric label="Sensor Net" value={compact(fleet.sensor)} helper="Detection and command reach" icon={RadioTower} tone="border-emerald-200 bg-emerald-50 text-emerald-700" />
           <Metric label="Research" value={compact(state.resources.research)} helper="Orbital technology points" icon={Atom} tone="border-violet-200 bg-violet-50 text-violet-700" />
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm flex items-center gap-3 xl:col-span-6">
+            <img src={SHIP_ASSETS.CAPITALS.BATTLESHIP.path} alt="Fleet" className="w-12 h-12 rounded-xl border border-white/10 bg-black/10 p-2 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+            <img src={MENU_ASSETS.BUILDINGS.DEFENSE_TURRET.path} alt="Defense" className="w-12 h-12 rounded-xl border border-white/10 bg-black/10 p-2 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+            <img src={SHIP_ASSETS.FIGHTERS.INTERCEPTOR.path} alt="Interceptor" className="w-12 h-12 rounded-xl border border-white/10 bg-black/10 p-2 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+            <div className="text-sm text-slate-300 ml-2">Orbital platform fleet — combat, shield, sensor, and research metrics</div>
+          </div>
         </div>
 
         <Tabs defaultValue="fleet" className="space-y-5">

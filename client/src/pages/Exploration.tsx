@@ -14,6 +14,9 @@ import { UNIVERSE_EVENTS, DEBRIS_FIELDS } from "@/lib/universeEvents";
 import { FRONTIER_FEATURES, STRONGHOLD_PROGRAMS, WORMHOLE_ROUTES } from "@/lib/wormholeStrongholdCatalog";
 import { cn } from "@/lib/utils";
 import Navigation from "./Navigation";
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
+
+const TEMP_THEME_IMAGE = "/theme-temp.png";
 
 export default function Exploration() {
   const { toast } = useToast();
@@ -184,17 +187,23 @@ export default function Exploration() {
       <div className="space-y-6 animate-in fade-in duration-500">
         <Navigation />
         
-        <div className="relative rounded-xl overflow-hidden shadow-lg" style={{ minHeight: 140 }}>
-          <img src="/assets/backgrounds/deep_space.png" alt="Exploration" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-cyan-950/60 to-transparent" />
-          <div className="relative z-10 p-6 flex items-center gap-6">
-            <img src="/assets/ships/scout.png" alt="Scout" className="w-20 h-20 rounded-xl object-cover ring-2 ring-cyan-400/60 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
-            <div>
-              <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow">Deep Space Exploration</h2>
-              <p className="text-cyan-300 font-rajdhani text-lg">Discover anomalies, manage warp networks, and pursue achievements.</p>
+        <section className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.78), rgba(15,23,42,0.92)), url(${BACKGROUND_ASSETS.GALAXY_MAP.path})` }}>
+          <div className="p-5 lg:p-6 space-y-4 text-white">
+            <div className="flex items-center gap-2">
+              <img src={MENU_ASSETS.NAVIGATION.EXPLORATION.path} alt="Icon" className="w-8 h-8 rounded-lg border border-white/10 bg-white/10 p-1.5 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+              <h1 className="text-2xl font-bold">Deep Space Exploration</h1>
+            </div>
+            <p className="text-sm leading-6 text-slate-300">Discover anomalies, manage warp networks, and pursue achievements.</p>
+            <div className="flex flex-wrap gap-3">
+              {[{ label: "Scout Ships", image: SHIP_ASSETS.FIGHTERS.SCOUT.path }, { label: "Exploration", image: MENU_ASSETS.NAVIGATION.EXPLORATION.path }, { label: "Moon Recon", image: OGAMEX_FEATURED_ASSETS.MOON.path }].map((item) => (
+                <div key={item.label} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                  <img src={item.image} alt={item.label} className="w-10 h-10 rounded-lg border border-white/10 bg-black/10 p-1.5 object-contain" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                  <div className="text-sm font-semibold">{item.label}</div>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
+        </section>
 
         <Tabs defaultValue="anomalies" className="w-full">
           <TabsList className="grid w-full grid-cols-5 bg-white border border-slate-200 h-16">
@@ -294,25 +303,37 @@ export default function Exploration() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   <Card className="border-slate-200 bg-slate-50">
                     <CardContent className="p-3">
-                      <div className="text-xs uppercase text-slate-500">Routes Mapped</div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <img src={MENU_ASSETS.NAVIGATION.EXPLORATION.path} alt="Routes" className="w-5 h-5 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                        <div className="text-xs uppercase text-slate-500">Routes Mapped</div>
+                      </div>
                       <div className="text-2xl font-bold text-slate-900">{surveyedCount}/{WORMHOLE_ROUTES.length}</div>
                     </CardContent>
                   </Card>
                   <Card className="border-green-200 bg-green-50">
                     <CardContent className="p-3">
-                      <div className="text-xs uppercase text-green-700">Stable Routes</div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <img src={SHIP_ASSETS.SPECIAL.TRANSPORT.path} alt="Stable" className="w-5 h-5 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                        <div className="text-xs uppercase text-green-700">Stable Routes</div>
+                      </div>
                       <div className="text-2xl font-bold text-green-900">{stabilizedRoutes}</div>
                     </CardContent>
                   </Card>
                   <Card className="border-blue-200 bg-blue-50">
                     <CardContent className="p-3">
-                      <div className="text-xs uppercase text-blue-700">Stronghold Intel</div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <img src={SHIP_ASSETS.FIGHTERS.SCOUT.path} alt="Intel" className="w-5 h-5 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                        <div className="text-xs uppercase text-blue-700">Stronghold Intel</div>
+                      </div>
                       <div className="text-2xl font-bold text-blue-900">{strongholdIntelCount}</div>
                     </CardContent>
                   </Card>
                   <Card className="border-amber-200 bg-amber-50">
                     <CardContent className="p-3">
-                      <div className="text-xs uppercase text-amber-700">Frontier Unlocks</div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <img src={OGAMEX_FEATURED_ASSETS.BACKGROUND.path} alt="Frontier" className="w-5 h-5 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                        <div className="text-xs uppercase text-amber-700">Frontier Unlocks</div>
+                      </div>
                       <div className="text-2xl font-bold text-amber-900">{frontierUnlockCount}</div>
                     </CardContent>
                   </Card>

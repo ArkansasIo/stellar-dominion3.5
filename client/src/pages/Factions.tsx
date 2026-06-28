@@ -1,294 +1,457 @@
+import { useState } from "react";
+import { Link } from "wouter";
+import { useQuery } from "@tanstack/react-query";
+import { Crown, Star, Shield, Swords, Heart, Globe, Zap, Target, Gift, Award, ArrowRight, Clock, TrendingUp, Users, BookOpen, CheckCircle, Lock, AlertTriangle, BarChart3, Sparkles, Handshake } from "lucide-react";
+
 import GameLayout from "@/components/layout/GameLayout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FACTIONS, Faction, FactionId } from "@/lib/factionData";
-import { Users, Target, Shield, Swords, Star, Globe, TrendingUp, TrendingDown, Handshake } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
 
-const alignmentColors: Record<string, string> = {
-  lawful: "bg-blue-100 text-blue-700 border-blue-300",
-  neutral: "bg-slate-100 text-slate-700 border-slate-300",
-  chaotic: "bg-purple-100 text-purple-700 border-purple-300"
+type FactionMembership = {
+  id: string;
+  factionId: string;
+  factionName: string;
+  factionDescription: string;
+  factionAlignment: string;
+  reputation: number;
+  tier: number;
+  joinDate: string;
+  questsCompleted: number;
+  factionColor: string;
+  factionIcon: string;
+  reputationLevel: string;
+  nextLevelAt: number;
+  reputationToNextLevel: number;
+  factionQuests: QuestSummary[];
+  rewards: RewardTrackTier[];
 };
 
-const moraleColors: Record<string, string> = {
-  good: "bg-green-100 text-green-700 border-green-300",
-  neutral: "bg-slate-100 text-slate-700 border-slate-300",
-  evil: "bg-red-100 text-red-700 border-red-300"
+type QuestSummary = {
+  id: string;
+  title: string;
+  description: string;
+  factionId: string;
+  type: string;
+  difficulty: "easy" | "medium" | "hard" | "epic";
+  rewards: { reputation?: number; prestige?: number; items?: string[] };
+  progress: number;
+  progressGoal: number;
+  status: "available" | "active" | "completed" | "failed";
+  expiresAt?: string;
+  completedAt?: string;
+  prerequisites?: string[];
+  repeatable: boolean;
 };
 
-const stanceColors: Record<string, string> = {
-  allied: "text-green-600",
-  neutral: "text-slate-500",
-  hostile: "text-red-600"
+type RewardTrackTier = {
+  tier: number;
+  name: string;
+  reputationRequired: number;
+  rewards: { label: string; type: string; quantity: number }[];
+  claimed: boolean;
+  canClaim: boolean;
 };
 
-const stanceIcons: Record<string, string> = {
-  allied: "🤝",
-  neutral: "😐",
-  hostile: "⚔️"
+type FactionsResponse = {
+  memberships: FactionMembership[];
+  availableToJoin: Array<{ id: string; name: string; description: string; alignment: string; color: string; icon: string }>;
 };
 
-function FactionCard({ faction }: { faction: Faction }) {
+const TEMP_THEME_IMAGE = "/theme-temp.png";
+
+function ReputationBadge({ level }: { level: string }) {
+  const colors: Record<string, string> = {
+    hated: "bg-red-100 text-red-800 border-red-300",
+    hostile: "bg-orange-100 text-orange-800 border-orange-300",
+    unfriendly: "bg-amber-100 text-amber-800 border-amber-300",
+    neutral: "bg-slate-100 text-slate-800 border-slate-300",
+    friendly: "bg-emerald-100 text-emerald-800 border-emerald-300",
+    honored: "bg-teal-100 text-teal-800 border-teal-300",
+    revered: "bg-blue-100 text-blue-800 border-blue-300",
+    exalted: "bg-purple-100 text-purple-800 border-purple-300",
+  };
   return (
-    <Card className="border-2 hover:border-primary/50 transition-colors" data-testid={`card-faction-${faction.id}`}>
-      <CardHeader className="pb-2">
-        <div className="flex items-start justify-between">
-          <div>
-            <CardTitle className="text-xl flex items-center gap-2">
-              <Users className="w-5 h-5 text-primary" />
-              {faction.name}
-            </CardTitle>
-            <p className="text-xs text-slate-500 mt-1">{faction.ideology}</p>
-          </div>
-          <div className="flex gap-2">
-            <Badge className={alignmentColors[faction.alignment]}>
-              {faction.alignment}
-            </Badge>
-            <Badge className={moraleColors[faction.morale]}>
-              {faction.morale}
-            </Badge>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <p className="text-sm text-slate-700">{faction.description}</p>
-        
-        <div className="grid grid-cols-2 gap-4">
-          <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-            <p className="text-xs font-bold text-slate-600 mb-2 flex items-center gap-1">
-              <Globe className="w-3 h-3" /> HOMEWORLD
-            </p>
-            <p className="text-sm font-medium text-slate-900">{faction.homeworld}</p>
-            <p className="text-xs text-slate-500">{faction.population} citizens</p>
-          </div>
-          <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-            <p className="text-xs font-bold text-slate-600 mb-2 flex items-center gap-1">
-              <Star className="w-3 h-3" /> STAR TYPE
-            </p>
-            <p className="text-sm font-medium text-slate-900">{faction.primaryStarType}</p>
-          </div>
-        </div>
+    <Badge className={cn("capitalize", colors[level] || "bg-slate-100 text-slate-800")}>
+      {level}
+    </Badge>
+  );
+}
 
-        <div className="p-3 bg-green-50 rounded-lg border border-green-200">
-          <p className="text-xs font-bold text-green-700 mb-2 flex items-center gap-1">
-            <TrendingUp className="w-3 h-3" /> BONUSES
-          </p>
-          <div className="grid grid-cols-2 gap-2 text-xs">
-            {faction.bonuses.resourceProduction && (
-              <span>🔩 Production: +{Math.round((faction.bonuses.resourceProduction - 1) * 100)}%</span>
-            )}
-            {faction.bonuses.combatPower && (
-              <span>⚔️ Combat: +{Math.round((faction.bonuses.combatPower - 1) * 100)}%</span>
-            )}
-            {faction.bonuses.researchSpeed && (
-              <span>🔬 Research: +{Math.round((faction.bonuses.researchSpeed - 1) * 100)}%</span>
-            )}
-            {faction.bonuses.diplomacy && (
-              <span>🤝 Diplomacy: +{Math.round((faction.bonuses.diplomacy - 1) * 100)}%</span>
-            )}
-            {faction.bonuses.espionage && (
-              <span>🕵️ Espionage: +{Math.round((faction.bonuses.espionage - 1) * 100)}%</span>
-            )}
-            {faction.bonuses.fleetSpeed && (
-              <span>🚀 Fleet Speed: +{Math.round((faction.bonuses.fleetSpeed - 1) * 100)}%</span>
-            )}
-            {faction.bonuses.diplomacyBonus && (
-              <span>🏛️ Diplomacy: +{Math.round((faction.bonuses.diplomacyBonus - 1) * 100)}%</span>
-            )}
-          </div>
-        </div>
+function DifficultyBadge({ difficulty }: { difficulty: string }) {
+  const colors: Record<string, string> = {
+    easy: "bg-emerald-100 text-emerald-700",
+    medium: "bg-amber-100 text-amber-700",
+    hard: "bg-red-100 text-red-700",
+    epic: "bg-purple-100 text-purple-700",
+  };
+  return (
+    <span className={cn("text-xs font-semibold px-2 py-0.5 rounded-full", colors[difficulty] || "bg-slate-100 text-slate-700")}>
+      {difficulty.toUpperCase()}
+    </span>
+  );
+}
 
-        {faction.penalties && Object.keys(faction.penalties).length > 0 && (
-          <div className="p-3 bg-red-50 rounded-lg border border-red-200">
-            <p className="text-xs font-bold text-red-700 mb-2 flex items-center gap-1">
-              <TrendingDown className="w-3 h-3" /> PENALTIES
-            </p>
-            <div className="grid grid-cols-2 gap-2 text-xs text-red-700">
-              {faction.penalties.resourceProduction && (
-                <span>🔩 Production: {Math.round((faction.penalties.resourceProduction - 1) * 100)}%</span>
-              )}
-              {faction.penalties.combatPower && (
-                <span>⚔️ Combat: {Math.round((faction.penalties.combatPower - 1) * 100)}%</span>
-              )}
-              {faction.penalties.researchSpeed && (
-                <span>🔬 Research: {Math.round((faction.penalties.researchSpeed - 1) * 100)}%</span>
-              )}
-            </div>
-          </div>
-        )}
-
-        <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-          <p className="text-xs font-bold text-blue-700 mb-2 flex items-center gap-1">
-            <Target className="w-3 h-3" /> GOALS
-          </p>
-          <ul className="text-xs text-blue-800 space-y-1">
-            {faction.goals.map((goal, idx) => (
-              <li key={idx} className="flex items-start gap-2">
-                <span className="text-blue-400">•</span>
-                {goal}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="p-3 bg-purple-50 rounded-lg border border-purple-200">
-          <p className="text-xs font-bold text-purple-700 mb-2 flex items-center gap-1">
-            <Star className="w-3 h-3" /> SPECIAL ABILITIES
-          </p>
-          <ul className="text-xs text-purple-800 space-y-1">
-            {faction.specialAbilities.map((ability, idx) => (
-              <li key={idx} className="flex items-start gap-2">
-                <span className="text-purple-400">✦</span>
-                {ability}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
-          <p className="text-xs font-bold text-amber-700 mb-2 flex items-center gap-1">
-            <Handshake className="w-3 h-3" /> DIPLOMATIC RELATIONS
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {faction.diplomaticStances.map(stance => (
-              <Badge key={stance.factionId} className={`text-xs ${stance.stance === 'allied' ? 'bg-green-100 border-green-300' : stance.stance === 'hostile' ? 'bg-red-100 border-red-300' : 'bg-slate-100 border-slate-300'}`}>
-                {stanceIcons[stance.stance]} {FACTIONS[stance.factionId]?.name || stance.factionId}
-              </Badge>
-            ))}
-          </div>
-        </div>
-
-        <div className="p-3 bg-slate-100 rounded-lg">
-          <p className="text-xs font-bold text-slate-600 mb-2">CULTURE</p>
-          <p className="text-xs text-slate-700">{faction.culture}</p>
-        </div>
-
-        <div className="flex flex-wrap gap-2">
-          <p className="text-xs font-bold text-slate-500 w-full">TRADE GOODS:</p>
-          {faction.tradingResources.map((resource, idx) => (
-            <Badge key={idx} variant="outline" className="text-xs">
-              {resource}
-            </Badge>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+function TierProgress({ current, next, reputation }: { current: number; next: number; reputation: number }) {
+  const progress = next > 0 ? Math.min(100, ((reputation - current) / (next - current)) * 100) : 100;
+  return (
+    <div className="space-y-1">
+      <div className="flex justify-between text-xs text-slate-500">
+        <span>Tier {Math.floor(reputation / next) + 1}</span>
+        <span>{reputation.toLocaleString()} / {next.toLocaleString()} rep</span>
+      </div>
+      <Progress value={progress} className="h-2" />
+    </div>
   );
 }
 
 export default function Factions() {
-  const factionList = Object.values(FACTIONS);
-  const alignments = ["all", "lawful", "neutral", "chaotic"];
-  const diplomacySummary = factionList.flatMap((faction) => faction.diplomaticStances);
-  const alliedLinks = diplomacySummary.filter((item) => item.stance === "allied").length;
-  const neutralLinks = diplomacySummary.filter((item) => item.stance === "neutral").length;
-  const hostileLinks = diplomacySummary.filter((item) => item.stance === "hostile").length;
-  
+  const [activeTab, setActiveTab] = useState("overview");
+  const [questSearch, setQuestSearch] = useState("");
+  const [selectedFaction, setSelectedFaction] = useState<string | null>(null);
+  const [rewardFilter, setRewardFilter] = useState<"all" | "available" | "claimed">("all");
+
+  const factionsQuery = useQuery<FactionsResponse>({
+    queryKey: ["/api/factions"],
+  });
+
+  const memberships = factionsQuery.data?.memberships || [];
+  const availableToJoin = factionsQuery.data?.availableToJoin || [];
+
+  const activeMembership = memberships.find((m) => m.factionId === selectedFaction) || memberships[0];
+  const factionQuests = activeMembership?.factionQuests || [];
+  const filteredQuests = factionQuests.filter((q) => {
+    const matchesSearch = questSearch === "" || q.title.toLowerCase().includes(questSearch.toLowerCase());
+    return matchesSearch;
+  });
+  const availableRewards = rewardFilter === "all" ? (activeMembership?.rewards || []) : rewardFilter === "available" ? (activeMembership?.rewards || []).filter((r) => !r.claimed) : (activeMembership?.rewards || []).filter((r) => r.claimed);
+
+  const totalQuestsCompleted = memberships.reduce((sum, m) => sum + m.questsCompleted, 0);
+  const highestReputation = memberships.length > 0 ? Math.max(...memberships.map((m) => m.reputation)) : 0;
+
   return (
     <GameLayout>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-4xl font-bold text-slate-900 flex items-center gap-3" data-testid="text-factions-title">
-            <Users className="w-10 h-10 text-primary" />
-            Galactic Factions
-          </h1>
-          <p className="text-slate-600 mt-2">12 unique civilizations competing for galactic dominance</p>
+      <div className="relative overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-cover bg-center mb-6" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.78), rgba(15,23,42,0.92)), url(${BACKGROUND_ASSETS.STAR_FIELD.path})` }}>
+        <div className="p-6 sm:p-8">
+          <div className="flex items-center gap-4">
+            <img src={MENU_ASSETS.BUILDINGS.TRADE_STATION.path} alt="Factions" className="w-16 h-16 rounded-2xl border border-white/10 bg-white/5 p-2 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+            <div>
+              <h1 className="text-2xl font-orbitron font-bold text-white">Factions & Reputation</h1>
+              <p className="text-slate-300 text-sm mt-1">Build reputation, complete quests, and unlock faction rewards.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="space-y-6" data-testid="factions-page">
+        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-3">
+          <div>
+            <h1 className="text-3xl font-orbitron font-bold text-slate-900 flex items-center gap-2">
+              <Handshake className="w-8 h-8 text-indigo-500" /> Factions & Reputation
+            </h1>
+            <p className="text-slate-600">Build reputation, complete quests, and unlock faction rewards.</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Badge variant="outline">Memberships: {memberships.length}</Badge>
+            <Badge variant="outline">Quests Done: {totalQuestsCompleted}</Badge>
+            <Badge variant="outline">Top Rep: {highestReputation.toLocaleString()}</Badge>
+          </div>
         </div>
 
-        <div className="grid grid-cols-4 gap-4">
-          <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-            <CardContent className="p-4 text-center">
-              <Shield className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-              <p className="text-2xl font-bold text-blue-900">{factionList.filter(f => f.alignment === 'lawful').length}</p>
-              <p className="text-xs text-blue-700">Lawful Factions</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200">
-            <CardContent className="p-4 text-center">
-              <Users className="w-8 h-8 text-slate-600 mx-auto mb-2" />
-              <p className="text-2xl font-bold text-slate-900">{factionList.filter(f => f.alignment === 'neutral').length}</p>
-              <p className="text-xs text-slate-700">Neutral Factions</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
-            <CardContent className="p-4 text-center">
-              <Swords className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-              <p className="text-2xl font-bold text-purple-900">{factionList.filter(f => f.alignment === 'chaotic').length}</p>
-              <p className="text-xs text-purple-700">Chaotic Factions</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200">
-            <CardContent className="p-4 text-center">
-              <Globe className="w-8 h-8 text-amber-600 mx-auto mb-2" />
-              <p className="text-2xl font-bold text-amber-900">{factionList.length}</p>
-              <p className="text-xs text-amber-700">Total Factions</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="bg-green-50 border-green-200">
-            <CardContent className="p-4 text-center">
-              <p className="text-2xl font-bold text-green-700">{alliedLinks}</p>
-              <p className="text-xs text-green-700">Allied Diplomatic Links</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-slate-50 border-slate-200">
-            <CardContent className="p-4 text-center">
-              <p className="text-2xl font-bold text-slate-700">{neutralLinks}</p>
-              <p className="text-xs text-slate-700">Neutral Diplomatic Links</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-red-50 border-red-200">
-            <CardContent className="p-4 text-center">
-              <p className="text-2xl font-bold text-red-700">{hostileLinks}</p>
-              <p className="text-xs text-red-700">Hostile Diplomatic Links</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        <Card className="bg-white border-slate-200">
-          <CardHeader>
-            <CardTitle>Faction Strategy Doctrine</CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm text-slate-600">
-            <div className="rounded border border-slate-200 bg-slate-50 p-3">
-              <div className="font-semibold text-slate-900">Lawful Bloc</div>
-              <div>Stable growth, treaty-heavy diplomacy, and strong defensive posture.</div>
-            </div>
-            <div className="rounded border border-slate-200 bg-slate-50 p-3">
-              <div className="font-semibold text-slate-900">Neutral Bloc</div>
-              <div>Balanced economy/combat distribution with flexible strategic pivots.</div>
-            </div>
-            <div className="rounded border border-slate-200 bg-slate-50 p-3">
-              <div className="font-semibold text-slate-900">Chaotic Bloc</div>
-              <div>Aggressive opportunism, high-risk power spikes, and disruptive campaigns.</div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Tabs defaultValue="all" className="w-full">
-          <TabsList className="bg-white border border-slate-200">
-            {alignments.map(alignment => (
-              <TabsTrigger key={alignment} value={alignment} className="capitalize" data-testid={`tab-faction-${alignment}`}>
-                {alignment === "all" ? "All Factions" : alignment}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-
-          {alignments.map(alignment => (
-            <TabsContent key={alignment} value={alignment} className="mt-4">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {factionList
-                  .filter(f => alignment === "all" || f.alignment === alignment)
-                  .map(faction => (
-                    <FactionCard key={faction.id} faction={faction} />
-                  ))}
-              </div>
-            </TabsContent>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {memberships.map((m) => (
+            <Card
+              key={m.id}
+              className={cn(
+                "cursor-pointer transition-all hover:shadow-md",
+                selectedFaction === m.factionId || (!selectedFaction && memberships[0]?.factionId === m.factionId)
+                  ? "ring-2 ring-indigo-400"
+                  : ""
+              )}
+              onClick={() => setSelectedFaction(m.factionId)}
+            >
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center overflow-hidden">
+                    <img src={MENU_ASSETS.NAVIGATION.DIPLOMACY.path} alt={m.factionName} className="w-6 h-6 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                  </div>
+                  <Crown className="w-5 h-5" style={{ color: m.factionColor }} />
+                  <CardTitle className="text-sm">{m.factionName}</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-2 text-xs">
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Reputation</span>
+                  <span className="font-semibold">{m.reputation.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Level</span>
+                  <ReputationBadge level={m.reputationLevel} />
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Quests</span>
+                  <span className="font-semibold">{m.questsCompleted}</span>
+                </div>
+                <Progress
+                  value={m.reputationToNextLevel > 0 ? (m.reputation / m.reputationToNextLevel) * 100 : 100}
+                  className="h-1.5"
+                />
+              </CardContent>
+            </Card>
           ))}
-        </Tabs>
+        </div>
+
+        {availableToJoin.length > 0 && (
+          <Card className="border-dashed border-indigo-300 bg-indigo-50/50">
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2"><Star className="w-4 h-4" /> Available Factions</CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+              {availableToJoin.map((f) => (
+                <div key={f.id} className="flex items-center justify-between p-3 bg-white rounded-lg border">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden">
+                      <img src={MENU_ASSETS.NAVIGATION.DIPLOMACY.path} alt={f.name} className="w-6 h-6 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                    </div>
+                    <Globe className="w-5 h-5" style={{ color: f.color }} />
+                    <span className="font-semibold text-sm">{f.name}</span>
+                  </div>
+                  <Button size="sm" variant="outline">Join</Button>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
+
+        {!activeMembership ? (
+          <div className="text-center py-12 text-slate-500">
+            <Handshake className="w-12 h-12 mx-auto mb-3 text-slate-300" />
+            <p className="text-lg font-semibold">No faction memberships yet.</p>
+            <p className="text-sm">Join a faction above to start earning reputation.</p>
+          </div>
+        ) : (
+          <>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid grid-cols-4 w-full">
+                <TabsTrigger value="overview"><BookOpen className="w-4 h-4 mr-1" /> Overview</TabsTrigger>
+                <TabsTrigger value="quests"><Target className="w-4 h-4 mr-1" /> Quests</TabsTrigger>
+                <TabsTrigger value="rewards"><Gift className="w-4 h-4 mr-1" /> Reward Track</TabsTrigger>
+                <TabsTrigger value="progress"><TrendingUp className="w-4 h-4 mr-1" /> Progress</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="overview" className="space-y-4 mt-4">
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex flex-col md:flex-row gap-6">
+                      <div className="flex-1 space-y-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center overflow-hidden">
+                            <img src={MENU_ASSETS.BUILDINGS.TRADE_STATION.path} alt={activeMembership.factionName} className="w-10 h-10 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                          </div>
+                          <Crown className="w-8 h-8" style={{ color: activeMembership.factionColor }} />
+                          <div>
+                            <h3 className="text-xl font-bold">{activeMembership.factionName}</h3>
+                            <ReputationBadge level={activeMembership.reputationLevel} />
+                          </div>
+                        </div>
+                        <p className="text-sm text-slate-600">{activeMembership.factionDescription}</p>
+                        <div className="flex gap-4 pt-2">
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-indigo-700">{activeMembership.reputation.toLocaleString()}</div>
+                            <div className="text-xs text-slate-500">Reputation</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-emerald-700">{activeMembership.questsCompleted}</div>
+                            <div className="text-xs text-slate-500">Quests Done</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-amber-700">{activeMembership.tier}</div>
+                            <div className="text-xs text-slate-500">Tier</div>
+                          </div>
+                        </div>
+                        <div className="pt-3">
+                          <TierProgress current={0} next={activeMembership.nextLevelAt || 1000} reputation={activeMembership.reputation} />
+                        </div>
+                      </div>
+                      <div className="md:w-48 space-y-2">
+                        <div className="text-sm font-semibold text-slate-500">JOINED</div>
+                        <div className="text-sm">{new Date(activeMembership.joinDate).toLocaleDateString()}</div>
+                        <Separator />
+                        <div className="text-sm font-semibold text-slate-500">ALIGNMENT</div>
+                        <Badge className="capitalize">{activeMembership.factionAlignment}</Badge>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="quests" className="space-y-4 mt-4">
+                <div className="flex items-center gap-3">
+                  <Input
+                    placeholder="Search quests..."
+                    value={questSearch}
+                    onChange={(e) => setQuestSearch(e.target.value)}
+                    className="max-w-xs"
+                  />
+                  <span className="text-xs text-slate-500">{filteredQuests.length} quests</span>
+                </div>
+                {filteredQuests.length === 0 ? (
+                  <div className="text-center py-8 text-slate-500">
+                    <Target className="w-10 h-10 mx-auto mb-2 text-slate-300" />
+                    {questSearch ? "No quests match your search." : "No quests available for this faction."}
+                    {!questSearch && <p className="text-sm">Check back later for new contracts.</p>}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                    {filteredQuests.map((quest) => (
+                      <Card key={quest.id} className={cn(
+                        "flex flex-col",
+                        quest.status === "completed" && "border-emerald-300 bg-emerald-50/50",
+                        quest.status === "failed" && "border-red-300 bg-red-50/50",
+                      )}>
+                        <CardHeader className="pb-3">
+                          <div className="flex items-start justify-between">
+                            <CardTitle className="text-sm flex-1">{quest.title}</CardTitle>
+                            <DifficultyBadge difficulty={quest.difficulty} />
+                          </div>
+                          <CardDescription className="text-xs mt-1">{quest.description}</CardDescription>
+                        </CardHeader>
+                        <CardContent className="flex-1 space-y-2 text-sm">
+                          <div className="flex items-center justify-between">
+                            <span className="text-slate-500">Progress</span>
+                            <span>{quest.progress}/{quest.progressGoal}</span>
+                          </div>
+                          <Progress value={(quest.progress / quest.progressGoal) * 100} className="h-2" />
+                          <div className="flex flex-wrap gap-2 pt-1">
+                            {quest.rewards.reputation && (
+                              <Badge variant="outline" className="text-xs">
+                                +{quest.rewards.reputation} Rep
+                              </Badge>
+                            )}
+                            {quest.rewards.prestige && (
+                              <Badge variant="outline" className="text-xs">
+                                +{quest.rewards.prestige} Prestige
+                              </Badge>
+                            )}
+                            {quest.repeatable && (
+                              <Badge variant="secondary" className="text-xs">Repeatable</Badge>
+                            )}
+                          </div>
+                          <div className="flex items-center justify-between pt-1">
+                            <Badge className={cn(
+                              "capitalize",
+                              quest.status === "available" && "bg-blue-100 text-blue-800",
+                              quest.status === "active" && "bg-amber-100 text-amber-800",
+                              quest.status === "completed" && "bg-emerald-100 text-emerald-800",
+                              quest.status === "failed" && "bg-red-100 text-red-800",
+                            )}>{quest.status}</Badge>
+                            {quest.expiresAt && <span className="text-xs text-red-500">Expires {new Date(quest.expiresAt).toLocaleDateString()}</span>}
+                          </div>
+                        </CardContent>
+                        <CardFooter className="pt-0">
+                          <Button size="sm" className="w-full" disabled={quest.status === "completed" || quest.status === "failed"}>
+                            {quest.status === "completed" ? "Completed" : quest.status === "failed" ? "Failed" : quest.status === "active" ? "In Progress" : "Accept Quest"}
+                          </Button>
+                        </CardFooter>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </TabsContent>
+
+              <TabsContent value="rewards" className="space-y-4 mt-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Button size="sm" variant={rewardFilter === "all" ? "default" : "outline"} onClick={() => setRewardFilter("all")}>All</Button>
+                  <Button size="sm" variant={rewardFilter === "available" ? "default" : "outline"} onClick={() => setRewardFilter("available")}>Available</Button>
+                  <Button size="sm" variant={rewardFilter === "claimed" ? "default" : "outline"} onClick={() => setRewardFilter("claimed")}>Claimed</Button>
+                </div>
+
+                {(activeMembership.rewards || []).length === 0 ? (
+                  <div className="text-center py-8 text-slate-500">
+                    <Gift className="w-10 h-10 mx-auto mb-2 text-slate-300" />
+                    No reward tiers configured for this faction.
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {(activeMembership.rewards || []).map((tier) => (
+                      <Card key={tier.tier} className={cn(
+                        tier.claimed && "border-emerald-300 bg-emerald-50/50",
+                        tier.canClaim && !tier.claimed && "border-amber-300 bg-amber-50/50",
+                      )}>
+                        <CardContent className="p-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-bold">Tier {tier.tier}</span>
+                              <span className="text-sm font-semibold">{tier.name}</span>
+                              <Badge variant="outline" className="text-xs">{tier.reputationRequired.toLocaleString()} rep</Badge>
+                            </div>
+                            {tier.claimed ? (
+                              <Badge className="bg-emerald-500"><CheckCircle className="w-3 h-3 mr-1" /> Claimed</Badge>
+                            ) : tier.canClaim ? (
+                              <Badge className="bg-amber-500"><Gift className="w-3 h-3 mr-1" /> Claim Now</Badge>
+                            ) : (
+                              <Badge variant="secondary"><Lock className="w-3 h-3 mr-1" /> Locked</Badge>
+                            )}
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {tier.rewards.map((reward, idx) => (
+                              <Badge key={idx} variant="outline" className="text-xs">
+                                {reward.label} x{reward.quantity}
+                              </Badge>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </TabsContent>
+
+              <TabsContent value="progress" className="space-y-4 mt-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                  {memberships.map((m) => (
+                    <Card key={m.id}>
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-sm flex items-center gap-2">
+                          <Crown className="w-4 h-4" style={{ color: m.factionColor }} /> {m.factionName}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-3 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">Reputation</span>
+                          <span className="font-semibold">{m.reputation.toLocaleString()}</span>
+                        </div>
+                        <Progress value={m.reputationToNextLevel > 0 ? (m.reputation / m.reputationToNextLevel) * 100 : 100} className="h-2" />
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">Next Level</span>
+                          <span className="font-semibold">{m.reputationToNextLevel.toLocaleString()} rep</span>
+                        </div>
+                        <Separator />
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">Quests Completed</span>
+                          <span className="font-semibold">{m.questsCompleted}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">Current Tier</span>
+                          <span className="font-semibold">{m.tier}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-500">Joined</span>
+                          <span className="font-semibold">{new Date(m.joinDate).toLocaleDateString()}</span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </TabsContent>
+            </Tabs>
+          </>
+        )}
       </div>
     </GameLayout>
   );

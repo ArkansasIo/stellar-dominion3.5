@@ -10,6 +10,9 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { ShoppingBag } from "lucide-react";
 import { Link } from "wouter";
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
+
+const TEMP_THEME_IMAGE = "/theme-temp.png";
 
 type StoreCategory = "boosters" | "cosmetics" | "resources" | "bundles";
 type StoreCurrency = "silver" | "gold" | "platinum";
@@ -148,13 +151,17 @@ export default function Storefront() {
     <GameLayout>
       <div className="space-y-6">
         <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
-          <img src="/assets/backgrounds/space_station.png" alt="Storefront" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-emerald-950/60 to-transparent" />
+          <img src={BACKGROUND_ASSETS.STAR_FIELD.path} alt="Storefront" className="absolute inset-0 w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-blue-950/60 to-transparent" />
           <div className="relative z-10 p-6 flex items-center gap-6">
-            <img src="/assets/buildings/space_port.png" alt="Store" className="w-20 h-20 rounded-xl object-cover ring-2 ring-emerald-400/60 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
+            <div className="flex gap-2 items-center">
+              <img src={SHIP_ASSETS.SPECIAL.TRANSPORT.path} alt="Transport" className="w-12 h-12 object-contain" />
+              <img src={MENU_ASSETS.BUILDINGS.TRADE_STATION.path} alt="Trade Station" className="w-12 h-12 object-contain" />
+              <img src={MENU_ASSETS.RESOURCES.CREDITS.path} alt="Credits" className="w-12 h-12 object-contain" />
+            </div>
             <div>
               <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow">Storefront</h2>
-              <p className="text-emerald-300 font-rajdhani text-lg">Purchase boosters, cosmetics, resources, and bundles for story and seasonal progression.</p>
+              <p className="text-blue-300 font-rajdhani text-lg">Purchase boosters, cosmetics, resources, and bundles for story and seasonal progression.</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 <Link href="/story-mode"><Button variant="outline" size="sm" className="border-white/30 text-white hover:bg-white/10">Story Mode</Button></Link>
                 <Link href="/season-pass"><Button variant="outline" size="sm" className="border-white/30 text-white hover:bg-white/10">Season Pass</Button></Link>

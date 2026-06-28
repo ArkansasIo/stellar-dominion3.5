@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   BACKGROUND_ASSETS,
   MENU_ASSETS,
@@ -33,6 +34,14 @@ import {
   Factory,
   Orbit,
   Activity,
+  BarChart3,
+  Clock,
+  Layers,
+  Zap,
+  TrendingUp,
+  ChevronRight,
+  AlertCircle,
+  CheckCircle,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { unitData, type UnitItem } from "@/lib/unitData";
@@ -81,6 +90,14 @@ type ConstructorYardStatusResponse = {
   success: boolean;
   status: ConstructorYardStatus;
 };
+
+const SHIP_CLASS_TIERS = [
+  { tier: 1, label: "Starter", maxLevel: 4, color: "slate" },
+  { tier: 2, label: "Advanced", maxLevel: 8, color: "blue" },
+  { tier: 3, label: "Elite", maxLevel: 12, color: "purple" },
+  { tier: 4, label: "Legendary", maxLevel: 15, color: "amber" },
+  { tier: 5, label: "Mythic", maxLevel: 20, color: "red" },
+];
 
 function getUnitImagePath(item: UnitItem) {
   if (item.id === "interceptor") return SHIP_ASSETS.FIGHTERS.INTERCEPTOR.path;
@@ -149,6 +166,7 @@ const UnitCard = ({
   const canAfford = resources.metal >= totalMetal && resources.crystal >= totalCrystal && resources.deuterium >= totalDeut;
   const canBuild = canAfford && meetsRequirement;
   const totalPower = item.stats.attack + item.stats.shield + item.stats.structure / 10;
+  const costEfficiency = totalPower > 0 ? Math.round(totalPower / (item.cost.metal + item.cost.crystal + item.cost.deuterium) * 1000) / 1000 : 0;
 
   return (
     <Card className={cn("bg-white border-slate-200 hover:border-primary/50 transition-all group overflow-hidden shadow-sm flex flex-col h-full", !meetsRequirement && "opacity-60")} data-testid={`card-unit-${item.id}`}>
@@ -173,7 +191,7 @@ const UnitCard = ({
             <div className="flex items-center gap-1"><Shield className="w-3 h-3 text-green-500" /> Shld:<span className="text-slate-900 font-mono">{item.stats.shield.toLocaleString()}</span></div>
             <div className="flex items-center gap-1"><Rocket className="w-3 h-3 text-purple-500" /> Spd:<span className="text-slate-900 font-mono">{item.stats.speed.toLocaleString()}</span></div>
           </div>
-          <div className="mt-2 pt-2 border-t border-slate-200 flex items-center justify-between text-[10px]"><span className="text-slate-500 flex items-center gap-1"><Target className="w-3 h-3" /> Combat Power</span><span className="font-mono font-bold text-primary">{Math.floor(totalPower).toLocaleString()}</span></div>
+          <div className="mt-2 pt-2 border-t border-slate-200 flex items-center justify-between text-[10px]"><span className="text-slate-500 flex items-center gap-1"><Target className="w-3 h-3" /> Combat Power</span><span className="font-mono font-bold text-primary">{Math.floor(totalPower).toLocaleString()}</span><span className="text-slate-400">Eff: {costEfficiency}</span></div>
         </div>
         <Separator />
         <div className="space-y-1">
@@ -192,6 +210,7 @@ const UnitCard = ({
     </Card>
   );
 };
+
 function ConstructorYardPanel({ title, description, domain, entries, status, onStartUpgrade, onCompleteUpgrade, isStarting, isCompleting }: { title: string; description: string; domain: "mothership" | "starship"; entries: YardEntry[]; status?: ConstructorYardStatus; onStartUpgrade: (entryId: string, targetLevel: number) => void; onCompleteUpgrade: (entryId: string) => void; isStarting: boolean; isCompleting: boolean; }) {
   const runningById = new Map((status?.activeUpgrades || []).map((item) => [item.entryId, item]));
   return (
@@ -261,6 +280,9 @@ function ConstructorYardPanel({ title, description, domain, entries, status, onS
 export default function Shipyard() {
   const { toast } = useToast();
   const { units, resources, buildUnit, queue, buildings } = useGame();
+  const [fleetView, setFleetView] = useState<"grid" | "compact">("grid");
+  const [classFilter, setClassFilter] = useState<string>("all");
+
   const combatShips = unitData.filter((u) => u.class === "fighter" || u.class === "capital");
   const civilShips = unitData.filter((u) => u.class === "civilian");
   const troops = unitData.filter((u) => u.class === "troop");
@@ -268,8 +290,22 @@ export default function Shipyard() {
   const supers = unitData.filter((u) => u.class === "super");
   const titans = unitData.filter((u) => u.class === "titan");
   const unitQueue = queue.filter((q) => q.type === "unit");
+
   const totalFleetPower = useMemo(() => Object.entries(units).reduce((sum, [id, count]) => { const unit = unitData.find((u) => u.id === id); if (!unit) return sum; const power = unit.stats.attack + unit.stats.shield + unit.stats.structure / 10; return sum + power * count; }, 0), [units]);
   const totalShips = useMemo(() => Object.values(units).reduce((a, b) => a + b, 0), [units]);
+  const avgQueueTime = unitQueue.length > 0 ? Math.round(unitQueue.reduce((sum, item) => sum + Math.max(0, Math.floor((item.endTime - Date.now()) / 1000)), 0) / unitQueue.length) : 0;
+
+  const fleetComposition = useMemo(() => {
+    const classes: Record<string, { count: number; power: number; label: string }> = {};
+    Object.entries(units).forEach(([id, count]) => {
+      const unit = unitData.find((u) => u.id === id);
+      if (!unit || count === 0) return;
+      if (!classes[unit.class]) classes[unit.class] = { count: 0, power: 0, label: unit.class };
+      classes[unit.class].count += count;
+      classes[unit.class].power += Math.floor((unit.stats.attack + unit.stats.shield + unit.stats.structure / 10) * count);
+    });
+    return Object.entries(classes).sort((a, b) => b[1].power - a[1].power);
+  }, [units]);
 
   const { data: starshipCatalog } = useQuery<ConstructorYardCatalogResponse>({ queryKey: ["/api/constructor-yard/catalog", "starship"], queryFn: async () => { const res = await fetch("/api/constructor-yard/catalog?domain=starship", { credentials: "include" }); if (!res.ok) throw new Error("Failed to load starship constructor yard"); return res.json(); } });
   const { data: mothershipCatalog } = useQuery<ConstructorYardCatalogResponse>({ queryKey: ["/api/constructor-yard/catalog", "mothership"], queryFn: async () => { const res = await fetch("/api/constructor-yard/catalog?domain=mothership", { credentials: "include" }); if (!res.ok) throw new Error("Failed to load mothership constructor yard"); return res.json(); } });
@@ -282,6 +318,8 @@ export default function Shipyard() {
   const featuredMothershipYards = (mothershipCatalog?.entries || []).slice(0, 6);
   const yardStatus = yardStatusData?.status;
   const motherships = supers.filter((item) => item.id === "mothership" || item.id === "deathstar");
+  const constructionQueueTotal = unitQueue.reduce((acc, q) => acc + (q.amount || 1), 0);
+  const estimatedTimeHours = Math.round((constructionQueueTotal * 0.5) * 10) / 10;
 
   return (
     <GameLayout>
@@ -292,7 +330,7 @@ export default function Shipyard() {
               <div className="inline-flex items-center gap-2 rounded-full border border-cyan-200/20 bg-cyan-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-100"><Factory className="w-3.5 h-3.5" />Fleet Fabrication Wing</div>
               <div>
                 <h2 className="text-3xl font-orbitron font-bold">Orbital Shipyard</h2>
-                <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300">Fleet construction, Spaceship Command-inspired constructor doctrines, mothership cores, 32 command categories, and a 90-hull starship line all run from this integrated shipyard deck while keeping the same shipyard menu structure.</p>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300">Fleet construction, constructor doctrines, mothership cores, 32 command categories, and a 90-hull starship line.</p>
               </div>
               <div className="flex flex-wrap gap-3">
                 {[{ label: "Shipyard", image: MENU_ASSETS.BUILDINGS.SHIPYARD.path }, { label: "Constructor Yard", image: MENU_ASSETS.BUILDINGS.ROBOTICS_FACTORY.path }, { label: "Mothership Core", image: SHIP_ASSETS.SPECIAL.CARRIER.path }].map((item) => (
@@ -304,7 +342,7 @@ export default function Shipyard() {
               </div>
             </div>
             <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
-              {[{ label: "Fleet Power", value: Math.floor(totalFleetPower).toLocaleString(), image: SHIP_ASSETS.CAPITALS.BATTLECRUISER.path, tone: "text-blue-100" }, { label: "Active Queue", value: unitQueue.reduce((acc, q) => acc + (q.amount || 1), 0).toLocaleString(), image: MENU_ASSETS.BUILDINGS.SHIPYARD.path, tone: "text-amber-100" }, { label: "Yard Upgrades", value: (yardStatus?.activeUpgrades.length || 0).toLocaleString(), image: MENU_ASSETS.BUILDINGS.ROBOTICS_FACTORY.path, tone: "text-emerald-100" }].map((item) => (
+              {[{ label: "Fleet Power", value: Math.floor(totalFleetPower).toLocaleString(), image: SHIP_ASSETS.CAPITALS.BATTLECRUISER.path, tone: "text-blue-100" }, { label: "Active Queue", value: constructionQueueTotal.toLocaleString(), image: MENU_ASSETS.BUILDINGS.SHIPYARD.path, tone: "text-amber-100" }, { label: "Est. Queue Time", value: `${estimatedTimeHours}h`, image: MENU_ASSETS.BUILDINGS.ROBOTICS_FACTORY.path, tone: "text-emerald-100" }].map((item) => (
                 <div key={item.label} className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur-sm">
                   <div className="flex items-center gap-3">
                     <img src={item.image} alt={item.label} className="w-12 h-12 rounded-xl border border-white/10 bg-black/10 p-2 object-contain" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = TEMP_THEME_IMAGE; }} />
@@ -316,14 +354,37 @@ export default function Shipyard() {
           </div>
         </section>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200" data-testid="card-stats-fleet-power"><CardContent className="p-4"><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden"><img src={SHIP_ASSETS.CAPITALS.BATTLECRUISER.path} alt="Fleet power" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} /></div><div><div className="text-xs text-blue-600 uppercase">Total Fleet Power</div><div className="text-xl font-orbitron font-bold text-blue-900">{Math.floor(totalFleetPower).toLocaleString()}</div></div></div></CardContent></Card>
           <Card className="bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200" data-testid="card-stats-total-ships"><CardContent className="p-4"><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-full bg-slate-500/10 flex items-center justify-center overflow-hidden"><img src={SHIP_ASSETS.FIGHTERS.FIGHTER.path} alt="Total ships" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} /></div><div><div className="text-xs text-slate-600 uppercase">Total Ships</div><div className="text-xl font-orbitron font-bold text-slate-900">{totalShips.toLocaleString()}</div></div></div></CardContent></Card>
           <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200" data-testid="card-stats-shipyard"><CardContent className="p-4"><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center overflow-hidden"><img src={MENU_ASSETS.BUILDINGS.SHIPYARD.path} alt="Shipyard" className="w-7 h-7 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} /></div><div><div className="text-xs text-orange-600 uppercase">Shipyard Level</div><div className="text-xl font-orbitron font-bold text-orange-900">{buildings?.shipyard || 0}</div></div></div></CardContent></Card>
           <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200" data-testid="card-stats-mothership-yard"><CardContent className="p-4"><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center overflow-hidden"><img src={SHIP_ASSETS.SPECIAL.CARRIER.path} alt="Motherships" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} /></div><div><div className="text-xs text-purple-600 uppercase">Mothership Hulls</div><div className="text-xl font-orbitron font-bold text-purple-900">{motherships.reduce((sum, item) => sum + (units[item.id] || 0), 0)}</div></div></div></CardContent></Card>
+          <Card className="bg-gradient-to-br from-teal-50 to-teal-100 border-teal-200" data-testid="card-stats-composition"><CardContent className="p-4"><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-full bg-teal-500/10 flex items-center justify-center overflow-hidden"><Layers className="w-6 h-6 text-teal-600" /></div><div><div className="text-xs text-teal-600 uppercase">Ship Classes</div><div className="text-xl font-orbitron font-bold text-teal-900">{fleetComposition.length}</div></div></div></CardContent></Card>
         </div>
 
-        {unitQueue.length > 0 && <Card className="bg-white border-primary/20 shadow-sm" data-testid="card-production-queue"><CardHeader className="pb-2"><CardTitle className="text-sm font-bold uppercase tracking-widest text-primary flex items-center gap-2"><Hammer className="w-4 h-4" /> Production Queue</CardTitle></CardHeader><CardContent><div className="space-y-2">{unitQueue.map((item, i) => { const timeLeft = Math.max(0, Math.floor((item.endTime - Date.now()) / 1000)); return <div key={i} className="flex items-center gap-4 bg-slate-50 p-3 rounded border border-slate-100"><div className="w-12 h-12 flex items-center justify-center bg-white rounded border border-slate-200"><img src={getQueueImagePath(item.itemId, item.name)} alt="Queue item" className="w-9 h-9 object-contain" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = TEMP_THEME_IMAGE; }} /></div><div className="flex-1"><div className="flex justify-between text-sm font-medium text-slate-900 mb-1"><span>{item.amount}x {item.name}</span><span className="font-mono text-primary">{timeLeft}s remaining</span></div><Progress value={Math.max(0, 100 - (timeLeft / 2) * 100)} className="h-2" /></div></div>; })}</div></CardContent></Card>}
+        {unitQueue.length > 0 && <Card className="bg-white border-primary/20 shadow-sm" data-testid="card-production-queue"><CardHeader className="pb-2"><CardTitle className="text-sm font-bold uppercase tracking-widest text-primary flex items-center gap-2"><Hammer className="w-4 h-4" /> Production Queue — {constructionQueueTotal} units (~{estimatedTimeHours}h)</CardTitle></CardHeader><CardContent><div className="space-y-2">{unitQueue.map((item, i) => { const timeLeft = Math.max(0, Math.floor((item.endTime - Date.now()) / 1000)); return <div key={i} className="flex items-center gap-4 bg-slate-50 p-3 rounded border border-slate-100"><div className="w-12 h-12 flex items-center justify-center bg-white rounded border border-slate-200"><img src={getQueueImagePath(item.itemId, item.name)} alt="Queue item" className="w-9 h-9 object-contain" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = TEMP_THEME_IMAGE; }} /></div><div className="flex-1"><div className="flex justify-between text-sm font-medium text-slate-900 mb-1"><span>{item.amount}x {item.name}</span><span className="font-mono text-primary">{timeLeft}s remaining</span></div><Progress value={Math.max(0, 100 - (timeLeft / 2) * 100)} className="h-2" /></div></div>; })}</div></CardContent></Card>}
+
+        {fleetComposition.length > 0 && (
+          <Card className="border-slate-200">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm flex items-center gap-2"><BarChart3 className="w-4 h-4" /> Fleet Composition</CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+              {fleetComposition.map(([cls, data]) => (
+                <div key={cls} className="flex items-center justify-between p-3 rounded-lg border border-slate-200">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="capitalize text-xs">{data.label}</Badge>
+                    <span className="text-xs text-slate-500">{data.count.toLocaleString()} ships</span>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-xs font-bold text-slate-900">{data.power.toLocaleString()}</div>
+                    <div className="text-[10px] text-slate-400">power</div>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
 
         <Tabs defaultValue="combat" className="w-full">
           <TabsList className="bg-white border border-slate-200 h-12 w-full justify-start overflow-x-auto">
@@ -334,6 +395,7 @@ export default function Shipyard() {
             <TabsTrigger value="constructor" className="font-orbitron" data-testid="tab-constructor"><Wrench className="w-4 h-4 mr-2" /> Constructor Yard</TabsTrigger>
             <TabsTrigger value="motherships" className="font-orbitron text-purple-700" data-testid="tab-motherships"><Orbit className="w-4 h-4 mr-2" /> Motherships</TabsTrigger>
             <TabsTrigger value="titan" className="font-orbitron text-red-600 font-bold" data-testid="tab-titan"><Hexagon className="w-4 h-4 mr-2" /> Titans</TabsTrigger>
+            <TabsTrigger value="analytics" className="font-orbitron" data-testid="tab-analytics"><BarChart3 className="w-4 h-4 mr-2" /> Analytics</TabsTrigger>
           </TabsList>
           <div className="mt-6">
             <TabsContent value="combat" className="mt-0"><Card className="mb-6 bg-slate-50 border-slate-200" data-testid="card-combat-info"><CardContent className="p-4"><div className="flex items-center gap-4"><img src={SHIP_ASSETS.CAPITALS.DESTROYER.path} alt="Combat fleet" className="w-10 h-10 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} /><div><div className="font-bold text-slate-900">Combat Fleet</div><div className="text-sm text-slate-500">Fighters and capital ships for offensive and defensive operations. Upgrade your Shipyard to unlock advanced vessels.</div></div></div></CardContent></Card><div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">{combatShips.map((item) => <UnitCard key={item.id} item={item} count={units[item.id] || 0} onBuild={buildUnit} resources={resources} buildings={buildings} />)}</div></TabsContent>
@@ -348,6 +410,14 @@ export default function Shipyard() {
             </TabsContent>
             <TabsContent value="motherships" className="mt-0"><div className="space-y-6"><Card className="mb-0 bg-purple-100 border-purple-300" data-testid="card-mothership-info"><CardContent className="p-4"><div className="flex items-center gap-4"><img src={SHIP_ASSETS.SPECIAL.CARRIER.path} alt="Motherships" className="w-12 h-12 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} /><div><div className="font-bold text-purple-900 text-lg">Mothership Systems</div><div className="text-sm text-purple-700">Mobile command fortresses, heavy support hulls, and endgame command platforms all route through the mothership constructor yard.</div></div><Badge className="ml-auto bg-purple-700">CORE SYSTEM</Badge></div></CardContent></Card><div className="grid grid-cols-1 lg:grid-cols-2 gap-6">{motherships.map((item) => <UnitCard key={item.id} item={item} count={units[item.id] || 0} onBuild={buildUnit} resources={resources} buildings={buildings} />)}</div><ConstructorYardPanel title="Mothership Constructor Yard" description="Build out command cores, carrier cradles, siege hull sections, and mothership logistics relays for flagship-scale production." domain="mothership" entries={featuredMothershipYards} status={yardStatus} onStartUpgrade={(entryId, targetLevel) => startUpgradeMutation.mutate({ entryId, targetLevel })} onCompleteUpgrade={(entryId) => completeUpgradeMutation.mutate({ entryId })} isStarting={startUpgradeMutation.isPending} isCompleting={completeUpgradeMutation.isPending} /></div></TabsContent>
             <TabsContent value="titan" className="mt-0"><Card className="mb-6 bg-red-100 border-red-300" data-testid="card-titan-info"><CardContent className="p-4"><div className="flex items-center gap-4"><img src={SHIP_ASSETS.SPECIAL.CARRIER.path} alt="Titans" className="w-12 h-12 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} /><div><div className="font-orbitron font-bold text-red-900 text-lg">TITAN CLASS</div><div className="text-sm text-red-700">The ultimate expression of military might. These planet-killer class vessels require Shipyard Level 12 and massive resources to construct. Only one may exist per empire.</div></div><Badge className="ml-auto bg-red-600 animate-pulse">LEGENDARY</Badge></div></CardContent></Card><div className="grid grid-cols-1 lg:grid-cols-2 gap-6">{titans.map((item) => <UnitCard key={item.id} item={item} count={units[item.id] || 0} onBuild={buildUnit} resources={resources} buildings={buildings} />)}</div></TabsContent>
+            <TabsContent value="analytics" className="mt-0 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Card className="bg-slate-50"><CardContent className="p-4"><div className="text-xs text-slate-500">Ship Class Tiers</div><div className="flex gap-2 mt-2">{SHIP_CLASS_TIERS.map((t) => <Badge key={t.tier} variant="outline" className={cn("text-xs", `border-${t.color}-200`)}>{t.label}</Badge>)}</div></CardContent></Card>
+                <Card className="bg-slate-50"><CardContent className="p-4"><div className="text-xs text-slate-500">Queue Efficiency</div><div className="text-2xl font-bold text-emerald-700 mt-1">~{estimatedTimeHours}h total</div></CardContent></Card>
+                <Card className="bg-slate-50"><CardContent className="p-4"><div className="text-xs text-slate-500">Avg Build Time / Unit</div><div className="text-2xl font-bold text-blue-700 mt-1">{avgQueueTime > 0 ? `${avgQueueTime}s` : "N/A"}</div></CardContent></Card>
+              </div>
+              <Card><CardHeader><CardTitle className="text-sm">Material Cost Breakdown by Class</CardTitle></CardHeader><CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">{[{ label: "Fighters", total: unitData.filter(u => u.class === "fighter").reduce((s, u) => s + u.cost.metal + u.cost.crystal + u.cost.deuterium, 0) }, { label: "Capital", total: unitData.filter(u => u.class === "capital").reduce((s, u) => s + u.cost.metal + u.cost.crystal + u.cost.deuterium, 0) }, { label: "Super/Titan", total: unitData.filter(u => u.class === "super" || u.class === "titan").reduce((s, u) => s + u.cost.metal + u.cost.crystal + u.cost.deuterium, 0) }].map((cl) => <div key={cl.label} className="p-3 rounded-lg border border-slate-200"><div className="text-xs text-slate-500">{cl.label}</div><div className="text-lg font-bold text-slate-900">{cl.total.toLocaleString()}</div></div>)}</CardContent></Card>
+            </TabsContent>
           </div>
         </Tabs>
 

@@ -8,6 +8,9 @@ import { WARP_GATES, TRADE_ROUTES, WarpGate, TradeRoute, calculateWarpTime, calc
 import { FRONTIER_FEATURES, WORMHOLE_ROUTES, type WormholeRoute } from "@/lib/wormholeStrongholdCatalog";
 import { Orbit, Zap, Clock, Link2, TrendingUp, AlertTriangle, Navigation, Truck, ArrowRight, MapPin } from "lucide-react";
 import { useState } from "react";
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
+
+const TEMP_THEME_IMAGE = "/theme-temp.png";
 
 function WarpGateCard({ gate, onAction }: { gate: WarpGate; onAction: (gate: WarpGate) => void }) {
   const linkedGateNames = gate.linkedGates.map(id => 
@@ -349,13 +352,23 @@ export default function WarpNetwork() {
   return (
     <GameLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-4xl font-bold text-slate-900 flex items-center gap-3" data-testid="text-warp-title">
-            <Orbit className="w-10 h-10 text-purple-500" />
-            Warp Network
-          </h1>
-          <p className="text-slate-600 mt-2">Control warp gates and manage trade routes across the galaxy</p>
-        </div>
+        <section className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.78), rgba(15,23,42,0.92)), url(${BACKGROUND_ASSETS.GALAXY_MAP.path})` }}>
+          <div className="p-5 lg:p-6 space-y-4 text-white">
+            <div className="flex items-center gap-2">
+              <img src={MENU_ASSETS.NAVIGATION.EMPIRE.path} alt="Icon" className="w-8 h-8 rounded-lg border border-white/10 bg-white/10 p-1.5 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+              <h1 className="text-2xl font-bold" data-testid="text-warp-title">Warp Network</h1>
+            </div>
+            <p className="text-sm leading-6 text-slate-300">Control warp gates and manage trade routes across the galaxy</p>
+            <div className="flex flex-wrap gap-3">
+              {[{ label: "Scout", image: SHIP_ASSETS.FIGHTERS.SCOUT.path }, { label: "Exploration", image: MENU_ASSETS.NAVIGATION.EXPLORATION.path }, { label: "Moon", image: OGAMEX_FEATURED_ASSETS.MOON.path }].map((item) => (
+                <div key={item.label} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                  <img src={item.image} alt={item.label} className="w-10 h-10 rounded-lg border border-white/10 bg-black/10 p-1.5 object-contain" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                  <div className="text-sm font-semibold">{item.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
         <div className="grid grid-cols-4 gap-4">
           <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">

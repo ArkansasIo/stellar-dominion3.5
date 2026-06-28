@@ -20,6 +20,9 @@ import {
   TOTAL_COLONY_PAGES,
 } from "@/lib/colonySystems";
 import { createHabitatConditionProfile } from "@/lib/environmentSystems";
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
+
+const TEMP_THEME_IMAGE = "/theme-temp.png";
 
 type MainMenu = "planet" | "moon" | "station";
 type PlanetSubMenu = "infrastructure" | "governance";
@@ -460,10 +463,23 @@ export default function PlanetCommand() {
     <GameLayout>
       <div className="space-y-6" data-testid="planet-command-page">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-orbitron font-bold text-slate-900">Planet Command</h1>
-            <p className="text-slate-600">Planet, moon, and orbital station command menus with operational sub-menus.</p>
-          </div>
+          <section className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.78), rgba(15,23,42,0.92)), url(${BACKGROUND_ASSETS.GALAXY_MAP.path})` }}>
+            <div className="p-5 lg:p-6 space-y-4 text-white">
+              <div className="flex items-center gap-2">
+                <img src={MENU_ASSETS.NAVIGATION.EMPIRE.path} alt="Icon" className="w-8 h-8 rounded-lg border border-white/10 bg-white/10 p-1.5 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                <h1 className="text-2xl font-bold">Planet Command</h1>
+              </div>
+              <p className="text-sm leading-6 text-slate-300">Planet, moon, and orbital station command menus with operational sub-menus.</p>
+              <div className="flex flex-wrap gap-3">
+                {[{ label: "Colonizer", image: SHIP_ASSETS.SPECIAL.COLONIZER.path }, { label: "Empire", image: MENU_ASSETS.NAVIGATION.EMPIRE.path }, { label: "Background", image: OGAMEX_FEATURED_ASSETS.BACKGROUND.path }].map((item) => (
+                  <div key={item.label} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                    <img src={item.image} alt={item.label} className="w-10 h-10 rounded-lg border border-white/10 bg-black/10 p-1.5 object-contain" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                    <div className="text-sm font-semibold">{item.label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
           <div className="w-full lg:w-[340px]">
             <Select value={selectedPlanetId} onValueChange={setSelectedPlanetId}>
               <SelectTrigger data-testid="select-planet-command-world">

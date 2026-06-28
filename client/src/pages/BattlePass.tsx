@@ -8,6 +8,9 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Swords, Gift } from "lucide-react";
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
+
+const TEMP_THEME_IMAGE = "/theme-temp.png";
 
 interface BattleReward {
   tier: number;
@@ -131,13 +134,17 @@ export default function BattlePass() {
     <GameLayout>
       <div className="space-y-6">
         <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
-          <img src="/assets/backgrounds/combat_battle.png" alt="Battle Pass" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-red-950/60 to-transparent" />
+          <img src={BACKGROUND_ASSETS.STAR_FIELD.path} alt="Battle Pass" className="absolute inset-0 w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-blue-950/60 to-transparent" />
           <div className="relative z-10 p-6 flex items-center gap-6">
-            <img src="/assets/ships/battleship.png" alt="Battleship" className="w-20 h-20 rounded-xl object-cover ring-2 ring-red-400/60 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
+            <div className="flex gap-2 items-center">
+              <img src={SHIP_ASSETS.CAPITALS.BATTLESHIP.path} alt="Battleship" className="w-12 h-12 object-contain" />
+              <img src={MENU_ASSETS.BUILDINGS.TRADE_STATION.path} alt="Trade Station" className="w-12 h-12 object-contain" />
+              <img src={OGAMEX_FEATURED_ASSETS.BACKGROUND.path} alt="Featured" className="w-12 h-12 object-contain" />
+            </div>
             <div>
               <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow">Battle Pass</h2>
-              <p className="text-red-300 font-rajdhani text-lg">Complete missions, gain battle XP, and claim Free, Premium, and Elite rewards.</p>
+              <p className="text-blue-300 font-rajdhani text-lg">Complete missions, gain battle XP, and claim Free, Premium, and Elite rewards.</p>
             </div>
           </div>
         </div>

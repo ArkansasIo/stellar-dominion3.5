@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
 import {
   Check,
   ChevronLeft,
@@ -21,6 +22,8 @@ import {
   Search,
   Sun,
 } from "lucide-react";
+
+const TEMP_THEME_IMAGE = "/theme-temp.png";
 
 type ThemePreset = "og-white" | "black-style" | "imperial-gold";
 
@@ -170,36 +173,32 @@ export default function GameAssetsGallery() {
   return (
     <GameLayout>
       <div className="asset-vault space-y-5">
-        <section
-          className="relative overflow-hidden rounded-2xl border border-[var(--sd-panel-border)] bg-[linear-gradient(135deg,var(--sd-panel-top),var(--sd-panel-bottom))] shadow-2xl"
-          style={{
-            backgroundImage:
-              "linear-gradient(105deg,rgba(3,7,18,.96),rgba(15,23,42,.72)),url(/assets/ogamex/backgrounds/background-large.jpg)",
-            backgroundPosition: "center",
-            backgroundSize: "cover",
-          }}
-        >
-          <div className="relative grid gap-6 p-5 sm:p-7 lg:grid-cols-[1fr_auto] lg:items-end">
+        <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
+          <img src={BACKGROUND_ASSETS.STAR_FIELD.path} alt="Game Asset Command Vault" className="absolute inset-0 w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-blue-950/60 to-transparent" />
+          <div className="relative z-10 p-6 flex items-center gap-6">
+            <div className="flex gap-2 items-center">
+              <img src={SHIP_ASSETS.CAPITALS.BATTLECRUISER.path} alt="Battlecruiser" className="w-12 h-12 object-contain" />
+              <img src={MENU_ASSETS.BUILDINGS.SHIPYARD.path} alt="Shipyard" className="w-12 h-12 object-contain" />
+              <img src={OGAMEX_FEATURED_ASSETS.SHIPS.path} alt="Ships" className="w-12 h-12 object-contain" />
+            </div>
             <div>
-              <div className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.28em] text-[var(--sd-text-highlight)]">
-                <Package className="h-4 w-4" />
-                Dominion Visual Archive
-              </div>
-              <h1 className="font-orbitron text-3xl font-black text-white sm:text-4xl">Game Asset Command Vault</h1>
-              <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-200">
+              <h1 className="font-orbitron text-3xl font-black text-white drop-shadow sm:text-4xl">Game Asset Command Vault</h1>
+              <p className="mt-1 max-w-3xl text-sm leading-6 text-blue-200">
                 Browse the live client art, the full OGameX archive, and both Universe Empires visual collections from one searchable interface.
               </p>
             </div>
-            <div className="grid grid-cols-2 gap-3 text-right">
-              <div className="rounded-xl border border-white/15 bg-black/30 px-4 py-3 backdrop-blur">
-                <div className="text-[10px] uppercase tracking-[0.2em] text-slate-400">Library</div>
-                <div className="font-orbitron text-2xl font-bold text-white">{data?.totalLibraryAssets ?? "—"}</div>
-              </div>
-              <div className="rounded-xl border border-white/15 bg-black/30 px-4 py-3 backdrop-blur">
-                <div className="text-[10px] uppercase tracking-[0.2em] text-slate-400">Results</div>
-                <div className="font-orbitron text-2xl font-bold text-white">{data?.total ?? "—"}</div>
-              </div>
-            </div>
+          </div>
+        </div>
+
+        <section className="grid grid-cols-2 gap-3">
+          <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+            <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500">Library</div>
+            <div className="font-orbitron text-2xl font-bold text-slate-900">{data?.totalLibraryAssets ?? "—"}</div>
+          </div>
+          <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+            <div className="text-[10px] uppercase tracking-[0.2em] text-slate-500">Results</div>
+            <div className="font-orbitron text-2xl font-bold text-slate-900">{data?.total ?? "—"}</div>
           </div>
         </section>
 

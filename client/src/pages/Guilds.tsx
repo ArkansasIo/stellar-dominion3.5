@@ -8,6 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Coins, LogOut, Shield, Sword, Users } from "lucide-react";
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
+
+const TEMP_THEME_IMAGE = "/theme-temp.png";
 
 type GuildRecord = {
   id: string;
@@ -160,18 +163,24 @@ export default function Guilds() {
   return (
     <GameLayout>
       <div className="space-y-6 animate-in fade-in duration-500" data-testid="guilds-page">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-slate-200 pb-4">
-          <div>
-            <h1 className="text-3xl font-orbitron font-bold text-slate-900 flex items-center gap-2">
-              <Shield className="w-8 h-8 text-primary" />
-              Guild Command
-            </h1>
-            <p className="text-muted-foreground font-rajdhani text-lg mt-1">
-              Create a guild, browse active organizations, and manage your roster from one place.
-            </p>
+        <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
+          <img src={BACKGROUND_ASSETS.STAR_FIELD.path} alt="Guild Command" className="absolute inset-0 w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-blue-950/60 to-transparent" />
+          <div className="relative z-10 p-6 flex items-center gap-6">
+            <div className="flex gap-2 items-center">
+              <img src={MENU_ASSETS.NAVIGATION.DIPLOMACY.path} alt="Diplomacy" className="w-12 h-12 object-contain" />
+              <img src={MENU_ASSETS.BUILDINGS.TRADE_STATION.path} alt="Trade Station" className="w-12 h-12 object-contain" />
+              <img src={OGAMEX_FEATURED_ASSETS.DEFENSE.path} alt="Defense" className="w-12 h-12 object-contain" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-orbitron font-bold text-white drop-shadow">Guild Command</h1>
+              <p className="text-blue-300 font-rajdhani text-lg">Create a guild, browse active organizations, and manage your roster from one place.</p>
+            </div>
           </div>
+        </div>
 
-          {playerGuild && (
+        {playerGuild && (
+          <div className="flex justify-end">
             <Button
               variant="outline"
               onClick={() => leaveGuildMutation.mutate(playerGuild.id)}
@@ -181,8 +190,8 @@ export default function Guilds() {
               <LogOut className="w-4 h-4 mr-2" />
               {leaveGuildMutation.isPending ? "Leaving..." : "Leave Guild"}
             </Button>
-          )}
-        </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Card className="bg-white border-slate-200 shadow-sm"><CardContent className="p-4"><div className="text-xs uppercase text-slate-500">Guilds Listed</div><div className="text-2xl font-orbitron font-bold text-slate-900">{guildDirectory.length}</div></CardContent></Card>

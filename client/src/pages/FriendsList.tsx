@@ -8,6 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Heart, Trash2, UserPlus, Users } from "lucide-react";
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
+
+const TEMP_THEME_IMAGE = "/theme-temp.png";
 
 type FriendRecord = {
   id: string;
@@ -188,19 +191,23 @@ export default function FriendsList() {
   return (
     <GameLayout>
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500" data-testid="friends-page">
-        <div className="flex flex-col gap-3 border-b border-slate-200 pb-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h1 className="flex items-center gap-2 font-orbitron text-3xl font-bold text-slate-900">
-              <Users className="h-8 w-8 text-primary" />
-              Friends Network
-            </h1>
-            <p className="mt-1 font-rajdhani text-lg text-muted-foreground">
-              Track online allies, clear incoming requests, and keep your social command roster organized.
-            </p>
+        <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
+          <img src={BACKGROUND_ASSETS.STAR_FIELD.path} alt="Friends Network" className="absolute inset-0 w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-blue-950/60 to-transparent" />
+          <div className="relative z-10 p-6 flex items-center gap-6">
+            <div className="flex gap-2 items-center">
+              <img src={SHIP_ASSETS.CAPITALS.CORVETTE.path} alt="Corvette" className="w-12 h-12 object-contain" />
+              <img src={MENU_ASSETS.NAVIGATION.HOME.path} alt="Home" className="w-12 h-12 object-contain" />
+              <img src={OGAMEX_FEATURED_ASSETS.BACKGROUND.path} alt="Background" className="w-12 h-12 object-contain" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-orbitron font-bold text-white drop-shadow">Friends Network</h1>
+              <p className="text-blue-300 font-rajdhani text-lg">Track online allies, clear incoming requests, and keep your social command roster organized.</p>
+            </div>
           </div>
-          <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-right shadow-sm">
-            <div className="text-[10px] font-bold uppercase tracking-[0.24em] text-slate-400">Roster Capacity</div>
-            <div className="mt-1 font-rajdhani text-lg font-semibold uppercase tracking-wider text-slate-900">
+          <div className="absolute top-4 right-4 rounded-xl border border-white/20 bg-black/30 px-4 py-3 text-right shadow-sm backdrop-blur">
+            <div className="text-[10px] font-bold uppercase tracking-[0.24em] text-blue-200">Roster Capacity</div>
+            <div className="mt-1 font-rajdhani text-lg font-semibold uppercase tracking-wider text-white">
               {friendsCount}/50
             </div>
           </div>

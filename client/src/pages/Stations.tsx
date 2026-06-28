@@ -14,7 +14,7 @@ import {
   type OrbitalStation,
   type OrbitalCategoryMeta,
 } from "@shared/config/orbitalStationsConfig";
-import { MENU_ASSETS } from "@shared/config";
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
 import {
   Satellite, Moon, Building2, Clock, Box, Gem, Database,
   TrendingUp, Hammer, ChevronDown, ChevronRight, Layers,
@@ -626,32 +626,42 @@ export default function Stations() {
   return (
     <GameLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-4xl font-bold text-slate-900 flex items-center gap-3" data-testid="text-stations-title">
-            <Satellite className="w-10 h-10 text-blue-500" />
-            Orbital Stations
-          </h1>
-          <p className="text-slate-600 mt-2">Construct and manage moon bases and space stations with progression from Tiers 1-99 and Levels 1-999.</p>
-        </div>
+        <section className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.78), rgba(15,23,42,0.92)), url(${BACKGROUND_ASSETS.SHIPYARD.path})` }}>
+          <div className="p-5 lg:p-6 space-y-4 text-white">
+            <div className="flex items-center gap-2">
+              <img src={MENU_ASSETS.NAVIGATION.EMPIRE.path} alt="Stations" className="w-8 h-8 rounded-lg border border-white/10 bg-white/10 p-1.5 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+              <h1 className="text-2xl font-bold" data-testid="text-stations-title">Orbital Stations</h1>
+            </div>
+            <p className="text-sm leading-6 text-slate-300">Construct and manage moon bases, space stations, and orbital infrastructure.</p>
+            <div className="flex flex-wrap gap-3">
+              {[{ label: "Moon", image: SHIP_ASSETS.CAPITALS.BATTLECRUISER.path }, { label: "Station", image: MENU_ASSETS.BUILDINGS.SHIPYARD.path }, { label: "Infrastructure", image: OGAMEX_FEATURED_ASSETS.BACKGROUND.path }].map((item) => (
+                <div key={item.label} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                  <img src={item.image} alt={item.label} className="w-10 h-10 rounded-lg border border-white/10 bg-black/10 p-1.5 object-contain" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                  <div className="text-sm font-semibold">{item.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
         <div className="grid grid-cols-3 gap-4">
           <Card className="bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200">
             <CardContent className="p-4 text-center">
-              <Moon className="w-8 h-8 text-slate-600 mx-auto mb-2" />
+              <div className="w-10 h-10 rounded-full bg-slate-500/10 flex items-center justify-center overflow-hidden mx-auto mb-2"><img src={SHIP_ASSETS.CAPITALS.BATTLECRUISER.path} alt="Moon Facilities" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} /></div>
               <p className="text-2xl font-bold text-slate-900">{moonBuildings.length}</p>
               <p className="text-xs text-slate-700">Moon Facilities</p>
             </CardContent>
           </Card>
           <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
             <CardContent className="p-4 text-center">
-              <Satellite className="w-8 h-8 text-blue-600 mx-auto mb-2" />
+              <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mx-auto mb-2"><img src={SHIP_ASSETS.CAPITALS.DESTROYER.path} alt="Station Facilities" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} /></div>
               <p className="text-2xl font-bold text-blue-900">{stationBuildings.length}</p>
               <p className="text-xs text-blue-700">Station Facilities</p>
             </CardContent>
           </Card>
           <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
             <CardContent className="p-4 text-center">
-              <Building2 className="w-8 h-8 text-purple-600 mx-auto mb-2" />
+              <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center overflow-hidden mx-auto mb-2"><img src={SHIP_ASSETS.CAPITALS.BATTLESHIP.path} alt="Infrastructure" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} /></div>
               <p className="text-2xl font-bold text-purple-900">{ORBITAL_STATION_STATS.totalStations}</p>
               <p className="text-xs text-purple-700">Infrastructure Stations</p>
             </CardContent>
@@ -661,24 +671,28 @@ export default function Stations() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Card className="bg-white border-slate-200">
             <CardContent className="pt-6">
+              <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mx-auto mb-2"><img src={SHIP_ASSETS.CAPITALS.BATTLECRUISER.path} alt="Active Facility Pool" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} /></div>
               <div className="text-xs uppercase text-slate-500">Active Facility Pool</div>
               <div className="text-2xl font-bold text-slate-900">{activeBuildingPool.length}</div>
             </CardContent>
           </Card>
           <Card className="bg-white border-slate-200">
             <CardContent className="pt-6">
+              <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mx-auto mb-2"><img src={SHIP_ASSETS.CAPITALS.DESTROYER.path} alt="Average Cost Factor" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} /></div>
               <div className="text-xs uppercase text-slate-500">Average Cost Factor</div>
               <div className="text-2xl font-bold text-blue-700">x{averageCostFactor}</div>
             </CardContent>
           </Card>
           <Card className="bg-white border-slate-200">
             <CardContent className="pt-6">
+              <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mx-auto mb-2"><img src={SHIP_ASSETS.CAPITALS.BATTLESHIP.path} alt="Facility Levels" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} /></div>
               <div className="text-xs uppercase text-slate-500">Facility Levels</div>
               <div className="text-2xl font-bold text-purple-700">{totalFacilityLevels}</div>
             </CardContent>
           </Card>
           <Card className="bg-white border-slate-200">
             <CardContent className="pt-6">
+              <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mx-auto mb-2"><img src={SHIP_ASSETS.CAPITALS.CORVETTE.path} alt="Infrastructure Built" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} /></div>
               <div className="text-xs uppercase text-slate-500">Infrastructure Built</div>
               <div className="text-2xl font-bold text-rose-700">{totalInfrastructureBuilt}</div>
             </CardContent>
@@ -688,18 +702,21 @@ export default function Stations() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card className="bg-white border-slate-200">
             <CardContent className="pt-6">
+              <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mx-auto mb-2"><img src={SHIP_ASSETS.CAPITALS.BATTLECRUISER.path} alt="Strongholds Online" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} /></div>
               <div className="text-xs uppercase text-slate-500">Strongholds Online</div>
               <div className="text-2xl font-bold text-indigo-700">{totalStrongholds}</div>
             </CardContent>
           </Card>
           <Card className="bg-white border-slate-200">
             <CardContent className="pt-6">
+              <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mx-auto mb-2"><img src={SHIP_ASSETS.CAPITALS.DESTROYER.path} alt="Wormhole Anchors" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} /></div>
               <div className="text-xs uppercase text-slate-500">Wormhole Anchors</div>
               <div className="text-2xl font-bold text-cyan-700">{buildingLevels.wormholeAnchor ?? 0}</div>
             </CardContent>
           </Card>
           <Card className="bg-white border-slate-200">
             <CardContent className="pt-6">
+              <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mx-auto mb-2"><img src={SHIP_ASSETS.CAPITALS.BATTLESHIP.path} alt="Command Nexus" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} /></div>
               <div className="text-xs uppercase text-slate-500">Command Nexus</div>
               <div className="text-2xl font-bold text-amber-700">{buildingLevels.strongholdCommandNexus ?? 0}</div>
             </CardContent>

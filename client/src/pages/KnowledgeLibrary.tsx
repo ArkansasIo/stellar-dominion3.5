@@ -11,11 +11,15 @@ import { useGame } from "@/lib/gameContext";
 import { TECHS } from "@/lib/techData";
 import {
   ALL_KNOWLEDGE_JOBS,
+  BACKGROUND_ASSETS,
   KNOWLEDGE_OPERATIONS_META,
   KNOWLEDGE_SUPPORT_UNITS,
+  MENU_ASSETS,
+  OGAMEX_FEATURED_ASSETS,
   RESEARCH_JOB_SYSTEMS,
   RESEARCH_PROGRAM_LIBRARY_240,
   RESEARCH_TECH_CATEGORIES,
+  SHIP_ASSETS,
   TECHNOLOGY_JOB_SYSTEMS,
   TECHNOLOGY_SYSTEM_LIBRARY_240,
   calculateKnowledgeOutput,
@@ -28,6 +32,9 @@ import {
   type KnowledgeSupportUnit,
   type ResearchTechCategory,
 } from "@shared/config";
+
+const TEMP_THEME_IMAGE = "/theme-temp.png";
+
 import {
   Atom,
   Beaker,
@@ -389,21 +396,30 @@ export default function KnowledgeLibrary() {
   return (
     <GameLayout>
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
-          <img src="/assets/backgrounds/nebula.png" alt="Knowledge" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-indigo-950/65 to-transparent" />
-          <div className="relative z-10 p-6 flex items-center gap-6">
-            <img src="/assets/research/computing.png" alt="Knowledge" className="w-20 h-20 rounded-xl object-cover ring-2 ring-indigo-400/60 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
-            <div>
-              <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow">Knowledge Library</h2>
-              <p className="text-indigo-300 font-rajdhani text-lg">240 research programs, 240 technology systems, staffing jobs, and specialist units.</p>
+        <section className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.78), rgba(15,23,42,0.92)), url(${BACKGROUND_ASSETS.RESEARCH_LAB.path})` }}>
+          <div className="p-5 lg:p-6 space-y-4 text-white">
+            <div className="flex items-center gap-2">
+              <img src={MENU_ASSETS.BUILDINGS.RESEARCH_LAB.path} alt="Icon" className="w-8 h-8 rounded-lg border border-white/10 bg-white/10 p-1.5 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+              <h1 className="text-2xl font-bold">Knowledge Library</h1>
+            </div>
+            <p className="text-sm leading-6 text-slate-300">240 research programs, 240 technology systems, staffing jobs, and specialist units.</p>
+            <div className="flex flex-wrap gap-3">
+              {[{ label: "Research Lab", image: MENU_ASSETS.BUILDINGS.RESEARCH_LAB.path }, { label: "Research Nav", image: MENU_ASSETS.NAVIGATION.RESEARCH.path }, { label: "Featured Research", image: OGAMEX_FEATURED_ASSETS.RESEARCH.path }].map((item) => (
+                <div key={item.label} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                  <img src={item.image} alt={item.label} className="w-10 h-10 rounded-lg border border-white/10 bg-black/10 p-1.5 object-contain" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                  <div className="text-sm font-semibold">{item.label}</div>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
+        </section>
         <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
           <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
             <Card className="border-slate-200 bg-white shadow-sm">
               <CardContent className="p-4">
+                <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mb-2">
+                  <img src={SHIP_ASSETS.CAPITALS.BATTLECRUISER.path} alt="Research" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                </div>
                 <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Research</div>
                 <div className="mt-2 text-3xl font-orbitron font-bold text-slate-900">
                   {KNOWLEDGE_OPERATIONS_META.researchPrograms}
@@ -412,6 +428,9 @@ export default function KnowledgeLibrary() {
             </Card>
             <Card className="border-slate-200 bg-white shadow-sm">
               <CardContent className="p-4">
+                <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mb-2">
+                  <img src={SHIP_ASSETS.CAPITALS.BATTLECRUISER.path} alt="Technology" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                </div>
                 <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Technology</div>
                 <div className="mt-2 text-3xl font-orbitron font-bold text-slate-900">
                   {KNOWLEDGE_OPERATIONS_META.technologySystems}
@@ -420,6 +439,9 @@ export default function KnowledgeLibrary() {
             </Card>
             <Card className="border-slate-200 bg-white shadow-sm">
               <CardContent className="p-4">
+                <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mb-2">
+                  <img src={SHIP_ASSETS.CAPITALS.BATTLECRUISER.path} alt="Jobs" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                </div>
                 <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Jobs</div>
                 <div className="mt-2 text-3xl font-orbitron font-bold text-slate-900">
                   {KNOWLEDGE_OPERATIONS_META.researchJobs + KNOWLEDGE_OPERATIONS_META.technologyJobs}
@@ -428,6 +450,9 @@ export default function KnowledgeLibrary() {
             </Card>
             <Card className="border-slate-200 bg-white shadow-sm">
               <CardContent className="p-4">
+                <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mb-2">
+                  <img src={SHIP_ASSETS.CAPITALS.BATTLECRUISER.path} alt="Units" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                </div>
                 <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Units</div>
                 <div className="mt-2 text-3xl font-orbitron font-bold text-slate-900">
                   {KNOWLEDGE_OPERATIONS_META.supportUnits}

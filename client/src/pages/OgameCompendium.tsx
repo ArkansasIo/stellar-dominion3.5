@@ -8,6 +8,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, Calculator, Database, ImageIcon } from "lucide-react";
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
+
+const TEMP_THEME_IMAGE = "/theme-temp.png";
 
 const OGame_ENTRY_IMAGES: Record<string, string> = {
   metalMine: "/assets/ogamex/objects/buildings/metal_mine_small.jpg",
@@ -150,11 +153,20 @@ export default function OgameCompendium() {
   return (
     <GameLayout>
       <div className="space-y-6">
-        <div>
-          <h2 className="text-3xl font-orbitron font-bold text-slate-900">OGame Compendium</h2>
-          <p className="text-muted-foreground">
-            SQL-backed catalog for buildings, research, ships, defenses, moon facilities, and officers.
-          </p>
+        <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
+          <img src={BACKGROUND_ASSETS.RESEARCH_LAB.path} alt="OGame Compendium" className="absolute inset-0 w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-blue-950/60 to-transparent" />
+          <div className="relative z-10 p-6 flex items-center gap-6">
+            <div className="flex gap-2 items-center">
+              <img src={MENU_ASSETS.BUILDINGS.RESEARCH_LAB.path} alt="Research Lab" className="w-12 h-12 object-contain" />
+              <img src={MENU_ASSETS.NAVIGATION.RESEARCH.path} alt="Research" className="w-12 h-12 object-contain" />
+              <img src={OGAMEX_FEATURED_ASSETS.RESEARCH.path} alt="Featured Research" className="w-12 h-12 object-contain" />
+            </div>
+            <div>
+              <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow">OGame Compendium</h2>
+              <p className="text-blue-300 font-rajdhani text-lg">SQL-backed catalog for buildings, research, ships, defenses, moon facilities, and officers.</p>
+            </div>
+          </div>
         </div>
 
         <Card className="bg-white border-slate-200">

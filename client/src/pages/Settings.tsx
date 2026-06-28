@@ -20,7 +20,7 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { MENU_ASSETS } from "@shared/config";
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
 
 const TEMP_THEME_IMAGE = "/theme-temp.png";
 
@@ -657,26 +657,38 @@ export default function Settings() {
   return (
     <GameLayout>
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div className="flex justify-between items-center">
-           <div>
-             <h2 className="text-3xl font-orbitron font-bold text-slate-900">System Configuration</h2>
-             <p className="text-muted-foreground font-rajdhani text-lg">Manage server parameters, game rules, and account settings.</p>
-           </div>
-           {isActualAdmin && (
-             <div className="flex items-center gap-2">
-                {isAdmin && <Badge variant="destructive" className="animate-pulse">ADMIN MODE</Badge>}
-                {!isAdmin && <Badge variant="secondary">USER VIEW</Badge>}
-                <Button 
-                   variant={isAdmin ? "destructive" : "outline"} 
-                   size="sm"
-                   onClick={toggleAdmin}
-                   data-testid="button-toggle-admin-mode"
-                >
-                   {isAdmin ? "Switch to User View" : "Switch to Admin Mode"}
-                </Button>
-             </div>
-           )}
-        </div>
+        <section className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.78), rgba(15,23,42,0.92)), url(${BACKGROUND_ASSETS.STAR_FIELD.path})` }}>
+          <div className="p-5 lg:p-6 space-y-4 text-white">
+            <div className="flex items-center gap-2">
+              <img src={MENU_ASSETS.NAVIGATION.EMPIRE.path} alt="Settings" className="w-8 h-8 rounded-lg border border-white/10 bg-white/10 p-1.5 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+              <h1 className="text-2xl font-bold">System Configuration</h1>
+            </div>
+            <p className="text-sm leading-6 text-slate-300">Configure your empire's account, display, game, and server preferences.</p>
+            <div className="flex flex-wrap gap-3">
+              {[{ label: "Account", image: SHIP_ASSETS.CAPITALS.BATTLECRUISER.path }, { label: "Display", image: MENU_ASSETS.BUILDINGS.SHIPYARD.path }, { label: "Admin", image: OGAMEX_FEATURED_ASSETS.BACKGROUND.path }].map((item) => (
+                <div key={item.label} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                  <img src={item.image} alt={item.label} className="w-10 h-10 rounded-lg border border-white/10 bg-black/10 p-1.5 object-contain" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                  <div className="text-sm font-semibold">{item.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {isActualAdmin && (
+          <div className="flex items-center gap-2 justify-end">
+            {isAdmin && <Badge variant="destructive" className="animate-pulse">ADMIN MODE</Badge>}
+            {!isAdmin && <Badge variant="secondary">USER VIEW</Badge>}
+            <Button
+              variant={isAdmin ? "destructive" : "outline"}
+              size="sm"
+              onClick={toggleAdmin}
+              data-testid="button-toggle-admin-mode"
+            >
+              {isAdmin ? "Switch to User View" : "Switch to Admin Mode"}
+            </Button>
+          </div>
+        )}
 
         <Tabs defaultValue="account" className="w-full">
            <TabsList className="bg-white border border-slate-200 h-12 w-full justify-start overflow-x-auto">

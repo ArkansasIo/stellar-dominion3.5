@@ -7,7 +7,10 @@
 import React, { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import GameLayout from "@/components/layout/GameLayout";
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
 import "./ResearchAnalyticsDashboard.css";
+
+const TEMP_THEME_IMAGE = "/theme-temp.png";
 
 type ResearchTechDetail = {
   id: string;
@@ -209,40 +212,74 @@ export const ResearchAnalyticsDashboard: React.FC = () => {
   return (
     <GameLayout>
       <div className="research-analytics-dashboard">
-        <h2>Research Analytics</h2>
+        <section className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-cover bg-center mb-6" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.78), rgba(15,23,42,0.92)), url(${BACKGROUND_ASSETS.RESEARCH_LAB.path})` }}>
+          <div className="p-5 lg:p-6 space-y-4 text-white">
+            <div className="flex items-center gap-2">
+              <img src={MENU_ASSETS.BUILDINGS.RESEARCH_LAB.path} alt="Icon" className="w-8 h-8 rounded-lg border border-white/10 bg-white/10 p-1.5 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+              <h1 className="text-2xl font-bold">Research Analytics Dashboard</h1>
+            </div>
+            <p className="text-sm leading-6 text-slate-300">Statistics, insights, and trends about research progress</p>
+            <div className="flex flex-wrap gap-3">
+              {[{ label: "Research Lab", image: MENU_ASSETS.BUILDINGS.RESEARCH_LAB.path }, { label: "Research Nav", image: MENU_ASSETS.NAVIGATION.RESEARCH.path }, { label: "Featured Research", image: OGAMEX_FEATURED_ASSETS.RESEARCH.path }].map((item) => (
+                <div key={item.label} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                  <img src={item.image} alt={item.label} className="w-10 h-10 rounded-lg border border-white/10 bg-black/10 p-1.5 object-contain" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                  <div className="text-sm font-semibold">{item.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
         <div className="analytics-grid stats-section">
           <div className="stat-card">
+            <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mb-2">
+              <img src={SHIP_ASSETS.CAPITALS.BATTLECRUISER.path} alt="Total XP" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+            </div>
             <div className="stat-label">Total XP</div>
             <div className="stat-value">{analytics.totalXP.toLocaleString()}</div>
             <div className="stat-subtext">Experience accumulated</div>
           </div>
 
           <div className="stat-card">
+            <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mb-2">
+              <img src={SHIP_ASSETS.CAPITALS.BATTLECRUISER.path} alt="Level" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+            </div>
             <div className="stat-label">Level</div>
             <div className="stat-value">{analytics.currentLevel}</div>
             <div className="stat-subtext">Research mastery level</div>
           </div>
 
           <div className="stat-card">
+            <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mb-2">
+              <img src={SHIP_ASSETS.CAPITALS.BATTLECRUISER.path} alt="Completed" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+            </div>
             <div className="stat-label">Completed</div>
             <div className="stat-value">{analytics.researchesCompleted}</div>
             <div className="stat-subtext">Technologies researched</div>
           </div>
 
           <div className="stat-card">
+            <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mb-2">
+              <img src={SHIP_ASSETS.CAPITALS.BATTLECRUISER.path} alt="Rank" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+            </div>
             <div className="stat-label">Rank</div>
             <div className="stat-value">#{playerRank}</div>
             <div className="stat-subtext">Global leaderboard</div>
           </div>
 
           <div className="stat-card">
+            <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mb-2">
+              <img src={SHIP_ASSETS.CAPITALS.BATTLECRUISER.path} alt="Streak" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+            </div>
             <div className="stat-label">Streak</div>
             <div className="stat-value">{analytics.discoveryStreak}</div>
             <div className="stat-subtext">Discovery streak</div>
           </div>
 
           <div className="stat-card">
+            <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mb-2">
+              <img src={SHIP_ASSETS.CAPITALS.BATTLECRUISER.path} alt="Avg Time" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+            </div>
             <div className="stat-label">Avg Time</div>
             <div className="stat-value">{analytics.averageCompletionTime}h</div>
             <div className="stat-subtext">Per technology</div>

@@ -23,6 +23,8 @@ import {
 } from "@/lib/blueprintSystem";
 import { cn } from "@/lib/utils";
 
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
+
 import Navigation from "./Navigation";
 
 type ManufacturingLogEntry = {
@@ -35,6 +37,8 @@ type ManufacturingLogEntry = {
 };
 
 const rarityFilters: Array<"all" | Rarity> = ["all", "common", "uncommon", "rare", "epic", "legendary", "exotic"];
+
+const TEMP_THEME_IMAGE = "/theme-temp.png";
 
 export default function Blueprints() {
   const { toast } = useToast();
@@ -252,23 +256,29 @@ export default function Blueprints() {
       <div className="space-y-6 animate-in fade-in duration-500">
         <Navigation />
 
-        <div className="relative rounded-xl overflow-hidden shadow-lg" style={{ minHeight: 140 }}>
-          <img src="/assets/backgrounds/space_station.png" alt="Blueprints" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-800/60 to-transparent" />
-          <div className="relative z-10 p-6 flex items-center gap-6">
-            <img src="/assets/buildings/robotics_factory.png" alt="Factory" className="w-20 h-20 rounded-xl object-cover ring-2 ring-slate-300/50 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
-            <div>
-              <h2 className="font-orbitron text-3xl font-bold text-white drop-shadow">Blueprint Manufacturing</h2>
-              <p className="text-slate-300 font-rajdhani text-lg">Imperial blueprint library — hull families, facility doctrine, and rarity tiers.</p>
+        <section className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.78), rgba(15,23,42,0.92)), url(${BACKGROUND_ASSETS.RESEARCH_LAB.path})` }}>
+          <div className="p-5 lg:p-6 space-y-4 text-white">
+            <div className="flex items-center gap-2">
+              <img src={MENU_ASSETS.NAVIGATION.EMPIRE.path} alt="Blueprints" className="w-8 h-8 rounded-lg border border-white/10 bg-white/10 p-1.5 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+              <h1 className="text-2xl font-bold">Blueprint Manufacturing</h1>
+            </div>
+            <p className="text-sm leading-6 text-slate-300">Design, copy, and manufacture blueprints for ships, infrastructure, and equipment.</p>
+            <div className="flex flex-wrap gap-3">
+              {[{ label: "Originals", image: SHIP_ASSETS.CAPITALS.BATTLECRUISER.path }, { label: "Copies", image: MENU_ASSETS.BUILDINGS.SHIPYARD.path }, { label: "Library", image: OGAMEX_FEATURED_ASSETS.BACKGROUND.path }].map((item) => (
+                <div key={item.label} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                  <img src={item.image} alt={item.label} className="w-10 h-10 rounded-lg border border-white/10 bg-black/10 p-1.5 object-contain" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                  <div className="text-sm font-semibold">{item.label}</div>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
+        </section>
         <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <Card className="border-slate-200 bg-white"><CardContent className="p-3 text-center"><div className="text-xs text-slate-500">Categories</div><div className="font-orbitron text-2xl text-slate-900">{BLUEPRINT_LIBRARY_STATS.totalCategories}</div></CardContent></Card>
-            <Card className="border-slate-200 bg-white"><CardContent className="p-3 text-center"><div className="text-xs text-slate-500">Blueprints</div><div className="font-orbitron text-2xl text-slate-900">{BLUEPRINT_LIBRARY_STATS.totalBlueprints}</div></CardContent></Card>
-            <Card className="border-slate-200 bg-white"><CardContent className="p-3 text-center"><div className="text-xs text-slate-500">Classes</div><div className="font-orbitron text-2xl text-slate-900">{BLUEPRINT_LIBRARY_STATS.totalClasses}</div></CardContent></Card>
-            <Card className="border-slate-200 bg-white"><CardContent className="p-3 text-center"><div className="text-xs text-slate-500">Subtypes</div><div className="font-orbitron text-2xl text-slate-900">{BLUEPRINT_LIBRARY_STATS.totalSubTypes}</div></CardContent></Card>
+            <Card className="border-slate-200 bg-white"><CardContent className="p-3 text-center"><div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mx-auto mb-2"><img src={SHIP_ASSETS.CAPITALS.BATTLECRUISER.path} alt="Categories" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} /></div><div className="text-xs text-slate-500">Categories</div><div className="font-orbitron text-2xl text-slate-900">{BLUEPRINT_LIBRARY_STATS.totalCategories}</div></CardContent></Card>
+            <Card className="border-slate-200 bg-white"><CardContent className="p-3 text-center"><div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mx-auto mb-2"><img src={SHIP_ASSETS.CAPITALS.DESTROYER.path} alt="Blueprints" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} /></div><div className="text-xs text-slate-500">Blueprints</div><div className="font-orbitron text-2xl text-slate-900">{BLUEPRINT_LIBRARY_STATS.totalBlueprints}</div></CardContent></Card>
+            <Card className="border-slate-200 bg-white"><CardContent className="p-3 text-center"><div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mx-auto mb-2"><img src={SHIP_ASSETS.CAPITALS.BATTLESHIP.path} alt="Classes" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} /></div><div className="text-xs text-slate-500">Classes</div><div className="font-orbitron text-2xl text-slate-900">{BLUEPRINT_LIBRARY_STATS.totalClasses}</div></CardContent></Card>
+            <Card className="border-slate-200 bg-white"><CardContent className="p-3 text-center"><div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mx-auto mb-2"><img src={SHIP_ASSETS.CAPITALS.CORVETTE.path} alt="Subtypes" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} /></div><div className="text-xs text-slate-500">Subtypes</div><div className="font-orbitron text-2xl text-slate-900">{BLUEPRINT_LIBRARY_STATS.totalSubTypes}</div></CardContent></Card>
           </div>
         </div>
 

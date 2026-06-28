@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { useGame } from "@/lib/gameContext";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
 import { useToast } from "@/hooks/use-toast";
 
 type MessagesMainTab = "messages" | "trades";
@@ -383,6 +384,8 @@ function CreateTradeDialog({ onSuccess }: { onSuccess: () => void }) {
   );
 }
 
+const TEMP_THEME_IMAGE = "/theme-temp.png";
+
 export default function Messages() {
   const { messages, sendMessage, markMessageRead, deleteMessage } = useGame();
   const [mainTab, setMainTab] = useState<MessagesMainTab>("messages");
@@ -557,23 +560,29 @@ export default function Messages() {
   return (
     <GameLayout>
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
-          <img src="/assets/backgrounds/space_station.png" alt="Messages" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-900/60 to-transparent" />
-          <div className="relative z-10 p-6 flex items-center gap-6">
-            <img src="/assets/buildings/space_port.png" alt="Comms" className="w-20 h-20 rounded-xl object-cover ring-2 ring-slate-300/50 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
-            <div>
-              <h2 className="text-3xl font-orbitron font-bold text-white drop-shadow" data-testid="text-messages-title">Subspace Communications</h2>
-              <p className="text-slate-300 font-rajdhani text-lg">Encrypted messaging terminal & player trading.</p>
+        <section className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.78), rgba(15,23,42,0.92)), url(${BACKGROUND_ASSETS.STAR_FIELD.path})` }}>
+          <div className="p-5 lg:p-6 space-y-4 text-white">
+            <div className="flex items-center gap-2">
+              <img src={MENU_ASSETS.NAVIGATION.EMPIRE.path} alt="Messages" className="w-8 h-8 rounded-lg border border-white/10 bg-white/10 p-1.5 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+              <h1 className="text-2xl font-bold" data-testid="text-messages-title">Subspace Communications</h1>
+            </div>
+            <p className="text-sm leading-6 text-slate-300">Manage encrypted communications, combat reports, and trade offers.</p>
+            <div className="flex flex-wrap gap-3">
+              {[{ label: "Messages", image: SHIP_ASSETS.CAPITALS.BATTLECRUISER.path }, { label: "Trades", image: MENU_ASSETS.BUILDINGS.SHIPYARD.path }, { label: "Reports", image: OGAMEX_FEATURED_ASSETS.BACKGROUND.path }].map((item) => (
+                <div key={item.label} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                  <img src={item.image} alt={item.label} className="w-10 h-10 rounded-lg border border-white/10 bg-black/10 p-1.5 object-contain" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                  <div className="text-sm font-semibold">{item.label}</div>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
+        </section>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card className="bg-white border-slate-200"><CardContent className="p-4"><div className="text-xs uppercase text-slate-500">Unread Messages</div><div className="text-2xl font-orbitron font-bold text-blue-700">{unreadMessages}</div></CardContent></Card>
-          <Card className="bg-white border-slate-200"><CardContent className="p-4"><div className="text-xs uppercase text-slate-500">Pending Trades</div><div className="text-2xl font-orbitron font-bold text-amber-700">{pendingTrades}</div></CardContent></Card>
-          <Card className="bg-white border-slate-200"><CardContent className="p-4"><div className="text-xs uppercase text-slate-500">Accepted Trades</div><div className="text-2xl font-orbitron font-bold text-emerald-700">{acceptedTrades}</div></CardContent></Card>
-          <Card className="bg-white border-slate-200"><CardContent className="p-4"><div className="text-xs uppercase text-slate-500">Sent Messages</div><div className="text-2xl font-orbitron font-bold text-purple-700">{sentTransmissions}</div></CardContent></Card>
+          <Card className="bg-white border-slate-200"><CardContent className="p-4"><div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mx-auto mb-2"><img src={SHIP_ASSETS.CAPITALS.BATTLECRUISER.path} alt="Unread" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} /></div><div className="text-xs uppercase text-slate-500">Unread Messages</div><div className="text-2xl font-orbitron font-bold text-blue-700">{unreadMessages}</div></CardContent></Card>
+          <Card className="bg-white border-slate-200"><CardContent className="p-4"><div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mx-auto mb-2"><img src={SHIP_ASSETS.CAPITALS.DESTROYER.path} alt="Pending" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} /></div><div className="text-xs uppercase text-slate-500">Pending Trades</div><div className="text-2xl font-orbitron font-bold text-amber-700">{pendingTrades}</div></CardContent></Card>
+          <Card className="bg-white border-slate-200"><CardContent className="p-4"><div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mx-auto mb-2"><img src={SHIP_ASSETS.CAPITALS.BATTLESHIP.path} alt="Accepted" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} /></div><div className="text-xs uppercase text-slate-500">Accepted Trades</div><div className="text-2xl font-orbitron font-bold text-emerald-700">{acceptedTrades}</div></CardContent></Card>
+          <Card className="bg-white border-slate-200"><CardContent className="p-4"><div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center overflow-hidden mx-auto mb-2"><img src={SHIP_ASSETS.CAPITALS.CORVETTE.path} alt="Sent" className="w-8 h-8 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} /></div><div className="text-xs uppercase text-slate-500">Sent Messages</div><div className="text-2xl font-orbitron font-bold text-purple-700">{sentTransmissions}</div></CardContent></Card>
         </div>
 
         <Card className="bg-indigo-50 border-indigo-200">

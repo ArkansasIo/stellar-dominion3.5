@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import GameLayout from "@/components/layout/GameLayout";
-import { TECH_BRANCH_ASSETS } from "@shared/config";
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS, TECH_BRANCH_ASSETS } from "@shared/config";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -155,21 +155,23 @@ export default function EmpirePlanetViewer() {
   return (
     <GameLayout>
       <div className="space-y-6 animate-in fade-in duration-500" data-testid="empire-planet-viewer">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-slate-200 pb-4">
-          <div>
-            <h1 className="text-3xl font-orbitron font-bold text-slate-900 flex items-center gap-2">
-              <Globe className="w-8 h-8 text-primary" />
-              Empire Planets
-            </h1>
-            <p className="text-muted-foreground font-rajdhani text-lg mt-1">
-              Planet catalog and interstellar reconnaissance overview.
-            </p>
+        <section className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.78), rgba(15,23,42,0.92)), url(${BACKGROUND_ASSETS.GALAXY_MAP.path})` }}>
+          <div className="p-5 lg:p-6 space-y-4 text-white">
+            <div className="flex items-center gap-2">
+              <img src={MENU_ASSETS.NAVIGATION.EMPIRE.path} alt="Icon" className="w-8 h-8 rounded-lg border border-white/10 bg-white/10 p-1.5 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
+              <h1 className="text-2xl font-bold">Empire Planets</h1>
+            </div>
+            <p className="text-sm leading-6 text-slate-300">Planet catalog and interstellar reconnaissance overview.</p>
+            <div className="flex flex-wrap gap-3">
+              {[{ label: "Planet Catalog", image: SHIP_ASSETS.CAPITALS.BATTLECRUISER.path }, { label: "Survey Data", image: MENU_ASSETS.BUILDINGS.SHIPYARD.path }, { label: "Recon Overview", image: OGAMEX_FEATURED_ASSETS.BACKGROUND.path }].map((item) => (
+                <div key={item.label} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                  <img src={item.image} alt={item.label} className="w-10 h-10 rounded-lg border border-white/10 bg-black/10 p-1.5 object-contain" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = TEMP_THEME_IMAGE; }} />
+                  <div className="text-sm font-semibold">{item.label}</div>
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="text-right text-sm text-slate-500">
-            <div className="font-mono">{new Date().toLocaleTimeString()}</div>
-            <div className="text-xs">{new Date().toLocaleDateString()}</div>
-          </div>
-        </div>
+        </section>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card className="bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200 shadow-sm">

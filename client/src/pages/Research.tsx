@@ -14,6 +14,7 @@ import {
 } from "@/lib/technologyDivisionCatalog";
 import { getCurrentKardashevUpgradeLevel } from "@/lib/kardashevUpgradeCatalog";
 import { cn } from "@/lib/utils";
+import { BACKGROUND_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
 import {
   ArrowUpCircle,
   Atom,
@@ -184,13 +185,17 @@ export default function Research() {
     <GameLayout>
       <div className="space-y-6">
         <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
-          <img src="/assets/backgrounds/nebula.png" alt="Research" className="absolute inset-0 w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display='none'; }} />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-indigo-900/60 to-transparent" />
+          <img src={BACKGROUND_ASSETS.RESEARCH_LAB.path} alt="Research" className="absolute inset-0 w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-blue-950/60 to-transparent" />
           <div className="relative z-10 p-6 flex items-center gap-6">
-            <img src="/assets/research/astrophysics.png" alt="Research" className="w-20 h-20 rounded-xl object-cover ring-2 ring-indigo-400/50 shadow-lg" onError={(e) => { e.currentTarget.style.display='none'; }} />
+            <div className="flex gap-2 items-center">
+              <img src={MENU_ASSETS.BUILDINGS.RESEARCH_LAB.path} alt="Research Lab" className="w-12 h-12 object-contain" />
+              <img src={MENU_ASSETS.NAVIGATION.RESEARCH.path} alt="Research" className="w-12 h-12 object-contain" />
+              <img src={OGAMEX_FEATURED_ASSETS.RESEARCH.path} alt="Featured Research" className="w-12 h-12 object-contain" />
+            </div>
             <div>
               <h2 className="text-3xl font-bold text-white drop-shadow">Technology Division</h2>
-              <p className="text-indigo-300 mt-1">Core research in Physics, Society, and Engineering — driving your empire's advancement.</p>
+              <p className="text-blue-300 mt-1">Core research in Physics, Society, and Engineering — driving your empire's advancement.</p>
             </div>
           </div>
         </div>
