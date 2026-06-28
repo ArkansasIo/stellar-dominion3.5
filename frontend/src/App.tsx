@@ -73,6 +73,9 @@ const Refining = lazy(() => import("@/pages/Refining"));
 const PlanetaryIndustry = lazy(() => import("@/pages/PlanetaryIndustry"));
 const Invention = lazy(() => import("@/pages/Invention"));
 const AdminLogin = lazy(() => import("@/pages/AdminLogin"));
+const SolSystem = lazy(() => import("@/pages/SolSystem"));
+const KnowledgeLibrary = lazy(() => import("@/pages/KnowledgeLibrary"));
+const ResearchAnalyticsDashboard = lazy(() => import("@/pages/ResearchAnalyticsDashboard"));
 
 function LoadingSplash() {
   return (
@@ -241,6 +244,9 @@ function RouterContent() {
       <Route path="/settings" component={Settings} />
       <Route path="/admin" component={Admin} />
       <Route path="/server-console" component={ServerConsole} />
+      <Route path="/sol-system" component={SolSystem} />
+      <Route path="/knowledge-library" component={KnowledgeLibrary} />
+      <Route path="/research-analytics" component={ResearchAnalyticsDashboard} />
       <Route component={NotFound} />
     </Switch>
   );

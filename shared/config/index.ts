@@ -971,6 +971,29 @@ export {
   type ClassicGameConfig,
 } from './classicGameConfig';
 
+// UniEngine Extended Ships Exports
+export {
+  UNIVERSE_EXTENDED_SHIPS,
+  UNIVERSE_EXTENDED_SHIP_MAP,
+} from './universeExtendedShips';
+
+// UniEngine Extended Defense Exports
+export {
+  UNIVERSE_EXTENDED_DEFENSES,
+  UNIVERSE_EXTENDED_DEFENSE_MAP,
+} from './universeExtendedDefense';
+
+// UniEngine Extended Tasks Exports
+export {
+  UNIVERSE_EXTENDED_TASKS,
+  UNIVERSE_EXTENDED_TASK_IDS,
+  UNIVERSE_EXTENDED_TASK_COUNT,
+  type UniEngineTaskJob,
+  type UniEngineTaskReward,
+  type UniEngineTaskDefinition,
+  type UniEngineTaskCategory,
+} from './universeExtendedTasks';
+
 // Title Screen Configuration
 export {
   DEFAULT_TITLE_SCREEN_CONFIG,
