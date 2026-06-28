@@ -459,6 +459,14 @@ const menuSections: MenuSection[] = [
           { href: "/universe-events", icon: AlertTriangle, label: "Universe Events", description: "Review active world events and their empire-wide impact." },
         ],
       },
+      {
+        title: "Dimensional",
+        description: "Navigate dimensional content, rifts, gates, contracts, and trials.",
+        items: [
+          { href: "/dimensional-hub", icon: Orbit, label: "Dimensional Hub", description: "Rifts, gates, contracts and dimensional power." },
+          { href: "/trials", icon: Swords, label: "Trials", description: "Wave-based combat challenges and leaderboards." },
+        ],
+      },
     ],
   },
   {
@@ -1031,6 +1039,8 @@ export default function GameLayout({ children }: { children: React.ReactNode }) 
                 { label: "Universe View", href: "/universe", icon: Orbit, helper: "Inspect realm-wide and multi-universe structures." },
                 { label: "Warp Routes", href: "/warp-network", icon: Network, helper: "Switch lanes, gates, and travel corridors." },
                 { label: "Celestial Index", href: "/celestial-browser", icon: Search, helper: "Browse stars, moons, and planetary objects." },
+                { label: "Dimensional Hub", href: "/dimensional-hub", icon: Orbit, helper: "Rifts, gates, contracts and dimensional power." },
+                { label: "Trials", href: "/trials", icon: Swords, helper: "Wave-based combat challenges and leaderboards." },
               ]
             : activePageContext?.section === "Diplomacy"
               ? [

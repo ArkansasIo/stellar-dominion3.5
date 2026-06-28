@@ -2194,6 +2194,55 @@ export const itemLevels = pgTable("item_levels", {
 
 export type ItemLevel = typeof itemLevels.$inferSelect;
 
+// Trials
+export const trials = pgTable("trials", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  trialTier: integer("trial_tier").notNull(),
+  bestWave: integer("best_wave").default(0),
+  bestTime: integer("best_time"),
+  totalCompletions: integer("total_completions").default(0),
+  totalAttempts: integer("total_attempts").default(0),
+  flawlessCompletions: integer("flawless_completions").default(0),
+  totalPointsEarned: integer("total_points_earned").default(0),
+  lastCompletedAt: timestamp("last_completed_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type Trial = typeof trials.$inferSelect;
+
+// Trial Attempts
+export const trialAttempts = pgTable("trial_attempts", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  trialTier: integer("trial_tier").notNull(),
+  wavesCompleted: integer("waves_completed").default(0),
+  totalWaves: integer("total_waves").default(0),
+  flawless: boolean("flawless").default(false),
+  completionTime: integer("completion_time"),
+  pointsEarned: integer("points_earned").default(0),
+  rewards: jsonb("rewards").default([]),
+  completed: boolean("completed").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type TrialAttempt = typeof trialAttempts.$inferSelect;
+
+// Trial Leaderboard
+export const trialLeaderboard = pgTable("trial_leaderboard", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  trialTier: integer("trial_tier").notNull(),
+  bestTime: integer("best_time"),
+  bestWave: integer("best_wave").default(0),
+  points: integer("points").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type TrialLeaderboardEntry = typeof trialLeaderboard.$inferSelect;
+
 // Empire Profiles
 export const empireProfiles = pgTable("empire_profiles", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),

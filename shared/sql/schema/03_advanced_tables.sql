@@ -287,3 +287,65 @@ CREATE TABLE IF NOT EXISTS bounties (
     claimed_at TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Dimensional Anomalies
+CREATE TABLE IF NOT EXISTS dimensional_anomalies (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    anomaly_id VARCHAR(255) NOT NULL,
+    name VARCHAR(255),
+    type VARCHAR(255),
+    location VARCHAR(255),
+    discovered BOOLEAN DEFAULT FALSE,
+    explored BOOLEAN DEFAULT FALSE,
+    data JSONB DEFAULT '{}',
+    cooldown_until TIMESTAMP,
+    exploration_count INTEGER DEFAULT 0,
+    total_rewards_earned JSONB DEFAULT '{}',
+    last_explored_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Trials
+CREATE TABLE IF NOT EXISTS trials (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    trial_tier INTEGER NOT NULL,
+    best_wave INTEGER DEFAULT 0,
+    best_time INTEGER,
+    total_completions INTEGER DEFAULT 0,
+    total_attempts INTEGER DEFAULT 0,
+    flawless_completions INTEGER DEFAULT 0,
+    total_points_earned INTEGER DEFAULT 0,
+    last_completed_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Trial Attempts
+CREATE TABLE IF NOT EXISTS trial_attempts (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    trial_tier INTEGER NOT NULL,
+    waves_completed INTEGER DEFAULT 0,
+    total_waves INTEGER DEFAULT 0,
+    flawless BOOLEAN DEFAULT FALSE,
+    completion_time INTEGER,
+    points_earned INTEGER DEFAULT 0,
+    rewards JSONB DEFAULT '[]',
+    completed BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Trial Leaderboard
+CREATE TABLE IF NOT EXISTS trial_leaderboard (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    trial_tier INTEGER NOT NULL,
+    best_time INTEGER,
+    best_wave INTEGER DEFAULT 0,
+    points INTEGER DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
