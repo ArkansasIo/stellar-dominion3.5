@@ -15,6 +15,7 @@ import {
   canCompleteThisTurn,
 } from '../../shared/config/turnSystemConfig';
 import { pool } from '../db';
+import { gameEngine } from '../gameEngine';
 
 export class TurnSystemService {
   private static normalizeTurnsData(rawTurnsData: any = {}) {
@@ -276,6 +277,11 @@ export class TurnSystemService {
 
       // Progress research
       const progressResult = await this.progressResearchByTurns(userId, turnsToApply);
+
+      // Trigger events if needed
+      if (turnsToApply >= 10) {
+        await gameEngine.triggerResearchMilestoneEvents(userId, turnsToApply);
+      }
 
       return {
         success: true,

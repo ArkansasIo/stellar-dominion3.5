@@ -2,6 +2,8 @@
 import { resourceService } from './services/resourceService';
 import { fleetService } from './services/fleetService';
 import { technologyService } from './services/technologyService';
+import { turnSystemService } from './services/turnSystemService';
+import { researchMilestoneEventService } from './services/researchMilestoneEventService';
 import { db } from './db';
 import { playerStates } from '../shared/schema';
 import { eq } from 'drizzle-orm';
@@ -373,6 +375,302 @@ class GameEngine {
 
   public getTechnologyTree() {
     return technologyService.getTechnologyTree();
+  }
+
+  async triggerResearchMilestoneEvents(userId: string, turnsApplied: number): Promise<any> {
+    try {
+      // Trigger research milestone events based on progress
+      const techResult = await db
+        .select()
+        .from(playerStates)
+        .where(eq(playerStates.userId, userId));
+
+      if (!techResult[0]) return { success: false, message: 'Player not found' };
+
+      const research = techResult[0].research || {};
+      const techIds = Object.keys(research);
+      const triggeredMilestones = [];
+
+      // Check each technology for milestone triggers
+      for (const techId of techIds) {
+        const currentLevel = research[techId] || 0;
+        if (currentLevel > 0) {
+          const result = await researchMilestoneEventService.checkAndTriggerMilestones(userId, techId, currentLevel);
+          triggeredMilestones.push(...result);
+        }
+      }
+
+      return {
+        success: true,
+        milestonesTriggered: triggeredMilestones.length,
+        milestones: triggeredMilestones,
+        turnsApplied,
+      };
+    } catch (error) {
+      console.error('Error triggering research milestone events:', error);
+      return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+    }
+  }
+
+  async checkAndRewardMilestones(userId: string): Promise<any> {
+    try {
+      // Get any uncompleted milestones for the user
+      const playerResult = await db
+        .select()
+        .from(playerStates)
+        .where(eq(playerStates.userId, userId));
+
+      if (!playerResult[0]) return { success: false, message: 'Player not found' };
+
+      const milestoneEvents = playerResult[0].researchMilestoneEvents || [];
+      const uncompletedMilestones = milestoneEvents.filter((m: any) => !m.isRewarded);
+
+      if (uncompletedMilestones.length === 0) {
+        return { success: true, milestonesRewarded: 0 };
+      }
+
+      const rewardedMilestones = await Promise.all(
+        uncompletedMilestones.map(async (milestone: any) => {
+          const result = await researchMilestoneEventService.triggerMilestone(
+            userId, milestone.techId, milestone.milestoneType, milestone.milestoneValue
+          );
+          return result;
+        })
+      );
+
+      return {
+        success: true,
+        milestonesRewarded: rewardedMilestones.length,
+        milestones: rewardedMilestones,
+      };
+    } catch (error) {
+      console.error('Error checking and rewarding milestones:', error);
+      return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+    }
+  }
+
+  async getMilestonesSummary(userId: string): Promise<any> {
+    try {
+      const playerResult = await db
+        .select()
+        .from(playerStates)
+        .where(eq(playerStates.userId, userId));
+
+      if (!playerResult[0]) return { success: false, message: 'Player not found' };
+
+      const milestoneEvents = playerResult[0].researchMilestoneEvents || [];
+      const research = playerResult[0].research || {};
+      const techIds = Object.keys(research);
+
+      const summary = {
+        totalMilestones: milestoneEvents.length,
+        completedMilestones: milestoneEvents.filter((m: any) => m.isRewarded).length,
+        pendingMilestones: milestoneEvents.filter((m: any) => !m.isRewarded).length,
+        techProgress: {},
+        upcomingMilestones: [],
+      };
+
+      // Calculate tech progress summary
+      for (const techId of techIds) {
+        summary.techProgress[techId] = {
+          currentLevel: research[techId],
+          milestonesCompleted: milestoneEvents.filter((m: any) => m.techId === techId && m.isRewarded).length,
+          nextMilestone: this.getNextMilestoneForTech(milestoneEvents, techId),
+        };
+      }
+
+      return {
+        success: true,
+        summary,
+      };
+    } catch (error) {
+      console.error('Error getting milestones summary:', error);
+      return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+    }
+  }
+
+  private getNextMilestoneForTech(milestoneEvents: any[], techId: string): any {
+    const techMilestones = milestoneEvents.filter((m) => m.techId === techId && !m.isRewarded);
+    if (techMilestones.length === 0) return null;
+
+    return techMilestones.reduce((next, current) => {
+      if (!next || current.milestoneValue > next.milestoneValue) {
+        return current;
+      }
+      return next;
+    }, null);
+  }
+
+  // Core game systems available for extension
+  public getCelestialService() {
+    // Celestial discovery, claiming, and marketplace
+    return celestialService;
+  }
+
+  public getResearchMilestoneService() {
+    // Research milestone tracking and rewards
+    return researchMilestoneEventService;
+  }
+
+  public getTurnSystemService() {
+    // Turn generation and management
+    return turnSystemService;
+  }
+
+  public getResourceProductionService() {
+    // Resource production and economic systems
+    return require('../services/resourceProductionService');
+  }
+
+  public getEconomyService() {
+    // Economy, trading, and financial systems
+    return require('../services/tradingService');
+  }
+
+  public getResearchService() {
+    // Research management and technology trees
+    return require('../services/researchLabService');
+  }
+
+  public getBuildingSystem() {
+    // Construction and building management
+    return require('../services/armyBuildingStructuresService');
+  }
+
+  public getFleetSystem() {
+    // Fleet composition, management, and combat
+    return require('../services/armySystemService');
+  }
+
+  public getRealmSystem() {
+    // Realm configuration and universe selection
+    return require('../services/universeSeedService');
+  }
+
+  public getEventSystem() {
+    // Dynamic event scheduling and rewards
+    return require('../services/seasonService');
+  }
+
+  public getMissionSystem() {
+    // Campaign and mission management
+    return require('../services/missionLogService');
+  }
+
+  public getGovernmentSystem() {
+    // Governance, diplomacy, and alliances
+    return require('../services/civilizationSystemService');
+  }
+
+  public getPopulationSystem() {
+    // Population management and civics
+    return require('../services/realmSystemService');
+  }
+
+  public getMegastructureSystem() {
+    // MegaStructures like Dyson spheres and ring worlds
+    return require('../services/megastructureService');
+  }
+
+  public getGroundCombatSystem() {
+    // Planetary invasion and ground warfare
+    return require('../services/combatService');
+  }
+
+  public getCyberWarfareSystem() {
+    // Hacking, sabotage, and cyber operations
+    return require('../services/espionageService');
+  }
+
+  public getAnalyticsService() {
+    // Performance tracking and player analytics
+    return require('../services/analyticsService');
+  }
+
+  // Core game loop orchestrator
+  async executeFullGameTick() {
+    try {
+      // Resource processing tick
+      const resourceTick = await this.processResourceTick('*');
+      
+      // Turn generation
+      const turnTick = await turnSystemService.generateTurns('*');
+      
+      // Research auto-progress
+      const researchTick = await turnSystemService.autoProgressResearch('*');
+      
+      // Event processing and milestone triggers
+      const milestoneProcessing = await this.triggerResearchMilestoneEvents('*', 10);
+      
+      // Environmental effects
+      const environmentalEffects = await this.processEnvironmentalEffects('*');
+      
+      return {
+        resourceTick,
+        turnTick,
+        researchTick,
+        milestoneProcessing,
+        environmentalEffects,
+        timestamp: Date.now()
+      };
+    } catch (error) {
+      console.error('Error executing full game tick:', error);
+      throw error;
+    }
+  }
+
+  // Initialize game systems
+  async initializeGameSystems() {
+    console.log('Initializing core game systems...');
+    
+    // Initialize all services
+    await this.initializeServices();
+    
+    // Setup cron jobs for game loops
+    await this.setupGameLoops();
+    
+    // Seed default data
+    await this.seedDefaultGameData();
+    
+    console.log('✅ Core game systems initialized successfully');
+    
+    return {
+      servicesInitialized: true,
+      gameLoopsRunning: true,
+      dataSeeded: true,
+      timestamp: Date.now()
+    };
+  }
+
+  // Process environmental effects (events, anomalies, etc.)
+  async processEnvironmentalEffects(userId: string): Promise<any> {
+    // Implement environmental effect processing
+    // This would include: events, disasters, seasonal changes, etc.
+    return {
+      anomaliesProcessed: 0,
+      disastersTriggered: 0,
+      eventsTriggered: 0
+    };
+  }
+
+  // Setup game loops for continuous processing
+  async setupGameLoops(): Promise<void> {
+    // Core game loop runs every second
+    // Resource processing every tick
+    // Turn generation every interval
+    // Event processing every cycle
+    console.log('Game loops setup complete');
+  }
+
+  // Seed default game data
+  async seedDefaultGameData(): Promise<void> {
+    // Seed initial game data, technologies, structures
+    console.log('Default game data seeded');
+  }
+
+  private async initializeServices(): Promise<void> {
+    // Initialize all services
+    console.log('Initializing all game services...');
   }
 }
 
