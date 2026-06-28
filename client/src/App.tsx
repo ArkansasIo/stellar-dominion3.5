@@ -93,6 +93,7 @@ const PowerGrid = lazy(() => import("@/pages/PowerGrid"));
 const OrbitalDefense = lazy(() => import("@/pages/OrbitalDefense"));
 const DimensionalHub = lazy(() => import("@/pages/DimensionalHub"));
 const Trials = lazy(() => import("@/pages/Trials"));
+const Index = lazy(() => import("@/pages/Index"));
 
 function LoadingSplash() {
   return (
@@ -168,6 +169,8 @@ function RouterContent() {
   if (!isLoggedIn) {
     return (
       <Switch>
+        <Route path="/" component={Index} />
+        <Route path="/auth" component={Auth} />
         <Route path="/threejs-viewer" component={ThreeDViewerPortal} />
         <Route path="/admin-login" component={AdminLogin} />
         <Route path="/admin" component={Admin} />

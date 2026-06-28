@@ -2395,3 +2395,25 @@ export const bounties = pgTable("bounties", {
 });
 
 export type Bounty = typeof bounties.$inferSelect;
+
+// Celestial Marketplace - buy/sell planets and moons
+export const celestialMarketplace = pgTable("celestial_marketplace", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  sellerId: varchar("seller_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  bodyType: varchar("body_type").notNull(), // "planet" | "moon"
+  bodyId: varchar("body_id").notNull(),
+  bodyName: varchar("body_name").notNull(),
+  coordinates: varchar("coordinates").notNull(),
+  price: integer("price").notNull(),
+  currency: varchar("currency").notNull().default("credits"), // "credits" | "metal" | "crystal" | "deuterium"
+  status: varchar("status").notNull().default("listed"), // "listed" | "sold" | "cancelled"
+  buyerId: varchar("buyer_id"),
+  listedAt: timestamp("listed_at").defaultNow(),
+  soldAt: timestamp("sold_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type CelestialMarketplace = typeof celestialMarketplace.$inferSelect;
+export const insertCelestialMarketplaceSchema = createInsertSchema(celestialMarketplace).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertCelestialMarketplace = z.infer<typeof insertCelestialMarketplaceSchema>;

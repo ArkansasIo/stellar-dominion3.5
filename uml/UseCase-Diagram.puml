@@ -1,0 +1,253 @@
+@startuml
+' UseCase-Diagram.puml — Universe Civilization: Empires at War
+skinparam backgroundColor #0a0a1a
+skinparam usecase {
+  BackgroundColor #1a3a2a
+  BorderColor #4aff9e
+  FontColor #e0ffe0
+}
+skinparam actor {
+  BorderColor #ff9e4a
+  FontColor #ffe0b0
+}
+skinparam arrow {
+  Color #c0c0ff
+}
+
+left to right direction
+
+' ===== ACTORS =====
+actor "Guest" as GUEST #ff8844
+actor "Player" as PLAYER #44aaff
+actor "Admin" as ADMIN #ff4444
+actor "System" as SYSTEM #44ff88
+actor "AllianceLeader" as ALLDR #ffaa44
+actor "Moderator" as MOD #ff66aa
+
+rectangle "Account Management" as ACCT {
+  usecase "Register Account" as UC01
+  usecase "Login" as UC02
+  usecase "Logout" as UC03
+  usecase "Reset Password" as UC04
+  usecase "Delete Account" as UC05
+  usecase "Verify Email" as UC06
+  usecase "Enable 2FA" as UC07
+}
+
+rectangle "Empire Management" as EMP {
+  usecase "Create Empire" as UC10
+  usecase "Rename Empire" as UC11
+  usecase "Manage Government" as UC12
+  usecase "View Empire Stats" as UC13
+  usecase "Customize Emblem" as UC14
+  usecase "Set Capital" as UC15
+}
+
+rectangle "Colony Management" as COL {
+  usecase "Colonize Planet" as UC20
+  usecase "Construct Building" as UC21
+  usecase "Upgrade Building" as UC22
+  usecase "Manage Population" as UC23
+  usecase "View Colony Details" as UC24
+  usecase "Abandon Colony" as UC25
+  usecase "Set Production Queue" as UC26
+  usecase "Build Defense Grid" as UC27
+}
+
+rectangle "Fleet Management" as FLT {
+  usecase "Build Ship" as UC30
+  usecase "Design Ship" as UC31
+  usecase "Assemble Fleet" as UC32
+  usecase "Move Fleet" as UC33
+  usecase "Engage Combat" as UC34
+  usecase "Retreat Fleet" as UC35
+  usecase "Scrap Ship" as UC36
+  usecase "Repair Fleet" as UC37
+  usecase "Assign Officer" as UC38
+  usecase "Manage Crew" as UC39
+}
+
+rectangle "Exploration" as EXP {
+  usecase "Explore Solar System" as UC40
+  usecase "Scan Planet" as UC41
+  usecase "Send Probe" as UC42
+  usecase "Discover Anomaly" as UC43
+  usecase "Map Galaxy" as UC44
+  usecase "Activate Wormhole" as UC45
+}
+
+rectangle "Research" as RSH {
+  usecase "View Tech Tree" as UC50
+  usecase "Start Research" as UC51
+  usecase "Queue Research" as UC52
+  usecase "Unlock Technology" as UC53
+  usecase "View Bonuses" as UC54
+  usecase "Assign Scientists" as UC55
+}
+
+rectangle "Economy & Trade" as ECO {
+  usecase "Collect Resources" as UC60
+  usecase "Trade Resources" as UC61
+  usecase "Buy from Market" as UC62
+  usecase "Sell on Market" as UC63
+  usecase "Cancel Order" as UC64
+  usecase "View Price History" as UC65
+  usecase "Transfer Resources" as UC66
+}
+
+rectangle "Alliance" as ALY {
+  usecase "Join Alliance" as UC70
+  usecase "Create Alliance" as UC71
+  usecase "Leave Alliance" as UC72
+  usecase "Send Alliance Invite" as UC73
+  usecase "Manage Members" as UC74
+  usecase "Alliance Bank" as UC75
+  usecase "Declare Alliance War" as UC76
+  usecase "Sign Treaty" as UC77
+  usecase "Alliance Chat" as UC78
+}
+
+rectangle "Communication" as COMM {
+  usecase "Send Message" as UC80
+  usecase "Read Message" as UC81
+  usecase "Report Player" as UC82
+  usecase "Block Player" as UC83
+  usecase "Broadcast to Alliance" as UC84
+}
+
+rectangle "Admin Functions" as ADM {
+  usecase "Ban Player" as UC90
+  usecase "Mute Player" as UC91
+  usecase "Generate Universe" as UC92
+  usecase "Run Server Event" as UC93
+  usecase "View Audit Logs" as UC94
+  usecase "Manage Leaderboard" as UC95
+  usecase "Override Combat" as UC96
+  usecase "Adjust Game Speed" as UC97
+  usecase "Broadcast Announcement" as UC98
+  usecase "Restore Account" as UC99
+}
+
+rectangle "System Functions" as SYS {
+  usecase "Auto-Cleanup" as USA1
+  usecase "Generate Resources" as USA2
+  usecase "Process Market Trades" as USA3
+  usecase "Validate Session" as USA4
+  usecase "Run Scheduled Events" as USA5
+  usecase "Backup Database" as USA6
+  usecase "Dispatch Notifications" as USA7
+}
+
+' ===== ACTOR TO USECASE RELATIONSHIPS =====
+
+' Guest
+GUEST --> UC01
+GUEST --> UC02
+GUEST --> UC04
+
+' Player
+PLAYER --> UC02
+PLAYER --> UC03
+PLAYER --> UC05
+PLAYER --> UC06
+PLAYER --> UC07
+PLAYER --> UC10
+PLAYER --> UC11
+PLAYER --> UC12
+PLAYER --> UC13
+PLAYER --> UC14
+PLAYER --> UC15
+PLAYER --> UC20
+PLAYER --> UC21
+PLAYER --> UC22
+PLAYER --> UC23
+PLAYER --> UC24
+PLAYER --> UC25
+PLAYER --> UC26
+PLAYER --> UC27
+PLAYER --> UC30
+PLAYER --> UC31
+PLAYER --> UC32
+PLAYER --> UC33
+PLAYER --> UC34
+PLAYER --> UC35
+PLAYER --> UC36
+PLAYER --> UC37
+PLAYER --> UC38
+PLAYER --> UC39
+PLAYER --> UC40
+PLAYER --> UC41
+PLAYER --> UC42
+PLAYER --> UC43
+PLAYER --> UC44
+PLAYER --> UC45
+PLAYER --> UC50
+PLAYER --> UC51
+PLAYER --> UC52
+PLAYER --> UC53
+PLAYER --> UC54
+PLAYER --> UC55
+PLAYER --> UC60
+PLAYER --> UC61
+PLAYER --> UC62
+PLAYER --> UC63
+PLAYER --> UC64
+PLAYER --> UC65
+PLAYER --> UC66
+PLAYER --> UC70
+PLAYER --> UC71
+PLAYER --> UC72
+PLAYER --> UC80
+PLAYER --> UC81
+PLAYER --> UC82
+PLAYER --> UC83
+
+' Alliance Leader extends Player
+ALLDR --> UC73
+ALLDR --> UC74
+ALLDR --> UC75
+ALLDR --> UC76
+ALLDR --> UC77
+ALLDR --> UC78
+ALLDR --> UC84
+
+' Admin
+ADMIN --> UC90
+ADMIN --> UC91
+ADMIN --> UC92
+ADMIN --> UC93
+ADMIN --> UC94
+ADMIN --> UC95
+ADMIN --> UC96
+ADMIN --> UC97
+ADMIN --> UC98
+ADMIN --> UC99
+
+' System
+SYSTEM --> USA1
+SYSTEM --> USA2
+SYSTEM --> USA3
+SYSTEM --> USA4
+SYSTEM --> USA5
+SYSTEM --> USA6
+SYSTEM --> USA7
+
+' ===== INCLUDE / EXTEND =====
+UC02 .> UC06 : <<include>>
+UC02 .> UC07 : <<extend>>
+UC10 .> UC20 : <<include>>
+UC32 .> UC33 : <<include>>
+UC34 .> UC53 : <<extend>>
+UC61 .> UC62 : <<include>>
+UC61 .> UC63 : <<include>>
+UC42 .> UC43 : <<extend>>
+UC76 .> UC77 : <<extend>>
+UC90 .> UC99 : <<extend>>
+UC73 .> UC84 : <<include>>
+
+' ===== GENERALIZATION =====
+ADMIN -|> MOD : extends
+ALLDR -|> PLAYER : extends
+MOD -|> PLAYER : extends
+
+@enduml

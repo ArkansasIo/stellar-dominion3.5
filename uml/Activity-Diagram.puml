@@ -1,0 +1,266 @@
+@startuml
+' Activity-Diagram.puml — Universe Civilization: Empires at War
+skinparam backgroundColor #0a0a1a
+skinparam activity {
+  BackgroundColor #1a2a1a
+  BorderColor #4aff9e
+  FontColor #e0ffe0
+  ArrowColor #c0ffc0
+}
+skinparam partition {
+  BorderColor #4a9eff
+  BackgroundColor #0d0d2a
+  FontColor #4a9eff
+}
+
+' ============================================================
+' SWIMLANE: NEW PLAYER ONBOARDING → GAMEPLAY LOOP
+' ========================================================
+partition "Onboarding" {
+  start
+  :Guest registers account;
+  :Verify email address;
+  :Complete tutorial introduction;
+  :Select starting race / faction;
+  :Generate starter empire;
+  :Place first colony on starter planet;
+}
+
+partition "First Colony" {
+  :Tour colony interface;
+  :Construct initial buildings\n(Command Center, Power Plant, Mine);
+  :Manage population allocation;
+  :Collect first resource tick;
+  :Complete "First Colony" tutorial step;
+}
+
+partition "Research" {
+  :Open tech tree;
+  :Select starting technology;
+  :Pay research cost;
+  -> timer for research duration;
+  :Research completes;
+  :Unlock new buildings / ships;
+}
+
+partition "Fleet" {
+  :Build first ship (Scout / Fighter);
+  :Assign crew to ship;
+  :Assemble into fleet;
+  :Launch fleet from colony;
+  :Give movement order;
+  -> fleet travels in real-time;
+}
+
+partition "Exploration" {
+  :Fleet arrives at neighboring system;
+  :Scan planets;
+  :Discover resources;
+  :Encounter NPC fleets / anomalies;
+  :Send exploration report back;
+  :Mark system as explored;
+}
+
+partition "Combat" {
+  :Detect enemy fleet in system;
+  :Select "Engage" order;
+  :Enter combat screen;
+  :Fleets enter combat range;
+  :Long-range weapons fire;
+  :Close to medium range;
+  :Medium weapons engage;
+  :Close to short range;
+  :Short-range / boarding phase;
+  :Determine victor;
+  :Apply damage and loot;
+  :Generate combat report;
+}
+
+' Parallel flows from exploration
+partition "Expansion" {
+  fork
+    :Colonize new planet;
+    :Build economy structures;
+  fork again
+    :Build more ships;
+    :Grow fleet power;
+  fork again
+    :Research advanced techs;
+    :Unlock new tiers;
+  end fork
+}
+
+partition "Endgame" {
+  :Form / join alliance;
+  :Engage alliance warfare;
+  :Compete on leaderboards;
+  :Research endgame techs;
+  :Build Titans / Motherships;
+  :Participate in server events;
+  :Pursue victory condition;
+  stop
+}
+
+' ============================================================
+' SWIMLANE: FLEET COMBAT TURN RESOLUTION (DETAILED)
+' ========================================================
+partition "Fleet Combat Resolution" {
+  start
+  :Combat initiated;
+  :Calculate initiative\ndex vs speed per ship;
+  :Sort ship action order;
+
+  while (Combat rounds < 10 and both fleets alive) is (next round)
+    :Enter round {roundNumber};
+
+    partition "Phase 1: Long Range" {
+      :Identify ships with\nlong-range weapons;
+      :Check target in range;
+      :Calculate hit chance\n(base accuracy + crew skill - evasion);
+      :Roll for hit;
+
+      if (hit succeeds) then (yes)
+        :Calculate damage\n(weapon power * modifiers - shields);
+        :Apply damage to shields;
+        if (shields depleted) then (yes)
+          :Apply remaining damage to hull;
+          if (hull < 0) then (yes)
+            :Ship destroyed;
+            :Remove from combat;
+            :Check for crew escape pods;
+          endif
+        endif
+      else (miss)
+        :Log evaded/miss;
+      endif
+    }
+
+    partition "Phase 2: Medium Range" {
+      :Medium weapon cycle;
+      :Repeat hit/damage calculation;
+      :Apply special weapon effects\n(ion stun, EMP, missile volley);
+    }
+
+    partition "Phase 3: Short Range" {
+      :Short weapon cycle;
+      :Repeat hit/damage calculation;
+      :Check for ramming attempts;
+      :Apply critical hits on low hull;
+    }
+
+    partition "Phase 4: Boarding" {
+      :Check for boarding-capable ships;
+      if (boarding attempted) then (yes)
+        :Calculate boarding strength\n(marine count + officer bonus);
+        :Defender rolls anti-boarding defense;
+        if (boarders succeed) then (yes)
+          :Capture target ship;
+          :Transfer ship ownership;
+          :Remove from defender's fleet;
+          :Add to attacker's fleet;
+        else
+          :Repel boarders;
+          :Casualties on both sides;
+        endif
+      endif
+    }
+
+    :Apply morale changes;
+    :Check retreat conditions;
+    if (fleet power ratio < threshold) then (yes)
+      :Fleet attempts retreat;
+      :Calculate escape chance;
+      if (escape fails) then (yes)
+        :Fleet trapped in combat;
+      endif
+    endif
+
+    :Increment round counter;
+  endwhile
+
+  :Determine final result;
+  :Generate detailed combat report;
+  :Distribute experience to crew;
+  :Apply loot/resources transfer;
+  :Notify both players;
+  stop
+}
+
+' ============================================================
+' SWIMLANE: ALLIANCE WAR DECLARATION
+' ========================================================
+partition "Alliance War Declaration" {
+  start
+  :Alliance leader opens\nwar declaration screen;
+  :Select target alliance;
+
+  partition "Validation" {
+    :Check active wars count < max;
+    :Check alliance power difference;
+    :Check cooldown from previous war;
+    :Validate target is not same alliance;
+    :Validate target is not in NAP;
+  }
+
+  if (validation fails) then (fail)
+    :Display error / reason;
+    stop
+  else (pass)
+  endif
+
+  :Set war goals\n(conquest / humiliation / annihilation);
+  :Define war terms\n(unconditional / limited / tribute);
+  :Pay war declaration cost\n(resources + influence);
+
+  partition "Diplomacy Phase" {
+    :Send war declaration\ndiplomatic message;
+    :Target alliance notified;
+    :24-hour diplomatic cooldown begins;
+    :Alliance members can\nvote on war acceptance;
+  }
+
+  if (war vote passes) then (yes)
+    :War begins;
+  else
+    :Resources refunded (partial);
+    :Diplomatic penalty applied;
+    stop
+  endif
+
+  partition "Active War State" {
+    :All empire on color teams assigned;
+    :Alliance-wide war goal displayed;
+    :Members can attack freely;\nno aggression penalties;
+    :Score tracked\n(kills, captures, systems controlled);
+    :War exhaustion accumulates over time;
+  }
+
+  while (war active) is (ongoing)
+    :Battles fought;
+    :Territory changes hands;
+    :Resources looted;
+    :Ships destroyed;
+    :Check war score;
+  endwhile
+
+  partition "War Resolution" {
+    if (surrender) then (yes)
+      :Surrendering side pays tribute;
+      :Territory ceded;
+      :War ends;
+    else if (war score goal met) then (yes)
+      :Forced peace;
+      :Terms enforced;
+    else if (time limit reached) then (yes)
+      :Stalemate peace;
+      :No concessions;
+    endif
+
+    :Peace treaty signed;
+    :War cooldown begins;
+    :Rebuild phase starts;
+  }
+  stop
+}
+
+@enduml

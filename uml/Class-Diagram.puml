@@ -1,0 +1,734 @@
+@startuml
+' Class-Diagram.puml — Universe Civilization: Empires at War
+skinparam classAttributeIconSize 0
+skinparam backgroundColor #0a0a1a
+skinparam class {
+  BackgroundColor #1a1a3a
+  BorderColor #4a9eff
+  FontColor #e0e0ff
+  HeaderBackgroundColor #2a2a5a
+}
+
+' ===== ABSTRACT / INTERFACE =====
+abstract class Entity {
+  + UUID id
+  + DateTime createdAt
+  + DateTime updatedAt
+  + bool isActive
+  + save() : void
+  + delete() : void
+}
+
+interface Ownable {
+  + {abstract} UUID ownerId
+  + {abstract} transferOwnership(UUID newOwner) : void
+}
+
+interface Positionable {
+  + {abstract} Coordinates location
+  + {abstract} distanceTo(Positionable other) : double
+}
+
+' ===== PLAYER & ACCOUNT =====
+class Player extends Entity implements Ownable {
+  + UUID ownerId
+  + string username
+  + string email
+  + string passwordHash
+  + PlayerStatus status
+  + DateTime lastLogin
+  + string ipAddress
+  - AccountBan[] banHistory
+  + login(string password) : bool
+  + ban(Admin admin, string reason) : void
+  + updateEmail(string email) : void
+  + getActiveEmpires() : Empire[]
+}
+
+enum PlayerStatus {
+  INACTIVE
+  ACTIVE
+  BANNED
+  SUSPENDED
+  DELETED
+}
+
+class PlayerSettings {
+  + UUID playerId
+  + string language
+  + string timezone
+  + bool emailNotifications
+  + bool pushNotifications
+  + map<string,string> keyBindings
+  + int uiScale
+}
+
+' ===== EMPIRE =====
+class Empire extends Entity implements Ownable {
+  + UUID ownerId
+  + string name
+  + string emblemUrl
+  + ResourceBundle resources
+  + double totalPower
+  + int colonyCount
+  + int fleetCount
+  + EmpireGovernmentType government
+  + string motto
+  + bool isCapitalSet
+  + collectResources() : ResourceBundle
+  + declareWar(Empire target) : void
+  + sendMessage(Empire recipient, string content) : Message
+  + calculatePower() : double
+}
+
+class ResourceBundle {
+  + double credits
+  + double minerals
+  + double gas
+  + double energy
+  + double food
+  + double alloy
+  + double antimatter
+  + double darkMatter
+  + add(ResourceBundle other) : ResourceBundle
+  + subtract(ResourceBundle other) : ResourceBundle
+  + canAfford(ResourceBundle cost) : bool
+}
+
+enum EmpireGovernmentType {
+  MONARCHY
+  REPUBLIC
+  FEDERATION
+  CORPORATOCRACY
+  THEOCRACY
+  MILITARY_JUNTA
+  HIVE_MIND
+  AI_COLLECTIVE
+}
+
+' ===== COLONY & BUILDINGS =====
+class Colony extends Entity implements Ownable {
+  + UUID ownerId
+  + UUID planetId
+  + Population population
+  + ResourceBundle production
+  + double defenseRating
+  + double happiness
+  + double developmentLevel
+  + Building[] buildings
+  + buildBuilding(BuildingType type) : Building
+  + upgradeBuilding(UUID buildingId) : void
+  + getResourceOutput() : ResourceBundle
+  + calculateDefense() : double
+}
+
+class Population {
+  + int total
+  + int workers
+  + int scientists
+  + int soldiers
+  + int unemployed
+  + double growthRate
+  + assignWorker(UUID buildingId, int count) : void
+}
+
+class Building extends Entity {
+  + UUID colonyId
+  + BuildingType type
+  + int level
+  + double constructionProgress
+  + double upgradeCostMultiplier
+  + bool isOperational
+  + ConstructionQueueItem queueItem
+  + getProduction() : ResourceBundle
+  + getUpgradeCost() : ResourceBundle
+  + startUpgrade() : void
+}
+
+enum BuildingType {
+  COMMAND_CENTER
+  MINING_FACILITY
+  REFINERY
+  RESEARCH_LAB
+  SHIPYARD
+  DEFENSE_TURRET
+  SHIELD_GENERATOR
+  TRADE_PORT
+  HOUSING_DOME
+  POWER_PLANT
+  FARM
+  ANTIMATTER_REACTOR
+}
+
+class ConstructionQueueItem {
+  + UUID buildingId
+  + UUID colonyId
+  + ResourceBundle cost
+  + double timeRemaining
+  + double totalTime
+  + int priority
+  + cancel() : void
+}
+
+' ===== FLEET, SHIPS, CREW =====
+class Fleet extends Entity implements Ownable, Positionable {
+  + UUID ownerId
+  + Coordinates location
+  + UUID targetLocation
+  + FleetStatus status
+  + Ship[] ships
+  + double speed
+  + MissionType mission
+  + double fuel
+  + Crew[] crew
+  + moveTo(Coordinates target) : void
+  + engageFleet(Fleet target) : CombatReport
+  + dockAt(Colony colony) : void
+  + calculatePower() : double
+}
+
+enum FleetStatus {
+  DOCKED
+  UNDERWAY
+  IN_ORBIT
+  IN_COMBAT
+  DAMAGED
+  DESTROYED
+  REPAIRING
+  SCRAPPED
+}
+
+enum MissionType {
+  PATROL
+  ATTACK
+  DEFEND
+  COLONIZE
+  TRADE
+  EXPLORE
+  BOMBARD
+  TRANSPORT
+}
+
+class Ship extends Entity {
+  + UUID fleetId
+  + ShipClass shipClass
+  + string name
+  + double hullIntegrity
+  + double shieldStrength
+  + Weapon[] weapons
+  + double cargoCapacity
+  + double crewCapacity
+  + double fuelCapacity
+  + Crew[] assignedCrew
+  + Officer captain
+  + takeDamage(double amount) : void
+  + repair() : void
+  + equipWeapon(Weapon weapon, int slot) : void
+}
+
+enum ShipClass {
+  FIGHTER
+  FRIGATE
+  DESTROYER
+  CRUISER
+  BATTLESHIP
+  DREADNOUGHT
+  CARRIER
+  MOTHERSHIP
+  TITAN
+}
+
+class Weapon {
+  + UUID id
+  + WeaponType type
+  + double damage
+  + double range
+  + double fireRate
+  + double accuracy
+  + string name
+  + fire(Ship target) : DamageReport
+}
+
+enum WeaponType {
+  LASER
+  PLASMA
+  RAILGUN
+  MISSILE
+  ION_CANNON
+  KINETIC
+  TACHYON
+  DISRUPTOR
+}
+
+' ===== CREW & OFFICERS =====
+class Crew extends Entity {
+  + string name
+  + CrewRole role
+  + int experience
+  + int level
+  + double morale
+  + string portrait
+  + train(TrainingType type) : void
+  + gainExperience(int amount) : void
+}
+
+enum CrewRole {
+  PILOT
+  ENGINEER
+  GUNNER
+  SCIENTIST
+  MEDIC
+  COMMANDER
+  TECHNICIAN
+  MARINE
+}
+
+class Officer extends Crew {
+  + OfficerSpecialization spec
+  + Skill[] skills
+  + int leadershipRating
+  + int commandPoints
+  + assignToFleet(Fleet fleet) : void
+  + useSpecialAbility() : void
+}
+
+enum OfficerSpecialization {
+  TACTICAL
+  ENGINEERING
+  SCIENCE
+  DIPLOMACY
+  NAVIGATION
+}
+
+class Skill {
+  + string name
+  + int level
+  + int maxLevel
+  + double effectValue
+  + string description
+}
+
+' ===== RESEARCH & TECHNOLOGIES =====
+class ResearchTree extends Entity {
+  + UUID playerId
+  + Technology[] unlockedTechs
+  + Technology[] availableTechs
+  + Technology[] inProgress
+  + TechnologyCategory[] categories
+  + unlockTechnology(UUID techId) : void
+  + startResearch(UUID techId) : ResearchProject
+  + getBonuses() : ResearchBonuses
+}
+
+class Technology extends Entity {
+  + string name
+  + string description
+  + TechnologyCategory category
+  + TechnologyTier tier
+  + ResourceBundle cost
+  + double researchTime
+  + Technology[] prerequisites
+  + Technology[] unlocks
+  + double effectValue
+  + applyEffect(Empire empire) : void
+}
+
+enum TechnologyCategory {
+  WEAPONS
+  SHIELDS
+  PROPULSION
+  ENERGY
+  MINING
+  COMPUTING
+  BIOLOGY
+  METAMATERIALS
+  TIME_SPACE
+}
+
+enum TechnologyTier {
+  TIER_1
+  TIER_2
+  TIER_3
+  TIER_4
+  TIER_5
+  LEGENDARY
+}
+
+class ResearchProject {
+  + UUID technologyId
+  + UUID researchTreeId
+  + double progress
+  + double totalRequired
+  + int assignedScientists
+  + bool isComplete
+  + addProgress(double amount) : void
+  + complete() : Technology
+}
+
+class ResearchBonuses {
+  + double damageMultiplier
+  + double shieldMultiplier
+  + double miningEfficiency
+  + double buildSpeed
+  + double shipSpeed
+  + double moraleBonus
+}
+
+' ===== ALLIANCE =====
+class Alliance extends Entity {
+  + string name
+  + string tag
+  + string description
+  + AllianceRank defaultRank
+  + int memberCount
+  + ResourceBundle bank
+  + double alliancePower
+  + AllianceDiplomacy[] diplomacy
+  + invitePlayer(Player player) : void
+  + kickMember(UUID memberId) : void
+  + declareWar(Alliance target) : void
+  + setDiplomacy(Alliance other, DiplomaticRelation relation) : void
+}
+
+class AllianceMember {
+  + UUID allianceId
+  + UUID playerId
+  + AllianceRank rank
+  + DateTime joinedAt
+  + int contributions
+  + promote() : void
+  + demote() : void
+}
+
+enum AllianceRank {
+  MEMBER
+  OFFICER
+  COMMANDER
+  VICE_LEADER
+  LEADER
+  FOUNDER
+}
+
+class AllianceDiplomacy {
+  + UUID allianceId
+  + UUID targetAllianceId
+  + DiplomaticRelation relation
+  + DateTime establishedAt
+  + DateTime expiresAt
+  + string treatyTerms
+}
+
+enum DiplomaticRelation {
+  WAR
+  HOSTILE
+  NEUTRAL
+  FRIENDLY
+  TRADE_PACT
+  NON_AGGRESSION
+  ALLIANCE
+  FEDERATION
+}
+
+' ===== MARKET =====
+class Market extends Entity {
+  + UUID universeId
+  + MarketOrder[] orders
+  + TradeTransaction[] transactions
+  + double taxRate
+  + placeOrder(MarketOrder order) : void
+  + cancelOrder(UUID orderId) : void
+  + executeTrade(UUID orderId, UUID buyerId, int quantity) : TradeTransaction
+  + getPriceHistory(ResourceType type) : PricePoint[]
+}
+
+class MarketOrder {
+  + UUID id
+  + UUID sellerId
+  + ResourceType resourceType
+  + double quantity
+  + double unitPrice
+  + double remainingQuantity
+  + OrderType type
+  + DateTime expiresAt
+  + isExpired() : bool
+}
+
+enum OrderType {
+  SELL
+  BUY
+  BID
+  ASK
+}
+
+class TradeTransaction {
+  + UUID id
+  + UUID buyerId
+  + UUID sellerId
+  + UUID orderId
+  + ResourceType resourceType
+  + double quantity
+  + double totalPrice
+  + double tax
+  + DateTime timestamp
+}
+
+enum ResourceType {
+  CREDITS
+  MINERALS
+  GAS
+  ENERGY
+  FOOD
+  ALLOY
+  ANTIMATTER
+  DARK_MATTER
+}
+
+' ===== COMBAT =====
+class CombatReport {
+  + UUID id
+  + UUID attackerFleetId
+  + UUID defenderFleetId
+  + CombatRound[] rounds
+  + CombatResult result
+  + ResourceBundle loot
+  + Ship[] destroyedShips
+  + int experienceGained
+  + DateTime timestamp
+}
+
+class CombatRound {
+  + int roundNumber
+  + CombatPhase phase
+  + CombatAction[] actions
+  + double totalDamageDealt
+  + double totalDamageReceived
+}
+
+enum CombatPhase {
+  INITIATION
+  MOVEMENT
+  LONG_RANGE
+  MEDIUM_RANGE
+  SHORT_RANGE
+  BOARDING
+  RETREAT
+  RESOLUTION
+}
+
+class CombatAction {
+  + UUID sourceShipId
+  + UUID targetShipId
+  + ActionType type
+  + double value
+  + bool critical
+  + bool evaded
+}
+
+enum ActionType {
+  LASER_STRIKE
+  MISSILE_VOLLEY
+  RAMMING
+  BOARDING_PARTY
+  SHIELD_BOOST
+  REPAIR
+  EVASION
+  SPECIAL_ABILITY
+}
+
+enum CombatResult {
+  ATTACKER_VICTORY
+  DEFENDER_VICTORY
+  STALEMATE
+  RETREAT
+  MUTUAL_DESTRUCTION
+}
+
+' ===== UNIVERSE / GALAXY / PLANET =====
+class Universe extends Entity {
+  + string name
+  + int width
+  + int height
+  + int maxPlayers
+  + Galaxy[] galaxies
+  + double age
+  + string seed
+  + bool isActive
+  + generateGalaxy(string seed) : Galaxy
+  + getPlayerCount() : int
+}
+
+class Galaxy extends Entity {
+  + UUID universeId
+  + string name
+  + GalaxyType type
+  + Coordinates center
+  + double radius
+  + SolarSystem[] solarSystems
+  + generateSystems(int count) : void
+}
+
+enum GalaxyType {
+  SPIRAL
+  ELLIPTICAL
+  IRREGULAR
+  RING
+  DWARF
+}
+
+class SolarSystem extends Entity {
+  + UUID galaxyId
+  + string name
+  + Coordinates position
+  + StarType starType
+  + Planet[] planets
+  + bool isExplored
+  + int resourceRichness
+  + explore() : void
+}
+
+enum StarType {
+  CLASS_O
+  CLASS_B
+  CLASS_A
+  CLASS_F
+  CLASS_G
+  CLASS_K
+  CLASS_M
+  NEUTRON_STAR
+  BLACK_HOLE
+}
+
+class Planet extends Entity implements Positionable {
+  + UUID solarSystemId
+  + Coordinates location
+  + string name
+  + PlanetType type
+  + PlanetStatus status
+  + double size
+  + double gravity
+  + double temperature
+  + double atmosphere
+  + ResourceBundle resources
+  + Moon[] moons
+  + int maxColonies
+  + colonize(Player player) : Colony
+  + terraform() : void
+  + getBuildableSlots() : int
+}
+
+enum PlanetType {
+  TERRAN
+  OCEAN
+  DESERT
+  TUNDRA
+  GAS_GIANT
+  LAVA
+  ICE
+  BARREN
+  ARTIFICIAL
+  RINGWORLD
+}
+
+enum PlanetStatus {
+  UNEXPLORED
+  EXPLORED
+  COLONIZED
+  DEVELOPED
+  TERRAFORMED
+  DEPLETED
+  DEVASTATED
+}
+
+class Moon extends Entity {
+  + UUID planetId
+  + string name
+  + double size
+  + ResourceBundle resources
+  + bool isColonizable
+  + double orbitDistance
+}
+
+' ===== MESSAGING =====
+class Message extends Entity {
+  + UUID senderId
+  + UUID recipientId
+  + string subject
+  + string body
+  + bool read
+  + MessageType type
+  + MessageAttachment attachment
+  + markAsRead() : void
+  + reply(string content) : Message
+}
+
+enum MessageType {
+  DIRECT
+  ALLIANCE_BROADCAST
+  SYSTEM
+  DIPLOMATIC
+  BATTLE_REPORT
+  TRADE_ALERT
+}
+
+class MessageAttachment {
+  + AttachmentType type
+  + string data
+  + string fileName
+}
+
+enum AttachmentType {
+  COMBAT_REPORT
+  RESOURCES
+  SHIP_DESIGN
+  ALLIANCE_INVITE
+}
+
+' ===== RELATIONSHIPS =====
+Player "1" -- "*" Empire : owns
+Player "1" -- "1" PlayerSettings : has
+Player "1" -- "*" Message : sends
+Player "1" -- "*" Message : receives
+Player "1" -- "1" ResearchTree : researches
+
+Empire "1" -- "*" Colony : has
+Empire "1" -- "*" Fleet : commands
+Empire "1" -- "0..1" Alliance : belongs to
+Empire "1" -- "*" MarketOrder : lists
+
+Colony "1" -- "*" Building : contains
+Colony "1" -- "1" Population : has
+Colony "1" -- "1" ConstructionQueueItem : builds
+
+Fleet "1" -- "*" Ship : composed of
+Fleet "1" -- "1" CombatReport : generates
+Fleet "1" -- "0..1" Coordinates : target
+
+Ship "1" -- "*" Weapon : equipped with
+Ship "1" -- "*" Crew : assigned
+Ship "1" -- "0..1" Officer : commanded by
+
+Crew "1" -- "*" Skill : knows
+Officer --|> Crew : extends
+
+Alliance "1" -- "*" AllianceMember : has
+Alliance "1" -- "*" AllianceDiplomacy : conducts
+Alliance "1" -- "1" ResourceBundle : bank
+
+Market "1" -- "*" MarketOrder : contains
+Market "1" -- "*" TradeTransaction : records
+MarketOrder "1" -- "*" TradeTransaction : fulfilled by
+
+ResearchTree "1" -- "*" Technology : unlocks
+Technology "*" -- "*" Technology : requires
+Technology "1" -- "*" ResearchProject : in progress
+
+Universe "1" -- "*" Galaxy : contains
+Galaxy "1" -- "*" SolarSystem : contains
+SolarSystem "1" -- "*" Planet : contains
+Planet "1" -- "*" Moon : has
+Planet "1" -- "0..1" Colony : hosts
+
+CombatReport "1" -- "*" CombatRound : consists of
+CombatRound "1" -- "*" CombatAction : contains
+
+@enduml

@@ -1,0 +1,531 @@
+@startuml
+' Entity-Relationship-Diagram.puml — Universe Civilization: Empires at War
+skinparam backgroundColor #0a0a1a
+skinparam entity {
+  BackgroundColor #1a1a3a
+  BorderColor #4a9eff
+  FontColor #e0e0ff
+}
+skinparam relationship {
+  BackgroundColor #c0c0ff
+  BorderColor #c0c0ff
+}
+skinparam arrow {
+  Color #c0c0ff
+}
+
+' ============================================================
+' CORE PLAYER / EMPIRE / COLONY
+' ============================================================
+entity "players" as PLAYERS {
+  * id : UUID <<PK>>
+  --
+  * username : varchar(32) <<UNIQUE>>
+  * email : varchar(255) <<UNIQUE>>
+  * password_hash : varchar(255)
+  * status : player_status
+  * last_login : timestamptz
+  * created_at : timestamptz
+  * updated_at : timestamptz
+  * ip_address : inet
+  * referral_code : varchar(20)
+  * totp_secret : varchar(64)
+  * email_verified : bool
+}
+
+entity "player_settings" as PSETTINGS {
+  * id : UUID <<PK>>
+  * player_id : UUID <<FK>>
+  --
+  * language : varchar(10)
+  * timezone : varchar(50)
+  * email_notifications : bool
+  * push_notifications : bool
+  * ui_scale : int
+  * key_bindings : jsonb
+  * muted_players : UUID[]
+}
+
+entity "empires" as EMPIRES {
+  * id : UUID <<PK>>
+  * player_id : UUID <<FK>>
+  --
+  * name : varchar(64) <<UNIQUE>>
+  * emblem_url : text
+  * government_type : gov_type
+  * motto : text
+  * credits : bigint
+  * minerals : bigint
+  * gas : bigint
+  * energy : bigint
+  * food : bigint
+  * alloy : bigint
+  * antimatter : bigint
+  * dark_matter : bigint
+  * total_power : bigint
+  * colony_count : int
+  * fleet_count : int
+  * capital_colony_id : UUID <<FK>>
+  * created_at : timestamptz
+}
+
+entity "colonies" as COLONIES {
+  * id : UUID <<PK>>
+  * empire_id : UUID <<FK>>
+  * planet_id : UUID <<FK>>
+  --
+  * name : varchar(64)
+  * population_total : int
+  * population_workers : int
+  * population_scientists : int
+  * population_soldiers : int
+  * population_unemployed : int
+  * happiness : real
+  * development_level : int
+  * defense_rating : real
+  * created_at : timestamptz
+}
+
+entity "buildings" as BUILDINGS {
+  * id : UUID <<PK>>
+  * colony_id : UUID <<FK>>
+  --
+  * building_type : building_type
+  * level : int
+  * construction_progress : real
+  * is_operational : bool
+  * damaged : bool
+  * created_at : timestamptz
+  * upgraded_at : timestamptz
+}
+
+entity "construction_queue" as CONQ {
+  * id : UUID <<PK>>
+  * colony_id : UUID <<FK>>
+  * building_id : UUID <<FK>>
+  --
+  * action_type : varchar(16)
+  * time_remaining : interval
+  * total_time : interval
+  * priority : int
+  * started_at : timestamptz
+}
+
+' ============================================================
+' FLEETS / SHIPS / CREW
+' ============================================================
+entity "fleets" as FLEETS {
+  * id : UUID <<PK>>
+  * empire_id : UUID <<FK>>
+  --
+  * name : varchar(64)
+  * status : fleet_status
+  * mission : mission_type
+  * galaxy_id : UUID <<FK>>
+  * solar_system_id : UUID <<FK>>
+  * planet_id : UUID <<FK>>
+  * pos_x : bigint
+  * pos_y : bigint
+  * target_x : bigint
+  * target_y : bigint
+  * speed : real
+  * fuel : real
+  * fuel_capacity : real
+  * total_power : bigint
+  * created_at : timestamptz
+}
+
+entity "ships" as SHIPS {
+  * id : UUID <<PK>>
+  * fleet_id : UUID <<FK>>
+  * blueprint_id : UUID <<FK>>
+  --
+  * name : varchar(64)
+  * ship_class : ship_class
+  * hull_integrity : real
+  * hull_max : real
+  * shield_strength : real
+  * shield_max : real
+  * cargo_used : real
+  * cargo_capacity : real
+  * crew_capacity : int
+  * fuel_capacity : real
+  * speed : real
+  * created_at : timestamptz
+}
+
+entity "ship_blueprints" as BLUEPRINTS {
+  * id : UUID <<PK>>
+  * empire_id : UUID <<FK>>
+  --
+  * name : varchar(64)
+  * ship_class : ship_class
+  * hull_max : real
+  * shield_max : real
+  * cargo_capacity : real
+  * crew_capacity : int
+  * fuel_capacity : real
+  * speed : real
+  * weapon_slots : jsonb
+  * cost_minerals : bigint
+  * cost_gas : bigint
+  * cost_alloy : bigint
+  * build_time : interval
+  * is_public : bool
+}
+
+entity "weapons" as WEAPONS {
+  * id : UUID <<PK>>
+  * ship_id : UUID <<FK>>
+  * blueprint_weapon_id : UUID <<FK>>
+  --
+  * weapon_type : weapon_type
+  * name : varchar(64)
+  * damage : real
+  * range : real
+  * fire_rate : real
+  * accuracy : real
+  * slot_index : int
+  * damaged : bool
+}
+
+entity "crew" as CREW {
+  * id : UUID <<PK>>
+  * ship_id : UUID <<FK>>
+  * empire_id : UUID <<FK>>
+  --
+  * name : varchar(64)
+  * role : crew_role
+  * experience : int
+  * level : int
+  * morale : real
+  * portrait : text
+  * is_officer : bool
+  * officer_spec : officer_spec
+  * leadership : int
+  * skills : jsonb
+  * created_at : timestamptz
+}
+
+' ============================================================
+' RESEARCH
+' ============================================================
+entity "technologies" as TECHNOLOGIES {
+  * id : UUID <<PK>>
+  --
+  * name : varchar(64) <<UNIQUE>>
+  * description : text
+  * category : tech_category
+  * tier : tech_tier
+  * cost_minerals : bigint
+  * cost_gas : bigint
+  * cost_energy : bigint
+  * cost_alloy : bigint
+  * research_time : interval
+  * effect_value : real
+  * prerequisites : UUID[]
+  * unlocks : UUID[]
+}
+
+entity "player_technologies" as PLAYER_TECHS {
+  * player_id : UUID <<FK>>
+  * technology_id : UUID <<FK>>
+  --
+  * researched : bool
+  * research_progress : real
+  * research_total : real
+  * assigned_scientists : int
+  * started_at : timestamptz
+  * completed_at : timestamptz
+  * queue_position : int
+}
+
+' ============================================================
+' ALLIANCE
+' ============================================================
+entity "alliances" as ALLIANCES {
+  * id : UUID <<PK>>
+  --
+  * name : varchar(64) <<UNIQUE>>
+  * tag : varchar(6) <<UNIQUE>>
+  * description : text
+  * emblem_url : text
+  * member_count : int
+  * bank_credits : bigint
+  * bank_minerals : bigint
+  * bank_gas : bigint
+  * bank_alloy : bigint
+  * alliance_power : bigint
+  * created_at : timestamptz
+}
+
+entity "alliance_members" as ALLIANCE_MEMBERS {
+  * alliance_id : UUID <<FK>>
+  * player_id : UUID <<FK>>
+  --
+  * rank : alliance_rank
+  * joined_at : timestamptz
+  * contributions : bigint
+  * last_active : timestamptz
+}
+
+entity "alliance_diplomacy" as ALLIANCE_DIPLOMACY {
+  * id : UUID <<PK>>
+  * alliance_id : UUID <<FK>>
+  * target_alliance_id : UUID <<FK>>
+  --
+  * relation : diplomatic_relation
+  * established_at : timestamptz
+  * expires_at : timestamptz
+  * treaty_terms : text
+}
+
+' ============================================================
+' UNIVERSE / GALAXY / PLANET
+' ============================================================
+entity "universes" as UNIVERSES {
+  * id : UUID <<PK>>
+  --
+  * name : varchar(64)
+  * width : int
+  * height : int
+  * max_players : int
+  * seed : varchar(64)
+  * age : interval
+  * is_active : bool
+  * created_at : timestamptz
+}
+
+entity "galaxies" as GALAXIES {
+  * id : UUID <<PK>>
+  * universe_id : UUID <<FK>>
+  --
+  * name : varchar(64)
+  * galaxy_type : galaxy_type
+  * center_x : bigint
+  * center_y : bigint
+  * radius : bigint
+}
+
+entity "solar_systems" as SOLAR_SYSTEMS {
+  * id : UUID <<PK>>
+  * galaxy_id : UUID <<FK>>
+  * controlling_empire_id : UUID <<FK>>
+  --
+  * name : varchar(64)
+  * pos_x : bigint
+  * pos_y : bigint
+  * star_type : star_type
+  * is_explored : bool
+  * resource_richness : int
+  * wormhole_target_id : UUID <<FK>>
+}
+
+entity "planets" as PLANETS {
+  * id : UUID <<PK>>
+  * solar_system_id : UUID <<FK>>
+  * controlling_colony_id : UUID <<FK>>
+  --
+  * name : varchar(64)
+  * planet_type : planet_type
+  * status : planet_status
+  * size : real
+  * gravity : real
+  * temperature : real
+  * atmosphere : real
+  * resources_minerals : bigint
+  * resources_gas : bigint
+  * resources_energy : real
+  * resources_food : real
+  * orbit_index : int
+  * max_colonies : int
+  * buildable_slots : int
+}
+
+entity "moons" as MOONS {
+  * id : UUID <<PK>>
+  * planet_id : UUID <<FK>>
+  --
+  * name : varchar(64)
+  * size : real
+  * resources_minerals : bigint
+  * resources_gas : bigint
+  * is_colonizable : bool
+  * orbit_distance : real
+}
+
+' ============================================================
+' MARKET
+' ============================================================
+entity "market_orders" as MARKET_ORDERS {
+  * id : UUID <<PK>>
+  * seller_id : UUID <<FK>>
+  * empire_id : UUID <<FK>>
+  --
+  * resource_type : resource_type
+  * quantity : numeric(20,4)
+  * unit_price : numeric(20,4)
+  * remaining_quantity : numeric(20,4)
+  * order_type : order_type
+  * created_at : timestamptz
+  * expires_at : timestamptz
+  * filled : bool
+  * cancelled : bool
+}
+
+entity "transactions" as TRANSACTIONS {
+  * id : UUID <<PK>>
+  * order_id : UUID <<FK>>
+  * buyer_id : UUID <<FK>>
+  * seller_id : UUID <<FK>>
+  --
+  * resource_type : resource_type
+  * quantity : numeric(20,4)
+  * unit_price : numeric(20,4)
+  * total_price : numeric(20,4)
+  * tax_amount : numeric(20,4)
+  * created_at : timestamptz
+}
+
+' ============================================================
+' MESSAGES / NOTIFICATIONS / EVENTS
+' ============================================================
+entity "messages" as MESSAGES {
+  * id : UUID <<PK>>
+  * sender_id : UUID <<FK>>
+  * recipient_id : UUID <<FK>>
+  --
+  * subject : varchar(128)
+  * body : text
+  * message_type : message_type
+  * read : bool
+  * read_at : timestamptz
+  * created_at : timestamptz
+  * attachment_type : attachment_type
+  * attachment_data : text
+}
+
+entity "notifications" as NOTIFICATIONS {
+  * id : UUID <<PK>>
+  * player_id : UUID <<FK>>
+  --
+  * notification_type : varchar(64)
+  * title : varchar(128)
+  * body : text
+  * data : jsonb
+  * read : bool
+  * created_at : timestamptz
+}
+
+entity "events" as EVENTS {
+  * id : UUID <<PK>>
+  * galaxy_id : UUID <<FK>>
+  * solar_system_id : UUID <<FK>>
+  --
+  * event_type : varchar(64)
+  * name : varchar(128)
+  * description : text
+  * data : jsonb
+  * starts_at : timestamptz
+  * ends_at : timestamptz
+  * is_active : bool
+}
+
+' ============================================================
+' ADMIN / LOGS
+' ============================================================
+entity "admin_logs" as ADMIN_LOGS {
+  * id : UUID <<PK>>
+  * admin_id : UUID <<FK>>
+  * target_player_id : UUID <<FK>>
+  --
+  * action : varchar(64)
+  * reason : text
+  * details : jsonb
+  * created_at : timestamptz
+}
+
+entity "audit_logs" as AUDIT_LOGS {
+  * id : UUID <<PK>>
+  * player_id : UUID <<FK>>
+  * empire_id : UUID <<FK>>
+  --
+  * action : varchar(64)
+  * entity_type : varchar(32)
+  * entity_id : UUID
+  * old_values : jsonb
+  * new_values : jsonb
+  * ip_address : inet
+  * created_at : timestamptz
+}
+
+' ============================================================
+' COMBAT
+' ============================================================
+entity "combat_reports" as COMBAT_REPORTS {
+  * id : UUID <<PK>>
+  * attacker_fleet_id : UUID <<FK>>
+  * defender_fleet_id : UUID <<FK>>
+  * attacker_empire_id : UUID <<FK>>
+  * defender_empire_id : UUID <<FK>>
+  --
+  * result : combat_result
+  * rounds_fought : int
+  * loot_credits : bigint
+  * loot_minerals : bigint
+  * loot_gas : bigint
+  * experience_gained : int
+  * attacker_losses : jsonb
+  * defender_losses : jsonb
+  * created_at : timestamptz
+}
+
+' ============================================================
+' RELATIONSHIPS
+' ============================================================
+PLAYERS ||--o{ EMPIRES : ""
+PLAYERS ||--o{ PSETTINGS : ""
+PLAYERS ||--o{ MESSAGES : "sender"
+PLAYERS ||--o{ MESSAGES : "recipient"
+PLAYERS ||--o{ NOTIFICATIONS : ""
+PLAYERS ||--o{ ADMIN_LOGS : "target"
+PLAYERS ||--o{ AUDIT_LOGS : ""
+
+EMPIRES ||--o{ COLONIES : ""
+EMPIRES ||--o{ FLEETS : ""
+EMPIRES ||--o{ BLUEPRINTS : ""
+EMPIRES ||--o{ MARKET_ORDERS : ""
+EMPIRES ||--o{ TRANSACTIONS : "seller"
+EMPIRES ||--o{ TRANSACTIONS : "buyer"
+EMPIRES ||--o{ ALLIANCE_MEMBERS : ""
+EMPIRES }o--|| ALLIANCES : "belongs to"
+EMPIRES ||--o{ CREW : ""
+
+COLONIES ||--o{ BUILDINGS : ""
+COLONIES ||--o{ CONQ : ""
+COLONIES ||--|| PLANETS : "located on"
+
+FLEETS ||--o{ SHIPS : ""
+SHIPS ||--o{ WEAPONS : ""
+SHIPS ||--o{ CREW : ""
+SHIPS }o--|| BLUEPRINTS : "based on"
+
+PLAYER_TECHS }o--|| TECHNOLOGIES : ""
+PLAYERS ||--o{ PLAYER_TECHS : ""
+
+ALLIANCES ||--o{ ALLIANCE_MEMBERS : ""
+ALLIANCES ||--o{ ALLIANCE_DIPLOMACY : ""
+ALLIANCES ||--o{ ALLIANCE_DIPLOMACY : "target"
+
+UNIVERSES ||--o{ GALAXIES : ""
+GALAXIES ||--o{ SOLAR_SYSTEMS : ""
+SOLAR_SYSTEMS ||--o{ PLANETS : ""
+PLANETS ||--o{ MOONS : ""
+SOLAR_SYSTEMS ||--o{ SOLAR_SYSTEMS : "wormhole"
+
+COMBAT_REPORTS }o--|| FLEETS : "attacker"
+COMBAT_REPORTS }o--|| FLEETS : "defender"
+
+MARKET_ORDERS ||--o{ TRANSACTIONS : ""
+
+@enduml

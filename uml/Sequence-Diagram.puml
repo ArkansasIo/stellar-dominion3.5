@@ -1,0 +1,328 @@
+@startuml
+' Sequence-Diagram.puml — Universe Civilization: Empires at War
+skinparam backgroundColor #0a0a1a
+skinparam sequence {
+  ArrowColor #c0c0ff
+  LifeLineBorderColor #4a9eff
+  LifeLineBackgroundColor #1a1a3a
+  ParticipantBorderColor #4a9eff
+  ParticipantBackgroundColor #1a1a3a
+  ActorBorderColor #ff9e4a
+  ActorBackgroundColor #2a1a0a
+}
+skinparam actor {
+  FontColor #ffe0b0
+}
+
+' ============================================================
+' SCENARIO 1: FLEET COMBAT RESOLUTION
+' ============================================================
+actor "Player A" as Attacker
+actor "Player B" as Defender
+participant "Game Engine" as Engine
+participant "Combat System" as CombatSys
+participant "Fleet Manager" as FleetMgr
+participant "Ship Manager" as ShipMgr
+participant "Damage Calculator" as DmgCalc
+participant "Event Dispatcher" as Events
+
+group Fleet Combat Resolution
+  Attacker -> Engine: attackFleet(attackerFleetId, targetFleetId)
+  activate Engine
+
+  Engine -> FleetMgr: validateFleet(fleetId, ownerId)
+  activate FleetMgr
+  FleetMgr --> Engine: FleetOK
+  deactivate FleetMgr
+
+  Engine -> FleetMgr: validateFleet(targetFleetId)
+  activate FleetMgr
+  FleetMgr --> Engine: FleetInRange
+  deactivate FleetMgr
+
+  Engine -> CombatSys: initiateCombat(attackerFleet, defenderFleet, location)
+  activate CombatSys
+
+  CombatSys -> FleetMgr: setStatus(attackerFleetId, IN_COMBAT)
+  CombatSys -> FleetMgr: setStatus(defenderFleetId, IN_COMBAT)
+
+  loop for each round (max 10)
+    CombatSys -> DmgCalc: calculateInitiative(attackerShips, defenderShips)
+    activate DmgCalc
+    DmgCalc --> CombatSys: shipOrderBySpeed
+    deactivate DmgCalc
+
+    CombatSys -> DmgCalc: calculatePhaseDamage(LONG_RANGE)
+    activate DmgCalc
+    DmgCalc -> ShipMgr: getWeaponRange(shipId, LONG_RANGE)
+    ShipMgr --> DmgCalc: longRangeWeapons
+    DmgCalc --> CombatSys: phaseDamageResults
+    deactivate DmgCalc
+
+    CombatSys -> FleetMgr: applyDamage(damageResults)
+    activate FleetMgr
+    FleetMgr -> ShipMgr: reduceHull(shipId, damage)
+    ShipMgr --> FleetMgr: updatedShipStatus
+    FleetMgr --> CombatSys: damageApplied
+    deactivate FleetMgr
+
+    CombatSys -> DmgCalc: calculatePhaseDamage(MEDIUM_RANGE)
+    activate DmgCalc
+    DmgCalc --> CombatSys: phaseDamageResults
+    deactivate DmgCalc
+
+    CombatSys -> FleetMgr: applyDamage(damageResults)
+    activate FleetMgr
+    FleetMgr --> CombatSys: damageApplied
+    deactivate FleetMgr
+
+    CombatSys -> DmgCalc: calculatePhaseDamage(SHORT_RANGE)
+    activate DmgCalc
+    DmgCalc --> CombatSys: phaseDamageResults
+    deactivate DmgCalc
+
+    CombatSys -> FleetMgr: applyDamage(damageResults)
+    activate FleetMgr
+    FleetMgr --> CombatSys: damageApplied
+    deactivate FleetMgr
+
+    CombatSys -> DmgCalc: calculateBoardPhase()
+    activate DmgCalc
+    DmgCalc --> CombatSys: boardingResults
+    deactivate DmgCalc
+
+    CombatSys -> CombatSys: checkVictoryConditions()
+    alt fleet destroyed or retreated
+      CombatSys -> FleetMgr: setStatus(loserId, DESTROYED)
+      CombatSys -> FleetMgr: setStatus(winnerId, DOCKED)
+      break
+    else stalemate
+    end
+  end
+
+  CombatSys -> CombatSys: generateCombatReport()
+  CombatSys -> Events: dispatch(BATTLE_COMPLETE, report)
+  activate Events
+  Events -> Attacker: combatResultNotification(report)
+  Events -> Defender: combatResultNotification(report)
+  Events --> CombatSys: dispatched
+  deactivate Events
+
+  CombatSys --> Engine: CombatReport
+  deactivate CombatSys
+  Engine --> Attacker: combatComplete(report)
+  deactivate Engine
+end
+
+' ============================================================
+' SCENARIO 2: BUILDING UPGRADE
+' ============================================================
+participant "Building System" as BuildSys
+participant "Resource Manager" as ResMgr
+participant "Construction Queue" as ConQ
+participant "Timer Service" as Timer
+
+ref over Attacker, Timer : BUILDING UPGRADE FLOW
+
+Attacker -> Engine: upgradeBuilding(colonyId, buildingId)
+activate Engine
+Engine -> BuildSys: requestUpgrade(colonyId, buildingId)
+activate BuildSys
+
+BuildSys -> BuildSys: getUpgradeCost(building)
+BuildSys -> ResMgr: canAfford(playerId, upgradeCost)
+activate ResMgr
+ResMgr --> BuildSys: sufficient
+deactivate ResMgr
+
+BuildSys -> ResMgr: deductResources(playerId, upgradeCost)
+activate ResMgr
+ResMgr --> BuildSys: deducted
+deactivate ResMgr
+
+BuildSys -> ConQ: addToQueue(buildingId, upgradeTime)
+activate ConQ
+ConQ --> BuildSys: queued
+deactivate ConQ
+
+BuildSys -> Timer: scheduleUpgrade(buildingId, duration)
+activate Timer
+Timer --> BuildSys: timerScheduled
+deactivate Timer
+
+BuildSys --> Engine: upgradeStarted(estimatedCompletion)
+deactivate BuildSys
+Engine --> Attacker: upgradeQueued(completionTime)
+deactivate Engine
+
+note right of Timer: Time passes...
+
+Timer -> BuildSys: notifyUpgradeComplete(buildingId)
+activate BuildSys
+BuildSys -> BuildSys: applyUpgradeEffects(building)
+BuildSys -> ResMgr: increaseProduction(building)
+BuildSys --> Timer: acknowledged
+deactivate BuildSys
+
+BuildSys -> Engine: upgradeComplete(buildingId, newLevel)
+activate Engine
+Engine -> Attacker: pushNotification(BUILDING_UPGRADED)
+deactivate Engine
+
+' ============================================================
+' SCENARIO 3: RESEARCH PROGRESSION
+' ============================================================
+participant "Research System" as ResSys
+
+ref over Attacker, Timer : RESEARCH PROGRESSION FLOW
+
+Attacker -> Engine: startResearch(techId)
+activate Engine
+Engine -> ResSys: beginResearch(playerId, techId)
+activate ResSys
+
+ResSys -> ResSys: validatePrerequisites(techId)
+alt missing prereqs
+  ResSys --> Engine: error(MISSING_PREREQUISITES)
+  Engine --> Attacker: error("Research prerequisites not met")
+  deactivate ResSys
+  deactivate Engine
+  return
+end
+
+ResSys -> ResMgr: canAfford(playerId, researchCost)
+activate ResMgr
+ResMgr --> ResSys: sufficient
+deactivate ResMgr
+
+ResSys -> ResMgr: deductResources(playerId, researchCost)
+ResSys -> Timer: scheduleResearch(techId, researchTime)
+activate Timer
+Timer --> ResSys: timerActive
+deactivate Timer
+
+ResSys --> Engine: researchStarted(researchTime)
+deactivate ResSys
+Engine --> Attacker: researchingTechnology(techId, completionTime)
+deactivate Engine
+
+note right of Timer: Research in progress...
+
+Timer -> ResSys: notifyResearchComplete(techId)
+activate ResSys
+ResSys -> ResSys: unlockTechnology(techId)
+ResSys -> ResSys: applyTechBonuses(playerId)
+ResSys -> Events: dispatch(TECH_UNLOCKED, techId)
+ResSys --> Timer: complete
+deactivate ResSys
+
+' ============================================================
+' SCENARIO 4: MARKETPLACE PURCHASE
+' ============================================================
+participant "Market System" as MktSys
+participant "Transaction Log" as TxLog
+
+ref over Attacker, Timer : MARKETPLACE PURCHASE FLOW
+
+Attacker -> Engine: purchaseResource(orderId, quantity)
+activate Engine
+Engine -> MktSys: executePurchase(buyerId, orderId, qty)
+activate MktSys
+
+MktSys -> MktSys: validateOrder(orderId)
+alt order expired or cancelled
+  MktSys --> Engine: error(ORDER_INVALID)
+  Engine --> Attacker: error("Order no longer available")
+  deactivate MktSys
+  deactivate Engine
+  return
+end
+
+MktSys -> ResMgr: deductCredits(buyerId, totalPrice)
+activate ResMgr
+ResMgr --> MktSys: creditsDeducted
+deactivate ResMgr
+
+MktSys -> ResMgr: addResource(buyerId, resourceType, quantity)
+MktSys -> ResMgr: addCredits(sellerId, totalPrice - tax)
+
+MktSys -> TxLog: recordTransaction(orderId, buyerId, sellerId, qty, price, tax)
+activate TxLog
+TxLog --> MktSys: transactionRecorded
+deactivate TxLog
+
+MktSys -> MktSys: updateOrderRemaining(orderId, qty)
+alt order fully filled
+  MktSys -> MktSys: closeOrder(orderId)
+  MktSys -> Events: dispatch(ORDER_FILLED, orderId)
+end
+
+MktSys --> Engine: purchaseComplete(transactionId)
+deactivate MktSys
+Engine --> Attacker: resourcesDelivered(transactionId)
+deactivate Engine
+
+' ============================================================
+' SCENARIO 5: PLAYER LOGIN
+' ============================================================
+participant "Auth Service" as Auth
+participant "Session Manager" as Session
+participant "Player Data Loader" as DataLoader
+participant "WebSocket Manager" as WSMgr
+
+ref over GUEST, WSMgr : PLAYER LOGIN FLOW
+
+GUEST -> Engine: login(username, password)
+activate Engine
+Engine -> Auth: authenticate(username, passwordHash)
+activate Auth
+
+Auth -> Auth: hashPassword(password)
+Auth -> Auth: queryPlayer(username)
+alt invalid credentials
+  Auth --> Engine: error(INVALID_CREDENTIALS)
+  Engine --> GUEST: error("Invalid username or password")
+  deactivate Auth
+  deactivate Engine
+  return
+end
+
+alt account banned or suspended
+  Auth --> Engine: error(ACCOUNT_LOCKED)
+  Engine --> GUEST: error("Account is banned/suspended")
+  deactivate Auth
+  deactivate Engine
+  return
+end
+
+Auth -> Auth: generateAuthToken(playerId)
+Auth -> Session: createSession(playerId, token, ipAddress)
+activate Session
+Session --> Auth: sessionToken
+deactivate Session
+
+Auth --> Engine: authenticated(playerId, token)
+deactivate Auth
+
+Engine -> DataLoader: loadGameState(playerId)
+activate DataLoader
+DataLoader -> DataLoader: loadPlayerSettings()
+DataLoader -> DataLoader: loadEmpires()
+DataLoader -> DataLoader: loadActiveFleets()
+DataLoader -> DataLoader: loadColonies()
+DataLoader -> DataLoader: loadResearchStatus()
+DataLoader -> DataLoader: loadUnreadMessages()
+DataLoader -> DataLoader: loadNotifications()
+DataLoader --> Engine: gameState
+deactivate DataLoader
+
+Engine -> WSMgr: openConnection(playerId, sessionToken)
+activate WSMgr
+WSMgr --> Engine: wsConnectionEstablished
+deactivate WSMgr
+
+Engine -> Engine: logLoginEvent(playerId, ipAddress)
+Engine --> GUEST: loginSuccess(sessionToken, gameState)
+deactivate Engine
+
+@enduml
