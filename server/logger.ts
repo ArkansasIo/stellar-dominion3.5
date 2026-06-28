@@ -1,6 +1,6 @@
 // Enhanced logging system for the server
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
-export type LogCategory = 'AUTH' | 'API' | 'DB' | 'SESSION' | 'SERVER' | 'CACHE' | 'PERFORMANCE';
+export type LogCategory = 'AUTH' | 'API' | 'DB' | 'SESSION' | 'SERVER' | 'CACHE' | 'PERFORMANCE' | 'SYSTEM';
 
 interface LogEntry {
   timestamp: string;

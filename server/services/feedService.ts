@@ -60,6 +60,10 @@ export class FeedService {
     writeFileSync(this.feedFile, JSON.stringify(data, null, 2), 'utf-8');
   }
 
+  async loadEntries(): Promise<void> {
+    return this.load();
+  }
+
   private async load(): Promise<void> {
     this.entries = [];
     if (!existsSync(this.feedFile)) return;

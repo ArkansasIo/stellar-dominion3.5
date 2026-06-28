@@ -19,6 +19,7 @@ export enum ModHooks {
   RESEARCH_VALIDATE = 'research_validate',
   FLEET_MISSIONS = 'fleet_missions',
   FLEET_HANDLER = 'fleet_handler',
+  EXPLORATION = 'exploration',
   PRODUCTION_POST = 'production_post',
   PLANET_IMAGE = 'planet_image',
   OBJECT_IMAGE = 'object_image',
