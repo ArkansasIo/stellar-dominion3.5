@@ -562,7 +562,7 @@ export default function GroundCombat() {
                         <div className="rounded border border-slate-200 bg-slate-50 p-2 text-center">
                           <span className="text-slate-500">Duration</span>
                           <div className="font-bold text-slate-900">
-                            {campaign.startTime ? `${Math.floor((Date.now() - new Date(campaign.startTime).getTime()) / 3600000)}h` : "-"}
+                            {campaign.startedAt ? `${Math.floor((Date.now() - new Date(campaign.startedAt).getTime()) / 3600000)}h` : "-"}
                           </div>
                         </div>
                       </div>

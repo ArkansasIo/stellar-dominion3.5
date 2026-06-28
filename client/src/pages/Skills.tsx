@@ -426,7 +426,7 @@ export default function Skills() {
                                       <div className="font-medium text-slate-800 mb-1">Skill Details</div>
                                       <div>Training Time: {formatTime(skill.trainingTime)}</div>
                                       <div>Next Level: {skill.currentLevel + 1}/{skill.maxLevel}</div>
-                                      <div>Category Bonus: +{skill.bonusValue || 0}% per level</div>
+                                      <div>Category Bonus: +{(skill as any).bonusValue || 0}% per level</div>
                                     </div>
                                   )}
                                 </div>
@@ -559,11 +559,11 @@ function SkillTreeView({
             <Button variant={filter === "trained" ? "default" : "outline"} size="sm" onClick={() => setFilter("trained")}>Trained</Button>
             <Button variant={filter === "available" ? "default" : "outline"} size="sm" onClick={() => setFilter("available")}>Available</Button>
             <Button variant={filter === "training" ? "default" : "outline"} size="sm" onClick={() => setFilter("training")}>Training</Button>
-            {categories.map((cat) => {
-              const Icon = CATEGORY_ICONS[cat] || BookOpen;
+            {categories.map((cat: string) => {
+              const Icon = CATEGORY_ICONS[cat as keyof typeof CATEGORY_ICONS] || BookOpen;
               return (
                 <Button key={cat} variant={filter === cat ? "default" : "outline"} size="sm" onClick={() => setFilter(cat)} className="text-xs">
-                  <Icon className="w-3 h-3 mr-1" /> {SKILL_CATEGORIES[cat] || cat}
+                  <Icon className="w-3 h-3 mr-1" /> {SKILL_CATEGORIES[cat as keyof typeof SKILL_CATEGORIES] || cat}
                 </Button>
               );
             })}

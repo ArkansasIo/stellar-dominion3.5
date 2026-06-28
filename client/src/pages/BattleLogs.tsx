@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { Sword, Eye, AlertTriangle, Zap, TrendingUp, TrendingDown, Search, ChevronDown, ChevronUp, Skull, Shield, Crosshair, Box, Gem, Database, Star, Clock, Filter, Calendar, Target, Track, Ship, Trophy } from "lucide-react";
+import { Sword, Eye, AlertTriangle, Zap, TrendingUp, TrendingDown, Search, ChevronDown, ChevronUp, Skull, Shield, Crosshair, Box, Gem, Database, Star, Clock, Filter, Calendar, Target, Ship, Truck, Trophy } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
 import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
