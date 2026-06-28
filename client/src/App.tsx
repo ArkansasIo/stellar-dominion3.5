@@ -23,6 +23,8 @@ const Galaxy = lazy(() => import("@/pages/Galaxy"));
 const Universe = lazy(() => import("@/pages/Universe"));
 const UniverseGenerator = lazy(() => import("@/pages/UniverseGenerator"));
 const Commander = lazy(() => import("@/pages/Commander"));
+const OGameOfficers = lazy(() => import("@/pages/OGameOfficers"));
+const LifeformsPage = lazy(() => import("@/pages/Lifeforms"));
 const Government = lazy(() => import("@/pages/Government"));
 const Settings = lazy(() => import("@/pages/Settings"));
 const Messages = lazy(() => import("@/pages/Messages"));
@@ -250,6 +252,8 @@ function RouterContent() {
       <Route path="/universe" component={Universe} />
       <Route path="/universe-generator" component={UniverseGenerator} />
       <Route path="/commander" component={Commander} />
+      <Route path="/officers" component={OGameOfficers} />
+      <Route path="/lifeforms" component={LifeformsPage} />
       <Route path="/government" component={Government} />
       <Route path="/alliance" component={Alliance} />
       <Route path="/market" component={Market} />

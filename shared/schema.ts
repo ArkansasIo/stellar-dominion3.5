@@ -151,6 +151,7 @@ export const playerStates = pgTable("player_states", {
   gravitonTech: jsonb("graviton_tech").notNull().default({ level: 0 }),
   gravitonProjects: jsonb("graviton_projects").notNull().default([]),
   allianceDepot: jsonb("alliance_depot").notNull().default({ level: 0 }),
+  lifeform: varchar("lifeform").notNull().default("humans"),
   
   // Occupation system
   occupations: jsonb("occupations").notNull().default([]),
@@ -333,6 +334,26 @@ export const allianceMembers = pgTable("alliance_members", {
 export const insertAllianceMemberSchema = createInsertSchema(allianceMembers).omit({ id: true, joinedAt: true });
 export type InsertAllianceMember = z.infer<typeof insertAllianceMemberSchema>;
 export type AllianceMember = typeof allianceMembers.$inferSelect;
+
+// Alliance bank transactions
+export const allianceBankTransactions = pgTable("alliance_bank_transactions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  allianceId: varchar("alliance_id").notNull().references(() => alliances.id, { onDelete: "cascade" }),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+
+  type: varchar("type").notNull(), // "deposit" | "withdraw" | "tax" | "interest" | "fee"
+  resourceType: varchar("resource_type").notNull(), // "metal" | "crystal" | "deuterium" | "antimatter" | "energy" | "credits"
+  amount: integer("amount").notNull().default(0),
+  balanceBefore: integer("balance_before").notNull().default(0),
+  balanceAfter: integer("balance_after").notNull().default(0),
+
+  description: text("description"),
+  metadata: jsonb("metadata"),
+
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type AllianceBankTransaction = typeof allianceBankTransactions.$inferSelect;
 
 // Market orders
 export const marketOrders = pgTable("market_orders", {

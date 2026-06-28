@@ -547,9 +547,25 @@ async function resourceTickHandler(_job: any, params: any): Promise<CronJobResul
         const deuteriumSynth = buildings.deuteriumSynthesizer || 0;
         const solarPlant = buildings.solarPlant || 0;
 
-        const metalProd = Math.floor(PROD.metalMultiplier * metalMine * (1 + metalMine / 10) * elapsedHours);
-        const crystalProd = Math.floor(PROD.crystalMultiplier * crystalMine * (1 + crystalMine / 10) * elapsedHours);
-        const deuteriumProd = Math.floor(PROD.deuteriumMultiplier * deuteriumSynth * (1 + deuteriumSynth / 12) * elapsedHours);
+        let mineProdBonus = 1;
+        try {
+          const officerRow = await pool.query(
+            `SELECT active_officers FROM player_states WHERE id = $1`,
+            [row.id]
+          );
+          if (officerRow.rows.length > 0) {
+            const activeOfficers = officerRow.rows[0].active_officers || {};
+            const now = Date.now();
+            const geologist = (activeOfficers as any).geologistOfficer;
+            if (geologist && geologist.expiresAt && geologist.expiresAt > now) {
+              mineProdBonus = 1.1;
+            }
+          }
+        } catch { }
+
+        const metalProd = Math.floor(PROD.metalMultiplier * metalMine * (1 + metalMine / 10) * elapsedHours * mineProdBonus);
+        const crystalProd = Math.floor(PROD.crystalMultiplier * crystalMine * (1 + crystalMine / 10) * elapsedHours * mineProdBonus);
+        const deuteriumProd = Math.floor(PROD.deuteriumMultiplier * deuteriumSynth * (1 + deuteriumSynth / 12) * elapsedHours * mineProdBonus);
         const energyProd = Math.floor(PROD.energyMultiplier * solarPlant * (1 + solarPlant / 10) * elapsedHours);
         const energyConsumed = Math.floor((10 * metalMine + 10 * crystalMine + 20 * deuteriumSynth) * elapsedHours);
         const netEnergy = Math.max(0, energyProd - energyConsumed);
@@ -760,10 +776,25 @@ async function researchTickHandler(_job: any, params: any): Promise<CronJobResul
       [params.maxPlayersPerTick || 75]
     );
 
-    for (const row of result.rows) {
-      try {
-        const research = row.active_research || {};
-        const progress = (research.currentProgress || 0) + (research.progressPerTick || 1);
+      for (const row of result.rows) {
+        try {
+          const research = row.active_research || {};
+          let researchSpeedBonus = 1;
+          try {
+            const officerRow = await pool.query(
+              `SELECT active_officers FROM player_states WHERE id = $1`,
+              [row.id]
+            );
+            if (officerRow.rows.length > 0) {
+              const activeOfficers = officerRow.rows[0].active_officers || {};
+              const now = Date.now();
+              const technocrat = (activeOfficers as any).technocratOfficer;
+              if (technocrat && technocrat.expiresAt && technocrat.expiresAt > now) {
+                researchSpeedBonus = 1.25;
+              }
+            }
+          } catch { }
+          const progress = (research.currentProgress || 0) + (research.progressPerTick || 1) * researchSpeedBonus;
         
         if (progress >= (research.totalProgress || 100)) {
           await pool.query(
