@@ -824,6 +824,14 @@ export const ANOMALY_TYPES: readonly AnomalyType[] = [
     description: 'A gravitational singularity warping spacetime around it',
   },
   {
+    id: 'comet',
+    name: 'Comet',
+    difficulty: 'easy',
+    rewards: { metal: 2000, crystal: 4000, deuterium: 1000, credits: 5000 },
+    dangerLevel: 2,
+    description: 'A comet rich in frozen volatiles and rare minerals',
+  },
+  {
     id: 'signal-source',
     name: 'Signal Source',
     difficulty: 'moderate',

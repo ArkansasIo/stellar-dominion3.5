@@ -409,6 +409,118 @@ export const PLANET_TYPES: PlanetType[] = [
   },
 ];
 
+// ========== SPECIAL/GDD PLANET TYPES (4 new) ==========
+
+const GDD_PLANET_TYPES: PlanetType[] = [
+  {
+    id: 'lava-world',
+    name: 'Lava World',
+    family: 'Terrestrial',
+    type: 'Terrestrial',
+    subType: 'Volcanic Extreme',
+    class: 'Hostile',
+    subClass: 'Magma',
+    description: 'Molten surface with rivers of lava and intense geothermal activity',
+    characteristics: ['Molten surface', 'Lava rivers', 'Volcanic eruptions', 'Extreme heat'],
+    geography: 'Continents of solidifying rock with lava oceans',
+    climate: 'Extreme heat from constant eruptions',
+    lifeforms: 'Silicon-based extremophiles',
+    stats: {
+      diameter: 11000, mass: 0.88, gravity: 0.92, axialTilt: 10, dayLength: 22, yearLength: 340,
+      atmospherePressure: 2.0, atmosphereComposition: { sulfur: 45, carbon: 30, other: 25 },
+      avgTemp: 500, minTemp: 100, maxTemp: 1200,
+      waterCoverage: 0, habitabilityIndex: 5, biodiversityPotential: 5,
+      metalRichness: 100, crystalRichness: 70, deuteriumRichness: 25, biologicalResources: 5,
+      radioactivity: 80, seismicActivity: 100, magneticField: 50, stormIntensity: 30,
+    },
+    basePossibleColonies: 1, baseProductionMultiplier: 0.6, rarity: 'rare',
+    discoveryValue: 3500,
+    dangers: ['Lava flows', 'Extreme heat', 'Toxic fumes', 'Ground collapse'],
+    opportunities: ['Rare metal extraction', 'Geothermal energy', 'Volcanic crystals'],
+  },
+
+  {
+    id: 'forest-world',
+    name: 'Forest World',
+    family: 'Terrestrial',
+    type: 'Terrestrial',
+    subType: 'Woodland',
+    class: 'Habitable',
+    subClass: 'Forest',
+    description: 'Lush forest-covered world teeming with diverse ecosystems',
+    characteristics: ['Ancient forests', 'Rich biodiversity', 'Clean atmosphere', 'Abundant water'],
+    geography: 'Vast forests covering continents with river networks',
+    climate: 'Temperate year-round',
+    lifeforms: 'Abundant diverse flora and fauna',
+    stats: {
+      diameter: 12500, mass: 0.95, gravity: 0.98, axialTilt: 23, dayLength: 24, yearLength: 365,
+      atmospherePressure: 1.0, atmosphereComposition: { nitrogen: 75, oxygen: 23, other: 2 },
+      avgTemp: 18, minTemp: 5, maxTemp: 30,
+      waterCoverage: 55, habitabilityIndex: 85, biodiversityPotential: 100,
+      metalRichness: 40, crystalRichness: 35, deuteriumRichness: 30, biologicalResources: 95,
+      radioactivity: 5, seismicActivity: 15, magneticField: 80, stormIntensity: 35,
+    },
+    basePossibleColonies: 5, baseProductionMultiplier: 1.2, rarity: 'uncommon',
+    discoveryValue: 3500,
+    dangers: ['Wildlife', 'Forest fires', 'Tropical diseases'],
+    opportunities: ['Biological research', 'Timber industry', 'Eco-tourism', 'Agriculture'],
+  },
+
+  {
+    id: 'artificial-world',
+    name: 'Artificial World',
+    family: 'Special',
+    type: 'Engineered',
+    subType: 'Constructed',
+    class: 'Ideal',
+    subClass: 'Megastructure',
+    description: 'Fully engineered planet created by ancient or advanced civilizations',
+    characteristics: ['Engineered surface', 'Controlled climate', 'Integrated systems', 'Advanced infrastructure'],
+    geography: 'Geometric landscapes with integrated structures',
+    climate: 'Fully controlled environment',
+    lifeforms: 'Engineered or transplanted',
+    stats: {
+      diameter: 14000, mass: 1.0, gravity: 1.0, axialTilt: 0, dayLength: 24, yearLength: 365,
+      atmospherePressure: 1.0, atmosphereComposition: { nitrogen: 77, oxygen: 22, other: 1 },
+      avgTemp: 22, minTemp: 15, maxTemp: 30,
+      waterCoverage: 40, habitabilityIndex: 100, biodiversityPotential: 80,
+      metalRichness: 60, crystalRichness: 60, deuteriumRichness: 60, biologicalResources: 60,
+      radioactivity: 10, seismicActivity: 5, magneticField: 90, stormIntensity: 10,
+    },
+    basePossibleColonies: 10, baseProductionMultiplier: 3.0, rarity: 'legendary',
+    discoveryValue: 25000,
+    specialFeatures: ['Automated defenses', 'Built-in factories', 'Pre-existing infrastructure'],
+    opportunities: ['Ancient technology', 'Advanced manufacturing', 'Command center'],
+  },
+
+  {
+    id: 'dyson-habitat',
+    name: 'Dyson Habitat',
+    family: 'Special',
+    type: 'Megastructure',
+    subType: 'Orbital Habitat',
+    class: 'Ideal',
+    subClass: 'Stellar Habitat',
+    description: 'Massive orbital habitat complex harnessing stellar energy',
+    characteristics: ['Stellar energy collection', 'Rotating habitats', 'Zero-g industry', 'Garden rings'],
+    geography: 'Concentric rings and spheres around a star',
+    climate: 'Engineered to perfection',
+    lifeforms: 'Advanced civilization or terraformed ecosystem',
+    stats: {
+      diameter: 50000, mass: 500, gravity: 1.0, axialTilt: 0, dayLength: 24, yearLength: 365,
+      atmospherePressure: 1.0, atmosphereComposition: { nitrogen: 78, oxygen: 21, other: 1 },
+      avgTemp: 22, minTemp: 10, maxTemp: 35,
+      waterCoverage: 50, habitabilityIndex: 95, biodiversityPotential: 85,
+      metalRichness: 50, crystalRichness: 50, deuteriumRichness: 50, biologicalResources: 70,
+      radioactivity: 5, seismicActivity: 0, magneticField: 95, stormIntensity: 5,
+    },
+    basePossibleColonies: 20, baseProductionMultiplier: 4.0, rarity: 'legendary',
+    discoveryValue: 40000,
+    specialFeatures: ['Solar collectors', 'Zero-g factories', 'Garden rings', 'Space elevators'],
+    opportunities: ['Solar energy', 'Advanced industry', 'Research hub'],
+  },
+];
+
 // ========== GAS GIANTS (12 types) ==========
 
 const GAS_GIANTS: PlanetType[] = [
@@ -795,6 +907,7 @@ export const ALL_PLANET_TYPES = [
   ...PLANET_TYPES,
   ...GAS_GIANTS,
   ...SMALL_BODIES,
+  ...GDD_PLANET_TYPES,
   ...EXOTIC_PLANETS,
 ];
 
@@ -804,6 +917,7 @@ export const PLANET_STATISTICS = {
   terrestrial: PLANET_TYPES.length,
   gasGiants: GAS_GIANTS.length,
   smallBodies: SMALL_BODIES.length,
+  gddTypes: GDD_PLANET_TYPES.length,
   exotic: EXOTIC_PLANETS.length,
   
   byRarity: {

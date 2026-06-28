@@ -1033,3 +1033,50 @@ export {
   type CSSAccessibilityConfig,
 } from './cssConfig';
 
+// Alliance System Config Exports
+export {
+  ALLIANCE_SYSTEM_CONFIG,
+  type AllianceRank,
+  type AllianceFeature,
+  type AllianceMissionTemplate,
+  type AllianceWarConfig,
+  type AllianceTaxConfig,
+  type AllianceTerritoryConfig,
+  type AllianceEventConfig,
+} from './allianceSystemConfig';
+
+// Missions Config Exports
+export {
+  MISSION_TYPES,
+  MISSION_DIFFICULTIES,
+  getMissionReward,
+  getMissionsByCategory,
+  getMissionById,
+  type MissionType,
+  type MissionDifficulty,
+  type MissionCategory,
+  type MissionDefinition,
+  type MissionDifficultyConfig,
+} from './missionsConfig';
+
+// Planet Defenses Config Exports
+export {
+  PLANET_DEFENSES,
+  getDefenseById,
+  getDefensesByCategory,
+  getDefensesByTier,
+  getTotalDefensePower,
+  type DefenseCategory,
+  type DefenseSystem,
+} from './planetDefensesConfig';
+
+// Progression Ranks Config Exports
+export {
+  PROGRESSION_RANKS,
+  getRankTitle,
+  getNextRankTitle,
+  calculateRankProgress,
+  type RankCategory,
+  type RankDefinition,
+} from './progressionRanksConfig';
+

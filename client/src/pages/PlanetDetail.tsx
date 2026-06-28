@@ -9,17 +9,87 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 import { 
   Globe, Thermometer, Droplets, Zap, Box, Gem, Database, 
-  Building2, Users, Shield, ArrowLeft, Flag, Rocket, Factory
+  Building2, Users, Shield, ArrowLeft, Flag, Rocket, Factory,
+  AlertTriangle, ShieldAlert, Activity
 } from "lucide-react";
 import { Link } from "wouter";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
+import { ALL_PLANET_TYPES } from "@shared/config";
+import { assessPlanetHazards, HAZARD_TYPES, type HazardSeverity, type PlanetHazardAssessment } from "@shared/config/hazardSystemConfig";
 
 const TEMP_THEME_IMAGE = "/theme-temp.png";
 import { createHabitatConditionProfile } from "@/lib/environmentSystems";
 import { createPlanetDossier } from "@/lib/planetDossier";
+
+const PLANET_TYPE_ID_MAP: Record<string, string> = {
+  temperate: "earth-like",
+  desert: "desert-world",
+  barren: "rocky-barren",
+  ocean: "ocean-world",
+  ice: "ice-world",
+  ice_giant: "gas-giant-neptune",
+  "ice-rock": "mountain-world",
+  jungle: "jungle-world",
+  lava: "volcanic-world",
+  volcanic: "volcanic-world",
+  gas: "gas-giant-jupiter",
+  gas_giant: "gas-giant-jupiter",
+  swamp: "swamp-world",
+  mountain: "mountain-world",
+  storm: "storm-world",
+  cavern: "cavern-world",
+  poison: "poison-world",
+  toxic: "poison-world",
+  rocky: "rocky-barren",
+};
+
+const CLASS_LETTER_MAP: Record<string, string> = {
+  M: "earth-like",
+  D: "desert-world",
+  V: "volcanic-world",
+  R: "jungle-world",
+  G: "gas-giant-jupiter",
+  I: "ice-world",
+  A: "asteroid-large",
+  P: "earth-like",
+};
+
+function getHazardAssessmentForPlanet(planet: PlanetData): PlanetHazardAssessment | null {
+  const typeLower = planet.type?.toLowerCase() || "";
+  const planetTypeId = PLANET_TYPE_ID_MAP[typeLower] || CLASS_LETTER_MAP[planet.class] || "";
+  const planetType = ALL_PLANET_TYPES.find((pt) => pt.id === planetTypeId);
+
+  if (!planetType) return null;
+
+  return assessPlanetHazards(
+    planetType.id,
+    planet.name,
+    planetType.stats,
+    planetType.dangers || [],
+  );
+}
+
+const SEVERITY_COLORS: Record<HazardSeverity, string> = {
+  none: "bg-green-100 text-green-800 border-green-200",
+  low: "bg-yellow-100 text-yellow-800 border-yellow-200",
+  moderate: "bg-orange-100 text-orange-800 border-orange-200",
+  high: "bg-red-100 text-red-800 border-red-200",
+  extreme: "bg-purple-100 text-purple-800 border-purple-200",
+  lethal: "bg-slate-900 text-white border-slate-800",
+};
+
+const SEVERITY_ICONS: Record<HazardSeverity, typeof AlertTriangle> = {
+  none: Shield,
+  low: Shield,
+  moderate: ShieldAlert,
+  high: AlertTriangle,
+  extreme: AlertTriangle,
+  lethal: AlertTriangle,
+};
 
 type PlanetDetailTab = "overview" | "dossier" | "resources" | "buildings" | "defense" | "environment" | "events";
 
@@ -178,6 +248,11 @@ export default function PlanetDetail() {
       });
     },
   });
+
+  const hazardAssessment = useMemo(() => {
+    if (!planet) return null;
+    return getHazardAssessmentForPlanet(planet);
+  }, [planet]);
 
   const defenseQuery = useQuery<PlanetDefenseResponse>({
     queryKey: ["planet-defense", planetId],
@@ -357,6 +432,15 @@ export default function PlanetDetail() {
                 <Users className="w-6 h-6 mx-auto mb-2 text-purple-500" />
                 <div className="text-xs text-muted-foreground">Population</div>
                 <div className="text-xl font-bold">{(planet.population / 1000).toFixed(0)}K</div>
+              </CardContent>
+            </Card>
+          )}
+          {hazardAssessment && (
+            <Card className={cn("cursor-default transition-all hover:shadow-md", SEVERITY_COLORS[hazardAssessment.overallSeverity].split(" ")[0])}>
+              <CardContent className="p-4 text-center">
+                <AlertTriangle className="w-6 h-6 mx-auto mb-2 text-current" />
+                <div className="text-xs text-muted-foreground">Hazard Level</div>
+                <div className="text-xl font-bold capitalize">{hazardAssessment.overallSeverity}</div>
               </CardContent>
             </Card>
           )}
@@ -617,6 +701,84 @@ export default function PlanetDetail() {
           </TabsContent>
 
           <TabsContent value="environment" className="space-y-4">
+            {hazardAssessment && (
+              <Card className="border-slate-200 bg-white shadow-sm">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-sm font-bold uppercase tracking-widest text-slate-700 flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4 text-amber-500" /> Planetary Hazard Assessment
+                    </CardTitle>
+                    <Badge className={SEVERITY_COLORS[hazardAssessment.overallSeverity]}>
+                      {hazardAssessment.overallSeverity.toUpperCase()}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                      <div className="text-xs uppercase tracking-wider text-slate-500">Production Malus</div>
+                      <div className="text-lg font-bold text-red-600">-{Math.round(hazardAssessment.overallProductionMalus * 100)}%</div>
+                    </div>
+                    <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                      <div className="text-xs uppercase tracking-wider text-slate-500">Growth Penalty</div>
+                      <div className="text-lg font-bold text-amber-600">-{Math.round(hazardAssessment.overallGrowthPenalty * 100)}%</div>
+                    </div>
+                    <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                      <div className="text-xs uppercase tracking-wider text-slate-500">Happiness Penalty</div>
+                      <div className="text-lg font-bold text-purple-600">-{Math.round(hazardAssessment.overallHappinessPenalty * 100)}%</div>
+                    </div>
+                    <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                      <div className="text-xs uppercase tracking-wider text-slate-500">Colonizable</div>
+                      <div className={cn("text-lg font-bold", hazardAssessment.safeForColonization ? "text-green-600" : "text-red-600")}>
+                        {hazardAssessment.safeForColonization ? "Safe" : "Unsafe"}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="text-xs uppercase tracking-wider text-slate-500 mb-2">Active Hazards</div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      {hazardAssessment.hazards.filter((h) => h.severity !== "none").map((hazard) => {
+                        const SevIcon = SEVERITY_ICONS[hazard.severity];
+                        return (
+                          <div key={hazard.type} className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white p-3">
+                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100">
+                              <SevIcon className="h-4 w-4 text-slate-600" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between gap-2">
+                                <span className="text-sm font-medium text-slate-900">{hazard.name}</span>
+                                <Badge className={SEVERITY_COLORS[hazard.severity] + " text-[10px] px-1.5 py-0"}>
+                                  {hazard.severity}
+                                </Badge>
+                              </div>
+                              <div className="text-xs text-slate-500 truncate">{hazard.description}</div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                      {hazardAssessment.hazards.filter((h) => h.severity !== "none").length === 0 && (
+                        <div className="col-span-2 text-sm text-slate-500 py-2">No significant hazards detected</div>
+                      )}
+                    </div>
+                  </div>
+
+                  {hazardAssessment.mitigations.length > 0 && (
+                    <div>
+                      <div className="text-xs uppercase tracking-wider text-slate-500 mb-2">Recommended Mitigations</div>
+                      <div className="flex flex-wrap gap-2">
+                        {hazardAssessment.mitigations.map((mitigation, i) => (
+                          <Badge key={i} variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-[11px]">
+                            {mitigation}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
             <HabitatSystemsPanel
               profile={planetConditionProfile}
               title={`${planet.name} Environment and Disease Command`}

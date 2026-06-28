@@ -99,6 +99,11 @@ const OrbitalDefense = lazy(() => import("@/pages/OrbitalDefense"));
 const DimensionalHub = lazy(() => import("@/pages/DimensionalHub"));
 const Trials = lazy(() => import("@/pages/Trials"));
 const Index = lazy(() => import("@/pages/Index"));
+const Espionage = lazy(() => import("@/pages/Espionage"));
+const Missions = lazy(() => import("@/pages/Missions"));
+const CommerceHub = lazy(() => import("@/pages/CommerceHub"));
+const Population = lazy(() => import("@/pages/Population"));
+const Hazards = lazy(() => import("@/pages/Hazards"));
 
 function LoadingSplash() {
   return (
@@ -294,6 +299,11 @@ function RouterContent() {
       <Route path="/ogame-compendium" component={OgameCompendium} />
       <Route path="/leaderboard" component={Leaderboard} />
       <Route path="/assets-gallery" component={GameAssetsGallery} />
+      <Route path="/espionage" component={Espionage} />
+      <Route path="/missions" component={Missions} />
+      <Route path="/commerce" component={CommerceHub} />
+      <Route path="/population" component={Population} />
+      <Route path="/hazards" component={Hazards} />
       <Route path="/settings" component={Settings} />
       <Route path="/admin" component={Admin} />
       <Route path="/admin/database" component={DatabaseAdmin} />

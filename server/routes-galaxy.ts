@@ -4,7 +4,7 @@ import { storage } from "./storage";
 import { playerStates, users, alliances } from "../shared/schema";
 import { like, eq } from "drizzle-orm";
 
-type SystemObjectType = "planet" | "asteroid" | "nebula" | "blackhole" | "station" | "empty";
+type SystemObjectType = "planet" | "asteroid" | "nebula" | "blackhole" | "station" | "empty" | "comet";
 
 interface SystemPosition {
   position: number;
@@ -12,7 +12,7 @@ interface SystemPosition {
   name: string;
   owner?: string;
   alliance?: string;
-  debris?: { metal: number; crystal: number };
+  debris?: { metal: number; crystal: number; deuterium?: number };
   moon?: boolean;
   class?: string;
   activity?: number; // minutes since last activity (undefined = no activity data)
@@ -194,9 +194,16 @@ function generateSystem(
         name: "Singularity",
         debris: { metal: 50000, crystal: 50000 },
       });
-    } else if (rareRoll < 0.06) {
+    } else if (rareRoll < 0.04) {
+      positions.push({
+        position: rarePos,
+        type: "comet",
+        name: "Named Comet",
+        debris: { metal: 5000, crystal: 10000, deuterium: 2000 },
+      });
+    } else if (rareRoll < 0.08) {
       positions.push({ position: rarePos, type: "nebula", name: "Ion Cloud" });
-    } else if (rareRoll < 0.10) {
+    } else if (rareRoll < 0.12) {
       positions.push({
         position: rarePos,
         type: "station",
