@@ -1,4 +1,4 @@
-<p align="center">
+fix <p align="center">
   <img src="docs/assets/logo.png" alt="Universe Civilization: Empires at War" width="480"/>
 </p>
 
