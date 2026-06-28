@@ -28,17 +28,16 @@ interface TrialTier {
   icon: string;
   color: string;
   powerRequirement: number;
-  entryCost: { credits?: number; metal?: number; crystal?: number; deuterium?: number };
+  entryCost: number;
   waves: TrialWave[];
   rewards: { type: string; amount: number; chance: number }[];
   firstClearRewards: { type: string; amount: number }[];
-  timeBonus: { baseSeconds: number; bonusMultiplier: number };
+  timeBonus: { underMinutes: number; bonusMultiplier: number }[];
 }
 
 interface ActiveTrial {
   id: string;
   tier: number;
-  currentWave: number;
   startTime: string;
   completedWaves: number;
   totalWaves: number;
@@ -56,17 +55,17 @@ interface TrialResult {
 
 interface LeaderboardEntry {
   rank: number;
-  playerName: string;
-  time: number;
-  waves: number;
+  userId: string;
+  bestTime: number | null;
+  bestWave: number;
   points: number;
 }
 
 interface PlayerRecord {
-  tier: number;
-  bestWaves: number;
-  bestTime: number;
-  bestPoints: number;
+  trialTier: number;
+  bestWave: number;
+  bestTime: number | null;
+  totalPointsEarned: number;
 }
 
 export default function Trials() {
@@ -113,10 +112,19 @@ export default function Trials() {
       return res.json();
     },
     onSuccess: (data) => {
-      setActiveTrial(data.attempt || data);
+      const attempt = data.attempt;
+      setActiveTrial({
+        id: attempt.id,
+        tier: attempt.trialTier,
+        startTime: attempt.createdAt,
+        completedWaves: attempt.wavesCompleted || 0,
+        totalWaves: attempt.totalWaves || data.totalWaves,
+        totalPoints: attempt.pointsEarned || 0,
+        flawless: attempt.flawless || false,
+      });
       setTrialResult(null);
       setCurrentWaveResult(null);
-      toast({ title: "Trial started!", description: `Tier ${data.attempt?.tier || data.tier} trial begun.` });
+      toast({ title: "Trial started!", description: `Tier ${attempt.trialTier} trial begun.` });
     },
     onError: (err: Error) => toast({ title: "Failed to start trial", description: err.message, variant: "destructive" }),
   });
@@ -137,17 +145,17 @@ export default function Trials() {
       return res.json();
     },
     onSuccess: (data) => {
-      setCurrentWaveResult(data.result);
-      if (data.result.completed) {
-        setTrialResult(data.result.rewards ? data.result : {
-          wavesCompleted: activeTrial?.currentWave || 0,
-          totalPoints: data.result.totalPoints || 0,
-          rewards: data.result.rewards || [],
-          flawless: false,
+      setCurrentWaveResult(data);
+      if (data.completed) {
+        setTrialResult({
+          wavesCompleted: data.wavesCleared || 0,
+          totalPoints: (activeTrial?.totalPoints || 0) + 0,
+          rewards: data.rewards || [],
+          flawless: data.flawless || false,
           timeBonus: { earned: false, seconds: 0, bonus: 0 },
         });
       }
-      toast({ title: "Wave resolved", description: data.result.waveResult || "Wave completed." });
+      toast({ title: "Wave resolved", description: data.waveCompleted ? "Wave completed!" : "Wave failed." });
       queryClient.invalidateQueries({ queryKey: ["trials"] });
     },
     onError: (err: Error) => toast({ title: "Wave failed", description: err.message, variant: "destructive" }),
@@ -156,7 +164,12 @@ export default function Trials() {
   const completeTrialMutation = useMutation({
     mutationFn: async () => {
       if (!activeTrial) throw new Error("No active trial");
-      const res = await fetch(`/api/trials/${activeTrial.tier}/complete`, { method: "POST", credentials: "include" });
+      const res = await fetch(`/api/trials/${activeTrial.tier}/complete`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ attemptId: activeTrial.id }),
+      });
       if (!res.ok) { const body = await res.json().catch(() => ({})); throw new Error(body.error || "Failed to complete trial"); }
       return res.json();
     },
@@ -172,7 +185,7 @@ export default function Trials() {
 
   const tiers = configQuery.data?.tiers || [];
   const playerRecords = trialsQuery.data?.trials || [];
-  const playerRecordMap = new Map(playerRecords.map((r: PlayerRecord) => [r.tier, r]));
+  const playerRecordMap = new Map(playerRecords.map((r: PlayerRecord) => [r.trialTier, r]));
   const leaderboard = leaderboardQuery.data?.leaderboard || [];
   const selectedTierConfig = tiers.find((t: TrialTier) => t.tier === selectedTier);
 
@@ -256,10 +269,10 @@ export default function Trials() {
                             <div className="rounded-lg bg-blue-50 border border-blue-200 p-2 text-xs">
                               <div className="font-bold text-blue-800 mb-1">Your Best</div>
                               <div className="flex justify-between text-blue-700">
-                                <span>Waves: {record.bestWaves}/{tier.waves.length}</span>
-                                <span>Points: {record.bestPoints.toLocaleString()}</span>
+                                <span>Waves: {record.bestWave}/{tier.waves.length}</span>
+                                <span>Points: {record.totalPointsEarned.toLocaleString()}</span>
                               </div>
-                              {record.bestTime > 0 && <div className="text-blue-700">Time: {formatTime(record.bestTime)}</div>}
+                              {(record.bestTime ?? 0) > 0 && <div className="text-blue-700">Time: {formatTime(record.bestTime ?? 0)}</div>}
                             </div>
                           )}
                           <div className="flex gap-2">
@@ -329,35 +342,35 @@ export default function Trials() {
                       <Zap className="w-5 h-5 text-amber-600" /> Active Trial - Tier {activeTrial.tier}
                     </CardTitle>
                     <CardDescription>
-                      Wave {activeTrial.currentWave} / {activeTrial.totalWaves} | Points: {activeTrial.totalPoints}
+                      Wave {activeTrial.completedWaves + 1} / {activeTrial.totalWaves} | Points: {activeTrial.totalPoints}
                       {activeTrial.flawless && <Badge className="ml-2 bg-yellow-100 text-yellow-900">Flawless</Badge>}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {selectedTierConfig && activeTrial.currentWave <= selectedTierConfig.waves.length && (
+                    {selectedTierConfig && activeTrial.completedWaves + 1 <= selectedTierConfig.waves.length && (
                       <Card className="border-red-200 bg-red-50">
                         <CardContent className="p-4">
                           <div className="flex items-start justify-between">
                             <div>
                               <div className="font-orbitron font-bold text-slate-900">
-                                Wave {selectedTierConfig.waves[activeTrial.currentWave - 1]?.waveNumber}: {selectedTierConfig.waves[activeTrial.currentWave - 1]?.name}
+                                Wave {selectedTierConfig.waves[activeTrial.completedWaves]?.waveNumber}: {selectedTierConfig.waves[activeTrial.completedWaves]?.name}
                               </div>
                               <p className="text-sm text-slate-600 mt-1">
-                                {selectedTierConfig.waves[activeTrial.currentWave - 1]?.description}
+                                {selectedTierConfig.waves[activeTrial.completedWaves]?.description}
                               </p>
                             </div>
-                            <Badge variant="outline" className={getDifficultyColor(selectedTierConfig.waves[activeTrial.currentWave - 1]?.difficulty || "medium")}>
-                              {selectedTierConfig.waves[activeTrial.currentWave - 1]?.difficulty}
+                            <Badge variant="outline" className={getDifficultyColor(selectedTierConfig.waves[activeTrial.completedWaves]?.difficulty || "medium")}>
+                              {selectedTierConfig.waves[activeTrial.completedWaves]?.difficulty}
                             </Badge>
                           </div>
                           <div className="grid grid-cols-2 gap-3 mt-3">
                             <div className="rounded-lg border border-red-200 bg-white p-2 text-center">
                               <div className="text-xs text-slate-500">Enemies</div>
-                              <div className="text-lg font-bold text-slate-900">{selectedTierConfig.waves[activeTrial.currentWave - 1]?.enemyCount}</div>
+                              <div className="text-lg font-bold text-slate-900">{selectedTierConfig.waves[activeTrial.completedWaves]?.enemyCount}</div>
                             </div>
                             <div className="rounded-lg border border-red-200 bg-white p-2 text-center">
                               <div className="text-xs text-slate-500">Enemy Power</div>
-                              <div className="text-lg font-bold text-slate-900">{selectedTierConfig.waves[activeTrial.currentWave - 1]?.enemyPower.toLocaleString()}</div>
+                              <div className="text-lg font-bold text-slate-900">{selectedTierConfig.waves[activeTrial.completedWaves]?.enemyPower.toLocaleString()}</div>
                             </div>
                           </div>
                         </CardContent>
@@ -368,7 +381,7 @@ export default function Trials() {
                       <Card className="border-green-200 bg-green-50">
                         <CardContent className="p-4">
                           <div className="font-bold text-green-800 mb-2">Last Wave Result</div>
-                          <p className="text-sm text-green-700">{currentWaveResult.waveResult || "Wave resolved."}</p>
+                          <p className="text-sm text-green-700">{currentWaveResult.waveCompleted ? "Wave completed successfully!" : "Wave failed."}</p>
                           {currentWaveResult.rewards && currentWaveResult.rewards.length > 0 && (
                             <div className="mt-2 flex flex-wrap gap-2">
                               {currentWaveResult.rewards.map((r: any, i: number) => (
@@ -378,7 +391,7 @@ export default function Trials() {
                           )}
                           {currentWaveResult.nextWave && (
                             <div className="mt-3 text-sm text-slate-600">
-                              Next wave: {currentWaveResult.nextWave.name} ({currentWaveResult.nextWave.enemyCount} enemies)
+                              Next wave: {currentWaveResult.nextWave?.name || ""} ({currentWaveResult.nextWave?.enemyCount} enemies)
                             </div>
                           )}
                         </CardContent>
@@ -506,13 +519,13 @@ export default function Trials() {
                             {entry.rank === 1 ? <Crown className="w-4 h-4" /> : entry.rank}
                           </div>
                           <div>
-                            <div className="font-semibold text-slate-900">{entry.playerName}</div>
-                            <div className="text-xs text-slate-500">{entry.waves} waves</div>
+                              <div className="font-semibold text-slate-900">{entry.userId.slice(0, 8) + "..."}</div>
+                            <div className="text-xs text-slate-500">{entry.bestWave} waves</div>
                           </div>
                         </div>
                         <div className="text-right">
                           <div className="font-bold text-slate-900">{entry.points.toLocaleString()} pts</div>
-                          <div className="text-xs text-slate-500">{formatTime(entry.time)}</div>
+                          {entry.bestTime != null && <div className="text-xs text-slate-500">{formatTime(entry.bestTime)}</div>}
                         </div>
                       </div>
                     ))}

@@ -4,6 +4,7 @@ import {
   playerPowerLevels,
   itemLevels,
   empireProfiles,
+  trialAttempts,
 } from "../shared/schema";
 import { eq, and } from "drizzle-orm";
 import { db } from "./db";
@@ -102,10 +103,25 @@ export function registerTrialRoutes(app: Express) {
   app.post("/api/trials/:tier/complete", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const userId = getUserId(req);
-      const { attemptId } = req.body;
+      const tier = parseInt(req.params.tier);
+      let attemptId = req.body?.attemptId;
 
       if (!attemptId) {
-        return res.status(400).json({ message: "Missing attemptId" });
+        // Auto-find the latest incomplete attempt for this user/tier
+        const [latest] = await db
+          .select()
+          .from(trialAttempts)
+          .where(and(
+            eq(trialAttempts.userId, userId),
+            eq(trialAttempts.trialTier, tier),
+            eq(trialAttempts.completed, false)
+          ))
+          .orderBy(trialAttempts.createdAt)
+          .limit(1);
+        if (!latest) {
+          return res.status(400).json({ message: "No active trial attempt found" });
+        }
+        attemptId = latest.id;
       }
 
       const playerState = await storage.getPlayerState(userId);

@@ -31,12 +31,18 @@ interface AnomalyConfig {
 
 interface AnomalyStatus {
   id: string;
-  anomalyId: string;
+  name: string;
+  type: string;
+  rarity: string;
+  region: string;
+  dangerLevel: number;
+  recommendedPower: number;
   discovered: boolean;
-  exploredCount: number;
+  explored: boolean;
+  explorationCount: number;
   lastExploredAt: string | null;
   cooldownUntil: string | null;
-  anomaly: AnomalyConfig;
+  onCooldown: boolean;
 }
 
 interface AbyssalGateTier {
@@ -54,9 +60,12 @@ interface AbyssalGateTier {
 }
 
 interface AbyssalGateStatus {
-  tier: number;
-  completedCount: number;
-  totalTokens: number;
+  gateTier: number;
+  tokensEarned: number;
+  tokensSpent: number;
+  gatesCompleted: number;
+  chestsOpened: number;
+  availableTokens: number;
   canOpenChest: boolean;
 }
 
@@ -74,14 +83,37 @@ interface DimensionalContractTier {
 }
 
 interface ContractStatus {
-  tier: number;
-  completedRaids: number;
-  totalTokens: number;
+  contractTier: number;
+  tokensEarned: number;
+  tokensSpent: number;
+  raidsCompleted: number;
+  chestsOpened: number;
+  availableTokens: number;
   canOpenChest: boolean;
 }
 
 interface PowerLevelData {
-  powerLevel: number;
+  success: boolean;
+  powerLevel: {
+    totalPower: number;
+    powerTier: string;
+    commander?: number;
+    fleet?: number;
+    research?: number;
+    buildings?: number;
+    empireAttributes?: number;
+    items?: number;
+    raidCareer?: number;
+    breakdown?: {
+      commander: number;
+      fleet: number;
+      research: number;
+      buildings: number;
+      empireAttributes: number;
+      items: number;
+      raidCareer: number;
+    };
+  };
   tierColor: string;
 }
 
@@ -113,8 +145,9 @@ interface GateTokenBalance {
 interface GateTokenHistory {
   id: string;
   tokenType: string;
-  change: number;
-  reason: string;
+  quantity: number;
+  action: string;
+  source: string;
   createdAt: string;
 }
 
@@ -229,7 +262,7 @@ export default function DimensionalHub() {
     },
   });
 
-  const dailyBonusQuery = useQuery<{ dailyBonus: { region: string; bonus: string } }>({
+  const dailyBonusQuery = useQuery<{ success: boolean; dailyBonus: { date: string; bonusRegion: string; multiplier: number; regions: string[] } }>({
     queryKey: ["anomalies-daily-bonus"],
     queryFn: async () => {
       const res = await fetch("/api/anomalies/daily-bonus", { credentials: "include" });
@@ -351,8 +384,13 @@ export default function DimensionalHub() {
 
   const anomalies = anomalyConfigQuery.data?.anomalies || [];
   const anomalyStatuses = anomalyStatusQuery.data?.anomalies || [];
-  const anomalyStats = anomalyConfigQuery.data?.stats || { total: 0, discovered: 0, explored: 0 };
-  const anomalyStatusMap = new Map(anomalyStatuses.map((s: AnomalyStatus) => [s.anomalyId, s]));
+  const anomalySummary = anomalyStatusQuery.data?.summary || { discovered: 0, explored: 0 };
+  const anomalyStats = {
+    total: anomalyConfigQuery.data?.stats?.total || 0,
+    discovered: anomalySummary.discovered,
+    explored: anomalySummary.explored,
+  };
+  const anomalyStatusMap = new Map(anomalyStatuses.map((s: AnomalyStatus) => [s.id, s]));
 
   const filteredAnomalies = anomalies.filter((a: AnomalyConfig) => {
     if (anomalyRegionFilter && a.region !== anomalyRegionFilter) return false;
@@ -362,11 +400,11 @@ export default function DimensionalHub() {
 
   const gateTiers = gateConfigQuery.data?.tiers || [];
   const gateStatuses = gateStatusQuery.data?.tokens || [];
-  const gateStatusMap = new Map(gateStatuses.map((s: AbyssalGateStatus) => [s.tier, s]));
+  const gateStatusMap = new Map(gateStatuses.map((s: AbyssalGateStatus) => [s.gateTier, s]));
 
   const contractTiers = contractConfigQuery.data?.tiers || [];
   const contractStatuses = contractStatusQuery.data?.contracts || [];
-  const contractStatusMap = new Map(contractStatuses.map((s: ContractStatus) => [s.tier, s]));
+  const contractStatusMap = new Map(contractStatuses.map((s: ContractStatus) => [s.contractTier, s]));
 
   const tokenBalances = tokenBalancesQuery.data?.balances || [];
   const tokenHistory = tokenHistoryQuery.data?.history || [];
@@ -439,7 +477,7 @@ export default function DimensionalHub() {
                   </div>
                   {dailyBonusQuery.data?.dailyBonus && (
                     <Badge className="bg-amber-100 text-amber-900 border-amber-200">
-                      <Star className="w-3 h-3 mr-1" /> Daily Bonus: {dailyBonusQuery.data.dailyBonus.region}
+                      <Star className="w-3 h-3 mr-1" /> Daily Bonus: {dailyBonusQuery.data.dailyBonus.bonusRegion}
                     </Badge>
                   )}
                 </div>
@@ -493,7 +531,7 @@ export default function DimensionalHub() {
                   {filteredAnomalies.map((anomaly: AnomalyConfig) => {
                     const status = anomalyStatusMap.get(anomaly.id);
                     const discovered = status?.discovered || false;
-                    const explored = (status?.exploredCount || 0) > 0;
+                    const explored = (status?.explorationCount || 0) > 0;
                     const cooldown = isOnCooldown(anomaly.id);
                     return (
                       <Card key={anomaly.id} className="border-slate-200">
@@ -517,7 +555,7 @@ export default function DimensionalHub() {
                           </div>
                           {discovered && (
                             <div className="text-xs text-slate-500">
-                              Explored: {status?.exploredCount || 0} times
+                              Explored: {status?.explorationCount || 0} times
                               {cooldown && <span className="text-red-500 ml-2">(On cooldown)</span>}
                             </div>
                           )}
@@ -554,9 +592,9 @@ export default function DimensionalHub() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   {gateTiers.map((tier: AbyssalGateTier) => {
                     const status = gateStatusMap.get(tier.tier);
-                    const totalTokens = status?.totalTokens || 0;
+                    const availableTokens = status?.availableTokens || 0;
                     const canOpenChest = status?.canOpenChest || false;
-                    const progress = Math.min(totalTokens / tier.maxTokensForChest, 1);
+                    const progress = Math.min(availableTokens / tier.maxTokensForChest, 1);
                     return (
                       <Card key={tier.tier} className="border-slate-200">
                         <CardContent className="p-4 space-y-3">
@@ -577,7 +615,7 @@ export default function DimensionalHub() {
                           <div>
                             <div className="flex justify-between text-xs mb-1">
                               <span className="text-slate-500">Token Progress</span>
-                              <span className="font-bold">{totalTokens.toLocaleString()} / {tier.maxTokensForChest.toLocaleString()}</span>
+                              <span className="font-bold">{availableTokens.toLocaleString()} / {tier.maxTokensForChest.toLocaleString()}</span>
                             </div>
                             <div className="w-full bg-slate-200 rounded-full h-2">
                               <div className="bg-emerald-500 h-2 rounded-full transition-all" style={{ width: `${(progress * 100).toFixed(1)}%` }} />
@@ -613,10 +651,10 @@ export default function DimensionalHub() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {contractTiers.map((tier: DimensionalContractTier) => {
                     const status = contractStatusMap.get(tier.tier);
-                    const totalTokens = status?.totalTokens || 0;
-                    const completedRaids = status?.completedRaids || 0;
+                    const availableTokens = status?.availableTokens || 0;
+                    const raidsCompleted = status?.raidsCompleted || 0;
                     const canOpenChest = status?.canOpenChest || false;
-                    const progress = Math.min(totalTokens / tier.maxTokensForChest, 1);
+                    const progress = Math.min(availableTokens / tier.maxTokensForChest, 1);
                     return (
                       <Card key={tier.tier} className="border-slate-200">
                         <CardContent className="p-4 space-y-3">
@@ -630,13 +668,13 @@ export default function DimensionalHub() {
                           <p className="text-xs text-slate-600 line-clamp-2">{tier.description}</p>
                           <div className="grid grid-cols-2 gap-2 text-xs">
                             <div className="flex items-center gap-1"><Zap className="w-3 h-3 text-amber-500" /> Power: <span className="font-bold">{tier.raidPowerRequirement.toLocaleString()}</span></div>
-                            <div className="flex items-center gap-1"><Swords className="w-3 h-3 text-red-500" /> Raids: <span className="font-bold">{completedRaids}</span></div>
+                            <div className="flex items-center gap-1"><Swords className="w-3 h-3 text-red-500" /> Raids: <span className="font-bold">{raidsCompleted}</span></div>
                             <div className="flex items-center gap-1"><Coins className="w-3 h-3 text-cyan-500" /> Per Raid: <span className="font-bold">{tier.tokensPerRaid}</span></div>
                           </div>
                           <div>
                             <div className="flex justify-between text-xs mb-1">
                               <span className="text-slate-500">Token Progress</span>
-                              <span className="font-bold">{totalTokens.toLocaleString()} / {tier.maxTokensForChest.toLocaleString()}</span>
+                              <span className="font-bold">{availableTokens.toLocaleString()} / {tier.maxTokensForChest.toLocaleString()}</span>
                             </div>
                             <div className="w-full bg-slate-200 rounded-full h-2">
                               <div className="bg-indigo-500 h-2 rounded-full transition-all" style={{ width: `${(progress * 100).toFixed(1)}%` }} />
@@ -684,7 +722,7 @@ export default function DimensionalHub() {
                   <div className="text-center py-6">
                     <div className="text-sm uppercase tracking-wider text-slate-500 mb-2">Total Dimensional Power</div>
                     <div className="text-5xl font-orbitron font-bold" style={{ color: powerLevelQuery.data.tierColor || "#2563eb" }}>
-                      {powerLevelQuery.data.powerLevel.toLocaleString()}
+                      {powerLevelQuery.data.powerLevel.totalPower.toLocaleString()}
                     </div>
                   </div>
                 )}
@@ -703,7 +741,7 @@ export default function DimensionalHub() {
                       <CardContent className="p-3 text-center">
                         <Icon className="w-4 h-4 mx-auto mb-1 text-slate-500" />
                         <div className="text-xs text-slate-500">{label}</div>
-                        <div className="text-lg font-bold text-slate-900">{(powerLevelQuery.data as any)?.[key] || 0}</div>
+                        <div className="text-lg font-bold text-slate-900">{(powerLevelQuery.data?.powerLevel as any)?.[key] || 0}</div>
                       </CardContent>
                     </Card>
                   ))}
@@ -796,11 +834,11 @@ export default function DimensionalHub() {
                       <div key={entry.id} className="flex justify-between items-center rounded-lg border border-slate-200 bg-white p-3 text-sm">
                         <div>
                           <span className="font-semibold capitalize">{entry.tokenType}</span>
-                          <span className="text-slate-500 ml-2">{entry.reason}</span>
+                          <span className="text-slate-500 ml-2">{entry.source}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className={entry.change > 0 ? "text-green-600 font-bold" : "text-red-600 font-bold"}>
-                            {entry.change > 0 ? "+" : ""}{entry.change}
+                          <span className={entry.quantity > 0 ? "text-green-600 font-bold" : "text-red-600 font-bold"}>
+                            {entry.quantity > 0 ? "+" : ""}{entry.quantity}
                           </span>
                           <span className="text-xs text-slate-400">{new Date(entry.createdAt).toLocaleDateString()}</span>
                         </div>
