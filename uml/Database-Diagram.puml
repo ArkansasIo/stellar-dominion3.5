@@ -1,0 +1,610 @@
+@startuml
+' Database-Diagram.puml — Universe Civilization: Empires at War (Detailed Schema)
+skinparam backgroundColor #0a0a1a
+skinparam table {
+  BackgroundColor #1a1a3a
+  BorderColor #4a9eff
+  FontColor #e0e0ff
+  HeaderBackgroundColor #2a2a5a
+}
+skinparam arrow {
+  Color #4aff9e
+  FontColor #4aff9e
+}
+
+' ============================================================
+' SCHEMA: accounts
+' ============================================================
+package "accounts" {
+  table players {
+    column id: UUID [PK, default: gen_random_uuid()]
+    column username: varchar(32) [NOT NULL, UNIQUE, INDEX]
+    column email: varchar(255) [NOT NULL, UNIQUE, INDEX]
+    column password_hash: varchar(255) [NOT NULL]
+    column status: player_status [NOT NULL, default: 'INACTIVE']
+    column last_login: timestamptz
+    column ip_address: inet
+    column referral_code: varchar(20) [UNIQUE]
+    column totp_secret: varchar(64)
+    column email_verified: bool [default: false]
+    column created_at: timestamptz [NOT NULL, default: now(), INDEX]
+    column updated_at: timestamptz [NOT NULL, default: now()]
+    index idx_players_status ON (status)
+    index idx_players_created ON (created_at)
+  }
+
+  table player_settings {
+    column id: UUID [PK, default: gen_random_uuid()]
+    column player_id: UUID [NOT NULL, FK → players.id, UNIQUE]
+    column language: varchar(10) [default: 'en']
+    column timezone: varchar(50) [default: 'UTC']
+    column email_notifications: bool [default: true]
+    column push_notifications: bool [default: true]
+    column ui_scale: int [default: 100]
+    column key_bindings: jsonb [default: '{}']
+    column muted_players: UUID[] [default: '{}']
+    index idx_settings_player ON (player_id)
+  }
+
+  table player_bans {
+    column id: UUID [PK, default: gen_random_uuid()]
+    column player_id: UUID [NOT NULL, FK → players.id, INDEX]
+    column admin_id: UUID [NOT NULL, FK → players.id]
+    column ban_type: varchar(16) [NOT NULL]
+    column reason: text [NOT NULL]
+    column evidence: jsonb
+    column banned_at: timestamptz [NOT NULL, default: now()]
+    column expires_at: timestamptz
+    column lifted_at: timestamptz
+    column lifted_by: UUID [FK → players.id]
+    index idx_bans_player ON (player_id)
+    index idx_bans_active ON (player_id) WHERE (lifted_at IS NULL AND (expires_at IS NULL OR expires_at > now()))
+  }
+}
+
+' ============================================================
+' SCHEMA: empire
+' ============================================================
+package "empire" {
+  table empires {
+    column id: UUID [PK, default: gen_random_uuid()]
+    column player_id: UUID [NOT NULL, FK → players.id, INDEX]
+    column name: varchar(64) [NOT NULL, UNIQUE, INDEX]
+    column emblem_url: text
+    column government_type: gov_type [NOT NULL, default: 'REPUBLIC']
+    column motto: text
+    column credits: bigint [NOT NULL, default: 1000]
+    column minerals: bigint [NOT NULL, default: 500]
+    column gas: bigint [NOT NULL, default: 200]
+    column energy: bigint [NOT NULL, default: 300]
+    column food: bigint [NOT NULL, default: 400]
+    column alloy: bigint [NOT NULL, default: 100]
+    column antimatter: bigint [NOT NULL, default: 0]
+    column dark_matter: bigint [NOT NULL, default: 0]
+    column total_power: bigint [NOT NULL, default: 0, INDEX]
+    column colony_count: int [NOT NULL, default: 1]
+    column fleet_count: int [NOT NULL, default: 0]
+    column capital_colony_id: UUID [FK → colonies.id]
+    column created_at: timestamptz [NOT NULL, default: now()]
+    index idx_empires_power ON (total_power DESC)
+    index idx_empires_player ON (player_id)
+  }
+
+  table resource_transactions {
+    column id: UUID [PK, default: gen_random_uuid()]
+    column empire_id: UUID [NOT NULL, FK → empires.id, INDEX]
+    column resource_type: resource_type [NOT NULL]
+    column amount: numeric(20,4) [NOT NULL]
+    column reason: varchar(64) [NOT NULL]
+    column related_entity_id: UUID
+    column related_entity_type: varchar(32)
+    column created_at: timestamptz [NOT NULL, default: now(), INDEX]
+    index idx_resource_tx_empire ON (empire_id, created_at DESC)
+  }
+}
+
+' ============================================================
+' SCHEMA: colonies
+' ============================================================
+package "colonies" {
+  table colonies {
+    column id: UUID [PK, default: gen_random_uuid()]
+    column empire_id: UUID [NOT NULL, FK → empires.id, INDEX]
+    column planet_id: UUID [NOT NULL, FK → planets.id, UNIQUE]
+    column name: varchar(64) [NOT NULL]
+    column population_total: int [NOT NULL, default: 100]
+    column population_workers: int [default: 50]
+    column population_scientists: int [default: 20]
+    column population_soldiers: int [default: 20]
+    column population_unemployed: int [default: 10]
+    column happiness: real [NOT NULL, default: 0.7]
+    column development_level: int [NOT NULL, default: 1]
+    column defense_rating: real [NOT NULL, default: 0]
+    column created_at: timestamptz [NOT NULL, default: now()]
+    index idx_colonies_empire ON (empire_id)
+  }
+
+  table buildings {
+    column id: UUID [PK, default: gen_random_uuid()]
+    column colony_id: UUID [NOT NULL, FK → colonies.id, INDEX]
+    column building_type: building_type [NOT NULL]
+    column level: int [NOT NULL, default: 1]
+    column construction_progress: real [NOT NULL, default: 0]
+    column is_operational: bool [NOT NULL, default: true]
+    column damaged: bool [NOT NULL, default: false]
+    column created_at: timestamptz [NOT NULL, default: now()]
+    column upgraded_at: timestamptz
+    index idx_buildings_colony ON (colony_id)
+    constraint uq_building_plot UNIQUE (colony_id, building_type)
+  }
+
+  table construction_queue {
+    column id: UUID [PK, default: gen_random_uuid()]
+    column colony_id: UUID [NOT NULL, FK → colonies.id, INDEX]
+    column building_id: UUID [FK → buildings.id]
+    column action_type: varchar(16) [NOT NULL]
+    column time_remaining: interval [NOT NULL]
+    column total_time: interval [NOT NULL]
+    column priority: int [NOT NULL, default: 0]
+    column started_at: timestamptz [NOT NULL, default: now()]
+    index idx_conq_colony ON (colony_id, priority DESC)
+  }
+}
+
+' ============================================================
+' SCHEMA: fleet
+' ============================================================
+package "fleet" {
+  table fleets {
+    column id: UUID [PK, default: gen_random_uuid()]
+    column empire_id: UUID [NOT NULL, FK → empires.id, INDEX]
+    column name: varchar(64) [NOT NULL]
+    column status: fleet_status [NOT NULL, default: 'DOCKED', INDEX]
+    column mission: mission_type [default: 'PATROL']
+    column galaxy_id: UUID [FK → galaxies.id]
+    column solar_system_id: UUID [FK → solar_systems.id]
+    column planet_id: UUID [FK → planets.id]
+    column pos_x: bigint [NOT NULL]
+    column pos_y: bigint [NOT NULL]
+    column target_x: bigint
+    column target_y: bigint
+    column speed: real [NOT NULL]
+    column fuel: real [NOT NULL, default: 100]
+    column fuel_capacity: real [NOT NULL]
+    column total_power: bigint [NOT NULL, default: 0]
+    column created_at: timestamptz [NOT NULL, default: now()]
+    index idx_fleets_status ON (status)
+    index idx_fleets_location ON (galaxy_id, solar_system_id)
+    index idx_fleets_empire_power ON (empire_id, total_power DESC)
+  }
+
+  table ship_blueprints {
+    column id: UUID [PK, default: gen_random_uuid()]
+    column empire_id: UUID [NOT NULL, FK → empires.id, INDEX]
+    column name: varchar(64) [NOT NULL]
+    column ship_class: ship_class [NOT NULL]
+    column hull_max: real [NOT NULL]
+    column shield_max: real [NOT NULL]
+    column cargo_capacity: real [NOT NULL]
+    column crew_capacity: int [NOT NULL]
+    column fuel_capacity: real [NOT NULL]
+    column speed: real [NOT NULL]
+    column weapon_slots: jsonb [NOT NULL, default: '[]']
+    column cost_minerals: bigint [NOT NULL]
+    column cost_gas: bigint [NOT NULL]
+    column cost_alloy: bigint [NOT NULL]
+    column build_time: interval [NOT NULL]
+    column is_public: bool [default: false]
+    column created_at: timestamptz [NOT NULL, default: now()]
+    index idx_blueprints_empire ON (empire_id)
+    constraint uq_blueprint_name UNIQUE (empire_id, name)
+  }
+
+  table ships {
+    column id: UUID [PK, default: gen_random_uuid()]
+    column fleet_id: UUID [NOT NULL, FK → fleets.id, INDEX]
+    column blueprint_id: UUID [NOT NULL, FK → ship_blueprints.id]
+    column name: varchar(64) [NOT NULL]
+    column ship_class: ship_class [NOT NULL]
+    column hull_integrity: real [NOT NULL]
+    column hull_max: real [NOT NULL]
+    column shield_strength: real [NOT NULL]
+    column shield_max: real [NOT NULL]
+    column cargo_used: real [NOT NULL, default: 0]
+    column cargo_capacity: real [NOT NULL]
+    column crew_capacity: int [NOT NULL]
+    column fuel_capacity: real [NOT NULL]
+    column speed: real [NOT NULL]
+    column created_at: timestamptz [NOT NULL, default: now()]
+    index idx_ships_fleet ON (fleet_id)
+    index idx_ships_hull ON (hull_integrity)
+  }
+
+  table ship_weapons {
+    column id: UUID [PK, default: gen_random_uuid()]
+    column ship_id: UUID [NOT NULL, FK → ships.id, INDEX]
+    column weapon_type: weapon_type [NOT NULL]
+    column name: varchar(64) [NOT NULL]
+    column damage: real [NOT NULL]
+    column range: real [NOT NULL]
+    column fire_rate: real [NOT NULL]
+    column accuracy: real [NOT NULL]
+    column slot_index: int [NOT NULL]
+    column damaged: bool [NOT NULL, default: false]
+    index idx_weapons_ship ON (ship_id)
+  }
+
+  table crew {
+    column id: UUID [PK, default: gen_random_uuid()]
+    column ship_id: UUID [FK → ships.id, INDEX]
+    column empire_id: UUID [NOT NULL, FK → empires.id]
+    column name: varchar(64) [NOT NULL]
+    column role: crew_role [NOT NULL]
+    column experience: int [NOT NULL, default: 0]
+    column level: int [NOT NULL, default: 1]
+    column morale: real [NOT NULL, default: 1.0]
+    column portrait: text
+    column is_officer: bool [NOT NULL, default: false]
+    column officer_spec: officer_spec
+    column leadership: int [default: 0]
+    column skills: jsonb [default: '[]']
+    column created_at: timestamptz [NOT NULL, default: now()]
+    index idx_crew_ship ON (ship_id)
+    index idx_crew_empire ON (empire_id)
+  }
+}
+
+' ============================================================
+' SCHEMA: research
+' ============================================================
+package "research" {
+  table technologies {
+    column id: UUID [PK, default: gen_random_uuid()]
+    column name: varchar(64) [NOT NULL, UNIQUE]
+    column description: text [NOT NULL]
+    column category: tech_category [NOT NULL, INDEX]
+    column tier: tech_tier [NOT NULL, INDEX]
+    column cost_minerals: bigint [NOT NULL]
+    column cost_gas: bigint [NOT NULL]
+    column cost_energy: bigint [NOT NULL]
+    column cost_alloy: bigint [NOT NULL]
+    column research_time: interval [NOT NULL]
+    column effect_value: real [NOT NULL]
+    column prerequisites: UUID[] [default: '{}']
+    column unlocks_techs: UUID[] [default: '{}']
+    column unlocks_buildings: building_type[] [default: '{}']
+    column unlocks_ships: ship_class[] [default: '{}']
+  }
+
+  table player_technologies {
+    column player_id: UUID [NOT NULL, FK → players.id]
+    column technology_id: UUID [NOT NULL, FK → technologies.id]
+    column researched: bool [NOT NULL, default: false, INDEX]
+    column research_progress: real [NOT NULL, default: 0]
+    column research_total: real [NOT NULL]
+    column assigned_scientists: int [NOT NULL, default: 0]
+    column started_at: timestamptz
+    column completed_at: timestamptz
+    column queue_position: int [default: null]
+    constraint pk_player_tech PRIMARY KEY (player_id, technology_id)
+    index idx_player_tech_progress ON (player_id, researched, queue_position)
+  }
+}
+
+' ============================================================
+' SCHEMA: alliances
+' ============================================================
+package "alliances" {
+  table alliances {
+    column id: UUID [PK, default: gen_random_uuid()]
+    column name: varchar(64) [NOT NULL, UNIQUE]
+    column tag: varchar(6) [NOT NULL, UNIQUE, INDEX]
+    column description: text
+    column emblem_url: text
+    column member_count: int [NOT NULL, default: 0]
+    column bank_credits: bigint [NOT NULL, default: 0]
+    column bank_minerals: bigint [NOT NULL, default: 0]
+    column bank_gas: bigint [NOT NULL, default: 0]
+    column bank_alloy: bigint [NOT NULL, default: 0]
+    column alliance_power: bigint [NOT NULL, default: 0, INDEX]
+    column created_at: timestamptz [NOT NULL, default: now()]
+    index idx_alliances_power ON (alliance_power DESC)
+  }
+
+  table alliance_members {
+    column alliance_id: UUID [NOT NULL, FK → alliances.id]
+    column player_id: UUID [NOT NULL, FK → players.id]
+    column rank: alliance_rank [NOT NULL, default: 'MEMBER']
+    column joined_at: timestamptz [NOT NULL, default: now()]
+    column contributions: bigint [NOT NULL, default: 0]
+    column last_active: timestamptz [NOT NULL, default: now()]
+    constraint pk_alliance_member PRIMARY KEY (alliance_id, player_id)
+    index idx_alliance_member_player ON (player_id)
+  }
+
+  table alliance_diplomacy {
+    column id: UUID [PK, default: gen_random_uuid()]
+    column alliance_id: UUID [NOT NULL, FK → alliances.id, INDEX]
+    column target_alliance_id: UUID [NOT NULL, FK → alliances.id]
+    column relation: diplomatic_relation [NOT NULL]
+    column established_at: timestamptz [NOT NULL, default: now()]
+    column expires_at: timestamptz
+    column treaty_terms: text
+    constraint uq_alliance_diplomacy UNIQUE (alliance_id, target_alliance_id)
+  }
+
+  table alliance_invites {
+    column id: UUID [PK, default: gen_random_uuid()]
+    column alliance_id: UUID [NOT NULL, FK → alliances.id]
+    column player_id: UUID [NOT NULL, FK → players.id, INDEX]
+    column invited_by: UUID [NOT NULL, FK → players.id]
+    column status: varchar(16) [NOT NULL, default: 'PENDING']
+    column created_at: timestamptz [NOT NULL, default: now()]
+    column responded_at: timestamptz
+  }
+}
+
+' ============================================================
+' SCHEMA: universe
+' ============================================================
+package "universe" {
+  table universes {
+    column id: UUID [PK, default: gen_random_uuid()]
+    column name: varchar(64) [NOT NULL]
+    column width: int [NOT NULL]
+    column height: int [NOT NULL]
+    column max_players: int [NOT NULL]
+    column seed: varchar(64) [NOT NULL]
+    column age: interval [NOT NULL, default: '0']
+    column is_active: bool [NOT NULL, default: true, INDEX]
+    column created_at: timestamptz [NOT NULL, default: now()]
+  }
+
+  table galaxies {
+    column id: UUID [PK, default: gen_random_uuid()]
+    column universe_id: UUID [NOT NULL, FK → universes.id, INDEX]
+    column name: varchar(64) [NOT NULL]
+    column galaxy_type: galaxy_type [NOT NULL]
+    column center_x: bigint [NOT NULL]
+    column center_y: bigint [NOT NULL]
+    column radius: bigint [NOT NULL]
+    index idx_galaxies_universe ON (universe_id)
+  }
+
+  table solar_systems {
+    column id: UUID [PK, default: gen_random_uuid()]
+    column galaxy_id: UUID [NOT NULL, FK → galaxies.id, INDEX]
+    column controlling_empire_id: UUID [FK → empires.id]
+    column name: varchar(64) [NOT NULL]
+    column pos_x: bigint [NOT NULL]
+    column pos_y: bigint [NOT NULL]
+    column star_type: star_type [NOT NULL]
+    column is_explored: bool [NOT NULL, default: false, INDEX]
+    column resource_richness: int [NOT NULL, default: 5]
+    column wormhole_target_id: UUID [FK → solar_systems.id]
+    index idx_solar_pos ON (galaxy_id, pos_x, pos_y)
+    index idx_solar_explored ON (galaxy_id, is_explored)
+  }
+
+  table planets {
+    column id: UUID [PK, default: gen_random_uuid()]
+    column solar_system_id: UUID [NOT NULL, FK → solar_systems.id, INDEX]
+    column controlling_colony_id: UUID [FK → colonies.id]
+    column name: varchar(64) [NOT NULL]
+    column planet_type: planet_type [NOT NULL]
+    column status: planet_status [NOT NULL, default: 'UNEXPLORED', INDEX]
+    column size: real [NOT NULL]
+    column gravity: real [NOT NULL]
+    column temperature: real [NOT NULL]
+    column atmosphere: real [NOT NULL]
+    column resources_minerals: bigint [NOT NULL]
+    column resources_gas: bigint [NOT NULL]
+    column resources_energy: real [NOT NULL]
+    column resources_food: real [NOT NULL]
+    column orbit_index: int [NOT NULL]
+    column max_colonies: int [NOT NULL, default: 1]
+    column buildable_slots: int [NOT NULL, default: 10]
+    index idx_planets_system ON (solar_system_id)
+    index idx_planets_status ON (status)
+  }
+
+  table moons {
+    column id: UUID [PK, default: gen_random_uuid()]
+    column planet_id: UUID [NOT NULL, FK → planets.id, INDEX]
+    column name: varchar(64) [NOT NULL]
+    column size: real [NOT NULL]
+    column resources_minerals: bigint [NOT NULL, default: 0]
+    column resources_gas: bigint [NOT NULL, default: 0]
+    column is_colonizable: bool [NOT NULL, default: false]
+    column orbit_distance: real [NOT NULL]
+    index idx_moons_planet ON (planet_id)
+  }
+}
+
+' ============================================================
+' SCHEMA: marketplace
+' ============================================================
+package "marketplace" {
+  table market_orders {
+    column id: UUID [PK, default: gen_random_uuid()]
+    column seller_id: UUID [NOT NULL, FK → players.id]
+    column empire_id: UUID [NOT NULL, FK → empires.id, INDEX]
+    column resource_type: resource_type [NOT NULL, INDEX]
+    column quantity: numeric(20,4) [NOT NULL]
+    column unit_price: numeric(20,4) [NOT NULL]
+    column remaining_quantity: numeric(20,4) [NOT NULL]
+    column order_type: order_type [NOT NULL]
+    column created_at: timestamptz [NOT NULL, default: now(), INDEX]
+    column expires_at: timestamptz [NOT NULL]
+    column filled: bool [NOT NULL, default: false]
+    column cancelled: bool [NOT NULL, default: false]
+    index idx_market_active ON (resource_type, filled, cancelled) WHERE (filled = false AND cancelled = false)
+    index idx_market_seller ON (empire_id)
+    index idx_market_price ON (resource_type, unit_price)
+  }
+
+  table transactions {
+    column id: UUID [PK, default: gen_random_uuid()]
+    column order_id: UUID [NOT NULL, FK → market_orders.id, INDEX]
+    column buyer_id: UUID [NOT NULL, FK → players.id]
+    column seller_id: UUID [NOT NULL, FK → players.id]
+    column resource_type: resource_type [NOT NULL]
+    column quantity: numeric(20,4) [NOT NULL]
+    column unit_price: numeric(20,4) [NOT NULL]
+    column total_price: numeric(20,4) [NOT NULL]
+    column tax_amount: numeric(20,4) [NOT NULL]
+    column created_at: timestamptz [NOT NULL, default: now(), INDEX]
+    index idx_tx_buyer ON (buyer_id)
+    index idx_tx_seller ON (seller_id)
+    index idx_tx_time ON (created_at DESC)
+  }
+}
+
+' ============================================================
+' SCHEMA: communication
+' ============================================================
+package "communication" {
+  table messages {
+    column id: UUID [PK, default: gen_random_uuid()]
+    column sender_id: UUID [NOT NULL, FK → players.id, INDEX]
+    column recipient_id: UUID [NOT NULL, FK → players.id, INDEX]
+    column subject: varchar(128) [NOT NULL]
+    column body: text [NOT NULL]
+    column message_type: message_type [NOT NULL, default: 'DIRECT']
+    column read: bool [NOT NULL, default: false]
+    column read_at: timestamptz
+    column created_at: timestamptz [NOT NULL, default: now(), INDEX]
+    column attachment_type: attachment_type
+    column attachment_data: text
+    index idx_messages_recipient ON (recipient_id, read, created_at DESC)
+    index idx_messages_sender ON (sender_id, created_at DESC)
+  }
+
+  table notifications {
+    column id: UUID [PK, default: gen_random_uuid()]
+    column player_id: UUID [NOT NULL, FK → players.id, INDEX]
+    column notification_type: varchar(64) [NOT NULL, INDEX]
+    column title: varchar(128) [NOT NULL]
+    column body: text
+    column data: jsonb [default: '{}']
+    column read: bool [NOT NULL, default: false]
+    column created_at: timestamptz [NOT NULL, default: now(), INDEX]
+    index idx_notifications_player ON (player_id, read, created_at DESC)
+  }
+}
+
+' ============================================================
+' SCHEMA: events
+' ============================================================
+package "events" {
+  table events {
+    column id: UUID [PK, default: gen_random_uuid()]
+    column galaxy_id: UUID [FK → galaxies.id, INDEX]
+    column solar_system_id: UUID [FK → solar_systems.id]
+    column event_type: varchar(64) [NOT NULL, INDEX]
+    column name: varchar(128) [NOT NULL]
+    column description: text
+    column data: jsonb [NOT NULL, default: '{}']
+    column starts_at: timestamptz [NOT NULL, INDEX]
+    column ends_at: timestamptz
+    column is_active: bool [NOT NULL, default: false, INDEX]
+    index idx_events_active ON (is_active, starts_at)
+  }
+}
+
+' ============================================================
+' SCHEMA: combat
+' ============================================================
+package "combat" {
+  table combat_reports {
+    column id: UUID [PK, default: gen_random_uuid()]
+    column attacker_fleet_id: UUID [NOT NULL, FK → fleets.id]
+    column defender_fleet_id: UUID [NOT NULL, FK → fleets.id]
+    column attacker_empire_id: UUID [NOT NULL, FK → empires.id]
+    column defender_empire_id: UUID [NOT NULL, FK → empires.id]
+    column result: combat_result [NOT NULL]
+    column rounds_fought: int [NOT NULL]
+    column loot_credits: bigint [NOT NULL, default: 0]
+    column loot_minerals: bigint [NOT NULL, default: 0]
+    column loot_gas: bigint [NOT NULL, default: 0]
+    column experience_gained: int [NOT NULL, default: 0]
+    column attacker_losses: jsonb [NOT NULL, default: '[]']
+    column defender_losses: jsonb [NOT NULL, default: '[]']
+    column created_at: timestamptz [NOT NULL, default: now(), INDEX]
+    index idx_combat_attacker ON (attacker_empire_id)
+    index idx_combat_defender ON (defender_empire_id)
+    index idx_combat_time ON (created_at DESC)
+  }
+}
+
+' ============================================================
+' SCHEMA: admin
+' ============================================================
+package "admin" {
+  table admin_logs {
+    column id: UUID [PK, default: gen_random_uuid()]
+    column admin_id: UUID [NOT NULL, FK → players.id, INDEX]
+    column target_player_id: UUID [FK → players.id]
+    column action: varchar(64) [NOT NULL, INDEX]
+    column reason: text
+    column details: jsonb [default: '{}']
+    column created_at: timestamptz [NOT NULL, default: now(), INDEX]
+    index idx_admin_logs_action ON (action, created_at DESC)
+    index idx_admin_logs_target ON (target_player_id)
+  }
+
+  table audit_logs {
+    column id: UUID [PK, default: gen_random_uuid()]
+    column player_id: UUID [FK → players.id, INDEX]
+    column empire_id: UUID [FK → empires.id]
+    column action: varchar(64) [NOT NULL, INDEX]
+    column entity_type: varchar(32) [NOT NULL]
+    column entity_id: UUID [NOT NULL]
+    column old_values: jsonb
+    column new_values: jsonb
+    column ip_address: inet
+    column created_at: timestamptz [NOT NULL, default: now(), INDEX]
+    index idx_audit_entity ON (entity_type, entity_id, created_at DESC)
+    index idx_audit_player ON (player_id, created_at DESC)
+  }
+}
+
+' ============================================================
+' FOREIGN KEY REFERENCES (VISUAL)
+' ============================================================
+player_settings.player_id --> players.id
+player_bans.player_id --> players.id
+empires.player_id --> players.id
+colonies.empire_id --> empires.id
+colonies.planet_id --> planets.id
+buildings.colony_id --> colonies.id
+construction_queue.colony_id --> colonies.id
+fleets.empire_id --> empires.id
+ships.fleet_id --> fleets.id
+ship_blueprints.empire_id --> empires.id
+ship_weapons.ship_id --> ships.id
+crew.ship_id --> ships.id
+crew.empire_id --> empires.id
+player_technologies.player_id --> players.id
+player_technologies.technology_id --> technologies.id
+alliance_members.alliance_id --> alliances.id
+alliance_members.player_id --> players.id
+alliance_diplomacy.alliance_id --> alliances.id
+alliance_diplomacy.target_alliance_id --> alliances.id
+galaxies.universe_id --> universes.id
+solar_systems.galaxy_id --> galaxies.id
+solar_systems.wormhole_target_id --> solar_systems.id
+planets.solar_system_id --> solar_systems.id
+moons.planet_id --> planets.id
+market_orders.seller_id --> players.id
+market_orders.empire_id --> empires.id
+transactions.order_id --> market_orders.id
+messages.sender_id --> players.id
+messages.recipient_id --> players.id
+notifications.player_id --> players.id
+combat_reports.attacker_fleet_id --> fleets.id
+combat_reports.defender_fleet_id --> fleets.id
+admin_logs.admin_id --> players.id
+audit_logs.player_id --> players.id
+
+@enduml

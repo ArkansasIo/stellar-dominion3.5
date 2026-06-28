@@ -1,0 +1,25 @@
+<svg width="720" height="720" viewBox="0 0 720 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="720" height="720" fill="transparent"/>
+  <g filter="url(#filter0_f)">
+    <circle cx="370" cy="386" r="212" fill="#58B4FF" fill-opacity="0.24"/>
+  </g>
+  <circle cx="384" cy="392" r="176" fill="url(#paint0_radial)"/>
+  <path d="M252 316C292 282 344 264 391 266C446 268 494 294 520 336C470 320 440 322 396 334C353 346 320 360 280 352C266 349 259 340 252 316Z" fill="#B4F8FF" fill-opacity="0.26"/>
+  <path d="M254 450C306 462 346 446 394 430C446 412 484 404 532 420C500 478 442 522 370 532C320 538 270 522 232 488C238 468 246 456 254 450Z" fill="#173D73" fill-opacity="0.46"/>
+  <path d="M238 386C250 406 270 420 298 422C326 424 350 412 382 396C426 376 472 362 524 374C520 398 514 418 504 436C464 420 430 424 390 438C340 454 286 474 232 456C226 434 224 410 238 386Z" fill="#0E2248" fill-opacity="0.4"/>
+  <ellipse cx="390" cy="444" rx="216" ry="76" transform="rotate(12 390 444)" stroke="#D8F7FF" stroke-opacity="0.45" stroke-width="18"/>
+  <ellipse cx="390" cy="444" rx="216" ry="76" transform="rotate(12 390 444)" stroke="#4AC5FF" stroke-opacity="0.22" stroke-width="42"/>
+  <defs>
+    <filter id="filter0_f" x="58" y="74" width="624" height="624" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+      <feGaussianBlur stdDeviation="50" result="effect1_foregroundBlur"/>
+    </filter>
+    <radialGradient id="paint0_radial" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(334 310) rotate(44.8304) scale(290.516)">
+      <stop stop-color="#DDFBFF"/>
+      <stop offset="0.32" stop-color="#5AC4FF"/>
+      <stop offset="0.62" stop-color="#2452A5"/>
+      <stop offset="1" stop-color="#071124"/>
+    </radialGradient>
+  </defs>
+</svg>

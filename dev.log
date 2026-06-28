@@ -1,0 +1,136 @@
+
+> rest-express@1.0.0 dev
+> tsx script/dev.ts
+
+[dotenv@17.3.1] injecting env (0) from .env -- tip: 🛡️ auth for agents: https://vestauth.com
+[dotenv@17.3.1] injecting env (0) from .env -- tip: 🤖 agentic secret storage: https://dotenvx.com/as2
+Set DATABASE_URL from hardcoded value
+Starting full-stack development server...
+[dotenv@17.3.1] injecting env (0) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+[dotenv@17.3.1] injecting env (3) from .env.local -- tip: ⚙️  suppress all logs with { quiet: true }
+[dotenv@17.3.1] injecting env (0) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+🔌 Connecting to database...
+Resource service started!
+Fleet service started!
+Technology service started!
+Game engine started!
+✅ Database connection established
+10:49:20 PM ⚠️ [33m[AUTH]    [0m [1mDEV_AUTH_BYPASS is enabled; protected routes will auto-authenticate locally[0m  
+10:49:26 PM [vite] (client) Re-optimizing dependencies because lockfile has changed
+10:49:27 PM [express] [i] serving on port 5001
+10:49:27 PM ℹ️ [34m[SERVER]  [0m [1mserving on port 5001[0m  
+
+[1m[34m================================================[0m
+[1m[34m SERVER STARTUP INITIALIZATION [0m
+[1m[34m================================================[0m
+
+[1m  Initializing Server Components:[0m
+    \ Loading Express.js framework...
+    [ok] [32mDatabase connection pool initialized[0m
+    [ok] [32mSession manager configured[0m
+    [ok] [32mAuthentication middleware loaded[0m
+    [ok] [32mAPI routes registered[0m
+    [ok] [32mError handlers configured[0m
+    \ Starting HTTP server...
+
+[1m[34m================================================[0m
+[1m[34m SERVER STARTUP INITIALIZATION [0m
+[1m[34m================================================[0m
+
+[1m  Initializing Server Components:[0m
+    | Loading Express.js framework...
+    [ok] [32mDatabase connection pool initialized[0m
+    [ok] [32mSession manager configured[0m
+    [ok] [32mAuthentication middleware loaded[0m
+    [ok] [32mAPI routes registered[0m
+    [ok] [32mError handlers configured[0m
+    | Starting HTTP server...
+
+[1m[34m================================================[0m
+[1m[34m SERVER STARTUP INITIALIZATION [0m
+[1m[34m================================================[0m
+
+[1m  Initializing Server Components:[0m
+    / Loading Express.js framework...
+    [ok] [32mDatabase connection pool initialized[0m
+    [ok] [32mSession manager configured[0m
+    [ok] [32mAuthentication middleware loaded[0m
+    [ok] [32mAPI routes registered[0m
+    [ok] [32mError handlers configured[0m
+    / Starting HTTP server...
+
+[1m[34m================================================[0m
+[1m[34m SERVER STARTUP INITIALIZATION [0m
+[1m[34m================================================[0m
+
+[1m  Initializing Server Components:[0m
+    - Loading Express.js framework...
+    [ok] [32mDatabase connection pool initialized[0m
+    [ok] [32mSession manager configured[0m
+    [ok] [32mAuthentication middleware loaded[0m
+    [ok] [32mAPI routes registered[0m
+    [ok] [32mError handlers configured[0m
+    - Starting HTTP server...
+
+[1m[34m================================================[0m
+[1m[34m SERVER STARTUP INITIALIZATION [0m
+[1m[34m================================================[0m
+
+[1m  Initializing Server Components:[0m
+    \ Loading Express.js framework...
+    [ok] [32mDatabase connection pool initialized[0m
+    [ok] [32mSession manager configured[0m
+    [ok] [32mAuthentication middleware loaded[0m
+    [ok] [32mAPI routes registered[0m
+    [ok] [32mError handlers configured[0m
+    \ Starting HTTP server...
+
+[1m[34m================================================[0m
+[1m[34m SERVER STARTUP INITIALIZATION [0m
+[1m[34m================================================[0m
+
+[1m  Initializing Server Components:[0m
+    | Loading Express.js framework...
+    [ok] [32mDatabase connection pool initialized[0m
+    [ok] [32mSession manager configured[0m
+    [ok] [32mAuthentication middleware loaded[0m
+    [ok] [32mAPI routes registered[0m
+    [ok] [32mError handlers configured[0m
+    | Starting HTTP server...
+
+[1m[32m================================================[0m
+[1m[32m SERVER INITIALIZED SUCCESSFULLY [0m
+[1m[32m================================================[0m
+
+[1m[34mSetup Complete:[0m
+  [32m*[0m All services initialized
+  [32m*[0m Server ready to accept connections
+  [32m*[0m Database connection verified
+
+[1m[36m================================================[0m
+[1m[36m SERVER STATUS DASHBOARD [0m
+[1m[36m================================================[0m
+
+[1mMain Server Info:[0m
+  [32m*[0m Server Status: [32mRUNNING[0m
+  [32m*[0m Port: [36m5001[0m
+  [32m*[0m Environment: [36mdevelopment[0m
+
+[1mDatabase:[0m
+  [32m*[0m PostgreSQL: [32mCONNECTED[0m
+  [32m*[0m Host: [36mlocalhost[0m
+
+[1mServices:[0m
+  [32m*[0m Express Server: [32mACTIVE[0m
+  [32m*[0m Session Manager: [32mACTIVE[0m
+  [32m*[0m Authentication: [32mREADY[0m
+
+[1mAccess:[0m
+  [36m->[0m API Endpoint: [1mhttp://localhost:5001/api[0m
+  [36m->[0m Web Interface: [1mhttp://localhost:5001[0m
+
+[1m[33mStatus Indicators:[0m
+  [32m*[0m Online / Active
+  [31m*[0m Offline / Inactive
+  [33m*[0m Warning / Resetting
+

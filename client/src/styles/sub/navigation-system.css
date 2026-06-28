@@ -1,0 +1,63 @@
+.sd-bottom-command-bar {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.75rem;
+  min-height: 60px;
+  padding: 0.75rem;
+  border: 1px solid var(--sd-panel-border);
+  background: linear-gradient(180deg, var(--sd-command-bar-top), var(--sd-command-bar-bottom));
+  box-shadow: 0 0 12px var(--sd-panel-glow);
+}
+
+.sd-bottom-command-tab {
+  display: flex;
+  min-height: 60px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  border: 1px solid var(--sd-button-frame);
+  color: var(--sd-text-primary);
+  background: linear-gradient(180deg, var(--sd-button-top), var(--sd-button-bottom));
+  clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px);
+  font-family: var(--sd-font-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sd-bottom-command-tab:hover,
+.sd-bottom-command-tab.is-active {
+  border-color: var(--sd-button-frame-active);
+  background: linear-gradient(180deg, var(--sd-button-top-active), var(--sd-button-bottom-active));
+  box-shadow: 0 0 12px rgba(0, 200, 255, 0.55);
+}
+
+.sd-top-link-bar {
+  padding: 0.2rem 0.35rem;
+  border: 1px solid rgba(79, 107, 134, 0.45);
+  background: linear-gradient(180deg, var(--sd-top-link-top), var(--sd-top-link-bottom));
+  box-shadow:
+    0 0 10px rgba(0, 150, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px);
+}
+
+.sd-realm-label {
+  color: var(--sd-text-highlight);
+  font-family: var(--sd-font-display);
+}
+
+.sd-realm-shell {
+  background: linear-gradient(180deg, var(--sd-realm-shell-top), var(--sd-realm-shell-bottom));
+  border-color: rgba(79, 107, 134, 0.8);
+  box-shadow:
+    0 0 10px rgba(0, 150, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.sd-realm-status {
+  background: linear-gradient(180deg, var(--sd-realm-status-top), var(--sd-realm-status-bottom));
+  border-color: rgba(43, 209, 255, 0.55);
+  color: #dff7ff;
+  box-shadow: 0 0 10px rgba(0, 200, 255, 0.18);
+}

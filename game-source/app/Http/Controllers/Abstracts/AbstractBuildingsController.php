@@ -1,0 +1,342 @@
+<?php
+
+namespace OGame\Http\Controllers\Abstracts;
+
+use Exception;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use OGame\GameObjects\Models\Enums\GameObjectType;
+use OGame\Http\Controllers\OGameController;
+use OGame\Http\Controllers\ShipyardController;
+use OGame\Http\Traits\ObjectAjaxTrait;
+use OGame\Services\BuildingQueueService;
+use OGame\Services\ObjectService;
+use OGame\Services\PlanetService;
+use OGame\Services\PlayerService;
+use OGame\ViewModels\BuildingViewModel;
+
+abstract class AbstractBuildingsController extends OGameController
+{
+    use ObjectAjaxTrait;
+
+    protected PlanetService $planet;
+
+    /**
+     * @var string Index view route (used for redirecting).
+     */
+    protected string $route_view_index;
+
+    /**
+     * Objects that are shown on this building page.
+     *
+     * @var array<array<string>>
+     */
+    protected array $objects = [];
+
+    /**
+     * Header filename objects.
+     *
+     * @var array<int>
+     */
+    protected array $header_filename_objects = [];
+
+    /**
+     * AbstractBuildingsController constructor.
+     */
+    public function __construct(protected BuildingQueueService $queue)
+    {
+        parent::__construct();
+    }
+
+    /**
+     * Returns render data for the building index page.
+     *
+     * @param Request $request
+     * @param PlayerService $player
+     * @return array<string, mixed>
+     * @throws Exception
+     */
+    public function indexPageParams(Request $request, PlayerService $player): array
+    {
+        $this->planet = $player->planets->current();
+
+        $count = 0;
+        $header_filename_parts = [];
+
+        // Parse build queue for this planet
+        $build_full_queue = $this->queue->retrieveQueue($this->planet);
+        $build_active = $build_full_queue->getCurrentlyBuildingFromQueue();
+        $build_queue = $build_full_queue->getQueuedFromQueue();
+
+        // Research Lab upgrading is disallowed when researching is ongoing
+        $research_in_progress = $player->isResearching();
+        $ship_or_defense_in_progress = $player->isBuildingShipsOrDefense();
+
+        $buildings = [];
+        foreach ($this->objects as $key_row => $objects_row) {
+            $buildings[$key_row] = [];
+            foreach ($objects_row as $object_machine_name) {
+                $count++;
+
+                // Get object
+                $object = ObjectService::getObjectByMachineName($object_machine_name);
+
+                // Get current level of building
+                $current_level = $this->planet->getObjectLevel($object_machine_name);
+                $next_level = $current_level + 1;
+
+                // Check requirements of this building
+                $requirements_met = ObjectService::objectRequirementsMetWithQueue($object_machine_name, $next_level, $this->planet);
+                // Check character class requirements (for class-specific ships like crawler)
+                $character_class_met = ObjectService::objectCharacterClassMet($object_machine_name, $this->planet);
+
+                $valid_planet_type = ObjectService::objectValidPlanetType($object_machine_name, $this->planet);
+
+                // Check if the current planet has enough resources to build this building.
+                $enough_resources = $this->planet->hasResources(ObjectService::getObjectPrice($object_machine_name, $this->planet));
+
+                $view_model = new BuildingViewModel();
+                $view_model->count = $count;
+                $view_model->object = $object;
+                $view_model->current_level = $current_level;
+                $view_model->requirements_met = $requirements_met;
+                $view_model->character_class_met = $character_class_met;
+                $view_model->valid_planet_type = $valid_planet_type;
+                $view_model->enough_resources = $enough_resources;
+                $view_model->currently_building = ($build_active !== null && $build_active->object->machine_name === $object->machine_name);
+                if ($view_model->currently_building && $build_active !== null) {
+                    $view_model->target_level = $build_active->level_target;
+                    $view_model->is_downgrade = $build_active->is_downgrade ?? false;
+                }
+                $view_model->research_in_progress = $research_in_progress;
+                $view_model->ship_or_defense_in_progress = $ship_or_defense_in_progress;
+
+                // Check if this building would use the last available field or exceed field limit
+                // Ships, defense units, and certain other objects don't consume planet fields
+                if (($object->type === GameObjectType::Building || $object->type === GameObjectType::Station) && $object->consumesPlanetField) {
+                    $currentBuildingCount = $this->planet->getBuildingCount();
+                    $maxFields = $this->planet->getPlanetFieldMax();
+
+                    // Calculate the projected building count after all queued items complete
+                    $queuedFieldChange = 0;
+                    // Include the currently building item
+                    $all_queued = [];
+                    if ($build_active !== null) {
+                        $all_queued[] = $build_active;
+                    }
+                    $all_queued = array_merge($all_queued, $build_queue);
+
+                    foreach ($all_queued as $queueItem) {
+                        if ($queueItem->object->consumesPlanetField) {
+                            $current_item_level = $this->planet->getObjectLevel($queueItem->object->machine_name);
+                            $queuedFieldChange += ($queueItem->level_target - $current_item_level);
+                        }
+                    }
+
+                    // The projected building count after all queued items complete
+                    $projectedBuildingCount = $currentBuildingCount + $queuedFieldChange;
+
+                    // If projected building count + 1 equals max fields, this would use the last field
+                    $view_model->uses_last_field = ($projectedBuildingCount + 1) >= $maxFields;
+
+                    // If projected building count >= max fields, fields are already exceeded (after queue completes)
+                    $view_model->fields_exceeded = $projectedBuildingCount >= $maxFields;
+                } else {
+                    $view_model->uses_last_field = false;
+                    $view_model->fields_exceeded = false;
+                }
+
+                $buildings[$key_row][$object->id] = $view_model;
+            }
+        }
+
+        // If building level is 1 or higher, add to header filename parts to
+        // render the header of this planet.
+        foreach ($this->header_filename_objects as $building_id) {
+            // Get object
+            $object = ObjectService::getObjectById($building_id);
+            $current_level = $this->planet->getObjectLevel($object->machine_name);
+
+            if ($current_level >= 1) {
+                $header_filename_parts[$building_id] = $building_id;
+            }
+        }
+
+        // Parse header filename for this planet
+        // IMPORTANT: Do NOT sort - the order from header_filename_objects is critical!
+        // OGame uses build order (dependency chain), not numerical order.
+        // ksort() would break the filename matching.
+
+        $header_filename = '';
+        if ($this->planet->isPlanet()) {
+            $header_filename = $this->planet->getPlanetBiomeType();
+        } elseif ($this->planet->isMoon()) {
+            $header_filename = 'moon_' . $this->planet->getPlanetImageType();
+        }
+
+        foreach ($header_filename_parts as $building_id) {
+            $header_filename .= '_' . $building_id;
+        }
+
+        // Max amount of buildings that can be in the queue in a given time.
+        $max_build_queue_count = 4; //@TODO: refactor into global / constant?
+        $build_queue_max = false;
+        if (count($build_queue) >= $max_build_queue_count) {
+            $build_queue_max = true;
+        }
+
+        // If openTech is in querystring, add client JS to open the technology tab.
+        $open_tech_id = 0;
+        if ($request->query->has('openTech')) {
+            $open_tech_id = $request->query('openTech');
+            if (!is_numeric($open_tech_id)) {
+                $open_tech_id = 0;
+            }
+        }
+
+        // Get Jump Gate level for moon header slot
+        $jump_gate_level = 0;
+        if ($this->planet->isMoon()) {
+            $jump_gate_level = $this->planet->getObjectLevel('jump_gate');
+        }
+
+        return [
+            'planet_id' => $this->planet->getPlanetId(),
+            'planet_name' => $this->planet->getPlanetName(),
+            'planet' => $this->planet,
+            'header_filename' => $header_filename,
+            'buildings' => $buildings,
+            'build_active' => $build_active,
+            'build_queue' => $build_queue,
+            'build_queue_max' => $build_queue_max,
+            'open_tech_id' => $open_tech_id,
+            'jump_gate_level' => $jump_gate_level,
+            'is_in_vacation_mode' => $player->isInVacationMode(),
+        ];
+    }
+
+    /**
+     * Handles an incoming add buildrequest.
+     *
+     * @param Request $request
+     * @param PlayerService $player
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function addBuildRequest(Request $request, PlayerService $player): JsonResponse
+    {
+        // Check if player is in vacation mode
+        // Note: Button is already disabled in frontend, but we check here for security
+        if ($player->isInVacationMode()) {
+            return response()->json([
+                'success' => false,
+            ]);
+        }
+
+        // Check if this is a downgrade request (mode 3)
+        $mode = $request->input('mode');
+        if ((int)$mode === 3) {
+            return $this->downgradeBuildRequest($request, $player);
+        }
+
+        // If the technology is a shipyard or nanite, it shouldn't be able to upgrade while ships are built.
+        if (($request->input('technologyId') === '21' || $request->input('technologyId') === '15') && $player->isBuildingShipsOrDefense()) {
+            return response()->json([
+                'success' => false,
+                'errors' => [['message' => __('The Shipyard is still busy.')]],
+            ]);
+        }
+        // If the technology is a solar satellite or crawler, execute the addBuildRequest method in ShipyardController.
+        if ($request->input('technologyId') === '212' || $request->input('technologyId') === '217') {
+            return resolve(ShipyardController::class)->addBuildRequest($request, $player);
+        }
+
+        // Explicitly verify CSRF token because this request supports both POST and GET.
+        if (!hash_equals($request->session()->token(), $request->input('_token'))) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid token.',
+            ]);
+        }
+
+        $building_id = $request->input('technologyId');
+
+        try {
+            $this->queue->add($player->planets->current(), $building_id);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Building construction started.',
+        ]);
+    }
+
+    /**
+     * Handles an incoming downgrade buildrequest.
+     *
+     * @param Request $request
+     * @param PlayerService $player
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function downgradeBuildRequest(Request $request, PlayerService $player): JsonResponse
+    {
+        // Check if player is in vacation mode
+        // Note: Button is already disabled in frontend, but we check here for security
+        if ($player->isInVacationMode()) {
+            return response()->json([
+                'success' => false,
+            ]);
+        }
+
+        // Explicitly verify CSRF token because this request supports both POST and GET.
+        if (!hash_equals($request->session()->token(), $request->input('_token'))) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid token.',
+            ]);
+        }
+
+        $building_id = $request->input('technologyId');
+
+        try {
+            $this->queue->addDowngrade($player->planets->current(), $building_id);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Building downgrade started.',
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'errors' => [['message' => $e->getMessage()]],
+            ]);
+        }
+    }
+
+    /**
+     * Handles an incoming cancel buildrequest.
+     *
+     * @param Request $request
+     * @param PlayerService $player
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function cancelBuildRequest(Request $request, PlayerService $player): JsonResponse
+    {
+        $building_id = $request->input('technologyId');
+        $building_queue_id = $request->input('listId');
+
+        $this->queue->cancel($player->planets->current(), $building_queue_id, $building_id);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Building construction canceled.',
+        ]);
+    }
+}

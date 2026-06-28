@@ -1,0 +1,392 @@
+[dotenv@17.3.1] injecting env (2) from .env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+[dotenv@17.3.1] injecting env (0) from .env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
+Starting full-stack development server...
+[dotenv@17.3.1] injecting env (0) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+[dotenv@17.3.1] injecting env (0) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+🔌 Connecting to database...
+Resource service started!
+Fleet service started!
+Technology service started!
+Game engine started!
+✅ Database connection established
+10:19:55 PM ⚠️ [33m[AUTH]    [0m [1mDEV_AUTH_BYPASS is enabled; protected routes will auto-authenticate locally[0m  
+[phpMyAdmin] Portal registered at http://localhost:5000/phpmyadmin
+10:19:55 PM [cron] Cron tables ensured
+10:19:55 PM [cron] Starting cron job: Resource Production Tick (every 60s)
+10:19:55 PM [cron] Starting cron job: Turn Generation Tick (every 60s)
+10:19:55 PM [cron] Starting cron job: Construction Queue Tick (every 60s)
+10:19:55 PM [cron] Starting cron job: Refinery Production Tick (every 60s)
+10:19:55 PM [cron] Starting cron job: Research Progress Tick (every 60s)
+10:19:55 PM [cron] Starting cron job: Research XP Distribution (every 60s)
+10:19:55 PM [cron] Starting cron job: Fleet Maintenance Tick (every 60s)
+10:19:55 PM [cron] Starting cron job: Mission Processing Tick (every 60s)
+10:19:55 PM [cron] Starting cron job: Expedition Processing (every 60s)
+10:19:55 PM [cron] Starting cron job: Market Price Update (every 60s)
+10:19:55 PM [cron] Starting cron job: Resource Trading Settlement (every 60s)
+10:19:55 PM [cron] Starting cron job: Merchant Stock Refresh (every 60s)
+10:19:55 PM [cron] Starting cron job: Smithy Production Tick (every 60s)
+10:19:55 PM [cron] Starting cron job: Blueprint Assembly Tick (every 60s)
+10:19:55 PM [cron] Starting cron job: Orbital Station Maintenance (every 60s)
+10:19:55 PM [cron] Starting cron job: Moon Operations Tick (every 60s)
+10:19:55 PM [cron] Starting cron job: Spore Drive Cooldown Management (every 60s)
+10:19:55 PM [cron] Starting cron job: Anomaly Respawn (every 60s)
+10:19:55 PM [cron] Starting cron job: Raid Operations Processing (every 60s)
+10:19:55 PM [cron] Starting cron job: Raid Rewards Distribution (every 60s)
+10:19:55 PM [cron] Starting cron job: Megastructure Operations (every 60s)
+10:19:55 PM [cron] Starting cron job: Government Progression Tick (every 60s)
+10:19:55 PM [cron] Starting cron job: Civilization Effects Update (every 60s)
+10:19:55 PM [cron] Starting cron job: Commander Experience & Leveling (every 60s)
+10:19:55 PM [cron] Starting cron job: Alliance Treasury Management (every 60s)
+10:19:55 PM [cron] Starting cron job: Alliance Technology Sharing (every 60s)
+10:19:55 PM [cron] Starting cron job: Daily Missions Reset (every 60s)
+10:19:55 PM [cron] Starting cron job: Weekly Missions Reset (every 60s)
+10:19:55 PM [cron] Starting cron job: Season Pass Progression (every 60s)
+10:19:55 PM [cron] Starting cron job: Achievement Progress Checker (every 60s)
+10:19:55 PM [cron] Starting cron job: Daily Reset (every 60s)
+10:19:55 PM [cron] Starting cron job: Weekly Reset (every 60s)
+10:19:56 PM [cron] Starting cron job: Monthly Reset (every 60s)
+10:19:56 PM [cron] Starting cron job: Limited Event Processor (every 60s)
+10:19:56 PM [cron] Starting cron job: Leaderboard Update (every 60s)
+10:19:56 PM [cron] Starting cron job: Server Maintenance (every 60s)
+10:19:56 PM [cron] Starting cron job: Inactive Player Warning (every 60s)
+10:19:56 PM [cron] Starting cron job: Server Statistics Collection (every 60s)
+10:19:56 PM [timer] Timer poller started (interval: 5000ms)
+10:19:56 PM [startup] [ok] Cron job system initialized
+10:19:56 PM ℹ️ [34m[SERVER]  [0m [1mCron job system initialized[0m  
+10:19:56 PM [cron] Starting cron job: Backup Critical Game Data (every 60s)
+10:19:57 PM [express] [i] serving on port 5000
+10:19:57 PM ℹ️ [34m[SERVER]  [0m [1mserving on port 5000[0m  
+
+[1m[34m================================================[0m
+[1m[34m SERVER STARTUP INITIALIZATION [0m
+[1m[34m================================================[0m
+
+[1m  Initializing Server Components:[0m
+    \ Loading Express.js framework...
+    [ok] [32mDatabase connection pool initialized[0m
+    [ok] [32mSession manager configured[0m
+    [ok] [32mAuthentication middleware loaded[0m
+    [ok] [32mAPI routes registered[0m
+    [ok] [32mError handlers configured[0m
+    \ Starting HTTP server...
+
+[1m[34m================================================[0m
+[1m[34m SERVER STARTUP INITIALIZATION [0m
+[1m[34m================================================[0m
+
+[1m  Initializing Server Components:[0m
+    | Loading Express.js framework...
+    [ok] [32mDatabase connection pool initialized[0m
+    [ok] [32mSession manager configured[0m
+    [ok] [32mAuthentication middleware loaded[0m
+    [ok] [32mAPI routes registered[0m
+    [ok] [32mError handlers configured[0m
+    | Starting HTTP server...
+
+[1m[34m================================================[0m
+[1m[34m SERVER STARTUP INITIALIZATION [0m
+[1m[34m================================================[0m
+
+[1m  Initializing Server Components:[0m
+    / Loading Express.js framework...
+    [ok] [32mDatabase connection pool initialized[0m
+    [ok] [32mSession manager configured[0m
+    [ok] [32mAuthentication middleware loaded[0m
+    [ok] [32mAPI routes registered[0m
+    [ok] [32mError handlers configured[0m
+    / Starting HTTP server...
+
+[1m[34m================================================[0m
+[1m[34m SERVER STARTUP INITIALIZATION [0m
+[1m[34m================================================[0m
+
+[1m  Initializing Server Components:[0m
+    - Loading Express.js framework...
+    [ok] [32mDatabase connection pool initialized[0m
+    [ok] [32mSession manager configured[0m
+    [ok] [32mAuthentication middleware loaded[0m
+    [ok] [32mAPI routes registered[0m
+    [ok] [32mError handlers configured[0m
+    - Starting HTTP server...
+
+[1m[34m================================================[0m
+[1m[34m SERVER STARTUP INITIALIZATION [0m
+[1m[34m================================================[0m
+
+[1m  Initializing Server Components:[0m
+    \ Loading Express.js framework...
+    [ok] [32mDatabase connection pool initialized[0m
+    [ok] [32mSession manager configured[0m
+    [ok] [32mAuthentication middleware loaded[0m
+    [ok] [32mAPI routes registered[0m
+    [ok] [32mError handlers configured[0m
+    \ Starting HTTP server...
+
+[1m[34m================================================[0m
+[1m[34m SERVER STARTUP INITIALIZATION [0m
+[1m[34m================================================[0m
+
+[1m  Initializing Server Components:[0m
+    | Loading Express.js framework...
+    [ok] [32mDatabase connection pool initialized[0m
+    [ok] [32mSession manager configured[0m
+    [ok] [32mAuthentication middleware loaded[0m
+    [ok] [32mAPI routes registered[0m
+    [ok] [32mError handlers configured[0m
+    | Starting HTTP server...
+
+[1m[34m================================================[0m
+[1m[34m SERVER STARTUP INITIALIZATION [0m
+[1m[34m================================================[0m
+
+[1m  Initializing Server Components:[0m
+    / Loading Express.js framework...
+    [ok] [32mDatabase connection pool initialized[0m
+    [ok] [32mSession manager configured[0m
+    [ok] [32mAuthentication middleware loaded[0m
+    [ok] [32mAPI routes registered[0m
+    [ok] [32mError handlers configured[0m
+    / Starting HTTP server...
+
+[1m[32m================================================[0m
+[1m[32m SERVER INITIALIZED SUCCESSFULLY [0m
+[1m[32m================================================[0m
+
+[1m[34mSetup Complete:[0m
+  [32m*[0m All services initialized
+  [32m*[0m Server ready to accept connections
+  [32m*[0m Database connection verified
+
+[1m[36m================================================[0m
+[1m[36m SERVER STATUS DASHBOARD [0m
+[1m[36m================================================[0m
+
+[1mMain Server Info:[0m
+  [32m*[0m Server Status: [32mRUNNING[0m
+  [32m*[0m Port: [36m5000[0m
+  [32m*[0m Environment: [36mdevelopment[0m
+  [32m*[0m Health Score: [32m100[0m
+  [32m*[0m Uptime: [36m0d 1h 1m[0m
+
+[1mDatabase:[0m
+  [32m*[0m PostgreSQL: [32mCONNECTED[0m
+  [32m*[0m Host: [36mhelium[0m
+  [32m*[0m Connections: [36m3/112[0m
+  [32m*[0m Active Queries: [36m0[0m
+  [32m*[0m Cache Hit Rate: [36m100%[0m
+
+[1mPerformance:[0m
+  [32m*[0m Total Requests: [36m0[0m
+  [32m*[0m Request Rate: [36m0.00/sec[0m
+  [32m*[0m Avg Response: [36m0ms[0m
+  [32m*[0m P95 / P99: [36m0ms / 0ms[0m
+
+[1mResources:[0m
+  [32m*[0m CPU Usage: [36m30%[0m
+  [32m*[0m Memory: [36m5151MB / 7966MB[0m
+  [32m*[0m Disk Usage: [36m0%[0m
+
+[1mServices:[0m
+  [32m*[0m Express Server: [32mACTIVE[0m
+  [32m*[0m Session Manager: [32mACTIVE[0m
+  [32m*[0m Authentication: [32mREADY[0m
+
+[1mAccess:[0m
+  [36m->[0m API Endpoint: [1mhttp://localhost:5000/api[0m
+  [36m->[0m Web Interface: [1mhttp://localhost:5000[0m
+  [36m->[0m Health Check: [1mhttp://localhost:5000/api/status/health[0m
+
+[1mHealth Checks:[0m
+  [32m*[0m database: [32mOK[0m (3/75)
+  [32m*[0m memory: [32mOK[0m (65/70)
+  [32m*[0m cpu: [32mOK[0m (30/60)
+  [32m*[0m diskSpace: [32mOK[0m (0/70)
+  [32m*[0m api: [32mOK[0m (0/1)
+  [32m*[0m cache: [32mOK[0m (95/80)
+  [32m*[0m websocket: [32mOK[0m (100/50)
+
+[1m[33mStatus Indicators:[0m
+  [32m*[0m Online / Active
+  [31m*[0m Offline / Inactive
+  [33m*[0m Warning / Resetting
+
+[2m[status][0m uptime=0d 1h 2m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5193MB/7966MB db=10/112
+[2m[status][0m uptime=0d 1h 3m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5202MB/7966MB db=10/112
+[2m[status][0m uptime=0d 1h 4m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5131MB/7966MB db=10/112
+[2m[status][0m uptime=0d 1h 5m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5404MB/7966MB db=10/112
+[2m[status][0m uptime=0d 1h 6m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5329MB/7966MB db=10/112
+[2m[status][0m uptime=0d 1h 7m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5317MB/7966MB db=10/112
+[2m[status][0m uptime=0d 1h 8m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5320MB/7966MB db=10/112
+[2m[status][0m uptime=0d 1h 9m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5327MB/7966MB db=9/112
+[2m[status][0m uptime=0d 1h 10m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5332MB/7966MB db=9/112
+[2m[status][0m uptime=0d 1h 11m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5340MB/7966MB db=10/112
+[2m[status][0m uptime=0d 1h 12m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5299MB/7966MB db=4/112
+[2m[status][0m uptime=0d 1h 13m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5323MB/7966MB db=10/112
+[2m[status][0m uptime=0d 1h 14m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5347MB/7966MB db=9/112
+[2m[status][0m uptime=0d 1h 15m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5268MB/7966MB db=9/112
+[2m[status][0m uptime=0d 1h 16m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5274MB/7966MB db=9/112
+[2m[status][0m uptime=0d 1h 17m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5273MB/7966MB db=9/112
+[2m[status][0m uptime=0d 1h 18m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5270MB/7966MB db=8/112
+[2m[status][0m uptime=0d 1h 19m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5323MB/7966MB db=9/112
+[2m[status][0m uptime=0d 1h 20m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5642MB/7966MB db=7/112
+[2m[status][0m uptime=0d 1h 21m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5656MB/7966MB db=9/112
+[2m[status][0m uptime=0d 1h 22m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5657MB/7966MB db=9/112
+[2m[status][0m uptime=0d 1h 23m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5659MB/7966MB db=9/112
+[2m[status][0m uptime=0d 1h 24m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5661MB/7966MB db=9/112
+[2m[status][0m uptime=0d 1h 25m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5340MB/7966MB db=8/112
+[2m[status][0m uptime=0d 1h 26m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5356MB/7966MB db=10/112
+[2m[status][0m uptime=0d 1h 27m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5361MB/7966MB db=9/112
+[2m[status][0m uptime=0d 1h 28m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5372MB/7966MB db=10/112
+[2m[status][0m uptime=0d 1h 29m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5378MB/7966MB db=8/112
+[2m[status][0m uptime=0d 1h 30m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5380MB/7966MB db=10/112
+[2m[status][0m uptime=0d 1h 31m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5383MB/7966MB db=9/112
+[2m[status][0m uptime=0d 1h 32m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5386MB/7966MB db=10/112
+[2m[status][0m uptime=0d 1h 33m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5373MB/7966MB db=8/112
+[2m[status][0m uptime=0d 1h 34m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5396MB/7966MB db=5/112
+[2m[status][0m uptime=0d 1h 35m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5359MB/7966MB db=10/112
+[2m[status][0m uptime=0d 1h 36m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5363MB/7966MB db=9/112
+[2m[status][0m uptime=0d 1h 37m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5368MB/7966MB db=7/112
+[2m[status][0m uptime=0d 1h 38m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5377MB/7966MB db=9/112
+[2m[status][0m uptime=0d 1h 39m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5372MB/7966MB db=9/112
+[2m[status][0m uptime=0d 1h 40m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5376MB/7966MB db=9/112
+[2m[status][0m uptime=0d 1h 41m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5375MB/7966MB db=4/112
+[2m[status][0m uptime=0d 1h 42m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5383MB/7966MB db=10/112
+[2m[status][0m uptime=0d 1h 43m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5394MB/7966MB db=9/112
+[2m[status][0m uptime=0d 1h 44m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5405MB/7966MB db=8/112
+[2m[status][0m uptime=0d 1h 45m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5339MB/7966MB db=9/112
+[2m[status][0m uptime=0d 1h 46m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5351MB/7966MB db=9/112
+[2m[status][0m uptime=0d 1h 47m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5350MB/7966MB db=9/112
+[2m[status][0m uptime=0d 1h 48m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5362MB/7966MB db=9/112
+[2m[status][0m uptime=0d 1h 49m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5362MB/7966MB db=10/112
+[2m[status][0m uptime=0d 1h 50m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5370MB/7966MB db=9/112
+[2m[status][0m uptime=0d 1h 51m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5371MB/7966MB db=10/112
+[2m[status][0m uptime=0d 1h 52m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5351MB/7966MB db=9/112
+[2m[status][0m uptime=0d 1h 53m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5348MB/7966MB db=9/112
+[2m[status][0m uptime=0d 1h 54m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5348MB/7966MB db=9/112
+[2m[status][0m uptime=0d 1h 55m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5334MB/7966MB db=9/112
+[2m[status][0m uptime=0d 1h 56m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5342MB/7966MB db=9/112
+[2m[status][0m uptime=0d 1h 57m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5512MB/7966MB db=10/112
+[2m[status][0m uptime=0d 1h 58m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5522MB/7966MB db=9/112
+[2m[status][0m uptime=0d 1h 59m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5570MB/7966MB db=10/112
+[2m[status][0m uptime=0d 2h 0m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5530MB/7966MB db=10/112
+[2m[status][0m uptime=0d 2h 1m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5518MB/7966MB db=9/112
+[2m[status][0m uptime=0d 2h 2m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5516MB/7966MB db=10/112
+[2m[status][0m uptime=0d 2h 3m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5517MB/7966MB db=9/112
+[2m[status][0m uptime=0d 2h 4m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5524MB/7966MB db=10/112
+[2m[status][0m uptime=0d 2h 5m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5275MB/7966MB db=10/112
+[2m[status][0m uptime=0d 2h 6m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5300MB/7966MB db=9/112
+[2m[status][0m uptime=0d 2h 7m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5300MB/7966MB db=9/112
+[2m[status][0m uptime=0d 2h 8m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5310MB/7966MB db=10/112
+[2m[status][0m uptime=0d 2h 9m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5312MB/7966MB db=10/112
+[2m[status][0m uptime=0d 2h 10m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5306MB/7966MB db=10/112
+[2m[status][0m uptime=0d 2h 11m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5309MB/7966MB db=9/112
+[2m[status][0m uptime=0d 2h 12m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5318MB/7966MB db=10/112
+[2m[status][0m uptime=0d 2h 13m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5326MB/7966MB db=10/112
+[2m[status][0m uptime=0d 2h 14m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5326MB/7966MB db=9/112
+[2m[status][0m uptime=0d 2h 15m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5331MB/7966MB db=10/112
+[2m[status][0m uptime=0d 2h 16m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5332MB/7966MB db=9/112
+[2m[status][0m uptime=0d 2h 17m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5331MB/7966MB db=9/112
+[2m[status][0m uptime=0d 2h 18m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5335MB/7966MB db=9/112
+[2m[status][0m uptime=0d 2h 19m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5346MB/7966MB db=9/112
+[2m[status][0m uptime=0d 2h 20m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5340MB/7966MB db=9/112
+[2m[status][0m uptime=0d 2h 21m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5343MB/7966MB db=10/112
+[2m[status][0m uptime=0d 2h 22m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5348MB/7966MB db=9/112
+[2m[status][0m uptime=0d 2h 23m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5349MB/7966MB db=10/112
+[2m[status][0m uptime=0d 2h 24m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5354MB/7966MB db=9/112
+[2m[status][0m uptime=0d 2h 25m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5341MB/7966MB db=10/112
+[2m[status][0m uptime=0d 2h 26m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5333MB/7966MB db=9/112
+[2m[status][0m uptime=0d 2h 27m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5320MB/7966MB db=9/112
+[2m[status][0m uptime=0d 2h 28m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5313MB/7966MB db=9/112
+[2m[status][0m uptime=0d 2h 29m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5311MB/7966MB db=9/112
+[2m[status][0m uptime=0d 2h 30m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5305MB/7966MB db=10/112
+[2m[status][0m uptime=0d 2h 31m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5306MB/7966MB db=9/112
+[2m[status][0m uptime=0d 2h 32m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5322MB/7966MB db=10/112
+[2m[status][0m uptime=0d 2h 33m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5316MB/7966MB db=9/112
+[2m[status][0m uptime=0d 2h 34m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5323MB/7966MB db=10/112
+[2m[status][0m uptime=0d 2h 35m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5342MB/7966MB db=10/112
+[2m[status][0m uptime=0d 2h 36m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5338MB/7966MB db=10/112
+[2m[status][0m uptime=0d 2h 37m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5341MB/7966MB db=10/112
+[2m[status][0m uptime=0d 2h 38m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5346MB/7966MB db=10/112
+[2m[status][0m uptime=0d 2h 39m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5350MB/7966MB db=10/112
+[2m[status][0m uptime=0d 2h 40m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5348MB/7966MB db=9/112
+[2m[status][0m uptime=0d 2h 41m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5349MB/7966MB db=9/112
+[2m[status][0m uptime=0d 2h 42m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5351MB/7966MB db=10/112
+[2m[status][0m uptime=0d 2h 43m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5353MB/7966MB db=9/112
+[2m[status][0m uptime=0d 2h 44m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5370MB/7966MB db=10/112
+[2m[status][0m uptime=0d 2h 45m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5257MB/7966MB db=10/112
+[2m[status][0m uptime=0d 2h 46m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5322MB/7966MB db=9/112
+[2m[status][0m uptime=0d 2h 47m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5337MB/7966MB db=9/112
+[2m[status][0m uptime=0d 2h 48m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5343MB/7966MB db=10/112
+[2m[status][0m uptime=0d 2h 49m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5352MB/7966MB db=10/112
+[2m[status][0m uptime=0d 2h 50m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5349MB/7966MB db=9/112
+[2m[status][0m uptime=0d 2h 51m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5354MB/7966MB db=10/112
+[2m[status][0m uptime=0d 2h 52m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5361MB/7966MB db=10/112
+[2m[status][0m uptime=0d 2h 53m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5364MB/7966MB db=9/112
+[2m[status][0m uptime=0d 2h 54m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5365MB/7966MB db=9/112
+[2m[status][0m uptime=0d 2h 55m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5322MB/7966MB db=10/112
+[2m[status][0m uptime=0d 2h 56m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5322MB/7966MB db=10/112
+[2m[status][0m uptime=0d 2h 57m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5340MB/7966MB db=9/112
+[2m[status][0m uptime=0d 2h 58m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5404MB/7966MB db=10/112
+[2m[status][0m uptime=0d 2h 59m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5454MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 0m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5462MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 1m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5468MB/7966MB db=9/112
+[2m[status][0m uptime=0d 3h 2m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5464MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 3m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5461MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 4m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5463MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 5m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5394MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 6m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5388MB/7966MB db=9/112
+[2m[status][0m uptime=0d 3h 7m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5388MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 8m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5383MB/7966MB db=9/112
+[2m[status][0m uptime=0d 3h 9m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5380MB/7966MB db=9/112
+[2m[status][0m uptime=0d 3h 10m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5392MB/7966MB db=9/112
+[2m[status][0m uptime=0d 3h 11m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5398MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 12m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5400MB/7966MB db=9/112
+[2m[status][0m uptime=0d 3h 13m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5492MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 14m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5464MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 15m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5377MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 16m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5352MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 17m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5411MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 18m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5363MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 19m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5457MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 20m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5406MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 21m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5497MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 22m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5447MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 23m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5494MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 24m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5480MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 25m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5445MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 26m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5458MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 27m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5354MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 28m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5363MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 29m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5372MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 30m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5395MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 31m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5402MB/7966MB db=9/112
+[2m[status][0m uptime=0d 3h 32m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5409MB/7966MB db=9/112
+[2m[status][0m uptime=0d 3h 33m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5472MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 34m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5510MB/7966MB db=9/112
+[2m[status][0m uptime=0d 3h 35m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5391MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 36m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5400MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 37m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5396MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 38m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5395MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 39m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5385MB/7966MB db=9/112
+[2m[status][0m uptime=0d 3h 40m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5380MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 41m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5389MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 42m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5390MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 43m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5378MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 44m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5369MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 45m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5375MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 46m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5376MB/7966MB db=9/112
+[2m[status][0m uptime=0d 3h 47m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5376MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 48m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5378MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 49m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5388MB/7966MB db=9/112
+[2m[status][0m uptime=0d 3h 50m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5389MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 51m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5393MB/7966MB db=9/112
+[2m[status][0m uptime=0d 3h 52m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5379MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 53m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5389MB/7966MB db=9/112
+[2m[status][0m uptime=0d 3h 54m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5398MB/7966MB db=9/112
+[2m[status][0m uptime=0d 3h 55m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5483MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 56m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5454MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 57m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5518MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 58m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5813MB/7966MB db=10/112
+[2m[status][0m uptime=0d 3h 59m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5887MB/7966MB db=10/112
+[2m[status][0m uptime=0d 4h 0m health=[32mHEALTHY[0m req=0 rps=0.00 avg=0ms cpu=0% mem=5947MB/7966MB db=10/112

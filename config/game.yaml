@@ -1,0 +1,16 @@
+# Game Configuration Example (Stage 1)
+
+universe:
+  galaxies: 5
+  sectorsPerGalaxy: 100
+  planetsPerSector: 10
+ships:
+  - type: "Fighter"
+    attack: 10
+    defense: 5
+    speed: 20
+  - type: "Cruiser"
+    attack: 30
+    defense: 20
+    speed: 10
+# ...extend as needed

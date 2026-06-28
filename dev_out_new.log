@@ -1,0 +1,8 @@
+
+> rest-express@1.0.0 dev
+> tsx script/dev.ts
+
+[dotenv@17.3.1] injecting env (3) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+[dotenv@17.3.1] injecting env (0) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+Port 5001 is already in use. Falling back to port 5002.
+Starting full-stack development server...

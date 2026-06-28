@@ -1,0 +1,58 @@
+name: Laravel Pint PSR-12 Code Style Checker
+
+on:
+  push:
+    branches: [ "main" ]
+    paths-ignore:
+      - 'resources/css/**'
+      - 'resources/js/**'
+      - 'public/css/**'
+      - 'public/js/**'
+      - 'public/mix-manifest.json'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'yarn.lock'
+      - 'webpack.mix.js'
+  pull_request:
+    branches: [ "main" ]
+    paths-ignore:
+      - 'resources/css/**'
+      - 'resources/js/**'
+      - 'public/css/**'
+      - 'public/js/**'
+      - 'public/mix-manifest.json'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'yarn.lock'
+      - 'webpack.mix.js'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  laravel-pint-psr12-code-style-checker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          coverage: none
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v5
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Run Laravel Pint (PSR-12)
+        run: composer run cs -- --verbose -- --test

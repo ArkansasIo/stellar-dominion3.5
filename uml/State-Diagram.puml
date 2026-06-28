@@ -1,0 +1,222 @@
+@startuml
+' State-Diagram.puml — Universe Civilization: Empires at War
+skinparam backgroundColor #0a0a1a
+skinparam state {
+  BackgroundColor #1a1a3a
+  BorderColor #4a9eff
+  FontColor #e0e0ff
+  ArrowColor #c0c0ff
+}
+skinparam stateAttribute {
+  FontColor #a0a0ff
+}
+
+' ============================================================
+' STATE MACHINE 1: PLAYER ACCOUNT
+' ============================================================
+state "Player Account" as ACCOUNT {
+  [*] --> INACTIVE : create account
+
+  state INACTIVE : Email not yet verified
+  state ACTIVE : Normal operation
+  state SUSPENDED : Temporary restriction
+  state BANNED : Permanent ban
+  state DELETED : Account removed
+
+  INACTIVE --> ACTIVE : verify email
+  INACTIVE --> DELETED : cancel registration\n(within 24h)
+
+  ACTIVE --> SUSPENDED : moderator action\n_TO suspension
+  ACTIVE --> BANNED : severe ToS violation
+  ACTIVE --> INACTIVE : email re-verification\nrequired
+
+  SUSPENDED --> ACTIVE : suspension expires\nor admin lifts
+  SUSPENDED --> BANNED : repeat offense\nduring suspension
+
+  BANNED --> DELETED : account purged\nafter appeal window
+  BANNED --> SUSPENDED : successful appeal\n(reduced penalty)
+
+  DELETED --> [*]
+}
+
+' ============================================================
+' STATE MACHINE 2: FLEET
+' ============================================================
+state "Fleet State Machine" as FLEET {
+  [*] --> DOCKED : fleet assembled\nat colony
+
+  state DOCKED : Shipyard / Colony orbit
+  state UNDERWAY : Traveling between systems
+  state IN_ORBIT : Arrived at destination system
+
+  state IN_COMBAT : Engaged with enemy
+  state DAMAGED : Hull below 30%
+  state DESTROYED : All ships lost
+
+  state REPAIRING : At colony repair bay
+  state SCRAPPED : Dismantled for resources
+  state CAPTURED : Taken by enemy
+
+  DOCKED --> UNDERWAY : move order issued
+  DOCKED --> REPAIRING : repair needed
+  DOCKED --> SCRAPPED : scrap order
+
+  UNDERWAY --> IN_ORBIT : arrive at target
+  UNDERWAY --> DOCKED : recall order\n(return to origin)
+  UNDERWAY --> IN_COMBAT : ambushed en route\n/intercepted
+
+  IN_ORBIT --> DOCKED : land at colony
+  IN_ORBIT --> UNDERWAY : new move order
+  IN_ORBIT --> IN_COMBAT : enemy fleet detected\nin system
+
+  IN_COMBAT --> DAMAGED : hull critically low
+  IN_COMBAT --> DESTROYED : fleet wiped out
+  IN_COMBAT --> DOCKED : victorious &\nreturn to base
+  IN_COMBAT --> CAPTURED : boarding success\n(all ships)
+  IN_COMBAT --> IN_ORBIT : retreated from combat
+
+  DAMAGED --> REPAIRING : emergency retreat
+  DAMAGED --> DESTROYED : failed retreat
+  DAMAGED --> IN_COMBAT : no escape forced\n(into next round)
+
+  REPAIRING --> DOCKED : repairs complete
+  REPAIRING --> IN_COMBAT : sortie before\repairs complete\n(emergency)
+
+  CAPTURED --> DOCKED : repurposed by\nnew owner
+  CAPTURED --> SCRAPPED : dismantled by\ncaptor
+
+  DESTROYED --> [*]
+  SCRAPPED --> [*]
+  DOCKED --> [*] : disband fleet
+}
+
+' ============================================================
+' STATE MACHINE 3: BUILDING
+' ============================================================
+state "Building State Machine" as BUILD {
+  [*] --> IDLE : plot available
+
+  state IDLE : Plot available for building
+  state CONSTRUCTING : Being built
+  state ACTIVE : Operational
+  state UPGRADING : Level increase in progress
+  state DAMAGED : Below 50% integrity
+  state DESTROYED : Hit points zero
+  state DEACTIVATED : Manual shutdown
+
+  IDLE --> CONSTRUCTING : start construction
+  IDLE --> DEACTIVATED : building already exists\n(mothball)
+
+  CONSTRUCTING --> ACTIVE : construction complete
+  CONSTRUCTING --> IDLE : construction cancelled\n(refund partial)
+
+  ACTIVE --> UPGRADING : upgrade initiated
+  ACTIVE --> DAMAGED : orbital bombardment\n/enemy action
+  ACTIVE --> DEACTIVATED : manual toggle
+  ACTIVE --> DESTROYED : critical hit
+
+  UPGRADING --> ACTIVE : upgrade complete
+  UPGRADING --> ACTIVE : upgrade cancelled\n(pause/downgrade)
+
+  DAMAGED --> ACTIVE : repairs complete
+  DAMAGED --> DESTROYED : further damage
+  DAMAGED --> DEACTIVATED : emergency shutdown
+
+  DEACTIVATED --> ACTIVE : reactivated
+  DEACTIVATED --> IDLE : dismantle building
+  DEACTIVATED --> DESTROYED : sabotaged while offline
+
+  DESTROYED --> IDLE : debris cleared\n/plot freed
+  DESTROYED --> [*] : plot permanently\ndestroyed
+}
+
+' ============================================================
+' STATE MACHINE 4: PLANET
+' ============================================================
+state "Planet State Machine" as PLANET {
+  [*] --> UNEXPLORED : universe generation
+
+  state UNEXPLORED : Scan required
+  state EXPLORED : Survey data available
+  state COLONIZED : Settled by empire
+  state DEVELOPED : Infrastructure built
+  state TERRAFORMED : Environment optimized
+  state DEPLETED : Resources exhausted
+  state DEVASTATED : Sterilized by war
+
+  UNEXPLORED --> EXPLORED : survey / probe mission
+  UNEXPLORED --> DEVASTATED : planet cracker\n(superweapon)
+
+  EXPLORED --> COLONIZED : colony ship arrives
+  EXPLORED --> UNEXPLORED : data lost\n(event/decay)
+
+  COLONIZED --> DEVELOPED : colony reaches\nlevel 10+
+  COLONIZED --> EXPLORED : colony abandoned
+  COLONIZED --> DEVASTATED : orbital bombardment\n(colony wiped out)
+  COLONIZED --> DEPLETED : over-mining\n(resource < 10%)
+
+  DEVELOPED --> TERRAFORMED : terraforming project\ncompleted
+  DEVELOPED --> COLONIZED : major catastrophe\n(lost development)
+  DEVELOPED --> DEVASTATED : targeted destruction
+  DEVELOPED --> DEPLETED : resource exhaustion
+
+  TERRAFORMED --> DEVELOPED : terraforming fails\n(instability)
+  TERRAFORMED --> DEVASTATED : attacked while\nterraformd
+  TERRAFORMED --> COLONIZED : population\nabandons planet
+
+  DEPLETED --> EXPLORED : natural restoration\n(very slow)
+  DEPLETED --> DEVASTATED : final exploitation
+  DEPLETED --> DEVELOPED : resource discovery\n(new vein)
+
+  DEVASTATED --> EXPLORED : event-based\nrestoration
+  DEVASTATED --> UNEXPLORED : forgotten sector\n(long decay)
+  DEVASTATED --> [*] : planet destroyed\n(removed from game)
+}
+
+' ============================================================
+' STATE MACHINE 5: COMBAT ROUND
+' ============================================================
+state "Combat Round State Machine" as COMBAT {
+  [*] --> INITIATION : combat begins
+
+  state INITIATION : Identify combatants,\ncheck surprise, range calc
+  state MOVEMENT : Positioning phase,\nclosing distance
+  state LONG_RANGE : Range 100+ units\n(fighters, missiles, snipers)
+  state MEDIUM_RANGE : Range 30-100 units\n(lasers, railguns, cannons)
+  state SHORT_RANGE : Range < 30 units\n(plasma, kinetics, torpedoes)
+  state BOARDING : Close quarters\nmarine assault
+  state RETREAT : Disengagement attempt
+  state RESOLUTION : Calculate results,\napply XP, log report
+
+  INITIATION --> MOVEMENT : calculate initial positions
+  INITIATION --> LONG_RANGE : already at range\n(rare)
+
+  MOVEMENT --> LONG_RANGE : closing in
+  MOVEMENT --> RETREAT : flee before engagement
+  MOVEMENT --> BOARDING : both fleets charge\n(ramming range)
+
+  LONG_RANGE --> MEDIUM_RANGE : distance closed
+  LONG_RANGE --> RETREAT : heavy losses,\nfleet morale broken
+  LONG_RANGE --> INITIATION : reinforcements arrived\n(combat reset)
+
+  MEDIUM_RANGE --> SHORT_RANGE : distance closed
+  MEDIUM_RANGE --> LONG_RANGE : disengage to\nlong range (kiting)
+  MEDIUM_RANGE --> RETREAT : tactical withdrawal
+
+  SHORT_RANGE --> BOARDING : boarding-capable\nships close in
+  SHORT_RANGE --> MEDIUM_RANGE : disengage briefly
+  SHORT_RANGE --> RETREAT : desperate retreat
+  SHORT_RANGE --> SHORT_RANGE : continue slugfest
+
+  BOARDING --> SHORT_RANGE : boarding repelled\nor completed
+  BOARDING --> RETREAT : losing side breaks
+  BOARDING --> RESOLUTION : successful capture\n/ decisive win
+
+  RETREAT --> RESOLUTION : escape successful
+  RETREAT --> SHORT_RANGE : escape failed\n(dragged back)
+  RETREAT --> RESOLUTION : fleet destroyed\n(during retreat)
+
+  RESOLUTION --> [*] : combat concluded
+}
+
+@enduml

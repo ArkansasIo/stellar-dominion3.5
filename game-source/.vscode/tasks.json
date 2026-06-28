@@ -1,0 +1,127 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Start Docker Containers",
+            "type": "shell",
+            "command": "docker compose up -d",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "Stop Docker Containers",
+            "type": "shell",
+            "command": "docker compose down",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "Run Laravel Pint (Code Style)",
+            "type": "shell",
+            "command": "docker compose exec ogamex-app composer run cs -- --test",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "Run Laravel Pint (Code Style) and auto fix",
+            "type": "shell",
+            "command": "docker compose exec ogamex-app composer run cs",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "Run PHPStan Analysis",
+            "type": "shell",
+            "command": "docker compose exec ogamex-app composer run stan",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "Run Laravel Tests",
+            "type": "shell",
+            "command": "docker compose exec ogamex-app php artisan test",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "Run Race Condition Tests",
+            "type": "shell",
+            "command": "docker compose exec ogamex-app php artisan test:race-condition-unitqueue && docker compose exec ogamex-app php artisan test:race-condition-game-mission",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "Build CSS (watch)",
+            "type": "shell",
+            "command": "npm install && npm run dev watch",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "Open Docker App Container Terminal",
+            "type": "shell",
+            "command": "docker compose exec ogamex-app bash",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new",
+                "focus": true,
+                "echo": true,
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "isBackground": true
+        }
+    ]
+}

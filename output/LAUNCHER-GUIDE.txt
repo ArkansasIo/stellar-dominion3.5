@@ -1,0 +1,214 @@
+╔══════════════════════════════════════════════════════════════════╗
+║                                                                  ║
+║     UNIVERSE EMPIRE DOMINION - LAUNCHER GUIDE                   ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+
+🚀 THREE WAYS TO START THE GAME:
+
+───────────────────────────────────────────────────────────────────
+1. FULL LAUNCHER (RECOMMENDED) ⭐
+───────────────────────────────────────────────────────────────────
+
+   Double-click: UniverseEmpireDominion-Launcher.exe
+
+   Features:
+   ✓ Starts server automatically
+   ✓ Opens browser automatically
+   ✓ Monitors server health
+   ✓ Shows real-time status
+   ✓ Single window management
+   ✓ Clean shutdown with Ctrl+C
+
+   What you'll see:
+   - Server startup progress
+   - Browser launch confirmation
+   - Live status updates every 5 seconds
+   - Server online/offline indicator
+   - Client connection status
+
+───────────────────────────────────────────────────────────────────
+2. BATCH FILE LAUNCHER
+───────────────────────────────────────────────────────────────────
+
+   Double-click: START-GAME.bat
+
+   Features:
+   ✓ Starts server in separate window
+   ✓ Starts client in separate window
+   ✓ Simple and straightforward
+   ✓ Two windows to manage
+
+───────────────────────────────────────────────────────────────────
+3. MANUAL LAUNCH
+───────────────────────────────────────────────────────────────────
+
+   Step 1: Start Server
+   - Go to: server/
+   - Double-click: UniverseEmpireDominion-windows.exe
+   - Wait for: "Server running on http://localhost:3000"
+
+   Step 2: Start Client
+   - Go to: client/
+   - Double-click: UniverseEmpireDominion-Client-windows.exe
+   - Browser opens automatically
+
+   OR just open browser manually:
+   - Go to: http://localhost:3000
+
+───────────────────────────────────────────────────────────────────
+
+📦 WHAT'S INCLUDED:
+
+Main Launcher:
+  UniverseEmpireDominion-Launcher.exe
+  └─ Full-featured launcher with monitoring
+
+Alternative Launchers:
+  START-GAME.bat
+  └─ Simple batch file launcher
+
+Server Backend:
+  server/UniverseEmpireDominion-windows.exe
+  └─ Game server with all logic and APIs
+
+Client Launcher:
+  client/UniverseEmpireDominion-Client-windows.exe
+  └─ Browser launcher with monitoring
+
+Configuration:
+  server/.env.local
+  └─ Server configuration file
+
+Documentation:
+  README.md - Complete guide
+  QUICK-START.txt - Quick reference
+  LAUNCHER-GUIDE.txt - This file
+
+───────────────────────────────────────────────────────────────────
+
+🎮 USING THE FULL LAUNCHER:
+
+1. Double-click UniverseEmpireDominion-Launcher.exe
+
+2. You'll see:
+   ═══════════════════════════════════════════════════════
+     UNIVERSE EMPIRE DOMINION - GAME LAUNCHER
+   ═══════════════════════════════════════════════════════
+   
+   ▶ Checking Prerequisites
+   ─────────────────────────────────────────────────────
+   ✓ Server executable found
+   ✓ Configuration file found
+   
+   ▶ Starting Server Backend
+   ─────────────────────────────────────────────────────
+   ℹ Launching server process...
+   ℹ Waiting for server to be ready...
+   ✓ Server is running on http://localhost:3000
+   
+   ▶ Opening Game Client
+   ─────────────────────────────────────────────────────
+   ✓ Game opened in browser
+   
+   ▶ Status Monitor Active
+   ─────────────────────────────────────────────────────
+   ℹ Monitoring server health every 5 seconds...
+   ℹ Press Ctrl+C to stop the game
+   
+   [2:00:00 PM] Server: ● ONLINE | Client: ● OPEN
+
+3. Play the game in your browser!
+
+4. When done, press Ctrl+C in the launcher window
+
+5. Launcher will:
+   ▶ Shutting Down
+   ─────────────────────────────────────────────────────
+   ℹ Stopping server...
+   ✓ Cleanup complete
+   ℹ Thank you for playing Universe Empire Dominion!
+
+───────────────────────────────────────────────────────────────────
+
+⚙️ CONFIGURATION:
+
+Before first run, ensure:
+✓ PostgreSQL is installed and running
+✓ Database "universe_empire" exists
+✓ server/.env.local is configured
+
+Default configuration (server/.env.local):
+  DATABASE_URL=postgresql://postgres:postgres@localhost:5432/universe_empire
+  PORT=3000
+  NODE_ENV=production
+  SESSION_SECRET=universe-empire-dominion-secret-key
+
+───────────────────────────────────────────────────────────────────
+
+🔧 TROUBLESHOOTING:
+
+Launcher won't start:
+→ Check if server executable exists in server/ folder
+→ Verify .env.local configuration
+→ Ensure PostgreSQL is running
+
+Server fails to start:
+→ Check PostgreSQL connection
+→ Verify database exists
+→ Check if port 3000 is available
+→ Review server/.env.local settings
+
+Browser doesn't open:
+→ Manually open: http://localhost:3000
+→ Check if server is running
+→ Try different browser
+
+Connection lost during play:
+→ Launcher will show warning
+→ Check server window for errors
+→ Restart launcher if needed
+
+───────────────────────────────────────────────────────────────────
+
+💡 TIPS:
+
+• Use the Full Launcher for best experience
+• Keep launcher window open while playing
+• Monitor status updates for server health
+• Press Ctrl+C for clean shutdown
+• Check server window for detailed logs
+
+───────────────────────────────────────────────────────────────────
+
+📊 LAUNCHER FEATURES:
+
+✓ Automatic server startup
+✓ Automatic browser launch
+✓ Real-time health monitoring
+✓ Status indicators (● ONLINE/OFFLINE)
+✓ Clean shutdown handling
+✓ Error detection and reporting
+✓ Colored console output
+✓ Timestamped logs
+✓ Process management
+✓ Connection monitoring
+
+───────────────────────────────────────────────────────────────────
+
+🌟 RECOMMENDED WORKFLOW:
+
+1. Start: Double-click UniverseEmpireDominion-Launcher.exe
+2. Play: Game opens in browser automatically
+3. Monitor: Watch status in launcher window
+4. Stop: Press Ctrl+C in launcher window
+
+That's it! Simple and efficient.
+
+───────────────────────────────────────────────────────────────────
+
+Version: 1.0.0
+Platform: Windows x64
+Build: 2026-06-15
+
+Enjoy the game! 🚀🌌

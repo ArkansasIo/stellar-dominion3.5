@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Light Mode / Steel Theme */
+    --background: 210 20% 98%;
+    --foreground: 220 40% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 40% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 40% 10%;
+
+    --primary: 210 100% 45%; /* Steel Blue */
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 20% 90%; /* Light Steel */
+    --secondary-foreground: 220 40% 10%;
+
+    --muted: 210 20% 90%;
+    --muted-foreground: 215 20% 40%;
+
+    --accent: 210 100% 45%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 85% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 215 20% 85%;
+    --input: 215 20% 85%;
+    --ring: 210 100% 45%;
+
+    --radius: 0.25rem;
+  }
+
+  .dark {
+    --background: 220 30% 8%;
+    --foreground: 210 40% 98%;
+
+    --card: 220 30% 12%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 220 30% 12%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 100% 50%;
+    --primary-foreground: 220 30% 8%;
+
+    --secondary: 220 30% 18%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 220 30% 18%;
+    --muted-foreground: 215 20% 60%;
+
+    --accent: 210 100% 50%;
+    --accent-foreground: 220 30% 8%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 215 20% 25%;
+    --input: 215 20% 25%;
+    --ring: 210 100% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Rajdhani', sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Orbitron', sans-serif;
+    @apply tracking-wide;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary));
+}
+
+.glass-panel {
+  @apply bg-card/80 backdrop-blur-md border border-border shadow-sm;
+}
+
+.tech-border {
+  position: relative;
+  @apply border border-primary/20;
+}
+
+.tech-border::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, hsl(var(--primary)), transparent);
+  opacity: 0.5;
+}
+
+/* Font utility classes */
+.font-orbitron {
+  font-family: 'Orbitron', sans-serif;
+}
+
+.font-rajdhani {
+  font-family: 'Rajdhani', sans-serif;
+}

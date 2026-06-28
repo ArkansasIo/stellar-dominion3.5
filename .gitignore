@@ -4,6 +4,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+lerna-debug.log*
+yarn.lock
+pnpm-lock.yaml
 
 # Build outputs
 dist
@@ -11,12 +14,16 @@ dist-ssr
 build
 .next
 out
+*.local
 .turbo
 output/
 
 # Environment variables (IMPORTANT: Never commit these!)
 .env
 .env.local
+.env.development.local
+.env.test.local
+.env.production.local
 .env.*.local
 
 # Sensitive credentials
@@ -31,16 +38,31 @@ output/
 *.swp
 *.swo
 *~
+.project
+.classpath
+.settings
+.factorypath
 
 # OS files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
 desktop.ini
 
 # Logs
 logs/
+logs
 *.log
+debug
 *.log.*
+lerna-debug.log*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # Testing
 coverage
@@ -51,6 +73,21 @@ coverage
 # Temporary files
 *.tmp
 *.temp
+.tmp
+.temp
+
+# Replit specific
+.replit
+.breakpoints
+replit.nix
+.upm
+.config/configstore
+
+# Local state
+.local
+server/public
+vite.config.ts.*
+dev-server.*
 
 # Archives
 *.tar.gz
@@ -69,6 +106,9 @@ ssl/
 *.key
 *.crt
 
+# Docker
+.dockerignore
+
 # Python
 __pycache__/
 *.pyc
@@ -77,3 +117,9 @@ __pycache__/
 .vercel
 .netlify
 .railway
+
+# Environment files
+*.env
+*.env.*
+script/__pycache__/
+ogamex-source/.git-vendored-backup/

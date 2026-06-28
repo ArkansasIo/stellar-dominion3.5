@@ -1,0 +1,207 @@
+/**
+ * Tech Tree Visualization Styles
+ */
+
+.tech-tree-visualization {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tech-tree-controls {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-wrap: wrap;
+}
+
+.control-group {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.view-mode-btn,
+.tech-tree-controls button {
+  padding: 0.5rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+}
+
+.view-mode-btn:hover,
+.tech-tree-controls button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.view-mode-btn.active {
+  background: #4CAF50;
+  border-color: #45a049;
+  color: #fff;
+}
+
+.tech-tree-stats {
+  display: flex;
+  gap: 1rem;
+  margin-left: auto;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.tech-tree-stats span {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.tech-tree-svg {
+  flex: 1;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.02) 1px,
+    transparent 1px
+  ),
+  linear-gradient(
+    rgba(255, 255, 255, 0.02) 1px,
+    transparent 1px
+  );
+  background-size: 50px 50px;
+  cursor: grab;
+  user-select: none;
+}
+
+.tech-tree-svg:active {
+  cursor: grabbing;
+}
+
+.connections {
+  pointer-events: none;
+}
+
+.tech-connection {
+  stroke: rgba(255, 255, 255, 0.2);
+  stroke-linecap: round;
+  transition: stroke 0.2s;
+}
+
+.tech-connection:hover {
+  stroke: rgba(255, 255, 255, 0.5);
+  stroke-width: 3 !important;
+}
+
+.tech-node {
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+
+.tech-node:hover circle {
+  filter: brightness(1.2);
+}
+
+.tech-node circle {
+  transition: all 0.2s;
+  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.5));
+}
+
+.tech-node text {
+  user-select: none;
+  pointer-events: none;
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
+}
+
+.tech-details-panel {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 1rem;
+  color: #fff;
+  max-width: 300px;
+  z-index: 10;
+  font-size: 0.9rem;
+}
+
+.tech-details-panel h3 {
+  margin: 0 0 0.5rem 0;
+  color: #4CAF50;
+  font-size: 1.1rem;
+}
+
+.tech-details-panel p {
+  margin: 0.25rem 0;
+  color: rgba(255, 255, 255, 0.8);
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+}
+
+.tech-tree-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #fff;
+  font-size: 1.1rem;
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+  border-radius: 8px;
+}
+
+/* Tier-specific colors */
+.tier-basic {
+  fill: #888;
+}
+
+.tier-standard {
+  fill: #4CAF50;
+}
+
+.tier-advanced {
+  fill: #2196F3;
+}
+
+.tier-military {
+  fill: #FF9800;
+}
+
+.tier-experimental {
+  fill: #9C27B0;
+}
+
+.tier-ancient {
+  fill: #FFD700;
+}
+
+.tier-exotic {
+  fill: #00BCD4;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .tech-tree-controls {
+    gap: 1rem;
+  }
+
+  .tech-tree-stats {
+    display: none;
+  }
+
+  .tech-details-panel {
+    bottom: auto;
+    top: 4rem;
+    right: 0.5rem;
+    left: 0.5rem;
+    max-width: none;
+  }
+}

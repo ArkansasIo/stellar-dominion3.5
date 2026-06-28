@@ -1,0 +1,282 @@
+@startuml
+' Component-Diagram.puml — Universe Civilization: Empires at War
+skinparam backgroundColor #0a0a1a
+skinparam component {
+  BackgroundColor #1a2a2a
+  BorderColor #4affaa
+  FontColor #e0ffe0
+}
+skinparam interface {
+  BorderColor #ffaa4a
+  BackgroundColor #2a1a0a
+  FontColor #ffe0b0
+}
+skinparam arrow {
+  Color #c0c0ff
+}
+skinparam node {
+  BorderColor #4a9eff
+  BackgroundColor #0a0a2a
+  FontColor #4a9eff
+}
+
+' ===== CLIENT (React SPA) =====
+node "Client Browser" as CLIENT {
+  component "React SPA" as REACT_SPA {
+    component "Pages" as PAGES {
+      [DashboardPage]
+      [LoginPage]
+      [GalaxyMapPage]
+      [ColonyPage]
+      [FleetPage]
+      [CombatPage]
+      [ResearchPage]
+      [MarketPage]
+      [AlliancePage]
+      [SettingsPage]
+      [AdminPanel]
+    }
+
+    component "Components" as COMPONENTS {
+      [ResourceBar]
+      [Minimap]
+      [ShipViewer]
+      [TechTree]
+      [BuildingList]
+      [ChatPanel]
+      [NotificationCenter]
+      [Leaderboard]
+      [PlanetViewer]
+      [FleetComposition]
+      [ConstructionQueue]
+      [CrewManager]
+    }
+
+    component "State Management" as STATE {
+      [Redux Store]
+      [GameStateSlice]
+      [EmpireSlice]
+      [FleetSlice]
+      [ColonySlice]
+      [CombatSlice]
+      [ResearchSlice]
+      [MarketSlice]
+      [AllianceSlice]
+      [UISlice]
+      [NotificationSlice]
+    }
+
+    component "Custom Hooks" as HOOKS {
+      [useGameLoop]
+      [useWebSocket]
+      [useResourcePolling]
+      [useFleetMovement]
+      [useCombatUpdates]
+      [useNotifications]
+      [useKeyboardShortcuts]
+      [useAudio]
+    }
+
+    component "Services" as SRV {
+      [AuthService]
+      [ApiService]
+      [WebSocketService]
+      [LocalStorageService]
+      [AudioService]
+      [NotificationService]
+    }
+
+    component "Utils" as UTILS {
+      [Formatters]
+      [Validators]
+      [Coordinates]
+      [CombatCalculations]
+      [ResourceCalculations]
+      [TimeUtils]
+      [Constants]
+    }
+  }
+}
+
+' ===== SERVER =====
+node "Web Servers" as SERVER {
+  component "Express Application" as EXPRESS {
+    component "Middleware Stack" as MIDDLEWARE {
+      [RateLimiter]
+      [AuthMiddleware]
+      [SessionValidator]
+      [RequestLogger]
+      [CorsHandler]
+      [ErrorHandler]
+      [Compression]
+      [HelmetSecurity]
+    }
+
+    component "API Routes" as ROUTES {
+      package "Routes v1" as ROUTES_V1 {
+        [AuthRoutes] as AR : /api/v1/auth
+        [PlayerRoutes] as PR : /api/v1/players
+        [EmpireRoutes] as ER : /api/v1/empires
+        [ColonyRoutes] as CR : /api/v1/colonies
+        [BuildingRoutes] as BR : /api/v1/buildings
+        [FleetRoutes] as FR : /api/v1/fleets
+        [ShipRoutes] as SR : /api/v1/ships
+        [CombatRoutes] as COR : /api/v1/combat
+        [ResearchRoutes] as RR : /api/v1/research
+        [MarketRoutes] as MR : /api/v1/market
+        [AllianceRoutes] as ALR : /api/v1/alliances
+        [MessageRoutes] as MSR : /api/v1/messages
+        [AdminRoutes] as ADR : /api/v1/admin
+        [UniverseRoutes] as UR : /api/v1/universe
+      }
+    }
+
+    component "Service Layer" as SERVICES {
+      [AuthService]
+      [PlayerService]
+      [EmpireService]
+      [ColonyService]
+      [BuildingService]
+      [FleetService]
+      [CombatService]
+      [ResearchService]
+      [MarketService]
+      [AllianceService]
+      [MessageService]
+      [UniverseService]
+      [EventService]
+      [NotificationService]
+    }
+
+    component "Game Logic Engine" as GAME_LOGIC {
+      [CombatEngine]
+      [ResourceEngine]
+      [MovementEngine]
+      [ConstructionEngine]
+      [ResearchEngine]
+      [MarketEngine]
+      [DiplomacyEngine]
+      [ExplorationEngine]
+      [CrewEngine]
+      [EventEngine]
+    }
+
+    component "WebSocket Handler" as WS {
+      [WsConnectionManager]
+      [GameStateSync]
+      [FleetMovementTracker]
+      [CombatReplayStream]
+      [ChatHandler]
+      [NotificationDispatcher]
+      [HeartbeatMonitor]
+    }
+
+    component "Database Layer" as DB_LAYER {
+      [Models]
+      [Repositories]
+      [QueryBuilders]
+      [Migrations]
+      [Seeders]
+      [ConnectionPool]
+    }
+  }
+}
+
+' ===== SHARED =====
+node "Shared Libraries" as SHARED {
+  component "Shared" as SHARED_PKG {
+    [GameTypes]
+    [ApiTypes]
+    [SocketEvents]
+    [GameConstants]
+    [ResourceFormulas]
+    [CombatFormulas]
+    [TechTreeDefinitions]
+    [ShipBlueprints]
+    [BuildingDefinitions]
+    [PlanetGeneration]
+    [ValidationRules]
+    [i18nStrings]
+  }
+}
+
+' ===== EXTERNAL =====
+node "External Infrastructure" as EXTERNAL {
+  component "PostgreSQL" as DB {
+    [Primary Database]
+    [Read Replicas]
+  }
+
+  component "Redis Cluster" as REDIS {
+    [Session Cache]
+    [Game State Cache]
+    [Rate Limit Counters]
+    [Message Queue]
+    [Real-Time Leaderboard]
+    [Combat State Store]
+  }
+
+  component "File Storage" as FS {
+    [Avatar Images]
+    [Emblem Images]
+    [Save Game Exports]
+    [Log Archives]
+  }
+
+  component "Message Queue" as MQ {
+    [Combat Events]
+    [Resource Updates]
+    [Email Dispatch]
+    [Notification Queue]
+  }
+}
+
+' ===== INTERFACES =====
+interface IApiClient as API_IF
+interface IWebSocket as WS_IF
+interface IDatabase as DB_IF
+interface ICache as CACHE_IF
+interface IMessageQueue as MQ_IF
+interface IFileStorage as FILE_IF
+interface ISharedTypes as SHARED_IF
+
+' ===== DEPENDENCIES =====
+CLIENT --> API_IF : HTTP/REST
+CLIENT --> WS_IF : WebSocket
+
+API_IF -up- SERVER
+WS_IF -up- SERVER
+
+SERVER --> DB_IF
+SERVER --> CACHE_IF
+SERVER --> MQ_IF
+SERVER --> SHARED_IF
+
+SHARED --> SHARED_IF
+
+DB_IF -down- DB
+CACHE_IF -down- REDIS
+MQ_IF -down- MQ
+FILE_IF -down- FS
+
+' Internal client dependencies
+PAGES --> COMPONENTS : uses
+PAGES --> STATE : dispatches
+PAGES --> HOOKS : uses
+COMPONENTS --> STATE : reads
+COMPONENTS --> HOOKS : uses
+HOOKS --> SRV : calls
+SRV --> UTILS : uses
+PAGES --> SRV : direct calls
+STATE --> SRV : thunks
+
+' Internal server dependencies
+ROUTES --> MIDDLEWARE : piped through
+ROUTES --> SERVICES : delegates to
+SERVICES --> GAME_LOGIC : core engine
+SERVICES --> DB_LAYER : persistence
+SERVICES --> WS : push updates
+WS --> DB_LAYER : read/write
+DB_LAYER --> SHARED : uses types
+
+@enduml

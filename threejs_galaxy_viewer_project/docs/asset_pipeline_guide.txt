@@ -1,0 +1,32 @@
+Galaxy Viewer Asset Pipeline Guide
+
+Browser-first folders:
+- assets/textures/png : UI-safe textures, decals, icons, transparency maps
+- assets/textures/jpg : large skyboxes, nebula backgrounds, matte planet surfaces
+- assets/textures/bmp : raw source textures before compression
+- assets/textures/tga : game-pipeline texture exchange format
+- assets/textures/dds : GPU-ready compressed textures for engine export
+- assets/models/obj : quick static meshes
+- assets/models/fbx : animated authoring source files
+- assets/models/gltf-glb : preferred modern runtime format for web delivery
+- assets/models/dae : interchange scenes and station layouts
+- assets/models/j3o : jMonkeyEngine-ready compiled assets
+
+Recommended web runtime flow:
+1. Author in FBX, OBJ, or DAE.
+2. Export runtime copies to GLTF or GLB for browser delivery.
+3. Keep large source textures in JPG or TGA.
+4. Generate PNG for transparent overlays and UI-safe decals.
+5. Generate DDS only when your engine build step supports GPU compression.
+
+Recommended Java engine flow:
+- jMonkeyEngine: keep source files in OBJ, FBX, GLTF, or DAE, then convert to J3O during import.
+- LWJGL or custom engine: load GLTF/GLB or OBJ, keep DDS/TGA as optional optimized textures.
+- Desktop tooling: keep authoring files in resources/3d/source and copy optimized runtime assets to public/assets/3d.
+
+Starter naming convention:
+- ships/ship_frigate_a
+- stations/station_trade_hub_a
+- planets/planet_verdant_01
+- sky/nebula_blue_01
+- ui/sector_grid_01

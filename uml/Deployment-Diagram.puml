@@ -1,0 +1,212 @@
+@startuml
+' Deployment-Diagram.puml — Universe Civilization: Empires at War
+skinparam backgroundColor #0a0a1a
+skinparam node {
+  BackgroundColor #1a1a3a
+  BorderColor #4a9eff
+  FontColor #e0e0ff
+}
+skinparam database {
+  BackgroundColor #1a2a1a
+  BorderColor #4aff9e
+  FontColor #e0ffe0
+}
+skinparam cloud {
+  BackgroundColor #2a1a0a
+  BorderColor #ff9e4a
+  FontColor #ffe0b0
+}
+skinparam artifact {
+  BackgroundColor #3a1a3a
+  BorderColor #ff4aff
+  FontColor #ffe0ff
+}
+skinparam actor {
+  BorderColor #ff8844
+  FontColor #ffe0b0
+}
+skinparam rectangle {
+  BackgroundColor #0d0d2a
+  BorderColor #4a9eff
+  FontColor #a0a0ff
+}
+skinparam arrow {
+  Color #c0c0ff
+  FontColor #c0c0ff
+}
+
+actor "Browser" as BROWSER
+
+cloud "CDN" as CDN {
+  node "CloudFront / Cloudflare" as CDN_NODE {
+    [Static Assets\n(JS/CSS/Images)]
+    [Cached API Responses]
+    [WebSocket Proxy]
+  }
+}
+
+node "Load Balancer" as LB {
+  [HAProxy / NGINX]
+  [SSL Termination]
+  [Rate Limiting]
+  [Health Checks]
+  [WebSocket Upgrades]
+  port "443" as LB_HTTPS
+  port "80" as LB_HTTP
+  port "7000-7010" as LB_WS
+}
+
+node "Web Server Cluster" as WEB {
+  node "Web Server 1" as WEB1 {
+    artifact "Express App\nInstance 1" as APP1
+    port "3000" as W1_PORT
+  }
+  node "Web Server 2" as WEB2 {
+    artifact "Express App\nInstance 2" as APP2
+    port "3000" as W2_PORT
+  }
+  node "Web Server N" as WEBN {
+    artifact "Express App\nInstance N" as APPN
+    port "3000" as WN_PORT
+  }
+  [Horizontal Auto-Scaler\n(CPU > 70%)]
+}
+
+node "Game Server Cluster" as GAME {
+  node "Game Server 1" as GAME1 {
+    artifact "Game Engine\nInstance 1" as GE1
+    port "8080" as G1_PORT
+    node "Combat\nProcessor" as CP1
+    node "Resource\nEngine" as RE1
+  }
+  node "Game Server 2" as GAME2 {
+    artifact "Game Engine\nInstance 2" as GE2
+    port "8080" as G2_PORT
+    node "Combat\nProcessor" as CP2
+    node "Resource\nEngine" as RE2
+  }
+  [Game State\nPartition Manager]
+  note right of GAME
+    Sharded by galaxy region
+    Combat instances isolated
+    Real-time tick processing
+  end note
+}
+
+node "WebSocket\nGateway" as WSGW {
+  artifact "Socket.IO Cluster" as SIO
+  port "7000-7010" as WSPORT
+  [Redis Adapter]
+  [Sticky Sessions]
+}
+
+node "Cache Layer" as CACHE {
+  database "Redis Primary" as REDIS_P
+  database "Redis Replica 1" as REDIS_R1
+  database "Redis Replica 2" as REDIS_R2
+  [Sentinel Manager]
+  note right of REDIS_P
+    Session data
+    Fleet positions
+    Combat state
+    Market orders
+    Leaderboards
+  end note
+}
+
+node "Database Primary" as DB_P {
+  database "PostgreSQL 16\nPrimary" as PG_P
+  [WAL Archiver]
+  port "5432" as DB_PORT
+  note right of DB_P
+    All writes go here
+    Transaction logs
+    WAL streaming to replicas
+  end note
+}
+
+node "Database Replicas" as DB_R {
+  database "Replica 1\n(Read)" as PG_R1
+  database "Replica 2\n(Read)" as PG_R2
+  database "Replica 3\n(Backup/DR)" as PG_R3
+  [PgBouncer\nConnection Pool]
+  [Read Load Balancer]
+  port "5432" as REP_PORT
+}
+
+node "Message Queue" as MQ {
+  [RabbitMQ Cluster]
+  [Combat Queue]
+  [Resource Tick Queue]
+  [Email Queue]
+  [Notification Queue]
+  [Event Bus]
+}
+
+node "File Storage" as FILES {
+  [S3-Compatible\nObject Storage]
+  [Player Avatars]
+  [Emblems]
+  [Battle Replays]
+  [Export Archives]
+  [Logs]
+}
+
+node "Monitoring" as MON {
+  [Prometheus]
+  [Grafana Dashboards]
+  [ELK Stack]
+  [AlertManager]
+  [PagerDuty]
+}
+
+' ===== NETWORK CONNECTIONS =====
+BROWSER -left-> CDN : HTTPS (443)
+CDN <--> LB : HTTPS / WSS (443/7000)
+
+LB <--> WEB : HTTP/2 (3000)
+LB <--> WSGW : WebSocket (7000-7010)
+
+WEB <--> GAME : gRPC (50051)
+WEB <--> CACHE : Redis Protocol (6379)
+
+GAME <--> CACHE : Redis Protocol (6379)
+GAME <--> MQ : AMQP (5672)
+
+WSGW <--> GAME : Internal Events
+WSGW <--> CACHE : Pub/Sub
+
+WEB --> DB_P : SQL (5432)
+WEB --> DB_R : SQL (5432, read-only)
+GAME --> DB_P : SQL (5432)
+GAME --> DB_R : SQL (5432, read-only)
+
+MQ <--> DB_P : Persistence
+
+MON --> ALL : Metrics Export\n(Prometheus :9090)
+
+FILES -right-> WEB : HTTP (443, presigned URLs)
+FILES -right-> GAME : HTTP (443, presigned URLs)
+
+' ===== LEGEND =====
+rectangle "#legend" as LEGEND {
+  rectangle "  HTTP/HTTPS  " as L_HTTP #transparent
+  rectangle "  WebSocket  " as L_WS #transparent
+  rectangle "  gRPC  " as L_GRPC #transparent
+  rectangle "  Redis  " as L_REDIS #transparent
+  rectangle "  SQL  " as L_SQL #transparent
+  rectangle "  AMQP  " as L_AMQP #transparent
+}
+legend right
+  | Protocol | Port |
+  |---|---|
+  | HTTPS | 443 |
+  | HTTP | 80 |
+  | WebSocket | 7000-7010 |
+  | gRPC | 50051 |
+  | Redis | 6379 |
+  | SQL | 5432 |
+  | AMQP | 5672 |
+end legend
+
+@enduml

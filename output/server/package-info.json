@@ -1,0 +1,35 @@
+{
+  "name": "UniverseEmpireDominion",
+  "version": "1.0.0",
+  "description": "Universe Empire Dominion - Space Strategy MMORPG",
+  "platforms": [
+    "windows",
+    "linux",
+    "macos",
+    "raspberry-pi"
+  ],
+  "buildDate": "2026-06-15T20:48:57.999Z",
+  "requirements": {
+    "postgresql": "14.x or higher",
+    "port": 3000,
+    "memory": "2GB minimum, 4GB recommended",
+    "storage": "5GB free space"
+  },
+  "files": [
+    {
+      "name": "README.txt",
+      "size": 1543,
+      "sizeMB": "0.00"
+    },
+    {
+      "name": "start-server.sh",
+      "size": 534,
+      "sizeMB": "0.00"
+    },
+    {
+      "name": "start-windows.bat",
+      "size": 205,
+      "sizeMB": "0.00"
+    }
+  ]
+}

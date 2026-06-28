@@ -1,0 +1,18 @@
+
+> rest-express@1.0.0 dev
+> tsx script/dev.ts
+
+[dotenv@17.3.1] injecting env (0) from .env -- tip: 🤖 agentic secret storage: https://dotenvx.com/as2
+[dotenv@17.3.1] injecting env (0) from .env -- tip: ⚙️  suppress all logs with { quiet: true }
+Set DATABASE_URL from hardcoded value
+Starting full-stack development server...
+[dotenv@17.3.1] injecting env (2) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+[dotenv@17.3.1] injecting env (3) from .env.local -- tip: 🛡️ auth for agents: https://vestauth.com
+[dotenv@17.3.1] injecting env (0) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+🔌 Connecting to database...
+Resource service started!
+Fleet service started!
+Technology service started!
+Game engine started!
+✅ Database connection established
+10:49:29 PM ⚠️ [33m[AUTH]    [0m [1mDEV_AUTH_BYPASS is enabled; protected routes will auto-authenticate locally[0m  

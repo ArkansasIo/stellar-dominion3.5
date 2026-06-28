@@ -1,0 +1,128 @@
+.sd-panel,
+.sd-panel-surface,
+.sd-detail-card,
+.sd-command-tile,
+.sd-subpage-card,
+.sd-resource-chip,
+.sd-turn-chip {
+  position: relative;
+  isolation: isolate;
+  border: 1px solid var(--sd-panel-border);
+  background: linear-gradient(180deg, var(--sd-panel-top), var(--sd-panel-bottom));
+  box-shadow:
+    0 0 12px var(--sd-panel-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.sd-panel::before,
+.sd-panel-surface::before,
+.sd-detail-card::before,
+.sd-command-tile::before,
+.sd-subpage-card::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 28%);
+  pointer-events: none;
+}
+
+.sd-panel-header {
+  position: relative;
+  border-bottom: 1px solid rgba(110, 197, 255, 0.18);
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.sd-panel-header::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(79, 212, 255, 0.6), transparent);
+}
+
+.sd-subpage-card,
+.sd-detail-card,
+.sd-command-tile {
+  clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px);
+}
+
+.sd-command-tile {
+  overflow: hidden;
+}
+
+.sd-subpage-card,
+.sd-detail-card,
+.sd-command-tile,
+.sd-panel-surface {
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease,
+    background 180ms ease;
+}
+
+.sd-subpage-card:hover,
+.sd-command-tile:hover,
+.sd-panel-surface:hover {
+  border-color: rgba(79, 212, 255, 0.48);
+  box-shadow:
+    0 0 18px rgba(0, 200, 255, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.sd-detail-card:hover {
+  border-color: rgba(79, 212, 255, 0.35);
+  box-shadow:
+    0 0 16px rgba(0, 200, 255, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.sd-resource-chip .sd-resource-value {
+  font-family: var(--sd-font-display);
+}
+
+.sd-resource-chip[data-resource="metal"] .sd-resource-value {
+  color: var(--sd-resource-metal);
+}
+
+.sd-resource-chip[data-resource="crystal"] .sd-resource-value {
+  color: var(--sd-resource-crystal);
+}
+
+.sd-resource-chip[data-resource="deuterium"] .sd-resource-value,
+.sd-resource-chip[data-resource="water"] .sd-resource-value {
+  color: var(--sd-resource-science);
+}
+
+.sd-resource-chip[data-resource="energy"] .sd-resource-value,
+.sd-resource-chip[data-resource="credits"] .sd-resource-value {
+  color: var(--sd-resource-energy);
+}
+
+.sd-resource-chip[data-resource="food"] .sd-resource-value {
+  color: var(--sd-resource-alloy);
+}
+
+.sd-submenu-indicator,
+.sd-collapsed-notice {
+  background: linear-gradient(180deg, rgba(33, 48, 64, 0.82), rgba(12, 19, 28, 0.82));
+  border-color: rgba(79, 212, 255, 0.16);
+  box-shadow:
+    0 0 12px rgba(0, 150, 255, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.sd-collapsed-notice {
+  background:
+    linear-gradient(180deg, rgba(28, 40, 54, 0.9), rgba(11, 18, 27, 0.88)),
+    radial-gradient(circle at top right, rgba(79, 212, 255, 0.12), transparent 36%);
+}
+
+.sd-eyebrow {
+  color: var(--sd-text-highlight);
+  font-family: var(--sd-font-display);
+  letter-spacing: 0.16em;
+  text-shadow: 0 0 8px rgba(79, 212, 255, 0.14);
+}

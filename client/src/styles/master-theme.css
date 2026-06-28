@@ -1,0 +1,229 @@
+@import "./sub/button-system.css";
+@import "./sub/panel-system.css";
+@import "./sub/sidebar-system.css";
+@import "./sub/background-system.css";
+@import "./sub/navigation-system.css";
+@import "./sub/form-system.css";
+@import "./sub/data-system.css";
+
+:root[data-sd-theme="black-style"] {
+  --sd-cut-corner: 6px;
+  --sd-font-display: "Orbitron", sans-serif;
+  --sd-font-ui: "Rajdhani", sans-serif;
+
+  --sd-theme-surface: dark;
+
+  --sd-text-primary: #e8f4ff;
+  --sd-text-secondary: #9bb6c9;
+  --sd-text-highlight: #4fd4ff;
+
+  --sd-button-top: #2f3c4d;
+  --sd-button-bottom: #1c2633;
+  --sd-button-top-hover: #3f5f7a;
+  --sd-button-bottom-hover: #20354a;
+  --sd-button-top-active: #00a8ff;
+  --sd-button-bottom-active: #005a8d;
+  --sd-button-frame: #4f6b86;
+  --sd-button-frame-active: #2bd1ff;
+
+  --sd-panel-top: rgba(20, 30, 40, 0.95);
+  --sd-panel-bottom: rgba(10, 15, 20, 0.95);
+  --sd-panel-border: #3a5168;
+  --sd-panel-glow: rgba(0, 150, 255, 0.15);
+
+  --sd-star-glow: #ffb347;
+  --sd-orbit-lines: #6ec5ff;
+  --sd-hyperlanes: #3bd1ff;
+  --sd-nebula-a: rgba(80, 110, 255, 0.16);
+  --sd-nebula-b: rgba(168, 78, 255, 0.12);
+
+  --sd-shell-bg: #060c14;
+  --sd-shell-nebula-a: rgba(80, 110, 255, 0.16);
+  --sd-shell-nebula-b: rgba(168, 78, 255, 0.12);
+  --sd-scene-accent-a: rgba(255, 179, 71, 0.08);
+  --sd-scene-accent-b: rgba(110, 197, 255, 0.08);
+
+  --sd-sidebar-top: rgba(26, 38, 52, 0.94);
+  --sd-sidebar-bottom: rgba(10, 16, 24, 0.94);
+  --sd-sidebar-radial: rgba(79, 212, 255, 0.08);
+  --sd-sidebar-status-top: rgba(47, 60, 77, 0.92);
+  --sd-sidebar-status-bottom: rgba(20, 30, 40, 0.92);
+
+  --sd-command-bar-top: rgba(47, 60, 77, 0.96);
+  --sd-command-bar-bottom: rgba(18, 27, 38, 0.96);
+  --sd-top-link-top: rgba(37, 47, 60, 0.72);
+  --sd-top-link-bottom: rgba(18, 25, 34, 0.72);
+  --sd-realm-shell-top: rgba(47, 60, 77, 0.9);
+  --sd-realm-shell-bottom: rgba(18, 27, 38, 0.9);
+  --sd-realm-status-top: rgba(0, 168, 255, 0.2);
+  --sd-realm-status-bottom: rgba(0, 90, 141, 0.3);
+
+  --sd-table-top: rgba(18, 28, 38, 0.94);
+  --sd-table-bottom: rgba(9, 14, 20, 0.94);
+  --sd-table-head-top: rgba(48, 67, 88, 0.84);
+  --sd-table-head-bottom: rgba(21, 31, 43, 0.84);
+  --sd-table-footer-top: rgba(47, 60, 77, 0.72);
+  --sd-table-footer-bottom: rgba(18, 27, 38, 0.72);
+
+  --sd-input-top: rgba(43, 57, 73, 0.96);
+  --sd-input-bottom: rgba(18, 26, 35, 0.96);
+  --sd-select-content-top: rgba(28, 38, 51, 0.98);
+  --sd-select-content-bottom: rgba(10, 15, 20, 0.98);
+  --sd-tabs-top: rgba(33, 45, 60, 0.92);
+  --sd-tabs-bottom: rgba(13, 20, 28, 0.92);
+  --sd-badge-top: rgba(47, 60, 77, 0.94);
+  --sd-badge-bottom: rgba(22, 31, 43, 0.94);
+
+  --sd-resource-metal: #cfd8dc;
+  --sd-resource-energy: #ffd54f;
+  --sd-resource-crystal: #ff5252;
+  --sd-resource-science: #64b5f6;
+  --sd-resource-alloy: #81c784;
+}
+
+:root[data-sd-theme="imperial-gold"] {
+  --sd-theme-surface: dark;
+  --sd-text-primary: #fff5d6;
+  --sd-text-secondary: #cbbd95;
+  --sd-text-highlight: #f5c451;
+  --sd-button-top: #493821;
+  --sd-button-bottom: #21170d;
+  --sd-button-top-hover: #654d29;
+  --sd-button-bottom-hover: #2f1f0f;
+  --sd-button-top-active: #b7791f;
+  --sd-button-bottom-active: #6b3f0c;
+  --sd-button-frame: #8f6a2f;
+  --sd-button-frame-active: #ffd978;
+  --sd-panel-top: rgba(39, 29, 18, 0.96);
+  --sd-panel-bottom: rgba(13, 10, 7, 0.97);
+  --sd-panel-border: #806232;
+  --sd-panel-glow: rgba(245, 196, 81, 0.16);
+  --sd-star-glow: #ffd978;
+  --sd-orbit-lines: #d19a42;
+  --sd-hyperlanes: #f5c451;
+  --sd-nebula-a: rgba(130, 32, 28, 0.2);
+  --sd-nebula-b: rgba(245, 196, 81, 0.12);
+  --sd-shell-bg: #080604;
+  --sd-shell-nebula-a: rgba(130, 32, 28, 0.2);
+  --sd-shell-nebula-b: rgba(245, 196, 81, 0.1);
+  --sd-scene-accent-a: rgba(255, 217, 120, 0.1);
+  --sd-scene-accent-b: rgba(140, 38, 34, 0.1);
+  --sd-sidebar-top: rgba(47, 34, 20, 0.96);
+  --sd-sidebar-bottom: rgba(16, 11, 7, 0.97);
+  --sd-sidebar-radial: rgba(245, 196, 81, 0.1);
+  --sd-sidebar-status-top: rgba(69, 49, 27, 0.94);
+  --sd-sidebar-status-bottom: rgba(28, 19, 11, 0.94);
+  --sd-command-bar-top: rgba(62, 44, 25, 0.97);
+  --sd-command-bar-bottom: rgba(21, 14, 8, 0.97);
+  --sd-top-link-top: rgba(64, 46, 27, 0.78);
+  --sd-top-link-bottom: rgba(25, 17, 10, 0.78);
+  --sd-realm-shell-top: rgba(66, 47, 27, 0.93);
+  --sd-realm-shell-bottom: rgba(23, 15, 9, 0.94);
+  --sd-realm-status-top: rgba(183, 121, 31, 0.26);
+  --sd-realm-status-bottom: rgba(107, 63, 12, 0.36);
+  --sd-table-top: rgba(38, 27, 17, 0.96);
+  --sd-table-bottom: rgba(14, 10, 7, 0.96);
+  --sd-table-head-top: rgba(75, 55, 31, 0.9);
+  --sd-table-head-bottom: rgba(32, 22, 13, 0.9);
+  --sd-table-footer-top: rgba(61, 43, 25, 0.82);
+  --sd-table-footer-bottom: rgba(24, 16, 10, 0.82);
+  --sd-input-top: rgba(57, 41, 25, 0.97);
+  --sd-input-bottom: rgba(22, 15, 9, 0.97);
+  --sd-select-content-top: rgba(45, 32, 20, 0.99);
+  --sd-select-content-bottom: rgba(14, 10, 7, 0.99);
+  --sd-tabs-top: rgba(52, 37, 22, 0.94);
+  --sd-tabs-bottom: rgba(19, 13, 8, 0.94);
+  --sd-badge-top: rgba(70, 50, 28, 0.96);
+  --sd-badge-bottom: rgba(27, 18, 10, 0.96);
+  --sd-resource-metal: #e4d4ab;
+  --sd-resource-energy: #ffd978;
+  --sd-resource-crystal: #e66a63;
+  --sd-resource-science: #d6b66a;
+  --sd-resource-alloy: #b8c58b;
+}
+
+:root,
+:root[data-sd-theme="og-white"] {
+  --sd-theme-surface: light;
+
+  --sd-text-primary: #1c2938;
+  --sd-text-secondary: #5e748b;
+  --sd-text-highlight: #146fe0;
+
+  --sd-button-top: #f8fbff;
+  --sd-button-bottom: #dbe7f4;
+  --sd-button-top-hover: #ffffff;
+  --sd-button-bottom-hover: #d1ddec;
+  --sd-button-top-active: #4e8ff0;
+  --sd-button-bottom-active: #215fbe;
+  --sd-button-frame: #9fb7d1;
+  --sd-button-frame-active: #2d7eea;
+
+  --sd-panel-top: rgba(255, 255, 255, 0.96);
+  --sd-panel-bottom: rgba(228, 237, 248, 0.96);
+  --sd-panel-border: #b7cadf;
+  --sd-panel-glow: rgba(74, 144, 226, 0.12);
+
+  --sd-star-glow: #ffb347;
+  --sd-orbit-lines: #5da9e9;
+  --sd-hyperlanes: #2d7eea;
+  --sd-nebula-a: rgba(91, 140, 255, 0.1);
+  --sd-nebula-b: rgba(120, 179, 255, 0.12);
+
+  --sd-shell-bg: #edf3fb;
+  --sd-shell-nebula-a: rgba(96, 165, 250, 0.14);
+  --sd-shell-nebula-b: rgba(191, 219, 254, 0.3);
+  --sd-scene-accent-a: rgba(245, 158, 11, 0.08);
+  --sd-scene-accent-b: rgba(59, 130, 246, 0.08);
+
+  --sd-sidebar-top: rgba(248, 251, 255, 0.96);
+  --sd-sidebar-bottom: rgba(223, 233, 244, 0.96);
+  --sd-sidebar-radial: rgba(37, 99, 235, 0.08);
+  --sd-sidebar-status-top: rgba(243, 247, 252, 0.96);
+  --sd-sidebar-status-bottom: rgba(220, 230, 241, 0.96);
+
+  --sd-command-bar-top: rgba(248, 251, 255, 0.98);
+  --sd-command-bar-bottom: rgba(225, 234, 244, 0.98);
+  --sd-top-link-top: rgba(248, 251, 255, 0.9);
+  --sd-top-link-bottom: rgba(232, 239, 248, 0.9);
+  --sd-realm-shell-top: rgba(244, 248, 253, 0.96);
+  --sd-realm-shell-bottom: rgba(224, 232, 241, 0.96);
+  --sd-realm-status-top: rgba(59, 130, 246, 0.14);
+  --sd-realm-status-bottom: rgba(29, 78, 216, 0.22);
+
+  --sd-table-top: rgba(255, 255, 255, 0.95);
+  --sd-table-bottom: rgba(232, 239, 248, 0.95);
+  --sd-table-head-top: rgba(232, 240, 249, 0.96);
+  --sd-table-head-bottom: rgba(214, 226, 239, 0.96);
+  --sd-table-footer-top: rgba(243, 247, 252, 0.92);
+  --sd-table-footer-bottom: rgba(225, 233, 243, 0.92);
+
+  --sd-input-top: rgba(255, 255, 255, 0.98);
+  --sd-input-bottom: rgba(231, 239, 248, 0.98);
+  --sd-select-content-top: rgba(255, 255, 255, 0.99);
+  --sd-select-content-bottom: rgba(234, 241, 249, 0.99);
+  --sd-tabs-top: rgba(245, 249, 253, 0.96);
+  --sd-tabs-bottom: rgba(228, 236, 245, 0.96);
+  --sd-badge-top: rgba(246, 250, 255, 0.96);
+  --sd-badge-bottom: rgba(226, 235, 246, 0.96);
+
+  --sd-resource-metal: #607d8b;
+  --sd-resource-energy: #c78500;
+  --sd-resource-crystal: #d13f65;
+  --sd-resource-science: #2563eb;
+  --sd-resource-alloy: #2e7d32;
+}
+
+.sd-future-text {
+  font-family: var(--sd-font-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sd-muted-text {
+  color: var(--sd-text-secondary);
+}
+
+.sd-highlight-text {
+  color: var(--sd-text-highlight);
+}

@@ -1,0 +1,444 @@
+<?php
+
+namespace OGame\Http\Controllers\Admin;
+
+use Exception;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+use OGame\Facades\AppUtil;
+use OGame\Factories\PlanetServiceFactory;
+use OGame\GameConstants\UniverseConstants;
+use OGame\Http\Controllers\OGameController;
+use OGame\Models\Planet\Coordinate;
+use OGame\Models\Resources;
+use OGame\Models\User;
+use OGame\Services\DarkMatterService;
+use OGame\Services\DebrisFieldService;
+use OGame\Services\ObjectService;
+use OGame\Services\PlayerService;
+use OGame\Services\SettingsService;
+
+class DeveloperShortcutsController extends OGameController
+{
+    /**
+     * Shows the developer shortcuts page.
+     *
+     * @return View
+     */
+    public function index(PlayerService $playerService, SettingsService $settingsService): View
+    {
+        // Get all unit objects
+        $units = ObjectService::getUnitObjects();
+
+        return view('ingame.admin.developershortcuts')->with([
+            'units' => $units,
+            'buildings' => [...ObjectService::getBuildingObjects(), ...ObjectService::getStationObjects()],
+            'research' => ObjectService::getResearchObjects(),
+            'currentPlanet' => $playerService->planets->current(),
+            'settings' => $settingsService,
+        ]);
+    }
+
+    /**
+     * Updates the planet objects and units.
+     *
+     * @param Request $request
+     * @param PlayerService $playerService
+     * @param SettingsService $settingsService
+     * @return RedirectResponse
+     * @throws Exception
+     */
+    public function update(Request $request, PlayerService $playerService, SettingsService $settingsService): RedirectResponse
+    {
+        if ($request->has('enable_free_class_changes')) {
+            // Enable free class changes
+            $settingsService->set('dev_free_class_changes', 1);
+            return redirect()->back()->with('success', 'Free class changes enabled! You can now change classes without Dark Matter cost.');
+        } elseif ($request->has('disable_free_class_changes')) {
+            // Disable free class changes
+            $settingsService->set('dev_free_class_changes', 0);
+            return redirect()->back()->with('success', 'Free class changes disabled. Normal costs apply.');
+        } elseif ($request->has('reset_character_class')) {
+            // Reset character class
+            $user = $playerService->getUser();
+            $user->character_class = null;
+            $user->character_class_free_used = false;
+            $user->character_class_changed_at = null;
+            $user->save();
+            return redirect()->back()->with('success', 'Character class has been reset. You can now select a class for free.');
+        } elseif ($request->has('set_mines')) {
+            // Handle "Set all mines to level 30"
+            $playerService->planets->current()->setObjectLevel(ObjectService::getObjectByMachineName('metal_mine')->id, 30);
+            $playerService->planets->current()->setObjectLevel(ObjectService::getObjectByMachineName('crystal_mine')->id, 30);
+            $playerService->planets->current()->setObjectLevel(ObjectService::getObjectByMachineName('deuterium_synthesizer')->id, 30);
+            $playerService->planets->current()->setObjectLevel(ObjectService::getObjectByMachineName('solar_plant')->id, 30);
+        } elseif ($request->has('set_storages')) {
+            // Handle "Set all storages to level 30"
+            $playerService->planets->current()->setObjectLevel(ObjectService::getObjectByMachineName('metal_store')->id, 15);
+            $playerService->planets->current()->setObjectLevel(ObjectService::getObjectByMachineName('crystal_store')->id, 15);
+            $playerService->planets->current()->setObjectLevel(ObjectService::getObjectByMachineName('deuterium_store')->id, 15);
+        } elseif ($request->has('set_shipyard')) {
+            // Handle "Set all shipyard facilities to level 12"
+            $playerService->planets->current()->setObjectLevel(ObjectService::getObjectByMachineName('shipyard')->id, 12);
+            $playerService->planets->current()->setObjectLevel(ObjectService::getObjectByMachineName('robot_factory')->id, 12);
+            $playerService->planets->current()->setObjectLevel(ObjectService::getObjectByMachineName('nano_factory')->id, 12);
+        } elseif ($request->has('set_research')) {
+            // Handle "Set all research to level 10"
+            $playerService->planets->current()->setObjectLevel(ObjectService::getObjectByMachineName('research_lab')->id, 12);
+            foreach (ObjectService::getResearchObjects() as $research) {
+                $playerService->setResearchLevel($research->machine_name, 10);
+            }
+        } elseif ($request->has('reset_buildings')) {
+            // Handle "Reset all buildings"
+            foreach (ObjectService::getBuildingObjects() as $building) {
+                $playerService->planets->current()->setObjectLevel($building->id, 0);
+            }
+            foreach (ObjectService::getStationObjects() as $building) {
+                $playerService->planets->current()->setObjectLevel($building->id, 0);
+            }
+        } elseif ($request->has('reset_research')) {
+            // Handle "Reset all research"
+            foreach (ObjectService::getResearchObjects() as $research) {
+                $playerService->setResearchLevel($research->machine_name, 0);
+            }
+        } elseif ($request->has('reset_units')) {
+            // Handle "Reset all units"
+            foreach (ObjectService::getUnitObjects() as $unit) {
+                $playerService->planets->current()->removeUnit($unit->machine_name, $playerService->planets->current()->getObjectAmount($unit->machine_name));
+            }
+        } elseif ($request->has('reset_resources')) {
+            // Set all resources to 0 by deducting the current amount.
+            $playerService->planets->current()->deductResources($playerService->planets->current()->getResources());
+
+            return redirect()->back()->with('success', 'All resources have been set to 0');
+        }
+
+        // Handle unit submission
+        $amountOfUnits = max(1, $request->input('amount_of_units', 1));
+        foreach (ObjectService::getUnitObjects() as $unit) {
+            if ($request->has('unit_' . $unit->id)) {
+                // Handle adding the specific unit
+                $playerService->planets->current()->addUnit($unit->machine_name, AppUtil::parseResourceValue($amountOfUnits));
+            }
+        }
+
+        // Handle building level setting
+        foreach ($request->all() as $key => $value) {
+            if (str_starts_with($key, 'building_')) {
+                $buildingId = (int)substr($key, 9); // Remove 'building_' prefix
+                $level = (int)$request->input('building_level', 1);
+
+                // Find the building object
+                $building = null;
+                foreach ([...ObjectService::getBuildingObjects(), ...ObjectService::getStationObjects()] as $obj) {
+                    if ($obj->id === $buildingId) {
+                        $building = $obj;
+                        break;
+                    }
+                }
+
+                if ($building) {
+                    $playerService->planets->current()->setObjectLevel($building->id, $level);
+                }
+            }
+        }
+
+        // Handle research level setting
+        foreach ($request->all() as $key => $value) {
+            if (str_starts_with($key, 'research_')) {
+                $researchId = (int)substr($key, 9); // Remove 'research_' prefix
+                $level = (int)$request->input('research_level', 1);
+
+                // Find the research object
+                $research = null;
+                foreach (ObjectService::getResearchObjects() as $obj) {
+                    if ($obj->id === $researchId) {
+                        $research = $obj;
+                        break;
+                    }
+                }
+
+                if ($research) {
+                    $playerService->setResearchLevel($research->machine_name, $level);
+                }
+            }
+        }
+
+        return redirect()->route('admin.developershortcuts.index')->with('success', __('Changes saved!'));
+    }
+
+    /**
+     * Updates the resources of the specified planet.
+     *
+     * @param Request $request
+     * @param PlayerService $playerService
+     * @return RedirectResponse
+     */
+    public function updateResources(Request $request, PlayerService $playerService, SettingsService $settingsService): RedirectResponse
+    {
+        // Validate coordinates
+        $validated = $request->validate([
+            'galaxy' => 'required|integer|min:1|max:' . $settingsService->numberOfGalaxies(),
+            'system' => 'required|integer|min:1|max:' . UniverseConstants::MAX_SYSTEM_COUNT,
+            'position' => 'required|integer|min:1|max:' . UniverseConstants::MAX_PLANET_POSITION,
+        ]);
+
+        $coordinate = new Coordinate(
+            $validated['galaxy'],
+            $validated['system'],
+            $validated['position']
+        );
+
+        $planetFactory = app(PlanetServiceFactory::class);
+        if ($request->has('update_resources_planet')) {
+            $planet = $planetFactory->makePlanetForCoordinate($coordinate);
+        } elseif ($request->has('update_resources_moon')) {
+            $planet = $planetFactory->makeMoonForCoordinate($coordinate);
+        } else {
+            return redirect()->back()->with('error', 'Invalid action specified');
+        }
+
+        // Parse each resource value, handling k/m/b suffixes and negative values
+        $metal = AppUtil::parseResourceValue($request->input('metal', 0));
+        $crystal = AppUtil::parseResourceValue($request->input('crystal', 0));
+        $deuterium = AppUtil::parseResourceValue($request->input('deuterium', 0));
+
+        // Split resources into positive and negative values
+        $resourcesToAdd = new Resources(
+            metal: max(0, $metal),
+            crystal: max(0, $crystal),
+            deuterium: max(0, $deuterium),
+            energy: 0
+        );
+
+        $resourcesToDeduct = new Resources(
+            metal: abs(min(0, $metal)),
+            crystal: abs(min(0, $crystal)),
+            deuterium: abs(min(0, $deuterium)),
+            energy: 0
+        );
+
+        // First deduct negative values, then add positive values
+        if ($resourcesToDeduct->sum() > 0) {
+            $planet->deductResources($resourcesToDeduct);
+        }
+
+        if ($resourcesToAdd->sum() > 0) {
+            $planet->addResources($resourcesToAdd);
+        }
+
+        return redirect()->back()->with('success', 'Resources updated successfully');
+    }
+
+    /**
+     * Creates a planet or moon at the specified coordinates.
+     *
+     * @param Request $request
+     * @param PlanetServiceFactory $planetServiceFactory
+     * @param PlayerService $player
+     * @return RedirectResponse
+     */
+    public function createAtCoords(Request $request, PlanetServiceFactory $planetServiceFactory, PlayerService $player, SettingsService $settingsService): RedirectResponse
+    {
+        // Validate coordinates
+        $validated = $request->validate([
+            'galaxy' => 'required|integer|min:1|max:' . $settingsService->numberOfGalaxies(),
+            'system' => 'required|integer|min:1|max:' . UniverseConstants::MAX_SYSTEM_COUNT,
+            'position' => 'required|integer|min:1|max:' . UniverseConstants::MAX_PLANET_POSITION,
+        ]);
+
+        $coordinate = new Coordinate(
+            $validated['galaxy'],
+            $validated['system'],
+            $validated['position']
+        );
+
+        try {
+            if ($request->has('delete_moon')) {
+                // Check if there's a moon at these coordinates.
+                $moon = $planetServiceFactory->makeMoonForCoordinate($coordinate);
+
+                if (!$moon) {
+                    return redirect()->back()->with('error', 'No moon exists at ' . $coordinate->asString());
+                }
+
+                // Delete the moon.
+                $moon->abandonPlanet();
+                return redirect()->back()->with('success', 'Moon deleted successfully at ' . $coordinate->asString());
+            }
+
+            if ($request->has('delete_planet')) {
+                // Check if there's a moon at these coordinates.
+                $planet = $planetServiceFactory->makePlanetForCoordinate($coordinate);
+
+                if (!$planet) {
+                    return redirect()->back()->with('error', 'No planet exists at ' . $coordinate->asString());
+                }
+
+                // Delete the planet.
+                $planet->abandonPlanet();
+                return redirect()->back()->with('success', 'Planet deleted successfully at ' . $coordinate->asString());
+            }
+
+            if ($request->has('create_planet')) {
+                // Create planet for current admin user
+                $planetServiceFactory->createAdditionalPlanetForPlayer($player, $coordinate);
+                return redirect()->back()->with('success', 'Planet created successfully at ' . $coordinate->asString());
+            }
+
+            if ($request->has('create_moon')) {
+                // First check if there's a planet at these coordinates.
+                $existingPlanet = $planetServiceFactory->makeForCoordinate($coordinate);
+                if (!$existingPlanet) {
+                    return redirect()->back()->with('error', 'Cannot create moon - no planet exists at ' . $coordinate->asString());
+                }
+
+                // Get moon parameters from request
+                $debrisAmount = (int)AppUtil::parseResourceValue($request->input('moon_debris', '2000000'));
+                $xFactor = $request->filled('moon_factor') ? (int)$request->input('moon_factor') : null;
+
+                // Validate inputs
+                if ($debrisAmount < 0) {
+                    return redirect()->back()->with('error', 'Debris amount must be positive');
+                }
+                if ($xFactor !== null && ($xFactor < 10 || $xFactor > 20)) {
+                    return redirect()->back()->with('error', 'X factor must be between 10 and 20');
+                }
+
+                // Create moon with specified parameters
+                // Moon chance is set to 20% (maximum) since we're guaranteed to create the moon anyway
+                $moon = $planetServiceFactory->createMoonForPlanet($existingPlanet, $debrisAmount, 20, $xFactor);
+                $moonSize = $moon->getPlanetDiameter();
+
+                $xFactorText = $xFactor !== null ? " (x={$xFactor})" : " (x=random)";
+                return redirect()->back()->with('success', "Moon created at {$coordinate->asString()} with diameter {$moonSize} km{$xFactorText}");
+            }
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Failed to create planet/moon: ' . $e->getMessage());
+        }
+
+        return redirect()->back()->with('error', 'Invalid action specified');
+    }
+
+    /**
+     * Creates a debris field at the specified coordinates.
+     *
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function createDebris(Request $request)
+    {
+        $coordinate = new Coordinate(
+            galaxy: (int)$request->input('galaxy'),
+            system: (int)$request->input('system'),
+            position: (int)$request->input('position')
+        );
+
+        $debrisField = app(DebrisFieldService::class);
+
+        if ($request->has('delete_debris')) {
+            // Load and delete if exists
+            if ($debrisField->loadForCoordinates($coordinate)) {
+                $debrisField->delete();
+                return redirect()->back()->with('success', 'Debris field deleted successfully at ' . $coordinate->asString());
+            }
+            return redirect()->back()->with('error', 'No debris field exists at ' . $coordinate->asString());
+        }
+
+        // Create/append debris field
+        $debrisField->loadOrCreateForCoordinates($coordinate);
+
+        // Add the resources
+        $resources = new Resources(
+            metal: (int)AppUtil::parseResourceValue($request->input('metal', 0)),
+            crystal: (int)AppUtil::parseResourceValue($request->input('crystal', 0)),
+            deuterium: (int)AppUtil::parseResourceValue($request->input('deuterium', 0)),
+            energy: 0,
+        );
+
+        $debrisField->appendResources($resources);
+        $debrisField->save();
+
+        return redirect()->back()->with('success', 'Debris field created/updated successfully at ' . $coordinate->asString());
+    }
+
+    /**
+     * Updates the dark matter of the player at the specified coordinates.
+     *
+     * @param Request $request
+     * @param PlanetServiceFactory $planetServiceFactory
+     * @param DarkMatterService $darkMatterService
+     * @param SettingsService $settingsService
+     * @return RedirectResponse
+     */
+    public function updateDarkMatter(Request $request, PlanetServiceFactory $planetServiceFactory, DarkMatterService $darkMatterService, SettingsService $settingsService): RedirectResponse
+    {
+        // Validate coordinates and amount
+        $validated = $request->validate([
+            'galaxy' => 'required|integer|min:1|max:' . $settingsService->numberOfGalaxies(),
+            'system' => 'required|integer|min:1|max:' . UniverseConstants::MAX_SYSTEM_COUNT,
+            'position' => 'required|integer|min:1|max:' . UniverseConstants::MAX_PLANET_POSITION,
+            'dark_matter' => 'required',
+        ]);
+
+        $coordinate = new Coordinate(
+            $validated['galaxy'],
+            $validated['system'],
+            $validated['position']
+        );
+
+        $planet = $planetServiceFactory->makePlanetForCoordinate($coordinate);
+        if (!$planet) {
+            return redirect()->back()->with('error', 'No planet exists at ' . $coordinate->asString());
+        }
+
+        $user = $planet->getPlayer()->getUser();
+        $amount = (int)AppUtil::parseResourceValue($request->input('dark_matter', 0));
+        if ($amount == 0) {
+            return redirect()->back()->with('error', 'Dark matter amount cannot be zero');
+        }
+
+        try {
+            if ($amount > 0) {
+                // Credit dark matter
+                $darkMatterService->credit($user, $amount, 'admin_grant', 'Admin granted dark matter via developer shortcuts');
+                return redirect()->back()->with('success', 'Added ' . number_format($amount) . ' dark matter to player ' . $user->username . ' at ' . $coordinate->asString());
+            } else {
+                // Debit dark matter (convert to positive for debit)
+                $debitAmount = abs($amount);
+                $darkMatterService->debit($user, $debitAmount, 'admin_deduct', 'Admin deducted dark matter via developer shortcuts');
+                return redirect()->back()->with('success', 'Deducted ' . number_format($debitAmount) . ' dark matter from player ' . $user->username . ' at ' . $coordinate->asString());
+            }
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Failed to update dark matter: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Impersonate another user by username from the developer shortcuts page.
+     */
+    public function impersonate(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'username' => ['required', 'string'],
+        ]);
+
+        $currentUser = $request->user();
+        $targetUser = User::where('username', $validated['username'])->first();
+
+        if (!$targetUser) {
+            return redirect()->back()->with('error', __('User not found.'));
+        }
+
+        if ($currentUser && $currentUser->id === $targetUser->id) {
+            return redirect()->back()->with('error', __('You cannot impersonate yourself.'));
+        }
+
+        $manager = app('impersonate');
+        $manager->take($currentUser, $targetUser);
+
+        return redirect()->route('overview.index')
+            ->with('success', __('Now impersonating :username', ['username' => $targetUser->username]));
+    }
+}

@@ -1,0 +1,430 @@
+@startuml
+' Package-Diagram.puml — Universe Civilization: Empires at War
+skinparam backgroundColor #0a0a1a
+skinparam package {
+  BackgroundColor #1a1a3a
+  BorderColor #4a9eff
+  FontColor #e0e0ff
+}
+skinparam rectangle {
+  BackgroundColor #1a2a1a
+  BorderColor #4aff9e
+  FontColor #e0ffe0
+}
+skinparam arrow {
+  Color #c0c0ff
+  FontColor #c0c0ff
+}
+
+top to bottom direction
+
+' ============================================================
+' PACKAGE: client/
+' ============================================================
+package "client/" as CLIENT {
+  package "pages/" as PAGES {
+    rectangle "DashboardPage" as DBP
+    rectangle "LoginPage" as LGP
+    rectangle "RegisterPage" as RGP
+    rectangle "GalaxyMapPage" as GMP
+    rectangle "ColonyPage" as CLP
+    rectangle "FleetPage" as FLP
+    rectangle "CombatPage" as CBP
+    rectangle "ResearchPage" as RSP
+    rectangle "MarketPage" as MKP
+    rectangle "AlliancePage" as ALP
+    rectangle "SettingsPage" as STP
+    rectangle "AdminPanel" as ADP
+    rectangle "LeaderboardPage" as LBP
+    rectangle "MessagesPage" as MSP
+    rectangle "EventPage" as EVP
+    rectangle "TutorialPage" as TTP
+  }
+
+  package "components/" as COMP {
+    rectangle "ResourceBar" as RB
+    rectangle "Minimap" as MM
+    rectangle "ShipViewer" as SV
+    rectangle "TechTree" as TT
+    rectangle "BuildingList" as BL
+    rectangle "ChatPanel" as CP
+    rectangle "NotificationCenter" as NC
+    rectangle "LeaderboardWidget" as LW
+    rectangle "PlanetViewer" as PV
+    rectangle "FleetComposition" as FC
+    rectangle "ConstructionQueue" as CQ
+    rectangle "CrewManager" as CM
+    rectangle "TradeWindow" as TW
+    rectangle "DiplomacyPanel" as DP
+    rectangle "CombatReplay" as CRP
+    rectangle "ModalSystem" as MS
+    rectangle "TooltipSystem" as TS
+  }
+
+  package "hooks/" as HOOKS {
+    rectangle "useGameLoop" as UGL
+    rectangle "useWebSocket" as UWS
+    rectangle "useResourcePolling" as URP
+    rectangle "useFleetMovement" as UFM
+    rectangle "useCombatUpdates" as UCU
+    rectangle "useNotifications" as UN
+    rectangle "useKeyboardShortcuts" as UKS
+    rectangle "useAudio" as UA
+    rectangle "useInterval" as UI
+    rectangle "useDebounce" as UD
+    rectangle "useAuth" as UAH
+  }
+
+  package "services/" as SRV {
+    rectangle "AuthService" as AS
+    rectangle "ApiService" as APIS
+    rectangle "WebSocketService" as WSS
+    rectangle "LocalStorageService" as LSS
+    rectangle "AudioService" as AUD
+    rectangle "NotificationService" as NS
+    rectangle "CacheService" as CS
+  }
+
+  package "store/" as STORE {
+    rectangle "configureStore" as CFG
+    rectangle "rootReducer" as RR
+    rectangle "slices/" as SLICES {
+      rectangle "gameStateSlice" as GSS
+      rectangle "empireSlice" as ES
+      rectangle "fleetSlice" as FS
+      rectangle "colonySlice" as COLS
+      rectangle "combatSlice" as CBS
+      rectangle "researchSlice" as RS
+      rectangle "marketSlice" as MKS
+      rectangle "allianceSlice" as ALS
+      rectangle "uiSlice" as UIS
+      rectangle "notificationSlice" as NTS
+      rectangle "chatSlice" as CHS
+      rectangle "adminSlice" as ADS
+    }
+  }
+
+  package "utils/" as CUTIL {
+    rectangle "formatters.ts" as FMT
+    rectangle "validators.ts" as VAL
+    rectangle "coordinates.ts" as COORD
+    rectangle "combatCalculations.ts" as CCMB
+    rectangle "resourceCalculations.ts" as RCALC
+    rectangle "timeUtils.ts" as TUTL
+    rectangle "constants.ts" as CONST
+    rectangle "eventBus.ts" as EBUS
+    rectangle "routing.ts" as ROUTE
+    rectangle "i18n.ts" as I18N
+  }
+}
+
+' ============================================================
+' PACKAGE: server/
+' ============================================================
+package "server/" as SERVER {
+  package "routes/" as ROUTES {
+    rectangle "auth.routes.ts" as AR
+    rectangle "player.routes.ts" as PR
+    rectangle "empire.routes.ts" as ER
+    rectangle "colony.routes.ts" as COR
+    rectangle "building.routes.ts" as BR
+    rectangle "fleet.routes.ts" as FR
+    rectangle "ship.routes.ts" as SR
+    rectangle "combat.routes.ts" as CR
+    rectangle "research.routes.ts" as RSR
+    rectangle "market.routes.ts" as MR
+    rectangle "alliance.routes.ts" as ALR
+    rectangle "message.routes.ts" as MSGR
+    rectangle "admin.routes.ts" as ADR
+    rectangle "universe.routes.ts" as UR
+    rectangle "event.routes.ts" as EVR
+    rectangle "crew.routes.ts" as CREWR
+    rectangle "notification.routes.ts" as NR
+    rectangle "well-known.routes.ts" as WKR
+  }
+
+  package "services/" as SVC {
+    rectangle "AuthService" as ASVC
+    rectangle "PlayerService" as PSVC
+    rectangle "EmpireService" as EMSVC
+    rectangle "ColonyService" as COSVC
+    rectangle "BuildingService" as BSVC
+    rectangle "FleetService" as FSVC
+    rectangle "CombatService" as CSVC
+    rectangle "ResearchService" as RSVC
+    rectangle "MarketService" as MSVC
+    rectangle "AllianceService" as ASVC2
+    rectangle "MessageService" as MSVC2
+    rectangle "UniverseService" as USVC
+    rectangle "EventService" as ESVC
+    rectangle "NotificationService" as NSVC
+    rectangle "CrewService" as CRSVC
+  }
+
+  package "game/" as GAME {
+    rectangle "CombatEngine" as CE
+    rectangle "ResourceEngine" as RE
+    rectangle "MovementEngine" as ME
+    rectangle "ConstructionEngine" as COE
+    rectangle "ResearchEngine" as RSE
+    rectangle "MarketEngine" as MKE
+    rectangle "DiplomacyEngine" as DE
+    rectangle "ExplorationEngine" as EE
+    rectangle "CrewEngine" as CRE
+    rectangle "EventEngine" as EVE
+    rectangle "ColonyManager" as CMGR
+    rectangle "FleetManager" as FMGR
+    rectangle "TickScheduler" as TSCH
+  }
+
+  package "ws/" as WS {
+    rectangle "connectionManager.ts" as WSCM
+    rectangle "gameStateSync.ts" as WSGS
+    rectangle "fleetMovementTracker.ts" as WSFM
+    rectangle "combatReplayStream.ts" as WSCR
+    rectangle "chatHandler.ts" as WSCH
+    rectangle "notificationDispatcher.ts" as WSND
+    rectangle "heartbeatMonitor.ts" as WSHB
+    rectangle "presenceTracker.ts" as WSPT
+  }
+
+  package "middleware/" as MW {
+    rectangle "auth.middleware.ts" as AUTHMW
+    rectangle "rateLimiter.middleware.ts" as RLM
+    rectangle "sessionValidator.middleware.ts" as SVM
+    rectangle "requestLogger.middleware.ts" as RLM2
+    rectangle "cors.middleware.ts" as CORS
+    rectangle "errorHandler.middleware.ts" as EH
+    rectangle "compression.middleware.ts" as COMPM
+    rectangle "helmet.middleware.ts" as HELM
+    rectangle "validateRequest.middleware.ts" as VRM
+    rectangle "auditLog.middleware.ts" as ALM
+  }
+
+  package "models/" as MODELS {
+    rectangle "Player.ts" as MPL
+    rectangle "Empire.ts" as MEP
+    rectangle "Colony.ts" as MCL
+    rectangle "Building.ts" as MBD
+    rectangle "Fleet.ts" as MFL
+    rectangle "Ship.ts" as MSH
+    rectangle "Crew.ts" as MCR
+    rectangle "Technology.ts" as MTC
+    rectangle "Alliance.ts" as MAL
+    rectangle "MarketOrder.ts" as MMO
+    rectangle "Transaction.ts" as MTX
+    rectangle "Universe.ts" as MUV
+    rectangle "Galaxy.ts" as MGL
+    rectangle "SolarSystem.ts" as MSS
+    rectangle "Planet.ts" as MPL2
+    rectangle "Moon.ts" as MMN
+    rectangle "Message.ts" as MMSG
+    rectangle "Notification.ts" as MNT
+    rectangle "CombatReport.ts" as MCRP
+    rectangle "Event.ts" as MEVT
+  }
+
+  package "repositories/" as REPO {
+    rectangle "PlayerRepository" as RPL
+    rectangle "EmpireRepository" as REP
+    rectangle "ColonyRepository" as RCL
+    rectangle "FleetRepository" as RFL
+    rectangle "ShipRepository" as RSH
+    rectangle "ResearchRepository" as RRS
+    rectangle "MarketRepository" as RMK
+    rectangle "AllianceRepository" as RAL
+    rectangle "UniverseRepository" as RUV
+  }
+
+  package "config/" as CONFIG {
+    rectangle "database.ts" as CDB
+    rectangle "redis.ts" as CRED
+    rectangle "game.ts" as CGAME
+    rectangle "auth.ts" as CAUTH
+    rectangle "server.ts" as CSRV
+    rectangle "rateLimit.ts" as CRL
+    rectangle "logging.ts" as CLOG
+    rectangle "email.ts" as CEML
+  }
+
+  package "utils/" as SUTIL {
+    rectangle "logger.ts" as SLOG
+    rectangle "errors.ts" as SERR
+    rectangle "encryption.ts" as SENC
+    rectangle "pagination.ts" as SPAG
+    rectangle "validation.ts" as SVAL
+    rectangle "formulas.ts" as SFML
+    rectangle "coordinates.ts" as SCOORD
+    rectangle "scheduler.ts" as SSCH
+  }
+}
+
+' ============================================================
+' PACKAGE: shared/
+' ============================================================
+package "shared/" as SHARED {
+  package "types/" as TYPES {
+    rectangle "game.types.ts" as GTS
+    rectangle "api.types.ts" as ATS
+    rectangle "socket.types.ts" as STS
+    rectangle "combat.types.ts" as CTS
+    rectangle "fleet.types.ts" as FTS
+    rectangle "colony.types.ts" as COT
+    rectangle "research.types.ts" as RTS
+    rectangle "market.types.ts" as MTS
+    rectangle "alliance.types.ts" as ALTS
+    rectangle "universe.types.ts" as UTS
+    rectangle "player.types.ts" as PTS
+    rectangle "enums.ts" as ENUMS
+  }
+
+  package "config/" as SHCONFIG {
+    rectangle "gameConstants.ts" as GC
+    rectangle "buildingDefinitions.ts" as BD
+    rectangle "shipBlueprints.ts" as SB
+    rectangle "techTree.ts" as TT2
+    rectangle "resourceFormulas.ts" as RF
+    rectangle "combatFormulas.ts" as CF
+  }
+
+  package "constants/" as CONSTS {
+    rectangle "apiEndpoints.ts" as APIE
+    rectangle "socketEvents.ts" as SE
+    rectangle "resourceTypes.ts" as RT
+    rectangle "buildingTypes.ts" as BT
+    rectangle "shipClasses.ts" as SC
+    rectangle "techCategories.ts" as TC
+  }
+
+  package "utils/" as SHUTIL {
+    rectangle "math.ts" as SMATH
+    rectangle "random.ts" as SRAND
+    rectangle "validation.ts" as SVAL2
+    rectangle "formatters.ts" as SFMT
+    rectangle "dateUtils.ts" as SDATE
+    rectangle "idGenerator.ts" as SID
+  }
+}
+
+' ============================================================
+' PACKAGE: database/
+' ============================================================
+package "database/" as DB {
+  package "migrations/" as MIG {
+    rectangle "001_create_players.ts" as M001
+    rectangle "002_create_empires.ts" as M002
+    rectangle "003_create_colonies.ts" as M003
+    rectangle "004_create_fleets.ts" as M004
+    rectangle "005_create_research.ts" as M005
+    rectangle "006_create_alliances.ts" as M006
+    rectangle "007_create_universe.ts" as M007
+    rectangle "008_create_market.ts" as M008
+    rectangle "009_create_messages.ts" as M009
+    rectangle "010_create_combat.ts" as M010
+    rectangle "011_create_admin.ts" as M011
+    rectangle "012_add_indexes.ts" as M012
+    rectangle "013_add_triggers.ts" as M013
+    rectangle "014_add_functions.ts" as M014
+  }
+
+  package "seeds/" as SEEDS {
+    rectangle "01_technologies.ts" as S01
+    rectangle "02_building_types.ts" as S02
+    rectangle "03_ship_classes.ts" as S03
+    rectangle "04_starter_empire.ts" as S04
+    rectangle "05_dev_seed.ts" as S05
+  }
+
+  package "schema/" as SCHEMA {
+    rectangle "types.sql" as STSQL
+    rectangle "functions.sql" as SFNS
+    rectangle "triggers.sql" as STRS
+    rectangle "views.sql" as SVIEW
+    rectangle "extensions.sql" as SEXT
+  }
+
+  package "config/" as DBCFG {
+    rectangle "knexfile.ts" as KNEX
+    rectangle "connection.ts" as DCONN
+    rectangle "queryBuilder.ts" as DQB
+  }
+}
+
+' ============================================================
+' PACKAGE: tests/
+' ============================================================
+package "tests/" as TESTS {
+  rectangle "unit/" as UNIT {
+    rectangle "services/" as UTSVC
+    rectangle "game/" as UTGAME
+    rectangle "utils/" as UTUTIL
+  }
+  rectangle "integration/" as INT {
+    rectangle "api/" as INTAPI
+    rectangle "ws/" as INTWS
+    rectangle "database/" as INTDB
+  }
+  rectangle "e2e/" as E2E {
+    rectangle "gameplay/" as E2EGP
+    rectangle "combat/" as E2ECB
+  }
+}
+
+' ============================================================
+' DEPENDENCY RELATIONSHIPS
+' ============================================================
+
+' Client internal
+PAGES --> COMP : composes
+PAGES --> HOOKS : uses
+PAGES --> STORE : dispatches
+PAGES --> SRV : calls
+PAGES --> CUTIL : imports
+COMP --> STORE : reads/selects
+COMP --> HOOKS : uses
+HOOKS --> SRV : invokes
+HOOKS --> CUTIL : imports
+SRV --> CUTIL : imports
+STORE --> SRV : async thunks
+
+' Server internal
+ROUTES --> MW : middleware chain
+ROUTES --> SVC : delegates
+SVC --> GAME : game logic
+SVC --> MODELS : ORM
+SVC --> REPO : data access
+SVC --> WS : push updates
+SVC --> SUTIL : helpers
+GAME --> MODELS : reads/writes
+GAME --> REPO : persistence
+WS --> SVC : callbacks
+CONFIG --> SUTIL : env helpers
+
+' Cross-package (server → shared)
+ROUTES -.-> SHARED : import types
+SVC -.-> SHARED : import types
+GAME -.-> SHARED : import config
+MODELS -.-> SHARED : import enums
+REPO -.-> SHARED : import types
+MW -.-> SHARED : import constants
+
+' Cross-package (client → shared)
+PAGES -.-> SHARED : import types
+COMP -.-> SHARED : import enums
+HOOKS -.-> SHARED : import config
+SRV -.-> SHARED : import types
+STORE -.-> SHARED : import types
+CUTIL -.-> SHARED : import formulas
+
+' Database
+DB -.-> SERVER : migration target
+MIG --> SCHEMA : executes
+SEEDS --> MIG : post-migration
+DBCFG --> SERVER : config
+
+' Tests
+TESTS -.-> SERVER : tests against
+TESTS -.-> CLIENT : tests against
+TESTS -.-> DB : seeds for test
+
+@enduml

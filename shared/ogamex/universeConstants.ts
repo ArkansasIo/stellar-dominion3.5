@@ -1,0 +1,10 @@
+export const UNIVERSE_CONSTANTS = {
+  MIN_GALAXY: 1,
+  MIN_SYSTEM: 1,
+  MIN_PLANET_POSITION: 1,
+  MAX_SYSTEM_COUNT: 499,
+  MAX_PLANET_POSITION: 15,
+  EXPEDITION_POSITION: 16,
+} as const;
+
+export type UniverseConstants = typeof UNIVERSE_CONSTANTS;

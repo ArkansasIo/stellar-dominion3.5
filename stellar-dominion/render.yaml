@@ -1,0 +1,34 @@
+services:
+  # Web Service
+  - type: web
+    name: stellar-dominion
+    env: node
+    region: oregon
+    plan: starter
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start
+    rootDir: .
+    autoDeploy: true
+    runtime: node
+    nodeVersion: 22
+    pullRequestPreviewsEnabled: false
+    healthCheckPath: /api/status/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: stellar-dominion-db
+          property: connectionString
+
+  # PostgreSQL Database
+databases:
+  - name: stellar-dominion-db
+    databaseName: stellar_dominion
+    plan: starter
+    region: oregon
+    ipAllowList: []

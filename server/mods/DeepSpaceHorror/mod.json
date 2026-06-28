@@ -1,0 +1,7 @@
+{
+  "name": "DeepSpaceHorror",
+  "version": "1.0.0", 
+  "author": "OGame Open Source Team",
+  "description": "Adds Leviathan space monsters (Amoeba, Guardian, Juggernaut) with custom fleet types and space portals",
+  "website": "https://github.com/ogamespec/ogame-opensource"
+}
