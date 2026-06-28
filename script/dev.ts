@@ -114,7 +114,7 @@ async function startLocalPostgres(): Promise<void> {
 
 async function createDatabaseIfNeeded(): Promise<void> {
   return new Promise((resolve, reject) => {
-    const check = spawn("psql", ["-h", "localhost", "-p", "15432", "-U", process.env.USER || "runner", "-d", "postgres", "-c", "SELECT 1 FROM pg_database WHERE datname = 'stellar_dominion';"], {
+    const check = spawn("psql", ["-h", "localhost", "-p", "15432", "-U", process.env.USER || process.env.USERNAME || "runner", "-d", "postgres", "-c", "SELECT 1 FROM pg_database WHERE datname = 'stellar_dominion';"], {
       stdio: ["ignore", "pipe", "pipe"],
       shell: false,
     });
@@ -128,7 +128,7 @@ async function createDatabaseIfNeeded(): Promise<void> {
         return;
       }
       console.log("🔧 Creating database stellar_dominion...");
-      const create = spawn("psql", ["-h", "localhost", "-p", "15432", "-U", process.env.USER || "runner", "-d", "postgres", "-c", "CREATE DATABASE stellar_dominion;"], {
+      const create = spawn("psql", ["-h", "localhost", "-p", "15432", "-U", process.env.USER || process.env.USERNAME || "runner", "-d", "postgres", "-c", "CREATE DATABASE stellar_dominion;"], {
         stdio: "inherit",
       });
       create.on("exit", (code) => {
@@ -158,7 +158,8 @@ async function startDev() {
   if (!dbUrl || dbUrl.includes("neon.tech")) {
     await startLocalPostgres();
     await createDatabaseIfNeeded();
-    process.env.DATABASE_URL = "postgresql://runner@localhost:15432/stellar_dominion";
+    const pgUser = process.env.USER || process.env.USERNAME || "runner";
+process.env.DATABASE_URL = `postgresql://${pgUser}@localhost:15432/stellar_dominion`;
   }
 
   const selectedPort = await findAvailablePort(basePort);
