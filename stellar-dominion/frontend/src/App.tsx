@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -66,6 +66,8 @@ const ResearchLab = lazy(() => import("@/pages/ResearchLab"));
 const GameAssetsGallery = lazy(() => import("@/pages/GameAssetsGallery"));
 const PlanetDetail = lazy(() => import("@/pages/PlanetDetail"));
 const OgameCompendium = lazy(() => import("@/pages/OgameCompendium"));
+const LifeSupport = lazy(() => import("@/pages/LifeSupport"));
+const Index = lazy(() => import("@/pages/Index"));
 
 function LoadingSplash() {
   return (
@@ -79,7 +81,7 @@ function LoadingSplash() {
         </div>
 
         <h1 className="font-orbitron text-4xl font-bold text-white tracking-widest mb-2">
-          STELLAR <span className="bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent">DOMINION</span>
+          UNIVERSE CIVILIZATION: <span className="bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent">EMPIRES AT WAR</span>
         </h1>
         <p className="text-slate-300 font-rajdhani text-xs tracking-widest uppercase mb-5">
           Connecting to Nexus Command System
@@ -152,6 +154,8 @@ function RouterContent() {
   if (!isLoggedIn) {
     return (
       <Switch>
+        <Route path="/" component={Index} />
+        <Route path="/auth" component={Auth} />
         <Route path="/about" component={About} />
         <Route path="/terms" component={Terms} />
         <Route path="/privacy" component={Privacy} />
@@ -224,6 +228,7 @@ function RouterContent() {
       <Route path="/research-lab" component={ResearchLab} />
       <Route path="/ogame-compendium" component={OgameCompendium} />
       <Route path="/assets-gallery" component={GameAssetsGallery} />
+      <Route path="/life-support" component={LifeSupport} />
       <Route path="/settings" component={Settings} />
       <Route path="/admin" component={Admin} />
       <Route path="/server-console" component={ServerConsole} />

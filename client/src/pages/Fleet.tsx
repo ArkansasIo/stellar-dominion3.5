@@ -13,7 +13,7 @@ import {
   Rocket, MapPin, Crosshair, Truck, Search, Play, Clock, AlertCircle, User, Anchor, 
   Zap, Skull, Disc, Target, Shield, Sword, TrendingUp, BarChart3, History, Info, Users, GraduationCap
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { unitData } from "@/lib/unitData";
 import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
 import { cn } from "@/lib/utils";
@@ -167,7 +167,7 @@ export default function Fleet() {
       setMissionType("colonize");
       setSelectedUnits((prev) => ({
          ...prev,
-         colonist: Math.min(units.colonist || 0, 1),
+          colonyShip: Math.min(units.colonyShip || 0, 1),
          lightFighter: Math.min(units.lightFighter || 0, 5),
          largeCargo: Math.min(units.largeCargo || 0, 2),
       }));
@@ -432,8 +432,8 @@ export default function Fleet() {
                            if (classUnits.length === 0) return null;
 
                            return (
-                              <>
-                                 <TableRow key={cls} className="bg-slate-50 hover:bg-slate-50 border-slate-200">
+                               <React.Fragment key={cls}>
+                                  <TableRow className="bg-slate-50 hover:bg-slate-50 border-slate-200">
                                     <TableCell colSpan={5} className="font-bold uppercase text-xs tracking-widest text-muted-foreground py-2">
                                        {cls} Class
                                     </TableCell>
@@ -472,8 +472,8 @@ export default function Fleet() {
                                           </TableCell>
                                        </TableRow>
                                     )
-                                 })}
-                              </>
+                                  })}
+                               </React.Fragment>
                            )
                         })}
                         
@@ -681,9 +681,9 @@ export default function Fleet() {
                        const now = Date.now();
                        const isReturn = mission.status === "return" || (now > mission.arrivalTime);
                        const endTime = isReturn ? mission.returnTime : mission.arrivalTime;
-                       const totalTime = 10000;
-                       const timeLeft = Math.max(0, endTime - now);
-                       const progress = Math.max(0, 100 - (timeLeft / totalTime) * 100);
+                        const travelDuration = Math.max(10000, mission.returnTime - mission.arrivalTime);
+                        const timeLeft = Math.max(0, endTime - now);
+                        const progress = Math.max(0, 100 - (timeLeft / travelDuration) * 100);
 
                        const missionPower = Object.entries(mission.units).reduce((sum, [id, count]: [string, any]) => {
                          const unit = getUnitData(id);

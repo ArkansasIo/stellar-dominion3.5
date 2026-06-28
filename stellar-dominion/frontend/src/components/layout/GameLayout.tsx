@@ -176,7 +176,7 @@ export default function GameLayout({ children }: { children: React.ReactNode }) 
              <Rocket className="text-white w-6 h-6" />
            </div>
            <div>
-             <h1 className="font-orbitron font-bold text-xl tracking-wider text-slate-900">STELLAR <span className="text-primary text-sm font-normal">DOMINION</span></h1>
+             <h1 className="font-orbitron font-bold text-xl tracking-wider text-slate-900">UNIVERSE CIVILIZATION</h1>
              <p className="text-xs text-muted-foreground font-rajdhani tracking-widest uppercase">Server: Nexus-Alpha // User: {username || "Commander"}</p>
            </div>
         </div>

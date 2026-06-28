@@ -18,12 +18,21 @@ import {
   POPULATION_SYSTEM,
   FOOD_SYSTEM,
   WATER_SYSTEM,
+  DISEASE_CATALOG,
+  DISEASE_CONTROL,
   computeResourcePressure,
   estimatePopulationGrowth,
   estimateFoodDemand,
   estimateWaterDemand,
+  computeOutbreakRisk,
+  computeOverallHealth,
+  computeMedicalCapacity,
+  computeDiseaseTransmission,
   type PopulationClass,
+  type ContainmentLevel,
+  type HealthState,
 } from "../shared/config";
+import { LifeSupportService } from "./services/lifeSupportService";
 
 function toNumber(value: unknown, fallback = 0): number {
   const numeric = Number(value);
@@ -301,6 +310,127 @@ export function registerLifeSupportRoutes(app: Express) {
     } catch (error) {
       console.error("[population/snapshot]", error);
       res.status(500).json({ success: false, message: "Failed to build population snapshot" });
+    }
+  });
+
+  app.get("/api/life-support/snapshot", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const userId = getUserId(req);
+      LifeSupportService.initializePlayer(userId);
+      const snapshot = await LifeSupportService.getPopulationSnapshot(userId);
+      res.json({ success: true, snapshot });
+    } catch (error) {
+      console.error("[life-support/snapshot]", error);
+      res.status(500).json({ success: false, message: "Failed to get life support snapshot" });
+    }
+  });
+
+  app.get("/api/life-support/health", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const userId = getUserId(req);
+      LifeSupportService.initializePlayer(userId);
+      const state = await storage.getPlayerState(userId);
+      const buildings = ((state?.buildings || {}) as Record<string, number>);
+      const currentPopulation = toNumber((state as any)?.population, 0) || 1000;
+      const medicalCapacity = computeMedicalCapacity(buildings);
+
+      LifeSupportService.processTurn(userId);
+      const healthState = LifeSupportService.getHealthStateForUser(userId);
+
+      if (!healthState) {
+        return res.json({
+          success: true,
+          health: {
+            overallHealth: 0.85,
+            diseaseResistance: 0.1,
+            outbreakRisk: 0.05,
+            activeOutbreaks: [],
+            quarantinedPopulation: 0,
+            medicalCapacity,
+          },
+        });
+      }
+
+      res.json({ success: true, health: healthState });
+    } catch (error) {
+      console.error("[life-support/health]", error);
+      res.status(500).json({ success: false, message: "Failed to get health status" });
+    }
+  });
+
+  app.get("/api/life-support/disease-catalog", (_req: Request, res: Response) => {
+    res.json({ success: true, catalog: DISEASE_CATALOG });
+  });
+
+  app.get("/api/life-support/disease-control-config", (_req: Request, res: Response) => {
+    res.json({ success: true, config: DISEASE_CONTROL });
+  });
+
+  app.post("/api/life-support/containment", isAuthenticated, (req: Request, res: Response) => {
+    try {
+      const userId = getUserId(req);
+      const { diseaseId, level } = req.body as { diseaseId: string; level: ContainmentLevel };
+
+      if (!diseaseId || !level) {
+        return res.status(400).json({ success: false, message: "Missing diseaseId or level" });
+      }
+
+      const validLevels: ContainmentLevel[] = ['none', 'basic', 'enhanced', 'strict', 'total'];
+      if (!validLevels.includes(level)) {
+        return res.status(400).json({ success: false, message: "Invalid containment level" });
+      }
+
+      const disease = DISEASE_CATALOG.find((d) => d.id === diseaseId);
+      if (!disease) {
+        return res.status(404).json({ success: false, message: "Disease not found" });
+      }
+
+      const success = LifeSupportService.setContainmentLevel(userId, diseaseId, level);
+      if (!success) {
+        return res.status(404).json({ success: false, message: "No active outbreak found for this disease" });
+      }
+
+      res.json({ success: true, message: `Containment set to ${level} for ${disease.name}` });
+    } catch (error) {
+      console.error("[life-support/containment]", error);
+      res.status(500).json({ success: false, message: "Failed to set containment level" });
+    }
+  });
+
+  app.post("/api/life-support/rationing", isAuthenticated, (req: Request, res: Response) => {
+    try {
+      const userId = getUserId(req);
+      const { mode } = req.body as { mode: string };
+
+      if (!mode) {
+        return res.status(400).json({ success: false, message: "Missing mode" });
+      }
+
+      const success = LifeSupportService.setRationingMode(userId, mode);
+      if (!success) {
+        return res.status(400).json({ success: false, message: "Invalid rationing mode" });
+      }
+
+      res.json({
+        success: true,
+        message: `Rationing set to ${mode}`,
+        mode: LifeSupportService.getRationingMode(userId),
+      });
+    } catch (error) {
+      console.error("[life-support/rationing]", error);
+      res.status(500).json({ success: false, message: "Failed to set rationing mode" });
+    }
+  });
+
+  app.get("/api/life-support/rationing", isAuthenticated, (req: Request, res: Response) => {
+    try {
+      const userId = getUserId(req);
+      const mode = LifeSupportService.getRationingMode(userId);
+      const config = FOOD_SYSTEM.consumption.rationingModes;
+      res.json({ success: true, mode, config });
+    } catch (error) {
+      console.error("[life-support/rationing]", error);
+      res.status(500).json({ success: false, message: "Failed to get rationing status" });
     }
   });
 }

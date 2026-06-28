@@ -120,7 +120,7 @@ export default function Auth() {
           <div className="w-16 h-16 bg-gradient-to-br from-slate-800 to-slate-900 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
              <Rocket className="w-8 h-8 text-white" />
           </div>
-          <CardTitle className="text-4xl font-orbitron font-bold tracking-wider text-slate-900">STELLAR DOMINION</CardTitle>
+          <CardTitle className="text-3xl font-orbitron font-bold tracking-wider text-slate-900">UNIVERSE CIVILIZATION: EMPIRES AT WAR</CardTitle>
           <CardDescription className="text-slate-700 font-rajdhani text-lg font-medium mt-2">⚡ Command your fleet. Conquer the stars.</CardDescription>
         </CardHeader>
         

@@ -104,6 +104,208 @@ export const WATER_SYSTEM = {
   },
 } as const;
 
+// ============================================================================
+// DISEASE CONTROL SYSTEM
+// ============================================================================
+
+export type DiseaseSeverity = 'mild' | 'moderate' | 'severe' | 'critical';
+export type DiseaseStatus = 'dormant' | 'emerging' | 'outbreak' | 'contained' | 'eradicated';
+export type ContainmentLevel = 'none' | 'basic' | 'enhanced' | 'strict' | 'total';
+
+export interface DiseaseTemplate {
+  id: string;
+  name: string;
+  description: string;
+  severity: DiseaseSeverity;
+  transmissionRate: number;
+  mortalityRate: number;
+  incubationTurns: number;
+  durationTurns: number;
+  productivityPenalty: number;
+  happinessPenalty: number;
+  requiresQuarantine: boolean;
+}
+
+export interface OutbreakState {
+  diseaseId: string;
+  status: DiseaseStatus;
+  infectedCount: number;
+  totalCases: number;
+  fatalities: number;
+  turnsActive: number;
+  containmentLevel: ContainmentLevel;
+  discoveredAt: number;
+}
+
+export interface HealthState {
+  overallHealth: number;
+  diseaseResistance: number;
+  outbreakRisk: number;
+  activeOutbreaks: OutbreakState[];
+  quarantinedPopulation: number;
+  medicalCapacity: number;
+}
+
+export const DISEASE_CATALOG: DiseaseTemplate[] = [
+  {
+    id: 'stellar-flu',
+    name: 'Stellar Flu',
+    description: 'A highly contagious respiratory infection common in space colonies.',
+    severity: 'mild',
+    transmissionRate: 0.12,
+    mortalityRate: 0.002,
+    incubationTurns: 3,
+    durationTurns: 12,
+    productivityPenalty: 0.15,
+    happinessPenalty: 0.08,
+    requiresQuarantine: false,
+  },
+  {
+    id: 'void-rot',
+    name: 'Void Rot',
+    description: 'A fungal infection that thrives in recycled air systems.',
+    severity: 'moderate',
+    transmissionRate: 0.08,
+    mortalityRate: 0.015,
+    incubationTurns: 5,
+    durationTurns: 20,
+    productivityPenalty: 0.25,
+    happinessPenalty: 0.15,
+    requiresQuarantine: true,
+  },
+  {
+    id: 'crystal-fever',
+    name: 'Crystal Fever',
+    description: 'A crystalline pathogen that calcifies organic tissue over time.',
+    severity: 'severe',
+    transmissionRate: 0.05,
+    mortalityRate: 0.05,
+    incubationTurns: 8,
+    durationTurns: 30,
+    productivityPenalty: 0.4,
+    happinessPenalty: 0.25,
+    requiresQuarantine: true,
+  },
+  {
+    id: 'quantum-plague',
+    name: 'Quantum Plague',
+    description: 'A devastating quantum-entangled pathogen that phases through conventional barriers.',
+    severity: 'critical',
+    transmissionRate: 0.15,
+    mortalityRate: 0.12,
+    incubationTurns: 4,
+    durationTurns: 40,
+    productivityPenalty: 0.6,
+    happinessPenalty: 0.4,
+    requiresQuarantine: true,
+  },
+  {
+    id: 'hydroponic-blight',
+    name: 'Hydroponic Blight',
+    description: 'A plant pathogen that contaminates food production systems.',
+    severity: 'moderate',
+    transmissionRate: 0.06,
+    mortalityRate: 0.001,
+    incubationTurns: 2,
+    durationTurns: 15,
+    productivityPenalty: 0.3,
+    happinessPenalty: 0.1,
+    requiresQuarantine: false,
+  },
+];
+
+export const DISEASE_CONTROL = {
+  containmentMeasures: {
+    none: { name: 'None', transmissionMultiplier: 1.0, costPerTurn: 0, happinessPenalty: 0 },
+    basic: { name: 'Basic Hygiene', transmissionMultiplier: 0.75, costPerTurn: 50, happinessPenalty: 0.02 },
+    enhanced: { name: 'Enhanced Protocols', transmissionMultiplier: 0.5, costPerTurn: 150, happinessPenalty: 0.05 },
+    strict: { name: 'Strict Quarantine', transmissionMultiplier: 0.25, costPerTurn: 400, happinessPenalty: 0.12 },
+    total: { name: 'Total Lockdown', transmissionMultiplier: 0.1, costPerTurn: 1000, happinessPenalty: 0.25 },
+  },
+  baseResistancePerPopulation: 0.001,
+  medicalFacilityResistanceBonus: 0.15,
+  researchBonusPerLevel: 0.02,
+  outbreakThreshold: 0.6,
+  naturalRecoveryRate: 0.08,
+  fatalityThreshold: 0.95,
+  quarantineEfficiency: 0.6,
+  postOutbreakImmunityTurns: 60,
+} as const;
+
+export function computeDiseaseTransmission(
+  disease: DiseaseTemplate,
+  containment: ContainmentLevel,
+  healthResistance: number,
+  overcrowding: number,
+): number {
+  const containmentMultiplier = DISEASE_CONTROL.containmentMeasures[containment].transmissionMultiplier;
+  const resistanceFactor = Math.max(0.1, 1 - healthResistance);
+  const overcrowdingFactor = 1 + overcrowding * 0.5;
+  return disease.transmissionRate * containmentMultiplier * resistanceFactor * overcrowdingFactor;
+}
+
+export function computeOutbreakRisk(
+  healthState: HealthState,
+  overcrowding: number,
+  foodPressure: ResourcePressureState,
+  waterPressure: ResourcePressureState,
+): number {
+  let risk = 0.05;
+
+  risk += Math.max(0, 1 - healthState.overallHealth) * 0.3;
+  risk += overcrowding * 0.25;
+
+  if (foodPressure === 'critical') risk += 0.15;
+  else if (foodPressure === 'strained') risk += 0.08;
+
+  if (waterPressure === 'critical') risk += 0.15;
+  else if (waterPressure === 'strained') risk += 0.08;
+
+  risk -= healthState.diseaseResistance * 0.2;
+  risk -= (healthState.medicalCapacity / Math.max(1, healthState.quarantinedPopulation + 1)) * 0.1;
+
+  return Math.max(0.01, Math.min(0.95, risk));
+}
+
+export function computeOverallHealth(
+  foodPressure: ResourcePressureState,
+  waterPressure: ResourcePressureState,
+  diseaseResistance: number,
+  activeOutbreaks: number,
+  medicalCapacity: number,
+  totalPopulation: number,
+): number {
+  let health = 0.85;
+
+  if (foodPressure === 'critical') health -= 0.2;
+  else if (foodPressure === 'strained') health -= 0.1;
+  else if (foodPressure === 'surplus') health += 0.05;
+
+  if (waterPressure === 'critical') health -= 0.2;
+  else if (waterPressure === 'strained') health -= 0.1;
+  else if (waterPressure === 'surplus') health += 0.05;
+
+  health += diseaseResistance * 0.15;
+  health -= activeOutbreaks * 0.1;
+
+  const capacityRatio = medicalCapacity / Math.max(1, totalPopulation);
+  health += Math.min(0.1, capacityRatio * 0.2);
+
+  return Math.max(0.05, Math.min(1.0, health));
+}
+
+export function computeMedicalCapacity(buildings: Record<string, number>): number {
+  const hospitalLevel = buildings.hospital ?? 0;
+  const researchLabLevel = buildings.researchLab ?? 0;
+  const roboticsLevel = buildings.roboticsFactory ?? 0;
+  return Math.floor(
+    hospitalLevel * 500 +
+    researchLabLevel * 100 +
+    roboticsLevel * 50 +
+    200,
+  );
+}
+
 export function computeResourcePressure(productionPerHour: number, consumptionPerHour: number): ResourcePressureState {
   if (productionPerHour >= consumptionPerHour * 1.15) return 'surplus';
   if (productionPerHour >= consumptionPerHour * 0.98) return 'stable';

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   LayoutDashboard, Pickaxe, Factory, FlaskConical, Rocket, Send, Globe,
-  Zap, Database, Box, Gem, User, Landmark, Mail, Shield, Hexagon, ShoppingBag, Orbit, Sword, Eye
+  Zap, Database, Box, Gem, User, Landmark, Mail, Shield, Hexagon, ShoppingBag, Orbit, Sword, Eye, Heart
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -27,6 +27,7 @@ const navItems = [
   { href: "/market", icon: ShoppingBag, label: "Market" },
   { href: "/messages", icon: Mail, label: "Messages" },
   { href: "/artifacts", icon: Gem, label: "Artifacts" },
+  { href: "/life-support", icon: Heart, label: "Life Support" },
 ];
 
 export default function Navigation() {
