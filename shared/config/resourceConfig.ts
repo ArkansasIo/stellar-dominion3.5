@@ -8,6 +8,13 @@ export const RESOURCE_CONFIG = {
     energy: { name: "Energy", description: "Power generation", category: "production" },
     food: { name: "Food", description: "Agricultural produce", category: "sustenance" },
     water: { name: "Water", description: "Fresh water supplies", category: "sustenance" },
+    credits: { name: "Credits", description: "Galactic currency", category: "currency" },
+    darkMatter: { name: "Dark Matter", description: "Exotic dark matter particles", category: "exotic" },
+    antimatter: { name: "Antimatter", description: "Highly energetic antimatter", category: "exotic" },
+    quantumCrystals: { name: "Quantum Crystals", description: "Crystals with quantum properties", category: "luxury" },
+    exoticGas: { name: "Exotic Gas", description: "Rare gaseous compounds", category: "luxury" },
+    plasmaCells: { name: "Plasma Cells", description: "Stabilized plasma energy cells", category: "luxury" },
+    alienArtifacts: { name: "Alien Artifacts", description: "Mysterious alien technology fragments", category: "luxury" },
   },
 
   // Mining equipment

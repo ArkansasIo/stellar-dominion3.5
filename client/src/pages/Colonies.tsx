@@ -21,6 +21,7 @@ import {
   Settings2,
   ChevronLeft,
   ChevronRight,
+  AlertTriangle,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
@@ -29,7 +30,8 @@ import Navigation from "./Navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS, PLANET_ASSETS } from "@shared/config";
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS, PLANET_ASSETS, ALL_PLANET_TYPES } from "@shared/config";
+import { assessPlanetHazards, type HazardSeverity, type PlanetHazardAssessment } from "@shared/config/hazardSystemConfig";
 import {
   applyManagementProfile,
   COLONIES_PER_PAGE,
@@ -43,6 +45,38 @@ import {
 } from "@/lib/colonySystems";
 
 const TEMP_THEME_IMAGE = "/theme-temp.png";
+
+const CLASS_LETTER_MAP: Record<string, string> = {
+  M: "earth-like",
+  D: "desert-world",
+  V: "volcanic-world",
+  R: "jungle-world",
+  G: "gas-giant-jupiter",
+  I: "ice-world",
+  A: "asteroid-large",
+  P: "earth-like",
+};
+
+const HAZARD_SEVERITY_COLORS: Record<string, string> = {
+  none: "bg-green-100 text-green-800",
+  low: "bg-yellow-100 text-yellow-800",
+  moderate: "bg-orange-100 text-orange-800",
+  high: "bg-red-100 text-red-800",
+  extreme: "bg-purple-100 text-purple-800",
+  lethal: "bg-slate-900 text-white",
+};
+
+function getHazardAssessmentForColony(colony: ColonySystemRecord): PlanetHazardAssessment | null {
+  const planetTypeId = CLASS_LETTER_MAP[colony.class] || "";
+  const planetType = ALL_PLANET_TYPES.find((pt) => pt.id === planetTypeId);
+  if (!planetType) return null;
+  return assessPlanetHazards(
+    planetType.id,
+    colony.name,
+    planetType.stats,
+    planetType.dangers || [],
+  );
+}
 
 type PopulationSnapshotResponse = {
   success: boolean;
@@ -211,6 +245,14 @@ export default function Colonies() {
   const snapshot = populationSnapshotQuery.data?.snapshot;
   const systemBodies = selectedColony ? getSystemOverview(selectedColony) : [];
   const moonBodies = systemBodies.filter((body) => body.type === "moon");
+
+  const colonyHazardAssessments = useMemo(() => {
+    const map: Record<string, PlanetHazardAssessment | null> = {};
+    for (const item of effectivePageItems) {
+      map[item.id] = getHazardAssessmentForColony(item);
+    }
+    return map;
+  }, [effectivePageItems]);
 
   const classColors: { [key: string]: string } = {
     M: "bg-blue-100 text-blue-900",
@@ -489,6 +531,15 @@ export default function Colonies() {
                       <div className="flex flex-col items-end gap-1">
                         <Badge className={classColors[colony.class] || "bg-slate-100 text-slate-900"}>{colony.class}</Badge>
                         <Badge className={statusBadgeClasses(colony.planetStatus.condition)}>{colony.planetStatus.condition}</Badge>
+                        {(() => {
+                          const hazard = colonyHazardAssessments[colony.id];
+                          if (!hazard || hazard.overallSeverity === "none") return null;
+                          return (
+                            <Badge className={HAZARD_SEVERITY_COLORS[hazard.overallSeverity] + " text-[10px] px-1.5"}>
+                              <AlertTriangle className="w-3 h-3 mr-0.5 inline" />{hazard.overallSeverity}
+                            </Badge>
+                          );
+                        })()}
                       </div>
                     </div>
 
@@ -549,7 +600,18 @@ export default function Colonies() {
                           <div className="text-xs text-slate-500 font-mono">{slot.coordinates}</div>
                         </div>
                       </div>
+                      <div className="flex flex-col items-end gap-1">
                       <Badge variant="secondary" className={classColors[slot.class] || "bg-slate-100 text-slate-900"}>{slot.class}</Badge>
+                      {(() => {
+                        const hazard = colonyHazardAssessments[slot.id];
+                        if (!hazard || hazard.overallSeverity === "none") return null;
+                        return (
+                          <Badge className={HAZARD_SEVERITY_COLORS[hazard.overallSeverity] + " text-[10px] px-1.5"}>
+                            <AlertTriangle className="w-3 h-3 mr-0.5 inline" />{hazard.overallSeverity}
+                          </Badge>
+                        );
+                      })()}
+                      </div>
                     </div>
 
                     <div className="space-y-2 text-xs">
@@ -605,6 +667,15 @@ export default function Colonies() {
                     <div className="flex items-center gap-2">
                       <Badge className={classColors[selectedColony.class] || "bg-slate-100 text-slate-900"}>{selectedColony.class}</Badge>
                       <Badge className={statusBadgeClasses(selectedColony.planetStatus.condition)}>{selectedColony.planetStatus.condition}</Badge>
+                      {(() => {
+                        const hazard = colonyHazardAssessments[selectedColony.id];
+                        if (!hazard || hazard.overallSeverity === "none") return null;
+                        return (
+                          <Badge className={HAZARD_SEVERITY_COLORS[hazard.overallSeverity] + " text-[10px] px-1.5"}>
+                            <AlertTriangle className="w-3 h-3 mr-0.5 inline" />{hazard.overallSeverity}
+                          </Badge>
+                        );
+                      })()}
                     </div>
                   </CardTitle>
                 </CardHeader>

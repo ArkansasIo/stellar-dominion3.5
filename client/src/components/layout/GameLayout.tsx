@@ -71,6 +71,9 @@ import {
   ClipboardList,
   CheckCircle2,
   X,
+  Eye,
+  Briefcase,
+  BarChart3,
 } from "lucide-react";
 
 interface NavItem {
@@ -336,6 +339,7 @@ const menuSections: MenuSection[] = [
           { href: "/power-grid", icon: Network, label: "Stellar Power Grid", description: "Generate, transmit, store, and autonomously route power across worlds and resource fields." },
           { href: "/facilities", icon: Factory, label: "Facilities", description: "Construct and upgrade industrial, research, and support facilities." },
           { href: "/colonies", icon: Home, label: "Colonies", description: "Manage colonization targets, colony slots, and expansion plans." },
+          { href: "/population", icon: Users, label: "Population", description: "Manage population demographics, citizen class assignment, and growth." },
           { href: "/stations", icon: Satellite, label: "Stations", description: "Control orbital stations, outposts, and support platforms." },
           { href: "/megastructures", icon: CircleDot, label: "Megastructures", description: "Develop late-game empire-scale construction projects." },
         ],
@@ -407,9 +411,11 @@ const menuSections: MenuSection[] = [
       },
       {
         title: "Operations",
-        description: "Run missions, battles, and after-action reviews.",
+        description: "Run missions, battles, espionage, and after-action reviews.",
         items: [
           { href: "/expeditions", icon: Compass, label: "Expeditions", description: "Launch deep-space missions for risk, reward, and discovery." },
+          { href: "/missions", icon: Briefcase, label: "Missions", description: "Dispatch fleets on strategic missions across the galaxy." },
+          { href: "/espionage", icon: Eye, label: "Espionage", description: "Gather intelligence and conduct covert operations." },
           { href: "/combat", icon: ShieldAlert, label: "Combat Center", description: "Engage combat systems and active battle mechanics." },
           { href: "/ground-combat", icon: Swords, label: "Ground Combat", description: "Assemble invasion troops, shock units, and special ops detachments." },
           { href: "/planet-occupation", icon: TowerControl, label: "Planet Occupation", description: "Control captured worlds through garrisons, suppression, extraction, and fortifications." },
@@ -450,6 +456,7 @@ const menuSections: MenuSection[] = [
           { href: "/warp-network", icon: Network, label: "Warp Network", description: "Manage travel corridors and inter-system movement." },
           { href: "/celestial-browser", icon: CircleDot, label: "Celestial Browser", description: "Inspect stars, planets, and other celestial objects." },
           { href: "/biome-codex", icon: BookOpen, label: "Biome Codex", description: "Study biome entries and their detailed environmental data.", activePrefixes: ["/biome/"] },
+          { href: "/hazards", icon: AlertTriangle, label: "Hazard Assessment", description: "Evaluate planetary hazards, risks, and environmental conditions." },
         ],
       },
       {
@@ -506,6 +513,7 @@ const menuSections: MenuSection[] = [
         description: "Buy, sell, and browse goods across the empire economy.",
         items: [
           { href: "/market", icon: ShoppingBag, label: "Market", description: "Trade raw materials, strategic goods, and market offers." },
+          { href: "/commerce", icon: BarChart3, label: "Commerce Hub", description: "Full trading interface with market prices and order management." },
           { href: "/merchants", icon: User, label: "Merchants", description: "Work with merchant NPCs and their specialized inventories." },
           { href: "/storefront", icon: Store, label: "Storefront", description: "Browse premium or featured storefront offerings." },
         ],

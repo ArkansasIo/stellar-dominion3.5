@@ -2,8 +2,9 @@
 import { resourceService } from './services/resourceService';
 import { fleetService } from './services/fleetService';
 import { technologyService } from './services/technologyService';
-import { turnSystemService } from './services/turnSystemService';
+import TurnSystemService, { turnSystemService } from './services/turnSystemService';
 import { researchMilestoneEventService } from './services/researchMilestoneEventService';
+import { CelestialService } from './services/celestialService';
 import { db } from './db';
 import { playerStates } from '../shared/schema';
 import { eq } from 'drizzle-orm';
@@ -387,11 +388,10 @@ class GameEngine {
 
       if (!techResult[0]) return { success: false, message: 'Player not found' };
 
-      const research = techResult[0].research || {};
+      const research = (techResult[0].research || {}) as Record<string, number>;
       const techIds = Object.keys(research);
       const triggeredMilestones = [];
 
-      // Check each technology for milestone triggers
       for (const techId of techIds) {
         const currentLevel = research[techId] || 0;
         if (currentLevel > 0) {
@@ -422,7 +422,8 @@ class GameEngine {
 
       if (!playerResult[0]) return { success: false, message: 'Player not found' };
 
-      const milestoneEvents = playerResult[0].researchMilestoneEvents || [];
+      const playerData = playerResult[0] as any;
+      const milestoneEvents = playerData.researchMilestoneEvents || [];
       const uncompletedMilestones = milestoneEvents.filter((m: any) => !m.isRewarded);
 
       if (uncompletedMilestones.length === 0) {
@@ -458,11 +459,18 @@ class GameEngine {
 
       if (!playerResult[0]) return { success: false, message: 'Player not found' };
 
-      const milestoneEvents = playerResult[0].researchMilestoneEvents || [];
-      const research = playerResult[0].research || {};
+      const playerData = playerResult[0] as any;
+      const milestoneEvents = playerData.researchMilestoneEvents || [];
+      const research = (playerResult[0].research || {}) as Record<string, number>;
       const techIds = Object.keys(research);
 
-      const summary = {
+      const summary: {
+        totalMilestones: number;
+        completedMilestones: number;
+        pendingMilestones: number;
+        techProgress: Record<string, { currentLevel: number; milestonesCompleted: number; nextMilestone: any }>;
+        upcomingMilestones: any[];
+      } = {
         totalMilestones: milestoneEvents.length,
         completedMilestones: milestoneEvents.filter((m: any) => m.isRewarded).length,
         pendingMilestones: milestoneEvents.filter((m: any) => !m.isRewarded).length,
@@ -501,10 +509,8 @@ class GameEngine {
     }, null);
   }
 
-  // Core game systems available for extension
   public getCelestialService() {
-    // Celestial discovery, claiming, and marketplace
-    return celestialService;
+    return CelestialService;
   }
 
   public getResearchMilestoneService() {
@@ -590,14 +596,11 @@ class GameEngine {
   // Core game loop orchestrator
   async executeFullGameTick() {
     try {
-      // Resource processing tick
-      const resourceTick = await this.processResourceTick('*');
+      const resourceTick = await processResourceTick('*');
       
-      // Turn generation
-      const turnTick = await turnSystemService.generateTurns('*');
+      const turnTick = await TurnSystemService.generateTurns('*');
       
-      // Research auto-progress
-      const researchTick = await turnSystemService.autoProgressResearch('*');
+      const researchTick = await TurnSystemService.autoProgressResearch('*');
       
       // Event processing and milestone triggers
       const milestoneProcessing = await this.triggerResearchMilestoneEvents('*', 10);

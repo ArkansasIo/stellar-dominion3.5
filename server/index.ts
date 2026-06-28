@@ -56,6 +56,7 @@ import { registerOGameOccupationRoutes } from "./routes-ogame-occupation";
 import { registerOGameAllianceDepotRoutes } from "./routes-ogame-alliance-depot";
 import { registerOGameGravitonRoutes } from "./routes-ogame-graviton";
 import { registerOGamePushProtectionRoutes } from "./routes-ogame-push-protection";
+import { registerHazardRoutes } from "./routes-hazards";
 import connectProviderRouter from "./routes-connect-provider";
 
 // New feature imports
@@ -309,6 +310,7 @@ import { eq, ilike, or } from "drizzle-orm";
   registerRealmRoutes(app);
   registerUniverseSeedRoutes(app);
   registerLifeSupportRoutes(app);
+  registerHazardRoutes(app);
   registerLiveOpsRoutes(app);
   registerMissingRoutes(app);
   registerExpeditionRoutes(app);

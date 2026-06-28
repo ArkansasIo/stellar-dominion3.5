@@ -156,9 +156,9 @@ export default function Auth() {
   };
 
   const useDemoAccount = () => {
-    saveCredentials("demo", "demo");
-    setUsername("demo");
-    setPassword("demo");
+    saveCredentials("player1", "password123");
+    setUsername("player1");
+    setPassword("password123");
     login();
   };
 

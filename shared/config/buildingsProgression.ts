@@ -34,7 +34,8 @@ export type BuildingCategory =
   | 'storage'
   | 'civilian'
   | 'orbital'
-  | 'strategic';
+  | 'strategic'
+  | 'infrastructure';
 
 export interface BuildingStats {
   production: number;
@@ -385,6 +386,175 @@ export const BUILDING_CONFIGS: Record<string, BuildingConfig> = {
       capacity: 0.2,
     },
   },
+
+  // MISSING GDD BUILDINGS
+
+  'defense-factory': {
+    baseCost: { metal: 800, crystal: 200, deuterium: 100 },
+    baseTime: 60,
+    baseProduction: 0,
+    baseMaintenance: { metal: 10, crystal: 5, deuterium: 5 },
+    baseStats: {
+      production: 0,
+      efficiency: 0.9,
+      speed: 1.2,
+      capacity: 100,
+    },
+    levelCap: 999,
+    unlockRequirements: ['Military Level 5'],
+    bonusPerTier: {
+      speed: 0.1,
+      efficiency: 0.04,
+    },
+  },
+
+  'fleet-academy': {
+    baseCost: { metal: 2000, crystal: 4000, deuterium: 1000 },
+    baseTime: 200,
+    baseProduction: 0,
+    baseMaintenance: { metal: 20, crystal: 20, deuterium: 10 },
+    baseStats: {
+      production: 0,
+      efficiency: 0.92,
+      speed: 1.1,
+      capacity: 50,
+    },
+    levelCap: 999,
+    unlockRequirements: ['Fleet Command Level 10', 'Military Level 8'],
+    bonusPerTier: {
+      speed: 0.15,
+      capacity: 0.1,
+    },
+  },
+
+  'orbital-dock': {
+    baseCost: { metal: 8000, crystal: 15000, deuterium: 5000 },
+    baseTime: 400,
+    baseProduction: 0,
+    baseMaintenance: { metal: 50, crystal: 50, deuterium: 50 },
+    baseStats: {
+      production: 0,
+      efficiency: 0.95,
+      speed: 1.8,
+      capacity: 300,
+    },
+    levelCap: 999,
+    unlockRequirements: ['Spatial Engineering Level 12', 'Shipyard Level 10'],
+    bonusPerTier: {
+      speed: 0.2,
+      capacity: 0.15,
+    },
+  },
+
+  'quantum-laboratory': {
+    baseCost: { metal: 3000, crystal: 8000, deuterium: 4000 },
+    baseTime: 300,
+    baseProduction: 0,
+    baseMaintenance: { metal: 20, crystal: 30, deuterium: 20 },
+    baseStats: {
+      production: 0,
+      efficiency: 0.97,
+      speed: 2.0,
+      capacity: 200,
+    },
+    levelCap: 999,
+    unlockRequirements: ['Quantum Technology Level 5', 'Research Lab Level 15'],
+    bonusPerTier: {
+      speed: 0.2,
+      efficiency: 0.06,
+    },
+  },
+
+  'deep-space-scanner': {
+    baseCost: { metal: 2000, crystal: 5000, deuterium: 2000 },
+    baseTime: 180,
+    baseProduction: 0,
+    baseMaintenance: { metal: 10, crystal: 20, deuterium: 15 },
+    baseStats: {
+      production: 0,
+      efficiency: 0.9,
+      speed: 1.0,
+      capacity: 0,
+    },
+    levelCap: 999,
+    unlockRequirements: ['Sensor Technology Level 8', 'Observatory Level 3'],
+    bonusPerTier: {
+      efficiency: 0.1,
+    },
+  },
+
+  'embassy': {
+    baseCost: { metal: 500, crystal: 1000, deuterium: 500 },
+    baseTime: 100,
+    baseProduction: 0,
+    baseMaintenance: { metal: 5, crystal: 5, deuterium: 5 },
+    baseStats: {
+      production: 0,
+      efficiency: 0.9,
+      speed: 1.0,
+      capacity: 0,
+    },
+    levelCap: 999,
+    unlockRequirements: ['Social Sciences Level 3'],
+    bonusPerTier: {
+      efficiency: 0.05,
+    },
+  },
+
+  'government-center': {
+    baseCost: { metal: 2000, crystal: 4000, deuterium: 2000 },
+    baseTime: 300,
+    baseProduction: 0,
+    baseMaintenance: { metal: 20, crystal: 10, deuterium: 10 },
+    baseStats: {
+      production: 0,
+      efficiency: 0.95,
+      speed: 1.1,
+      capacity: 0,
+    },
+    levelCap: 999,
+    unlockRequirements: ['Government Level 5', 'Embassy Level 3'],
+    bonusPerTier: {
+      efficiency: 0.08,
+    },
+  },
+
+  'terraforming-station': {
+    baseCost: { metal: 5000, crystal: 10000, deuterium: 5000 },
+    baseTime: 500,
+    baseProduction: 0,
+    baseMaintenance: { metal: 50, crystal: 50, deuterium: 50 },
+    baseStats: {
+      production: 0,
+      efficiency: 0.88,
+      speed: 1.0,
+      capacity: 0,
+    },
+    levelCap: 999,
+    unlockRequirements: ['Terraforming Technology Level 3', 'Planetary Engineering Level 10'],
+    bonusPerTier: {
+      efficiency: 0.1,
+    },
+  },
+
+  'power-grid': {
+    baseCost: { metal: 200, crystal: 100, deuterium: 50 },
+    baseTime: 40,
+    baseProduction: 0,
+    baseMaintenance: { metal: 2, crystal: 1, deuterium: 1 },
+    baseStats: {
+      production: 0,
+      efficiency: 0.95,
+      speed: 1.0,
+      capacity: 1000000,
+    },
+    levelCap: 999,
+    unlockRequirements: ['Energy Technology Level 2'],
+    bonusPerTier: {
+      capacity: 0.2,
+      efficiency: 0.03,
+    },
+  },
 };
 
 /**
@@ -419,6 +589,15 @@ export const BUILDINGS: Building[] = [
   // Orbital
   { id: 'space-station', name: 'Space Station', type: 'orbital', category: 'orbital', tier: 20, maxLevel: 999, description: 'Orbital habitat and command center', icon: '🌌' },
   { id: 'orbital-shipyard', name: 'Orbital Shipyard', type: 'orbital', category: 'orbital', tier: 18, maxLevel: 999, description: 'Constructs ships in orbit', icon: '🏭' },
+  { id: 'defense-factory', name: 'Defense Factory', type: 'factory', category: 'military', tier: 5, maxLevel: 999, description: 'Manufactures planetary defense systems', icon: '🛡️' },
+  { id: 'fleet-academy', name: 'Fleet Academy', type: 'infrastructure', category: 'military', tier: 8, maxLevel: 999, description: 'Trains fleet commanders and crew', icon: '🎓' },
+  { id: 'orbital-dock', name: 'Orbital Dock', type: 'orbital', category: 'orbital', tier: 15, maxLevel: 999, description: 'Large orbital construction facility', icon: '🏗️' },
+  { id: 'quantum-laboratory', name: 'Quantum Laboratory', type: 'laboratory', category: 'research', tier: 12, maxLevel: 999, description: 'Advanced quantum research facility', icon: '⚛️' },
+  { id: 'deep-space-scanner', name: 'Deep Space Scanner', type: 'infrastructure', category: 'research', tier: 8, maxLevel: 999, description: 'Scans deep space for anomalies', icon: '📡' },
+  { id: 'embassy', name: 'Embassy', type: 'infrastructure', category: 'civilian', tier: 3, maxLevel: 999, description: 'Diplomatic facility for foreign relations', icon: '🤝' },
+  { id: 'government-center', name: 'Government Center', type: 'infrastructure', category: 'civilian', tier: 10, maxLevel: 999, description: 'Seat of imperial government', icon: '🏛️' },
+  { id: 'terraforming-station', name: 'Terraforming Station', type: 'infrastructure', category: 'strategic', tier: 15, maxLevel: 999, description: 'Transforms planets for habitation', icon: '🌍' },
+  { id: 'power-grid', name: 'Power Grid', type: 'power', category: 'infrastructure', tier: 2, maxLevel: 999, description: 'Distributes power across colonies', icon: '⚡' },
 ];
 
 /**

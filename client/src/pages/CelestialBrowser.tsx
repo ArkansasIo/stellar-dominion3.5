@@ -4,11 +4,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { Star, Zap, Droplets, Thermometer, Radio, Users } from "lucide-react";
-import { useState } from "react";
+import { Star, Zap, Droplets, Thermometer, Users, AlertTriangle } from "lucide-react";
+import { useState, useMemo } from "react";
 import { Link, useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
-import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS, PLANET_ASSETS } from "@shared/config";
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS, PLANET_ASSETS, ALL_PLANET_TYPES } from "@shared/config";
+import { assessPlanetHazards, type HazardSeverity, type PlanetHazardAssessment } from "@shared/config/hazardSystemConfig";
 
 const SAMPLE_PLANETS = [
   {
@@ -67,6 +68,50 @@ const SAMPLE_STARS = [
 
 const TEMP_THEME_IMAGE = "/theme-temp.png";
 
+const PLANET_TYPE_ID_MAP: Record<string, string> = {
+  temperate: "earth-like",
+  desert: "desert-world",
+  barren: "rocky-barren",
+  ocean: "ocean-world",
+  ice: "ice-world",
+  ice_giant: "gas-giant-neptune",
+  "ice-rock": "mountain-world",
+  jungle: "jungle-world",
+  lava: "volcanic-world",
+  volcanic: "volcanic-world",
+  gas: "gas-giant-jupiter",
+  gas_giant: "gas-giant-jupiter",
+  swamp: "swamp-world",
+  mountain: "mountain-world",
+  storm: "storm-world",
+  cavern: "cavern-world",
+  poison: "poison-world",
+  toxic: "poison-world",
+  rocky: "rocky-barren",
+};
+
+const HAZARD_SEVERITY_COLORS: Record<string, string> = {
+  none: "bg-green-100 text-green-800 border-green-200",
+  low: "bg-yellow-100 text-yellow-800 border-yellow-200",
+  moderate: "bg-orange-100 text-orange-800 border-orange-200",
+  high: "bg-red-100 text-red-800 border-red-200",
+  extreme: "bg-purple-100 text-purple-800 border-purple-200",
+  lethal: "bg-slate-900 text-white border-slate-800",
+};
+
+function getHazardAssessmentForPlanet(planet: typeof SAMPLE_PLANETS[number]): PlanetHazardAssessment | null {
+  const typeLower = planet.type?.toLowerCase() || "";
+  const planetTypeId = PLANET_TYPE_ID_MAP[typeLower] || "";
+  const planetType = ALL_PLANET_TYPES.find((pt) => pt.id === planetTypeId);
+  if (!planetType) return null;
+  return assessPlanetHazards(
+    planetType.id,
+    planet.name,
+    planetType.stats,
+    planetType.dangers || [],
+  );
+}
+
 function getPlanetImagePath(type: string, planetClass: string) {
   const normalizedType = type.toLowerCase();
   const normalizedClass = planetClass.toLowerCase();
@@ -107,6 +152,19 @@ export default function CelestialBrowser() {
   const totalCrystal = filteredPlanets.reduce((sum, planet) => sum + planet.resources.crystal, 0);
   const habitableTargets = filteredPlanets.filter((planet) => planet.habitability >= 70).length;
   const colonizedTargets = filteredPlanets.filter((planet) => planet.colonized).length;
+
+  const hazardAssessments = useMemo(() => {
+    const map: Record<string, PlanetHazardAssessment | null> = {};
+    for (const planet of SAMPLE_PLANETS) {
+      map[planet.id] = getHazardAssessmentForPlanet(planet);
+    }
+    return map;
+  }, []);
+
+  const hazardTargets = filteredPlanets.filter((p) => {
+    const a = hazardAssessments[p.id];
+    return a && a.overallSeverity !== "none";
+  }).length;
 
   return (
     <GameLayout>
@@ -153,7 +211,9 @@ export default function CelestialBrowser() {
                       <div>
                         <h3 className="font-bold text-lg text-slate-900 mb-3">Planets</h3>
                         <div className="grid gap-3">
-                          {filteredPlanets.map((planet) => (
+                          {filteredPlanets.map((planet) => {
+                            const hazard = hazardAssessments[planet.id];
+                            return (
                             <Card key={planet.id} className="border-slate-200" data-testid={`planet-card-${planet.id}`}>
                               <CardContent className="pt-4">
                                 <div className="flex items-start justify-between mb-3">
@@ -174,6 +234,12 @@ export default function CelestialBrowser() {
                                   </div>
                                   <div className="flex gap-2">
                                     <Badge variant="outline">{planet.type}</Badge>
+                                    {hazard && hazard.overallSeverity !== "none" && (
+                                      <Badge className={HAZARD_SEVERITY_COLORS[hazard.overallSeverity]}>
+                                        <AlertTriangle className="w-3 h-3 mr-1 inline" />
+                                        {hazard.overallSeverity}
+                                      </Badge>
+                                    )}
                                     {planet.colonized && (
                                       <Badge className="bg-green-100 text-green-800">Colonized</Badge>
                                     )}
@@ -233,7 +299,8 @@ export default function CelestialBrowser() {
                                 </Link>
                               </CardContent>
                             </Card>
-                          ))}
+                            );
+                          })}
                         </div>
                       </div>
 
@@ -292,7 +359,9 @@ export default function CelestialBrowser() {
               </TabsContent>
 
               <TabsContent value="planets" className="mt-4 space-y-3">
-                {filteredPlanets.map((planet) => (
+                {filteredPlanets.map((planet) => {
+                  const hazard = hazardAssessments[planet.id];
+                  return (
                   <Card key={planet.id} className="border-slate-200">
                     <CardContent className="pt-4">
                       <div className="flex items-center gap-2 mb-2">
@@ -306,13 +375,19 @@ export default function CelestialBrowser() {
                           }}
                         />
                         <h4 className="font-bold">{planet.name}</h4>
+                        {hazard && hazard.overallSeverity !== "none" && (
+                          <Badge className={HAZARD_SEVERITY_COLORS[hazard.overallSeverity] + " ml-auto text-[10px]"}>
+                            {hazard.overallSeverity}
+                          </Badge>
+                        )}
                       </div>
                       <Button size="sm" className="w-full" onClick={() => setLocation(`/planet/${planet.id}`)}>
                         View Details
                       </Button>
                     </CardContent>
                   </Card>
-                ))}
+                  );
+                })}
               </TabsContent>
 
               <TabsContent value="stars" className="mt-4 space-y-3">
@@ -350,9 +425,10 @@ export default function CelestialBrowser() {
           </CardContent>
         </Card>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           <Card className="bg-white border-slate-200"><CardContent className="p-4"><div className="text-xs uppercase text-slate-500">Habitable Targets</div><div className="text-2xl font-orbitron font-bold text-emerald-700">{habitableTargets}</div></CardContent></Card>
           <Card className="bg-white border-slate-200"><CardContent className="p-4"><div className="text-xs uppercase text-slate-500">Colonized Worlds</div><div className="text-2xl font-orbitron font-bold text-blue-700">{colonizedTargets}</div></CardContent></Card>
+          <Card className="bg-white border-slate-200"><CardContent className="p-4"><div className="text-xs uppercase text-slate-500">Hazard Worlds</div><div className="text-2xl font-orbitron font-bold text-red-700">{hazardTargets}</div></CardContent></Card>
           <Card className="bg-white border-slate-200"><CardContent className="p-4"><div className="text-xs uppercase text-slate-500">Metal in View</div><div className="text-2xl font-orbitron font-bold text-amber-700">{totalMetal.toLocaleString()}</div></CardContent></Card>
           <Card className="bg-white border-slate-200"><CardContent className="p-4"><div className="text-xs uppercase text-slate-500">Crystal in View</div><div className="text-2xl font-orbitron font-bold text-cyan-700">{totalCrystal.toLocaleString()}</div></CardContent></Card>
         </div>
