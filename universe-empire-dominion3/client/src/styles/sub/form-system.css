@@ -1,0 +1,112 @@
+.sd-card-shell {
+  position: relative;
+  overflow: hidden;
+  clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px);
+  border: 1px solid var(--sd-panel-border);
+  background: linear-gradient(180deg, var(--sd-panel-top), var(--sd-panel-bottom));
+  box-shadow:
+    0 0 12px var(--sd-panel-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.sd-card-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 30%);
+  pointer-events: none;
+}
+
+.sd-card-title {
+  font-family: var(--sd-font-display);
+  color: var(--sd-text-primary);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.sd-card-description {
+  color: var(--sd-text-secondary);
+}
+
+.sd-input,
+.sd-textarea,
+.sd-select-trigger {
+  border: 1px solid var(--sd-button-frame) !important;
+  color: var(--sd-text-primary) !important;
+  background: linear-gradient(180deg, var(--sd-input-top), var(--sd-input-bottom)) !important;
+  box-shadow:
+    0 0 8px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px);
+}
+
+.sd-input::placeholder,
+.sd-textarea::placeholder {
+  color: var(--sd-text-secondary);
+}
+
+.sd-input:focus-visible,
+.sd-textarea:focus-visible,
+.sd-select-trigger:focus {
+  border-color: var(--sd-button-frame-active) !important;
+  box-shadow:
+    0 0 12px rgba(0, 200, 255, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.sd-select-content {
+  border: 1px solid var(--sd-panel-border) !important;
+  background: linear-gradient(180deg, var(--sd-select-content-top), var(--sd-select-content-bottom)) !important;
+  color: var(--sd-text-primary) !important;
+  box-shadow: 0 0 16px rgba(0, 150, 255, 0.16);
+}
+
+.sd-select-item {
+  color: var(--sd-text-secondary);
+  border-radius: 4px;
+}
+
+.sd-select-item[data-highlighted],
+.sd-select-item:focus {
+  background: linear-gradient(180deg, rgba(63, 95, 122, 0.82), rgba(32, 53, 74, 0.82)) !important;
+  color: var(--sd-text-primary) !important;
+}
+
+.sd-label {
+  font-family: var(--sd-font-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sd-text-secondary);
+}
+
+.sd-tabs-list {
+  border: 1px solid rgba(79, 107, 134, 0.55);
+  background: linear-gradient(180deg, var(--sd-tabs-top), var(--sd-tabs-bottom));
+  box-shadow:
+    0 0 10px rgba(0, 150, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.sd-tabs-trigger {
+  color: var(--sd-text-secondary);
+  font-family: var(--sd-font-display);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.sd-tabs-trigger[data-state="active"] {
+  color: var(--sd-text-primary) !important;
+  border: 1px solid var(--sd-button-frame-active);
+  background: linear-gradient(180deg, var(--sd-button-top-active), var(--sd-button-bottom-active));
+  box-shadow: 0 0 10px rgba(0, 200, 255, 0.35);
+}
+
+.sd-badge {
+  border: 1px solid var(--sd-button-frame);
+  background: linear-gradient(180deg, var(--sd-badge-top), var(--sd-badge-bottom));
+  color: var(--sd-text-primary);
+  font-family: var(--sd-font-display);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px);
+}

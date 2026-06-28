@@ -1,0 +1,55 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1773646050532,
+      "tag": "0000_serious_surge",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1781992806229,
+      "tag": "0001_romantic_jimmy_woo",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1782018882411,
+      "tag": "0002_lonely_the_fury",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1782021332984,
+      "tag": "0003_curvy_mojo",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1782021709884,
+      "tag": "0004_overjoyed_firebrand",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1782147535475,
+      "tag": "0005_bent_timeslip",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1782269105789,
+      "tag": "0006_known_meteorite",
+      "breakpoints": true
+    }
+  ]
+}

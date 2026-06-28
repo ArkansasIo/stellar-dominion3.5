@@ -1,0 +1,113 @@
+.sci-fi-button {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 6px;
+  clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px);
+  font-family: var(--sd-font-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease,
+    color 160ms ease;
+}
+
+.sci-fi-button::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  clip-path: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.02) 20%, transparent 45%);
+  opacity: 0.85;
+}
+
+.sci-fi-button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  opacity: 0;
+  transition: opacity 160ms ease;
+  box-shadow: 0 0 12px rgba(0, 200, 255, 0.55);
+}
+
+.sci-fi-button:hover::after,
+.sci-fi-button:focus-visible::after {
+  opacity: 1;
+}
+
+.sci-fi-button:hover {
+  transform: translateY(-1px);
+}
+
+.sci-fi-button--default,
+.sci-fi-button--secondary,
+.sci-fi-button--outline {
+  color: var(--sd-text-primary) !important;
+  border: 1px solid var(--sd-button-frame) !important;
+  background: linear-gradient(180deg, var(--sd-button-top), var(--sd-button-bottom)) !important;
+  box-shadow:
+    0 0 8px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.sci-fi-button--default:hover,
+.sci-fi-button--secondary:hover,
+.sci-fi-button--outline:hover {
+  background: linear-gradient(180deg, var(--sd-button-top-hover), var(--sd-button-bottom-hover)) !important;
+  box-shadow:
+    0 0 10px rgba(0, 200, 255, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.sci-fi-button--default:active,
+.sci-fi-button--secondary:active,
+.sci-fi-button--outline:active,
+.sci-fi-button--default[aria-pressed="true"],
+.sci-fi-button--secondary[aria-pressed="true"],
+.sci-fi-button--outline[aria-pressed="true"] {
+  background: linear-gradient(180deg, var(--sd-button-top-active), var(--sd-button-bottom-active)) !important;
+  border-color: var(--sd-button-frame-active) !important;
+  box-shadow: 0 0 12px rgba(0, 200, 255, 0.8);
+}
+
+.sci-fi-button--ghost {
+  color: var(--sd-text-secondary) !important;
+  border: 1px solid transparent !important;
+  background: linear-gradient(180deg, rgba(34, 49, 67, 0.72), rgba(17, 24, 35, 0.2)) !important;
+}
+
+.sci-fi-button--ghost:hover {
+  color: var(--sd-text-primary) !important;
+  border-color: rgba(79, 212, 255, 0.35) !important;
+  background: linear-gradient(180deg, rgba(63, 95, 122, 0.82), rgba(32, 53, 74, 0.52)) !important;
+}
+
+.sci-fi-button--destructive {
+  color: #fff1f1 !important;
+  border: 1px solid #e26666 !important;
+  background: linear-gradient(180deg, #7f3030, #4c1f1f) !important;
+  box-shadow:
+    0 0 8px rgba(0, 0, 0, 0.5),
+    0 0 10px rgba(226, 102, 102, 0.2);
+}
+
+.sci-fi-button--link {
+  clip-path: none;
+  border: 0 !important;
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+  font-family: var(--sd-font-ui);
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+
+.sci-fi-button--link::before,
+.sci-fi-button--link::after {
+  display: none;
+}

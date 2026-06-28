@@ -1,0 +1,1114 @@
+import { STARFLEET_BIOME_CATALOG_90, type StarfleetBiomeEntry } from './starfleetBiomeCatalogConfig';
+
+export type CelestialFamily =
+  | "galaxy"
+  | "star"
+  | "planet"
+  | "moon"
+  | "asteroid"
+  | "meteoroid"
+  | "comet"
+  | "nebula"
+  | "wormhole"
+  | "black-hole"
+  | "biome";
+
+export interface CelestialObject {
+  id: string;
+  name: string;
+  family: CelestialFamily;
+  type: string;
+  subType: string;
+  class: string;
+  subClass: string;
+  description: string;
+  characteristics: {
+    [key: string]: any;
+  };
+}
+
+// ===========================================================================
+// GALAXIES
+// ===========================================================================
+
+const GALAXIES: CelestialObject[] = [
+  // A
+  {
+    id: "galaxy-001",
+    name: "Andromeda",
+    family: "galaxy",
+    type: "spiral",
+    subType: "barred",
+    class: "SA(s)b",
+    subClass: "grand-design",
+    description: "A majestic spiral galaxy, the closest major galaxy to the Milky Way.",
+    characteristics: { age: "10 billion years", stars: "1 trillion" },
+  },
+  // B
+  {
+    id: "galaxy-002",
+    name: "Bode's Galaxy",
+    family: "galaxy",
+    type: "spiral",
+    subType: "unbarred",
+    class: "SA(s)ab",
+    subClass: "starburst",
+    description: "Known for its bright, active star-forming regions.",
+    characteristics: { age: "13.3 billion years", stars: "250 billion" },
+  },
+  // C
+  {
+    id: "galaxy-003",
+    name: "Cartwheel Galaxy",
+    family: "galaxy",
+    type: "lenticular",
+    subType: "ring",
+    class: "S0-a",
+    subClass: "collisional",
+    description: "A rare ring galaxy formed from a collision with a smaller galaxy.",
+    characteristics: { age: "200-300 million years (post-collision)", stars: "100 billion" },
+  },
+  // ... (and so on for all 26 letters)
+];
+
+// ===========================================================================
+// STARS
+// ===========================================================================
+
+const STARS: CelestialObject[] = [
+  {
+    id: "star-001",
+    name: "Aegis Prime",
+    family: "star",
+    type: "O-type",
+    subType: "blue-giant",
+    class: "O5V",
+    subClass: "extreme-luminosity",
+    description: "A brilliant blue O-class star that dominates its system.",
+    characteristics: { mass: "50 M☉", temperature: "42000K" },
+  },
+  {
+    id: "star-002",
+    name: "Betelgeuse",
+    family: "star",
+    type: "M-type",
+    subType: "red-supergiant",
+    class: "M1-2Ia-Iab",
+    subClass: "variable",
+    description: "A massive, pulsating red supergiant near the end of its life.",
+    characteristics: { mass: "18 M☉", temperature: "3600K" },
+  },
+  {
+    id: "star-003",
+    name: "Corvus",
+    family: "star",
+    type: "B-type",
+    subType: "main-sequence",
+    class: "B2V",
+    subClass: "white-hot",
+    description: "A bright blue-white star in the Corvus constellation.",
+    characteristics: { mass: "9 M☉", temperature: "21000K" },
+  },
+  {
+    id: "star-004",
+    name: "Deneb",
+    family: "star",
+    type: "A-type",
+    subType: "white-supergiant",
+    class: "A2Ia",
+    subClass: "luminescent",
+    description: "A luminous white supergiant used as a navigational beacon.",
+    characteristics: { mass: "19 M☉", temperature: "8600K" },
+  },
+  {
+    id: "star-005",
+    name: "Epsilon Eridani",
+    family: "star",
+    type: "K-type",
+    subType: "orange-dwarf",
+    class: "K2V",
+    subClass: "stable",
+    description: "A nearby orange dwarf favored by early colonists.",
+    characteristics: { mass: "0.8 M☉", temperature: "5000K" },
+  },
+  {
+    id: "star-006",
+    name: "Fomalhaut",
+    family: "star",
+    type: "A-type",
+    subType: "main-sequence",
+    class: "A3V",
+    subClass: "dust-ring",
+    description: "A bright star surrounded by a prominent debris disk.",
+    characteristics: { mass: "1.9 M☉", temperature: "8590K" },
+  },
+  {
+    id: "star-007",
+    name: "Gamma Draconis",
+    family: "star",
+    type: "K-type",
+    subType: "giant",
+    class: "K5III",
+    subClass: "red-giant",
+    description: "A red giant visible throughout the northern sky.",
+    characteristics: { mass: "2.7 M☉", temperature: "3900K" },
+  },
+  {
+    id: "star-008",
+    name: "Helios",
+    family: "star",
+    type: "G-type",
+    subType: "yellow-dwarf",
+    class: "G1V",
+    subClass: "stable",
+    description: "A Sun-like star at the heart of a temperate system.",
+    characteristics: { mass: "1.0 M☉", temperature: "5800K" },
+  },
+  {
+    id: "star-009",
+    name: "Icarus",
+    family: "star",
+    type: "F-type",
+    subType: "white-dwarf",
+    class: "F5V",
+    subClass: "high-radiation",
+    description: "A hot white star with extreme radiation output.",
+    characteristics: { mass: "1.4 M☉", temperature: "6500K" },
+  },
+  {
+    id: "star-010",
+    name: "Juno",
+    family: "star",
+    type: "M-type",
+    subType: "red-dwarf",
+    class: "M3V",
+    subClass: "flare-active",
+    description: "A small red dwarf prone to energetic flares.",
+    characteristics: { mass: "0.3 M☉", temperature: "3200K" },
+  },
+  {
+    id: "star-011",
+    name: "Kepler-22",
+    family: "star",
+    type: "G-type",
+    subType: "yellow-dwarf",
+    class: "G5V",
+    subClass: "habitable-zone",
+    description: "A stable yellow star known for its habitable-zone planets.",
+    characteristics: { mass: "0.97 M☉", temperature: "5510K" },
+  },
+  {
+    id: "star-012",
+    name: "Lyra",
+    family: "star",
+    type: "A-type",
+    subType: "main-sequence",
+    class: "A0V",
+    subClass: "sharp-lined",
+    description: "A bright A-class star in the Lyra constellation.",
+    characteristics: { mass: "2.1 M☉", temperature: "9500K" },
+  },
+  {
+    id: "star-013",
+    name: "Mira",
+    family: "star",
+    type: "M-type",
+    subType: "pulsating-giant",
+    class: "M2-3III",
+    subClass: "variable",
+    description: "A pulsating variable star that alters in brightness.",
+    characteristics: { mass: "1.2 M☉", temperature: "3200K" },
+  },
+  {
+    id: "star-014",
+    name: "Nemesis",
+    family: "star",
+    type: "K-type",
+    subType: "orange-dwarf",
+    class: "K7V",
+    subClass: "shadow-star",
+    description: "A dim orange dwarf hidden in the depths of a dark cluster.",
+    characteristics: { mass: "0.6 M☉", temperature: "4200K" },
+  },
+  {
+    id: "star-015",
+    name: "Orion",
+    family: "star",
+    type: "B-type",
+    subType: "blue-supergiant",
+    class: "B8Ia",
+    subClass: "nebula-anchor",
+    description: "A massive blue supergiant near a famous star-forming nebula.",
+    characteristics: { mass: "20 M☉", temperature: "12000K" },
+  },
+  {
+    id: "star-016",
+    name: "Polaris",
+    family: "star",
+    type: "F-type",
+    subType: "yellow-supergiant",
+    class: "F7Ib",
+    subClass: "north-star",
+    description: "A bright northern star used for navigation across multiple cultures.",
+    characteristics: { mass: "6 M☉", temperature: "6015K" },
+  },
+  {
+    id: "star-017",
+    name: "Quasar Nexus",
+    family: "star",
+    type: "A-type",
+    subType: "accretion-powered",
+    class: "A1V",
+    subClass: "quasar-core",
+    description: "A star-like object drawing energy from an accretion disk.",
+    characteristics: { mass: "10 M☉", temperature: "12000K" },
+  },
+  {
+    id: "star-018",
+    name: "Rigel",
+    family: "star",
+    type: "B-type",
+    subType: "blue-supergiant",
+    class: "B8Ia",
+    subClass: "variable",
+    description: "A hot blue supergiant radiating tremendous energy.",
+    characteristics: { mass: "18 M☉", temperature: "11000K" },
+  },
+  {
+    id: "star-019",
+    name: "Sirius",
+    family: "star",
+    type: "A-type",
+    subType: "main-sequence",
+    class: "A1V",
+    subClass: "binary-primary",
+    description: "The brightest star in the sky, part of a famous binary system.",
+    characteristics: { mass: "2.1 M☉", temperature: "9900K" },
+  },
+  {
+    id: "star-020",
+    name: "Tau Ceti",
+    family: "star",
+    type: "G-type",
+    subType: "yellow-dwarf",
+    class: "G8V",
+    subClass: "stable",
+    description: "A stable nearby star with several rocky worlds.",
+    characteristics: { mass: "0.78 M☉", temperature: "5344K" },
+  },
+  {
+    id: "star-021",
+    name: "Umbra",
+    family: "star",
+    type: "M-type",
+    subType: "red-dwarf",
+    class: "M5V",
+    subClass: "shadowed",
+    description: "A faint red dwarf that casts long shadows across its planets.",
+    characteristics: { mass: "0.2 M☉", temperature: "2800K" },
+  },
+  {
+    id: "star-022",
+    name: "Vega",
+    family: "star",
+    type: "A-type",
+    subType: "main-sequence",
+    class: "A0V",
+    subClass: "white-blue",
+    description: "A bright white star that has long been a standard for photometry.",
+    characteristics: { mass: "2.1 M☉", temperature: "9600K" },
+  },
+  {
+    id: "star-023",
+    name: "Wolf 1061",
+    family: "star",
+    type: "M-type",
+    subType: "red-dwarf",
+    class: "M3V",
+    subClass: "flare-active",
+    description: "A small red dwarf with a compact inner planetary system.",
+    characteristics: { mass: "0.3 M☉", temperature: "3300K" },
+  },
+  {
+    id: "star-024",
+    name: "Xenon",
+    family: "star",
+    type: "B-type",
+    subType: "hot-main-sequence",
+    class: "B1V",
+    subClass: "energy-rich",
+    description: "A luminous star that powers exotic xenon-based fuel harvesting.",
+    characteristics: { mass: "12 M☉", temperature: "25000K" },
+  },
+  {
+    id: "star-025",
+    name: "Yildun",
+    family: "star",
+    type: "F-type",
+    subType: "white-dwarf",
+    class: "F8V",
+    subClass: "variable",
+    description: "A stable white star prized for long-duration colonies.",
+    characteristics: { mass: "1.3 M☉", temperature: "6300K" },
+  },
+  {
+    id: "star-026",
+    name: "Zeta Reticuli",
+    family: "star",
+    type: "G-type",
+    subType: "yellow-dwarf",
+    class: "G1V",
+    subClass: "binary-secondary",
+    description: "A twin-like yellow star in a distant reticuli system.",
+    characteristics: { mass: "0.95 M☉", temperature: "5600K" },
+  },
+];
+
+// ===========================================================================
+// PLANETS
+// ===========================================================================
+
+const PLANETS: CelestialObject[] = [
+  {
+    id: "planet-001",
+    name: "Arrakis",
+    family: "planet",
+    type: "terrestrial",
+    subType: "desert",
+    class: "D",
+    subClass: "arid",
+    description: "A harsh desert world famous for its valuable spice deposits.",
+    characteristics: { gravity: "1.1g", atmosphere: "thin, breathable" },
+  },
+  {
+    id: "planet-002",
+    name: "Bajor",
+    family: "planet",
+    type: "terrestrial",
+    subType: "mountainous",
+    class: "C",
+    subClass: "temperate",
+    description: "A temperate world with tall mountain ranges and ancient temples.",
+    characteristics: { gravity: "0.9g", atmosphere: "thick, humid" },
+  },
+  {
+    id: "planet-003",
+    name: "Coruscant",
+    family: "planet",
+    type: "terrestrial",
+    subType: "city-planet",
+    class: "E",
+    subClass: "urban",
+    description: "A planet covered entirely by cityscapes and towering spires.",
+    characteristics: { gravity: "1.0g", atmosphere: "polluted, regulated" },
+  },
+  {
+    id: "planet-004",
+    name: "Dagobah",
+    family: "planet",
+    type: "terrestrial",
+    subType: "swamp",
+    class: "F",
+    subClass: "murky",
+    description: "A foggy, swamp-covered world filled with dense flora and strange fauna.",
+    characteristics: { gravity: "0.8g", atmosphere: "humid, oxygen-rich" },
+  },
+  {
+    id: "planet-005",
+    name: "Elysium",
+    family: "planet",
+    type: "ocean",
+    subType: "water-world",
+    class: "G",
+    subClass: "archipelagic",
+    description: "A lush water world with floating cities and endless seas.",
+    characteristics: { gravity: "0.95g", atmosphere: "moist, rich" },
+  },
+  {
+    id: "planet-006",
+    name: "Ferenginar",
+    family: "planet",
+    type: "terrestrial",
+    subType: "rainforest",
+    class: "H",
+    subClass: "wet",
+    description: "A perpetually rainy jungle world home to a mercantile species.",
+    characteristics: { gravity: "1.08g", atmosphere: "dense, acidic" },
+  },
+  {
+    id: "planet-007",
+    name: "Gallifrey",
+    family: "planet",
+    type: "terrestrial",
+    subType: "temporal",
+    class: "I",
+    subClass: "ancient",
+    description: "A world steeped in history, with time-stream anomalies across its surface.",
+    characteristics: { gravity: "1.2g", atmosphere: "thin, crisp" },
+  },
+  {
+    id: "planet-008",
+    name: "Hoth",
+    family: "planet",
+    type: "ice_giant",
+    subType: "frozen",
+    class: "J",
+    subClass: "glacial",
+    description: "A frozen ice giant where survival depends on thermal shelters.",
+    characteristics: { gravity: "1.3g", atmosphere: "thin, arctic" },
+  },
+  {
+    id: "planet-009",
+    name: "Icarus II",
+    family: "planet",
+    type: "lava",
+    subType: "volcanic",
+    class: "K",
+    subClass: "molten",
+    description: "A molten world of flowing lava and ash storms.",
+    characteristics: { gravity: "0.95g", atmosphere: "toxic, sulfurous" },
+  },
+  {
+    id: "planet-010",
+    name: "Jovian Prime",
+    family: "planet",
+    type: "gas_giant",
+    subType: "cloud-world",
+    class: "L",
+    subClass: "ringed",
+    description: "A massive gas giant with bright rings and storm bands.",
+    characteristics: { gravity: "2.4g", atmosphere: "hydrogen-helium" },
+  },
+  {
+    id: "planet-011",
+    name: "Kronos",
+    family: "planet",
+    type: "desert",
+    subType: "wasteland",
+    class: "M",
+    subClass: "barren",
+    description: "A harsh desert world with ancient battlefields and ruins.",
+    characteristics: { gravity: "1.1g", atmosphere: "thin, dusty" },
+  },
+  {
+    id: "planet-012",
+    name: "LV-426",
+    family: "planet",
+    type: "dead",
+    subType: "tested",
+    class: "N",
+    subClass: "ruined",
+    description: "A hostile moon used as an experimental colony site.",
+    characteristics: { gravity: "0.84g", atmosphere: "corrosive" },
+  },
+  {
+    id: "planet-013",
+    name: "Miranda",
+    family: "planet",
+    type: "ice_giant",
+    subType: "frozen",
+    class: "O",
+    subClass: "cratered",
+    description: "A cold world of canyons and frozen plateaus.",
+    characteristics: { gravity: "1.0g", atmosphere: "thin, icy" },
+  },
+  {
+    id: "planet-014",
+    name: "Nimbus",
+    family: "planet",
+    type: "mini_neptune",
+    subType: "storm",
+    class: "P",
+    subClass: "electrical",
+    description: "A tempestuous mini-Neptune with violent storms.",
+    characteristics: { gravity: "1.8g", atmosphere: "thick, ionized" },
+  },
+  {
+    id: "planet-015",
+    name: "Omega",
+    family: "planet",
+    type: "dead",
+    subType: "ruined",
+    class: "Q",
+    subClass: "sterile",
+    description: "A shattered world with little atmosphere and endless deserts.",
+    characteristics: { gravity: "0.9g", atmosphere: "nearly none" },
+  },
+  {
+    id: "planet-016",
+    name: "Pandora",
+    family: "planet",
+    type: "terrestrial",
+    subType: "jungle",
+    class: "R",
+    subClass: "biosphere-rich",
+    description: "A lush jungle planet teeming with life and floating mountains.",
+    characteristics: { gravity: "0.85g", atmosphere: "oxygen-rich" },
+  },
+  {
+    id: "planet-017",
+    name: "Quasar IX",
+    family: "planet",
+    type: "mini_neptune",
+    subType: "magnetic",
+    class: "S",
+    subClass: "radiant",
+    description: "A distant mini-Neptune with strong radiation and auroras.",
+    characteristics: { gravity: "1.4g", atmosphere: "dense, neon-rich" },
+  },
+  {
+    id: "planet-018",
+    name: "Risa",
+    family: "planet",
+    type: "ocean",
+    subType: "resort",
+    class: "T",
+    subClass: "paradise",
+    description: "A tropical ocean world renowned for its pleasure resorts.",
+    characteristics: { gravity: "0.92g", atmosphere: "humid, warm" },
+  },
+  {
+    id: "planet-019",
+    name: "Solaris",
+    family: "planet",
+    type: "terrestrial_paradise",
+    subType: "oceanic",
+    class: "U",
+    subClass: "garden",
+    description: "An idyllic habitable garden world with temperate seas.",
+    characteristics: { gravity: "1.0g", atmosphere: "breathable" },
+  },
+  {
+    id: "planet-020",
+    name: "Tatooine",
+    family: "planet",
+    type: "desert",
+    subType: "twin-sun",
+    class: "V",
+    subClass: "sandy",
+    description: "A dry desert world orbiting two suns.",
+    characteristics: { gravity: "1.07g", atmosphere: "thin, arid" },
+  },
+  {
+    id: "planet-021",
+    name: "Umbriel",
+    family: "planet",
+    type: "ice_giant",
+    subType: "frozen",
+    class: "W",
+    subClass: "shadowed",
+    description: "A cold, shadowed world with hidden ice caverns.",
+    characteristics: { gravity: "1.1g", atmosphere: "thin, cold" },
+  },
+  {
+    id: "planet-022",
+    name: "Vega V",
+    family: "planet",
+    type: "super_earth",
+    subType: "high-gravity",
+    class: "X",
+    subClass: "fortified",
+    description: "A large super-Earth with dense atmosphere and strong gravity.",
+    characteristics: { gravity: "2.0g", atmosphere: "dense, oxygen-rich" },
+  },
+  {
+    id: "planet-023",
+    name: "Weyland",
+    family: "planet",
+    type: "terrestrial",
+    subType: "industrial",
+    class: "Y",
+    subClass: "smog-filled",
+    description: "A heavily industrialized planet with massive factories.",
+    characteristics: { gravity: "1.15g", atmosphere: "polluted" },
+  },
+  {
+    id: "planet-024",
+    name: "Xenon",
+    family: "planet",
+    type: "ocean",
+    subType: "storm",
+    class: "Z",
+    subClass: "electrical",
+    description: "A stormy ocean world alive with charged weather systems.",
+    characteristics: { gravity: "1.05g", atmosphere: "ionized" },
+  },
+  {
+    id: "planet-025",
+    name: "Yavin",
+    family: "planet",
+    type: "jungle",
+    subType: "archaeological",
+    class: "AA",
+    subClass: "ancient",
+    description: "A jungle planet harboring ancient ruins and towering trees.",
+    characteristics: { gravity: "0.98g", atmosphere: "humid" },
+  },
+  {
+    id: "planet-026",
+    name: "Zerus",
+    family: "planet",
+    type: "lava",
+    subType: "volcanic",
+    class: "AB",
+    subClass: "magma",
+    description: "A volcanic world with rivers of molten rock and sulfur skies.",
+    characteristics: { gravity: "1.2g", atmosphere: "toxic" },
+  },
+];
+
+// ===========================================================================
+// MOONS
+// ===========================================================================
+
+const MOONS: CelestialObject[] = [
+  {
+    id: "moon-001",
+    name: "Ariel",
+    family: "moon",
+    type: "icy",
+    subType: "geologically-active",
+    class: "uranian",
+    subClass: "inner",
+    description: "A moon with a complex surface of canyons and ice plains.",
+    characteristics: { diameter: "1,157 km", orbit: "Uranus" },
+  },
+  {
+    id: "moon-002",
+    name: "Boreas",
+    family: "moon",
+    type: "rocky",
+    subType: "airless",
+    class: "outer",
+    subClass: "cratered",
+    description: "A small, cratered moon with minimal atmosphere.",
+    characteristics: { diameter: "820 km", orbit: "Gas Giant" },
+  },
+  {
+    id: "moon-003",
+    name: "Charon",
+    family: "moon",
+    type: "rocky",
+    subType: "tidally-locked",
+    class: "dwarf",
+    subClass: "cold",
+    description: "A frozen moon locked in perpetual face-to-face orbit with its planet.",
+    characteristics: { diameter: "1,212 km", orbit: "Pluto-like" },
+  },
+  {
+    id: "moon-004",
+    name: "Deimos",
+    family: "moon",
+    type: "rocky",
+    subType: "dusty",
+    class: "martian",
+    subClass: "small",
+    description: "A low-gravity moon covered in regolith and dust.",
+    characteristics: { diameter: "12 km", orbit: "Mars" },
+  },
+  {
+    id: "moon-005",
+    name: "Enceladus",
+    family: "moon",
+    type: "icy",
+    subType: "geysers",
+    class: "satellite",
+    subClass: "titan",
+    description: "A moon venting plumes of ice and water into space.",
+    characteristics: { diameter: "504 km", orbit: "Saturn" },
+  },
+  {
+    id: "moon-006",
+    name: "Fortuna",
+    family: "moon",
+    type: "rocky",
+    subType: "volcanic",
+    class: "hot",
+    subClass: "fiery",
+    description: "A volcanic moon with frequent lava eruptions.",
+    characteristics: { diameter: "1,050 km", orbit: "Molten Planet" },
+  },
+  {
+    id: "moon-007",
+    name: "Ganymede",
+    family: "moon",
+    type: "ice-rock",
+    subType: "magnetized",
+    class: "solar",
+    subClass: "largest",
+    description: "The largest moon of its system, with a subsurface ocean.",
+    characteristics: { diameter: "5,268 km", orbit: "Jupiter-like" },
+  },
+  {
+    id: "moon-008",
+    name: "Hyperion",
+    family: "moon",
+    type: "icy",
+    subType: "porous",
+    class: "irregular",
+    subClass: "tumbling",
+    description: "A sponge-like moon that tumbles unpredictably in orbit.",
+    characteristics: { diameter: "270 km", orbit: "Saturn" },
+  },
+  {
+    id: "moon-009",
+    name: "Io",
+    family: "moon",
+    type: "volcanic",
+    subType: "geologically-active",
+    class: "sulfuric",
+    subClass: "bright",
+    description: "A moon covered in sulfur flows and constant volcanic eruptions.",
+    characteristics: { diameter: "3,643 km", orbit: "Jupiter" },
+  },
+  {
+    id: "moon-010",
+    name: "Janus",
+    family: "moon",
+    type: "rocky",
+    subType: "co-orbital",
+    class: "small",
+    subClass: "shepherd",
+    description: "A small co-orbital moon that shares its path with another satellite.",
+    characteristics: { diameter: "179 km", orbit: "Saturn" },
+  },
+  {
+    id: "moon-011",
+    name: "Kalypso",
+    family: "moon",
+    type: "icy",
+    subType: "frozen",
+    class: "outer",
+    subClass: "reflective",
+    description: "A reflective icy moon with a smooth, bright surface.",
+    characteristics: { diameter: "620 km", orbit: "Gas Giant" },
+  },
+  {
+    id: "moon-012",
+    name: "Luna",
+    family: "moon",
+    type: "rocky",
+    subType: "airless",
+    class: "earth",
+    subClass: "well-mapped",
+    description: "The familiar gray moon with vast seas of basalt.",
+    characteristics: { diameter: "3,474 km", orbit: "Sol" },
+  },
+  {
+    id: "moon-013",
+    name: "Miranda",
+    family: "moon",
+    type: "icy",
+    subType: "terraced",
+    class: "strange",
+    subClass: "broken",
+    description: "A moon with patchwork terrains and deep canyons.",
+    characteristics: { diameter: "471 km", orbit: "Uranus" },
+  },
+  {
+    id: "moon-014",
+    name: "Nix",
+    family: "moon",
+    type: "icy",
+    subType: "small",
+    class: "Kuiper",
+    subClass: "distant",
+    description: "A tiny icy moon far from its primary planet.",
+    characteristics: { diameter: "42 km", orbit: "Distant" },
+  },
+  {
+    id: "moon-015",
+    name: "Oberon",
+    family: "moon",
+    type: "icy",
+    subType: "ancient",
+    class: "uranian",
+    subClass: "cratered",
+    description: "A heavily cratered moon with ancient impact scars.",
+    characteristics: { diameter: "1,523 km", orbit: "Uranus" },
+  },
+  {
+    id: "moon-016",
+    name: "Phobos",
+    family: "moon",
+    type: "rocky",
+    subType: "dusty",
+    class: "martian",
+    subClass: "spiral",
+    description: "A battered moon with a very low gravity field.",
+    characteristics: { diameter: "22 km", orbit: "Mars" },
+  },
+  {
+    id: "moon-017",
+    name: "Quorra",
+    family: "moon",
+    type: "ice-rock",
+    subType: "cold",
+    class: "distant",
+    subClass: "frosted",
+    description: "A distant moon with a surface of cracked ice.",
+    characteristics: { diameter: "580 km", orbit: "Outer System" },
+  },
+  {
+    id: "moon-018",
+    name: "Rhea",
+    family: "moon",
+    type: "rocky",
+    subType: "ringed",
+    class: "saturnian",
+    subClass: "flat",
+    description: "A pale moon with a wispy ring system.",
+    characteristics: { diameter: "1,528 km", orbit: "Saturn" },
+  },
+  {
+    id: "moon-019",
+    name: "Selene",
+    family: "moon",
+    type: "rocky",
+    subType: "breathable",
+    class: "terra-form",
+    subClass: "garden",
+    description: "A moon with pockets of thick atmosphere and green valleys.",
+    characteristics: { diameter: "2,100 km", orbit: "Habitable Planet" },
+  },
+  {
+    id: "moon-020",
+    name: "Titan",
+    family: "moon",
+    type: "icy",
+    subType: "thick-atmosphere",
+    class: "saturnian",
+    subClass: "methane-cloud",
+    description: "A large moon with a dense, orange atmosphere and liquid lakes.",
+    characteristics: { diameter: "5,150 km", orbit: "Saturn" },
+  },
+  {
+    id: "moon-021",
+    name: "Umbriel",
+    family: "moon",
+    type: "icy",
+    subType: "dark",
+    class: "uranian",
+    subClass: "shadowed",
+    description: "A dark, cold moon with a heavily cratered surface.",
+    characteristics: { diameter: "1,169 km", orbit: "Uranus" },
+  },
+  {
+    id: "moon-022",
+    name: "Valen",
+    family: "moon",
+    type: "rocky",
+    subType: "irradiated",
+    class: "hot",
+    subClass: "rust-red",
+    description: "A moon bathed in radiation with glowing mineral veins.",
+    characteristics: { diameter: "920 km", orbit: "Radiant Star" },
+  },
+  {
+    id: "moon-023",
+    name: "Wraith",
+    family: "moon",
+    type: "gas",
+    subType: "floating",
+    class: "atmospheric",
+    subClass: "mist-shrouded",
+    description: "A gas moon enveloped in ghostly clouds and electrical storms.",
+    characteristics: { diameter: "1,800 km", orbit: "Gas Giant" },
+  },
+  {
+    id: "moon-024",
+    name: "Xena",
+    family: "moon",
+    type: "rocky",
+    subType: "captured",
+    class: "irregular",
+    subClass: "elliptical",
+    description: "A captured moon with a highly elliptical orbit.",
+    characteristics: { diameter: "280 km", orbit: "Gas Giant" },
+  },
+  {
+    id: "moon-025",
+    name: "Ymir",
+    family: "moon",
+    type: "icy",
+    subType: "core-frozen",
+    class: "northern",
+    subClass: "glacier",
+    description: "A freezing moon covered by ice sheets and glaciers.",
+    characteristics: { diameter: "1,200 km", orbit: "Distant Planet" },
+  },
+  {
+    id: "moon-026",
+    name: "Zenon",
+    family: "moon",
+    type: "metallic",
+    subType: "ore-rich",
+    class: "mining",
+    subClass: "scarred",
+    description: "A small metallic moon rich in rare ores and minerals.",
+    characteristics: { diameter: "520 km", orbit: "Asteroid Belt" },
+  },
+];
+
+// ===========================================================================
+// ASTEROIDS
+// ===========================================================================
+
+const ASTEROIDS: CelestialObject[] = [
+    // A
+    {
+      id: "asteroid-001",
+      name: "Astraea",
+      family: "asteroid",
+      type: "S-type",
+      subType: "stony",
+      class: "main-belt",
+      subClass: "Flora-family",
+      description: "A large, stony asteroid in the main asteroid belt.",
+      characteristics: { diameter: "119 km", composition: "silicates, nickel-iron" },
+    },
+    // B
+    {
+      id: "asteroid-002",
+      name: "Bennu",
+      family: "asteroid",
+      type: "B-type",
+      subType: "carbonaceous",
+      class: "near-earth",
+      subClass: "apollo-group",
+      description: "A carbonaceous near-Earth asteroid, a target for sample return missions.",
+      characteristics: { diameter: "490 m", composition: "carbon, organic molecules" },
+    },
+    // ... (and so on for all 26 letters)
+];
+
+// ===========================================================================
+// BIOMES (90 entries from Starfleet Biome Catalog)
+// ===========================================================================
+
+function biomeToCelestialObject(biome: StarfleetBiomeEntry): CelestialObject {
+  return {
+    id: biome.id,
+    name: biome.name,
+    family: 'biome' as CelestialFamily,
+    type: biome.biomeType,
+    subType: biome.biomeSubType,
+    class: biome.class,
+    subClass: biome.subClass,
+    description: biome.description,
+    characteristics: {
+      environmentType: biome.environmentType,
+      size: biome.size,
+      rank: biome.rank,
+      rarity: biome.rarity,
+      title: biome.title,
+      code: biome.code,
+      letter: biome.letter,
+      colonyCapacity: biome.colonyCapacity,
+      hazards: biome.hazards,
+      strategicUses: biome.strategicUses,
+    },
+  };
+}
+
+const BIOMES: CelestialObject[] = STARFLEET_BIOME_CATALOG_90.map(biomeToCelestialObject);
+
+export const CELESTIAL_OBJECTS = {
+  galaxies: GALAXIES,
+  stars: STARS,
+  planets: PLANETS,
+  moons: MOONS,
+  asteroids: ASTEROIDS,
+  biomes: BIOMES,
+};
+
+// ===========================================================================
+// BIOME HELPER FUNCTIONS
+// ===========================================================================
+
+export function getBiomeById(id: string): CelestialObject | undefined {
+  return BIOMES.find(biome => biome.id === id);
+}
+
+export function getBiomesByEnvironmentType(environmentType: string): CelestialObject[] {
+  return BIOMES.filter(biome => biome.characteristics.environmentType === environmentType);
+}
+
+export function getBiomesByRarity(rarity: string): CelestialObject[] {
+  return BIOMES.filter(biome => biome.characteristics.rarity === rarity);
+}
+
+export function getBiomesByLetter(letter: string): CelestialObject[] {
+  return BIOMES.filter(biome => biome.characteristics.letter === letter.toUpperCase());
+}
+
+export function getBiomesByType(biomeType: string): CelestialObject[] {
+  return BIOMES.filter(biome => biome.type === biomeType);
+}
+
+export function getPlanetBiomes(): CelestialObject[] {
+  return getBiomesByEnvironmentType('planet');
+}
+
+export function getMoonBiomes(): CelestialObject[] {
+  return getBiomesByEnvironmentType('moon');
+}
+
+export function getColonyBiomes(): CelestialObject[] {
+  return getBiomesByEnvironmentType('colony');
+}
+
+export function getSpaceStationBiomes(): CelestialObject[] {
+  return getBiomesByEnvironmentType('space-station');
+}
+
+export function getStarbaseBiomes(): CelestialObject[] {
+  return getBiomesByEnvironmentType('starbase');
+}
+
+export function getMoonBaseBiomes(): CelestialObject[] {
+  return getBiomesByEnvironmentType('moon-base');
+}
+
+export function getBiomesByClass(biomeClass: string): CelestialObject[] {
+  return BIOMES.filter(biome => biome.class === biomeClass);
+}
+
+export function getLegendaryBiomes(): CelestialObject[] {
+  return getBiomesByRarity('legendary');
+}
+
+export function getEpicBiomes(): CelestialObject[] {
+  return getBiomesByRarity('epic');
+}
+
+export function getRareBiomes(): CelestialObject[] {
+  return getBiomesByRarity('rare');
+}
+
+export function getCommonBiomes(): CelestialObject[] {
+  return getBiomesByRarity('common');
+}
+
+export function getUncommonBiomes(): CelestialObject[] {
+  return getBiomesByRarity('uncommon');
+}
+
+export const BIOME_STATS = {
+  total: BIOMES.length,
+  byEnvironment: {
+    planet: getPlanetBiomes().length,
+    moon: getMoonBiomes().length,
+    colony: getColonyBiomes().length,
+    spaceStation: getSpaceStationBiomes().length,
+    starbase: getStarbaseBiomes().length,
+    moonBase: getMoonBaseBiomes().length,
+  },
+  byRarity: {
+    common: getCommonBiomes().length,
+    uncommon: getUncommonBiomes().length,
+    rare: getRareBiomes().length,
+    epic: getEpicBiomes().length,
+    legendary: getLegendaryBiomes().length,
+  },
+} as const;

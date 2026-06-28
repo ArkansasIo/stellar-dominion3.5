@@ -1,0 +1,288 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "./styles/master-theme.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  
+  --font-orbitron: 'Orbitron', sans-serif;
+  --font-rajdhani: 'Rajdhani', sans-serif;
+}
+
+:root {
+  /* Light Mode / Steel Theme */
+  --background: 210 20% 98%;
+  --foreground: 220 40% 10%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 220 40% 10%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 220 40% 10%;
+
+  --primary: 210 100% 45%; /* Steel Blue */
+  --primary-foreground: 210 40% 98%;
+
+  --secondary: 210 20% 90%; /* Light Steel */
+  --secondary-foreground: 220 40% 10%;
+
+  --muted: 210 20% 90%;
+  --muted-foreground: 215 20% 40%;
+
+  --accent: 210 100% 45%;
+  --accent-foreground: 210 40% 98%;
+
+  --destructive: 0 85% 60%;
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 215 20% 85%;
+  --input: 215 20% 85%;
+  --ring: 210 100% 45%;
+
+  --radius: 0.25rem;
+}
+
+body {
+  @apply font-rajdhani antialiased bg-background text-foreground;
+  background-color: hsl(var(--background));
+  min-height: 100vh;
+}
+
+html[data-touch-ui="true"] button,
+html[data-touch-ui="true"] [role="button"],
+html[data-touch-ui="true"] a,
+html[data-touch-ui="true"] input,
+html[data-touch-ui="true"] select,
+html[data-touch-ui="true"] textarea,
+html[data-touch-ui="true"] [data-radix-collection-item] {
+  touch-action: manipulation;
+}
+
+html[data-touch-ui="true"][data-touch-target-size="comfortable"] button,
+html[data-touch-ui="true"][data-touch-target-size="comfortable"] [role="button"],
+html[data-touch-ui="true"][data-touch-target-size="comfortable"] a[data-testid^="link-"] {
+  min-height: 44px;
+}
+
+html[data-touch-ui="true"][data-touch-target-size="large"] button,
+html[data-touch-ui="true"][data-touch-target-size="large"] [role="button"],
+html[data-touch-ui="true"][data-touch-target-size="large"] a[data-testid^="link-"] {
+  min-height: 50px;
+}
+
+html.compact-ui .glass-panel,
+html.compact-ui .card {
+  border-radius: calc(var(--radius) - 2px);
+}
+
+html.reduced-motion-ui *,
+html.reduced-motion-ui *::before,
+html.reduced-motion-ui *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+@media (max-width: 767px) {
+  body {
+    overscroll-behavior-y: contain;
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
+/* Custom Scrollbar for that futuristic feel */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary));
+}
+
+.glass-panel {
+  @apply bg-card/80 backdrop-blur-md border border-border shadow-sm;
+}
+
+.tech-border {
+  position: relative;
+  @apply border border-primary/20;
+}
+
+.tech-border::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, hsl(var(--primary)), transparent);
+  opacity: 0.5;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  @apply font-orbitron tracking-wide;
+}
+
+.starfield-layer {
+  background-image:
+    radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 30% 70%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 50% 10%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 70% 40%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 90% 80%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 15% 90%, rgba(255,255,255,0.2) 0%, transparent 100%),
+    radial-gradient(1px 1px at 85% 15%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 25% 50%, rgba(34,211,238,0.3) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 65% 30%, rgba(59,130,246,0.3) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 45% 60%, rgba(139,92,246,0.2) 0%, transparent 100%);
+  animation: starfield-drift 120s linear infinite;
+}
+
+.nebula-layer {
+  background:
+    radial-gradient(ellipse 600px 400px at 20% 30%, rgba(34,211,238,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 500px 350px at 70% 60%, rgba(99,102,241,0.05) 0%, transparent 70%),
+    radial-gradient(ellipse 400px 300px at 50% 80%, rgba(168,85,247,0.04) 0%, transparent 70%);
+  animation: nebula-breathe 20s ease-in-out infinite alternate;
+}
+
+@keyframes starfield-drift {
+  from { transform: translateY(0); }
+  to { transform: translateY(-20px); }
+}
+
+@keyframes nebula-breathe {
+  from { opacity: 0.6; transform: scale(1); }
+  to { opacity: 1; transform: scale(1.05); }
+}
+
+@keyframes particle-float {
+  0% { opacity: 0; transform: translateY(0) scale(1); }
+  10% { opacity: 0.8; }
+  90% { opacity: 0.8; }
+  100% { opacity: 0; transform: translateY(-100vh) scale(0.5); }
+}
+
+@keyframes star-twinkle {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+@keyframes nebula-pulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.1); }
+}
+
+.animate-particle-float {
+  animation: particle-float 8s ease-in-out infinite;
+}
+
+.animate-star-twinkle {
+  animation: star-twinkle 4s ease-in-out infinite;
+}
+
+.animate-nebula-pulse {
+  animation: nebula-pulse 8s ease-in-out infinite;
+}
+
+.animate-nebula-pulse-delayed {
+  animation: nebula-pulse 10s ease-in-out infinite 3s;
+}
+
+.animate-nebula-pulse-slow {
+  animation: nebula-pulse 15s ease-in-out infinite 5s;
+}
+
+.glass-card {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* Gold Landing Page Theme */
+.landing-gold-glow {
+  text-shadow: 0 0 40px rgba(245, 158, 11, 0.3), 0 0 80px rgba(245, 158, 11, 0.1);
+}
+
+.landing-section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.2), transparent);
+}
+
+.landing-card-hover {
+  transition: all 0.3s ease;
+}
+
+.landing-card-hover:hover {
+  border-color: rgba(245, 158, 11, 0.3);
+  box-shadow: 0 0 30px rgba(245, 158, 11, 0.05);
+  transform: translateY(-2px);
+}
+
+.landing-gold-border {
+  border: 1px solid rgba(245, 158, 11, 0.1);
+}
+
+.landing-gold-border:hover {
+  border-color: rgba(245, 158, 11, 0.25);
+}
+
+@keyframes landing-fade-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.landing-animate-in {
+  animation: landing-fade-in 0.6s ease-out forwards;
+}
+
+.landing-gold-gradient-text {
+  background: linear-gradient(135deg, #f59e0b, #fbbf24, #f59e0b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.landing-hero-bg {
+  background: radial-gradient(ellipse at center top, rgba(245, 158, 11, 0.08) 0%, transparent 60%);
+}
+
+.landing-section-alt {
+  background: linear-gradient(180deg, #0a0a12 0%, #0d0d18 50%, #0a0a12 100%);
+}

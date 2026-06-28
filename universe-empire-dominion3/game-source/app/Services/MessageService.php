@@ -1,0 +1,374 @@
+<?php
+
+namespace OGame\Services;
+
+use Exception;
+use InvalidArgumentException;
+use OGame\Factories\GameMessageFactory;
+use OGame\GameMessages\Abstracts\GameMessage;
+use OGame\GameMessages\BattleReport;
+use OGame\GameMessages\EspionageReport;
+use OGame\GameMessages\FleetLostContact;
+use OGame\GameMessages\WelcomeMessage;
+use OGame\Models\Message;
+use RuntimeException;
+
+/**
+ * Class MessageService.
+ *
+ * Message Service.
+ *
+ * @package OGame\Services
+ */
+class MessageService
+{
+    /**
+     * Define tab and subtab structure.
+     *
+     * @var array<string, array<string>> $tabs
+     */
+    private array $tabs = [
+        'fleets' => [
+            'espionage',
+            'combat_reports',
+            'expeditions',
+            'transport',
+            'other',
+        ],
+        'communication' => [
+            'messages',
+            'information',
+        ],
+        'economy' => [
+            'economy',
+        ],
+        'universe' => [
+            'universe',
+        ],
+        'system' => [
+            'system',
+        ],
+        'favorites' => [
+            'favorites',
+        ],
+    ];
+
+    /**
+     * MessageService constructor.
+     */
+    public function __construct(
+        /**
+         * The PlayerService object.
+         */
+        private PlayerService $player
+    ) {
+    }
+
+    /**
+     * Sends a system message to a player by using a template and passing params.
+     *
+     * @param PlayerService $player
+     * @param class-string<GameMessage> $gameMessageClass
+     * @param array<string,mixed> $params
+     * @return void
+     */
+    public function sendSystemMessageToPlayer(PlayerService $player, string $gameMessageClass, array $params): void
+    {
+        // Ensure the provided class is a subclass of GameMessage
+        if (!is_subclass_of($gameMessageClass, GameMessage::class)) {
+            throw new InvalidArgumentException('Invalid game message class: ' . $gameMessageClass);
+        }
+
+        try {
+            /** @var GameMessage $gameMessage */
+            $gameMessage = resolve($gameMessageClass);
+
+            $message = new Message();
+            $message->user_id = $player->getId();
+            $message->key = $gameMessage->getKey();
+            $message->params = $params;
+            $message->save();
+        } catch (Exception) {
+            throw new RuntimeException('Could not create GameMessage instance while trying to send message.');
+        }
+    }
+
+    /**
+     * Sends an espionage report message to a player with a specific espionage report.
+     *
+     * @param PlayerService $player
+     * @param int $espionageReportId
+     * @return Message The created message.
+     */
+    public function sendEspionageReportMessageToPlayer(PlayerService $player, int $espionageReportId): Message
+    {
+        try {
+            $gameMessage = resolve(EspionageReport::class);
+        } catch (Exception) {
+            throw new RuntimeException('Could not create espionage report message.');
+        }
+
+        $message = new Message();
+        $message->user_id = $player->getId();
+        $message->key = $gameMessage->getKey();
+        $message->espionage_report_id = $espionageReportId;
+        $message->save();
+
+        return $message;
+    }
+
+    /**
+     * Sends a battle report message to a player with a specific battle report.
+     *
+     * @param PlayerService $player
+     * @param int $battleReportId
+     * @return Message The created message.
+     */
+    public function sendBattleReportMessageToPlayer(PlayerService $player, int $battleReportId): Message
+    {
+        try {
+            $gameMessage = resolve(BattleReport::class);
+        } catch (Exception) {
+            throw new RuntimeException('Could not create battle report message.');
+        }
+
+        $message = new Message();
+        $message->user_id = $player->getId();
+        $message->key = $gameMessage->getKey();
+        $message->battle_report_id = $battleReportId;
+        $message->save();
+
+        return $message;
+    }
+
+    /**
+     * Sends a fleet lost contact message to a player.
+     *
+     * @param PlayerService $player
+     * @param string $coordinates
+     * @return Message The created message.
+     */
+    public function sendFleetLostContactMessageToPlayer(PlayerService $player, string $coordinates): Message
+    {
+        try {
+            $gameMessage = resolve(FleetLostContact::class);
+        } catch (Exception) {
+            throw new RuntimeException('Could not create fleet lost contact message.');
+        }
+
+        $message = new Message();
+        $message->user_id = $player->getId();
+        $message->key = $gameMessage->getKey();
+        $message->params = ['coordinates' => $coordinates];
+        $message->save();
+
+        return $message;
+    }
+
+    /**
+     * Sends a welcome message to the current player.
+     *
+     * @return void
+     */
+    public function sendWelcomeMessage(): void
+    {
+        $this->sendSystemMessageToPlayer($this->player, WelcomeMessage::class, ['player' => '[player]' . $this->player->getId() . '[/player]']);
+    }
+
+    /**
+     * Load messages for a specific tab/subtab with pagination.
+     *
+     * @param string $tab
+     * @param string $subtab
+     * @param int $page
+     * @return array{messages: GameMessage[], pagination: array{currentPage: int, totalPages: int, totalCount: int, perPage: int}}
+     */
+    public function getMessagesForTab(string $tab, string $subtab, int $page = 1): array
+    {
+        // If subtab is empty, we use the first subtab of the tab.
+        if (empty($subtab)) {
+            $subtab = $this->tabs[$tab][0];
+        }
+
+        // Get all messages of user where type is in the tab and subtab array. Order by created_at desc.
+        $messageKeys = GameMessageFactory::GetGameMessageKeysByTab($tab, $subtab);
+
+        // Use Laravel's paginate() method for automatic pagination handling
+        $paginator = Message::where('user_id', $this->player->getId())
+            ->whereIn('key', $messageKeys)
+            ->orderBy('created_at', 'desc')
+            ->paginate(10, ['*'], 'page', $page);
+
+        // Convert messages to GameMessage objects.
+        $gameMessages = [];
+        foreach ($paginator->items() as $message) {
+            $gameMessages[] = GameMessageFactory::createGameMessage($message);
+        }
+
+        // When the messages are loaded, mark them as viewed.
+        foreach ($paginator->items() as $message) {
+            $message->viewed = 1;
+            $message->save();
+        }
+
+        return [
+            'messages' => $gameMessages,
+            'pagination' => [
+                'currentPage' => $paginator->currentPage(),
+                'totalPages' => $paginator->lastPage(),
+                'totalCount' => $paginator->total(),
+                'perPage' => $paginator->perPage(),
+            ],
+        ];
+    }
+
+    /**
+     * Get an individual message for the current player to be shown in a full screen overlay view.
+     *
+     * @param int $messageId
+     * @return GameMessage
+     */
+    public function getFullMessage(int $messageId): GameMessage
+    {
+        $message = Message::where('id', $messageId)
+            ->where('user_id', $this->player->getId())
+            ->first();
+
+        if ($message === null) {
+            throw new RuntimeException('Message not found.');
+        }
+
+        return GameMessageFactory::createGameMessage($message);
+    }
+
+    /**
+     * Get total unread message count for current player.
+     *
+     * @return int
+     */
+    public function getUnreadMessagesCount(): int
+    {
+        return Message::where('user_id', $this->player->getId())
+            ->where('viewed', 0)
+            ->count();
+    }
+
+    /**
+     * Get total unread message count for a specific tab.
+     *
+     * @param string $tab
+     * @return int
+     */
+    public function getUnreadMessagesCountForTab(string $tab): int
+    {
+        // Get all keys for the tab.
+        $messageKeys = GameMessageFactory::GetGameMessageKeysByTab($tab);
+
+        return Message::where('user_id', $this->player->getId())
+            ->whereIn('key', $messageKeys)
+            ->where('viewed', 0)
+            ->count();
+    }
+
+    /**
+     * Get total unread message count for a specific tab/subtab.
+     *
+     * @param string $tab
+     * @param string $subtab
+     * @return int
+     */
+    public function getUnreadMessagesCountForSubTab(string $tab, string $subtab): int
+    {
+        // Get all keys for the subtab.
+        $messageKeys = GameMessageFactory::GetGameMessageKeysByTab($tab, $subtab);
+
+        return Message::where('user_id', $this->player->getId())
+            ->whereIn('key', $messageKeys)
+            ->where('viewed', 0)
+            ->count();
+    }
+
+    /**
+     * Deletes a message for the current player.
+     *
+     * @param int $messageId
+     * @return void
+     */
+    public function deleteMessage(int $messageId): void
+    {
+        Message::where('id', $messageId)
+            ->where('user_id', $this->player->getId())
+            ->delete();
+    }
+
+    /**
+     * Get an individual message with pagination context for navigation in full screen overlay.
+     *
+     * @param int $messageId
+     * @param string|null $tab
+     * @param string|null $subtab
+     * @return array{message: GameMessage, pagination: array{currentIndex: int, totalCount: int, firstId: int|null, prevId: int|null, nextId: int|null, lastId: int|null, tab: string, subtab: string}}
+     */
+    public function getMessagePaginationContext(int $messageId, string|null $tab = null, string|null $subtab = null): array
+    {
+        // Get the current message first
+        $currentMessage = Message::where('id', $messageId)
+            ->where('user_id', $this->player->getId())
+            ->first();
+
+        if ($currentMessage === null) {
+            throw new RuntimeException('Message not found.');
+        }
+
+        // If tab/subtab not provided, determine from the message key
+        $gameMessage = GameMessageFactory::createGameMessage($currentMessage);
+        if ($tab === null) {
+            $tab = $gameMessage->getTab();
+        }
+        if ($subtab === null) {
+            $subtab = $gameMessage->getSubtab();
+        }
+
+        // Get all message IDs for this subtab, ordered by created_at DESC then id DESC (newest first, consistent ordering)
+        $messageKeys = GameMessageFactory::GetGameMessageKeysByTab($tab, $subtab);
+        $allMessageIds = Message::where('user_id', $this->player->getId())
+            ->whereIn('key', $messageKeys)
+            ->orderBy('created_at', 'desc')
+            ->pluck('id')
+            ->toArray();
+
+        $totalCount = count($allMessageIds);
+        $currentIndexRaw = array_search($messageId, $allMessageIds, true);
+
+        // If message not found in the list (shouldn't happen), default to first position
+        if ($currentIndexRaw === false) {
+            $currentIndexRaw = 0;
+        }
+
+        $currentIndex = (int) $currentIndexRaw;
+
+        // Calculate navigation IDs (1-based index for display)
+        $firstId = $totalCount > 0 ? $allMessageIds[0] : null;
+        $lastId = $totalCount > 0 ? $allMessageIds[$totalCount - 1] : null;
+        $prevId = $currentIndex > 0 ? $allMessageIds[$currentIndex - 1] : null;
+        $nextId = ($currentIndex < ($totalCount - 1)) ? $allMessageIds[$currentIndex + 1] : null;
+
+        // Mark the current message as viewed
+        $currentMessage->viewed = 1;
+        $currentMessage->save();
+
+        return [
+            'message' => $gameMessage,
+            'pagination' => [
+                'currentIndex' => $currentIndex + 1, // 1-based for display
+                'totalCount' => $totalCount,
+                'firstId' => $firstId,
+                'prevId' => $prevId,
+                'nextId' => $nextId,
+                'lastId' => $lastId,
+                'tab' => $tab,
+                'subtab' => $subtab,
+            ],
+        ];
+    }
+}

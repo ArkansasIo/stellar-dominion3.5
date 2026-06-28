@@ -1,0 +1,28 @@
+{
+	"name": "Universe Empire Domions",
+	"image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
+	"features": {
+		"ghcr.io/devcontainers/features/node": {
+			"version": "20"
+		},
+		"ghcr.io/devcontainers/features/python": {
+			"version": "3.11"
+		},
+		"ghcr.io/devcontainers/features/docker-in-docker": {}
+	},
+	"forwardPorts": [5001, 5432, 8001],
+	"portsAttributes": {
+		"5001": {
+			"label": "App (Express + Vite)",
+			"onAutoForward": "openPreview"
+		},
+		"8001": {
+			"label": "Python API",
+			"onAutoForward": "notify"
+		},
+		"5432": {
+			"label": "PostgreSQL",
+			"onAutoForward": "ignore"
+		}
+	}
+}

@@ -16,6 +16,7 @@ build
 out
 *.local
 .turbo
+output/
 
 # Environment variables (IMPORTANT: Never commit these!)
 .env
@@ -24,6 +25,10 @@ out
 .env.test.local
 .env.production.local
 .env.*.local
+
+# Sensitive credentials
+.admin-credentials.json
+.admin-config.json
 
 # IDE and Editor files
 .vscode/*
@@ -49,6 +54,7 @@ Thumbs.db
 desktop.ini
 
 # Logs
+logs/
 logs
 *.log
 debug
@@ -92,8 +98,9 @@ dev-server.*
 *.db
 *.sqlite
 *.sqlite3
+.postgres_data/
 
-# SSL certificates (if any)
+# SSL certificates
 ssl/
 *.pem
 *.key
@@ -102,11 +109,15 @@ ssl/
 # Docker
 .dockerignore
 
+# Python
+__pycache__/
+*.pyc
+
 # Misc
 .vercel
 .netlify
 .railway
--e 
+
 # Environment files
 *.env
 *.env.*

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3D Asset Viewer</title>
+<style>
+body {
+  margin: 0;
+  background: #000;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+#viewer {
+  width: 100vw;
+  height: 100vh;
+}
+.controls {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 100;
+}
+button {
+  margin: 5px;
+  padding: 10px;
+  background: #333;
+  color: white;
+  border: 1px solid #666;
+  cursor: pointer;
+}
+button:hover {
+  background: #555;
+}
+</style>
+</head>
+<body>
+  <div class="controls">
+    <button id="ship-btn">View Ship</button>
+    <button id="station-btn">View Station</button>
+    <button id="planet-btn">View Planet</button>
+    <button id="screenshot-btn">Take Screenshot</button>
+  </div>
+  <div id="viewer"></div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x06111d);
+
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 0, 5);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById('viewer').appendChild(renderer.domElement);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(1, 1, 1);
+    scene.add(ambientLight, directionalLight);
+
+    let currentModel = null;
+
+    function loadModel(path) {
+      if (currentModel) {
+        scene.remove(currentModel);
+        currentModel.traverse((child) => {
+          if (child.isMesh) {
+            child.geometry.dispose();
+            child.material.dispose();
+          }
+        });
+      }
+
+      const loader = new OBJLoader();
+      loader.load(
+        path,
+        (object) => {
+          object.scale.setScalar(0.5);
+          object.traverse((child) => {
+            if (child.isMesh) {
+              child.material = new THREE.MeshStandardMaterial({
+                color: 0x888888,
+                roughness: 0.3,
+                metalness: 0.1,
+              });
+            }
+          });
+          scene.add(object);
+          currentModel = object;
+          controls.reset();
+        },
+        undefined,
+        (error) => {
+          console.error('Error loading model:', error);
+        }
+      );
+    }
+
+    document.getElementById('ship-btn').addEventListener('click', () => {
+      loadModel('./assets/models/obj/ship_frigate_a.obj');
+    });
+
+    document.getElementById('station-btn').addEventListener('click', () => {
+      loadModel('./assets/models/obj/station_trade_hub_a.obj');
+    });
+
+    document.getElementById('planet-btn').addEventListener('click', () => {
+      loadModel('./assets/models/obj/planet_verdant_01.obj');
+    });
+
+    document.getElementById('screenshot-btn').addEventListener('click', () => {
+      renderer.render(scene, camera);
+      const link = document.createElement('a');
+      link.download = '3d_asset_screenshot.png';
+      link.href = renderer.domElement.toDataURL();
+      link.click();
+    });
+
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+{
+  "appId": "com.universe-empire.dominion",
+  "productName": "Universe Empire Dominion",
+  "copyright": "Copyright © 2026 Universe Empire Dominion",
+  "directories": {
+    "output": "output/client",
+    "buildResources": "build-resources"
+  },
+  "files": [
+    "electron-main.cjs",
+    "dist/**/*",
+    "shared/**/*",
+    "package.json",
+    "assets/**/*",
+    "node_modules/**/*"
+  ],
+  "win": {
+    "target": ["nsis", "portable"],
+    "artifactName": "${productName}-Setup-${version}.${ext}",
+    "icon": "build-resources/icon.ico"
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "shortcutName": "Universe Empire Dominion"
+  },
+  "mac": {
+    "target": ["dmg", "zip"],
+    "category": "public.app-category.games",
+    "icon": "build-resources/icon.icns"
+  },
+  "linux": {
+    "target": ["AppImage"],
+    "category": "Game"
+  }
+}

@@ -1,0 +1,40 @@
+# Run PHPStan code analysis with `clear && ./vendor/bin/phpstan analyse --memory-limit=384M` command
+
+# Add custom PHPStan rules
+services:
+    -
+        class: Php\Rules\NoShortNullableTypeRule
+        tags: [phpstan.rules.rule]
+
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+
+    paths:
+        - app/
+        - database/
+        - php/Rules
+        - tests/
+        - resources/
+
+    # Level 9 is the highest level
+    level: 7
+
+    phpVersion: 80500
+    ignoreErrors:
+        - identifier: missingType.generics
+        - identifier: missingType.iterableValue
+
+    # Required because of bug where PHPStan triggers regex in app/GameMessages/Abstracts/GameMessage.php
+    # as error: Negated boolean expression is always false. Check later if this is fixed by removing
+    # this line and running PHPStan again. If it does not throw any errors anymore, you can safely remove this.
+    treatPhpDocTypesAsCertain: false
+
+#    ignoreErrors:
+#        - '#PHPDoc tag @var#'
+#
+#    excludePaths:
+#        - ./*/*/FileToBeExcluded.php
+#
+#    checkMissingIterableValueType: false

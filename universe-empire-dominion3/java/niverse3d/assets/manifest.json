@@ -1,0 +1,36 @@
+{
+  "project": "niverse3d",
+  "scene": "starter-universe",
+  "assetPolicy": {
+    "copyrightedThirdPartyAssetsImported": false,
+    "notes": [
+      "No proprietary OGame 3D assets are included.",
+      "Replace placeholder folders with licensed assets you own."
+    ]
+  },
+  "textures": [
+    {
+      "path": "textures/deep-space-background.png",
+      "purpose": "Nebula backdrop for the prototype scene",
+      "source": "attached_assets/generated_images/deep_space_background_with_nebula.png"
+    }
+  ],
+  "slots": [
+    {
+      "path": "models/planets",
+      "purpose": "Planet meshes and materials"
+    },
+    {
+      "path": "models/fleets",
+      "purpose": "Ships and fleet formations"
+    },
+    {
+      "path": "models/stations",
+      "purpose": "Orbital stations and structures"
+    },
+    {
+      "path": "fx",
+      "purpose": "Particles, audio, and shader-driven effects"
+    }
+  ]
+}

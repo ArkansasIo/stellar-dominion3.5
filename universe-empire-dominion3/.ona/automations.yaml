@@ -1,0 +1,59 @@
+tasks:
+  startDatabase:
+    name: Start Database
+    description: Start the PostgreSQL and MongoDB containers.
+    command: |
+      docker compose up -d db
+      until docker compose exec -T db pg_isready -U postgres > /dev/null 2>&1; do
+        echo "Waiting for PostgreSQL..."
+        sleep 2
+      done
+      echo "PostgreSQL is ready."
+      docker run -d --name mongodb --rm -p 27017:27017 mongo:7 || docker start mongodb 2>/dev/null || true
+      until docker exec mongodb mongosh --eval "db.runCommand({ ping: 1 })" > /dev/null 2>&1; do
+        echo "Waiting for MongoDB..."
+        sleep 2
+      done
+      echo "MongoDB is ready."
+    triggeredBy:
+      - postDevcontainerStart
+
+  installDeps:
+    name: Install Node dependencies
+    description: Install Node.js dependencies for the root project.
+    command: npm install
+    triggeredBy:
+      - postDevcontainerStart
+    dependsOn:
+      - startDatabase
+
+  installPythonDeps:
+    name: Install Python dependencies
+    description: Install Python dependencies for the FastAPI backend.
+    command: pip install -r backend/requirements.txt
+    triggeredBy:
+      - postDevcontainerStart
+
+  migrateDatabase:
+    name: Run database migrations
+    description: Push the Drizzle schema to the PostgreSQL database.
+    command: npm run db:push
+    triggeredBy:
+      - manual
+    dependsOn:
+      - installDeps
+
+services:
+  appServer:
+    name: App Server
+    description: Express server with integrated Vite middleware on port 5001.
+    commands:
+      start: npm run dev
+      ready: curl -sf http://localhost:5001
+
+  pythonApi:
+    name: Python API
+    description: FastAPI backend server on port 8001.
+    commands:
+      start: cd backend && python server.py
+      ready: curl -sf http://localhost:8001/docs

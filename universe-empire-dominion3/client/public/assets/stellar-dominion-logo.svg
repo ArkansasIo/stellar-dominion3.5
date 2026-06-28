@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <radialGradient id="nebula" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#7c3aed"/>
+      <stop offset="50%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0.3"/>
+    </radialGradient>
+    <radialGradient id="core" cx="50%" cy="50%" r="30%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#c084fc"/>
+    </radialGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <!-- Background nebula -->
+  <circle cx="100" cy="100" r="80" fill="url(#nebula)" opacity="0.6"/>
+  <!-- Hexagonal ring -->
+  <polygon points="100,30 145,55 145,105 100,130 55,105 55,55" fill="none" stroke="#7c3aed" stroke-width="2" opacity="0.7" filter="url(#glow)"/>
+  <polygon points="100,45 135,62 135,98 100,115 65,98 65,62" fill="none" stroke="#3b82f6" stroke-width="1.5" opacity="0.5"/>
+  <!-- Star core -->
+  <circle cx="100" cy="80" r="18" fill="url(#core)" filter="url(#glow)"/>
+  <!-- Star rays -->
+  <line x1="100" y1="55" x2="100" y2="35" stroke="#c084fc" stroke-width="2" opacity="0.8"/>
+  <line x1="120" y1="68" x2="135" y2="55" stroke="#c084fc" stroke-width="1.5" opacity="0.6"/>
+  <line x1="80" y1="68" x2="65" y2="55" stroke="#c084fc" stroke-width="1.5" opacity="0.6"/>
+  <!-- Orbital ring -->
+  <ellipse cx="100" cy="80" rx="45" ry="12" fill="none" stroke="#a78bfa" stroke-width="1" opacity="0.4" transform="rotate(-20 100 80)"/>
+  <!-- Text -->
+  <text x="100" y="155" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="14" fill="#c084fc" letter-spacing="3">STELLAR</text>
+  <text x="100" y="172" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="11" fill="#93c5fd" letter-spacing="5">DOMINION</text>
+</svg>

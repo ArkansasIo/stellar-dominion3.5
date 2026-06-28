@@ -1,0 +1,424 @@
+[dotenv@17.3.1] injecting env (3) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+[dotenv@17.3.1] injecting env (0) from .env -- tip: ⚙️  enable debug logging with { debug: true }
+🔌 Connecting to database...
+Game engine started!
+(node:25332) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
+In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
+
+To prepare for this change:
+- If you want the current behavior, explicitly use 'sslmode=verify-full'
+- If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
+
+See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✅ Database connection established
+[phpMyAdmin] Portal registered at http://localhost:5000/phpmyadmin
+2:29:34 PM [cron] Starting cron job: Resource Production Tick (every 60s)
+2:29:34 PM [cron] Starting cron job: Turn Generation Tick (every 60s)
+2:29:34 PM [cron] Starting cron job: Construction Queue Tick (every 60s)
+2:29:34 PM [cron] Starting cron job: Daily Reset (every 60s)
+2:29:34 PM [cron] Starting cron job: Weekly Reset (every 60s)
+2:29:34 PM [cron] Starting cron job: Market Price Update (every 60s)
+2:29:34 PM [cron] Starting cron job: Server Maintenance (every 60s)
+2:29:34 PM [cron] Starting cron job: Refinery Production Tick (every 60s)
+2:29:34 PM [startup] [ok] Cron job system initialized
+2:29:34 PM ℹ️ [34m[SERVER]  [0m [1mCron job system initialized[0m  
+[static] Found client build at: C:\Users\Shadow\Documents\universe-empire-dominion3\universe-empire-dominion3\dist\public
+2:29:34 PM [express] [i] serving on port 5001
+2:29:34 PM ℹ️ [34m[SERVER]  [0m [1mserving on port 5001[0m  
+2:29:34 PM [cron] Starting cron job: Anomaly Respawn (every 60s)
+
+[1m[34m================================================[0m
+[1m[34m SERVER STARTUP INITIALIZATION [0m
+[1m[34m================================================[0m
+
+[1m  Initializing Server Components:[0m
+    \ Loading Express.js framework...
+    [ok] [32mDatabase connection pool initialized[0m
+    [ok] [32mSession manager configured[0m
+    [ok] [32mAuthentication middleware loaded[0m
+    [ok] [32mAPI routes registered[0m
+    [ok] [32mError handlers configured[0m
+    \ Starting HTTP server...
+
+[1m[34m================================================[0m
+[1m[34m SERVER STARTUP INITIALIZATION [0m
+[1m[34m================================================[0m
+
+[1m  Initializing Server Components:[0m
+    | Loading Express.js framework...
+    [ok] [32mDatabase connection pool initialized[0m
+    [ok] [32mSession manager configured[0m
+    [ok] [32mAuthentication middleware loaded[0m
+    [ok] [32mAPI routes registered[0m
+    [ok] [32mError handlers configured[0m
+    | Starting HTTP server...
+
+[1m[34m================================================[0m
+[1m[34m SERVER STARTUP INITIALIZATION [0m
+[1m[34m================================================[0m
+
+[1m  Initializing Server Components:[0m
+    / Loading Express.js framework...
+    [ok] [32mDatabase connection pool initialized[0m
+    [ok] [32mSession manager configured[0m
+    [ok] [32mAuthentication middleware loaded[0m
+    [ok] [32mAPI routes registered[0m
+    [ok] [32mError handlers configured[0m
+    / Starting HTTP server...
+
+[1m[34m================================================[0m
+[1m[34m SERVER STARTUP INITIALIZATION [0m
+[1m[34m================================================[0m
+
+[1m  Initializing Server Components:[0m
+    - Loading Express.js framework...
+    [ok] [32mDatabase connection pool initialized[0m
+    [ok] [32mSession manager configured[0m
+    [ok] [32mAuthentication middleware loaded[0m
+    [ok] [32mAPI routes registered[0m
+    [ok] [32mError handlers configured[0m
+    - Starting HTTP server...
+
+[1m[34m================================================[0m
+[1m[34m SERVER STARTUP INITIALIZATION [0m
+[1m[34m================================================[0m
+
+[1m  Initializing Server Components:[0m
+    \ Loading Express.js framework...
+    [ok] [32mDatabase connection pool initialized[0m
+    [ok] [32mSession manager configured[0m
+    [ok] [32mAuthentication middleware loaded[0m
+    [ok] [32mAPI routes registered[0m
+    [ok] [32mError handlers configured[0m
+    \ Starting HTTP server...
+
+[1m[34m================================================[0m
+[1m[34m SERVER STARTUP INITIALIZATION [0m
+[1m[34m================================================[0m
+
+[1m  Initializing Server Components:[0m
+    | Loading Express.js framework...
+    [ok] [32mDatabase connection pool initialized[0m
+    [ok] [32mSession manager configured[0m
+    [ok] [32mAuthentication middleware loaded[0m
+    [ok] [32mAPI routes registered[0m
+    [ok] [32mError handlers configured[0m
+    | Starting HTTP server...
+
+[1m[34m================================================[0m
+[1m[34m SERVER STARTUP INITIALIZATION [0m
+[1m[34m================================================[0m
+
+[1m  Initializing Server Components:[0m
+    / Loading Express.js framework...
+    [ok] [32mDatabase connection pool initialized[0m
+    [ok] [32mSession manager configured[0m
+    [ok] [32mAuthentication middleware loaded[0m
+    [ok] [32mAPI routes registered[0m
+    [ok] [32mError handlers configured[0m
+    / Starting HTTP server...
+
+[1m[32m================================================[0m
+[1m[32m SERVER INITIALIZED SUCCESSFULLY [0m
+[1m[32m================================================[0m
+
+[1m[34mSetup Complete:[0m
+  [32m*[0m All services initialized
+  [32m*[0m Server ready to accept connections
+  [32m*[0m Database connection verified
+
+[1m[36m================================================[0m
+[1m[36m SERVER STATUS DASHBOARD [0m
+[1m[36m================================================[0m
+
+[1mMain Server Info:[0m
+  [32m*[0m Server Status: [32mRUNNING[0m
+  [32m*[0m Port: [36m5001[0m
+  [32m*[0m Environment: [36mproduction[0m
+  [32m*[0m Health Score: [32m100[0m
+  [32m*[0m Uptime: [36m0d 5h 7m[0m
+
+[1mDatabase:[0m
+  [32m*[0m PostgreSQL: [32mCONNECTED[0m
+  [32m*[0m Host: [36mlocalhost[0m
+  [32m*[0m Connections: [36m4/901[0m
+  [32m*[0m Active Queries: [36m1[0m
+  [32m*[0m Cache Hit Rate: [36m100%[0m
+
+[1mPerformance:[0m
+  [32m*[0m Total Requests: [36m0[0m
+  [32m*[0m Request Rate: [36m0.00/sec[0m
+  [32m*[0m Avg Response: [36m0ms[0m
+  [32m*[0m P95 / P99: [36m0ms / 0ms[0m
+
+[1mResources:[0m
+  [32m*[0m CPU Usage: [36m4%[0m
+  [32m*[0m Memory: [36m11488MB / 16364MB[0m
+  [32m*[0m Disk Usage: [36m77%[0m
+
+[1mServices:[0m
+  [32m*[0m Express Server: [32mACTIVE[0m
+  [32m*[0m Session Manager: [32mACTIVE[0m
+  [32m*[0m Authentication: [32mREADY[0m
+
+[1mAccess:[0m
+  [36m->[0m API Endpoint: [1mhttp://localhost:5001/api[0m
+  [36m->[0m Web Interface: [1mhttp://localhost:5001[0m
+  [36m->[0m Health Check: [1mhttp://localhost:5001/api/status/health[0m
+
+[1mHealth Checks:[0m
+  [32m*[0m database: [32mOK[0m (0/75)
+  [32m*[0m memory: [32mOK[0m (70/70)
+  [32m*[0m cpu: [32mOK[0m (4/60)
+  [32m*[0m diskSpace: [32mOK[0m (77/70)
+  [32m*[0m api: [32mOK[0m (0/1)
+  [32m*[0m cache: [32mOK[0m (95/80)
+  [32m*[0m websocket: [32mOK[0m (100/50)
+
+[1m[33mStatus Indicators:[0m
+  [32m*[0m Online / Active
+  [31m*[0m Offline / Inactive
+  [33m*[0m Warning / Resetting
+
+2:29:47 PM ⚠️ [33m[AUTH]    [0m [1mNo valid authentication for /api/auth/user[0m  
+2:29:47 PM [api] [!] GET    /api/auth/user                      [401] fast 3ms [0.0KB]
+2:29:47 PM ⚠️ [33m[SERVER]  [0m [1mGET    /api/auth/user                      [401] fast 3ms [0.0KB][0m  
+2:29:47 PM [api] [ok] GET    /api/status/health                  [200] steady 173ms [0.9KB]
+2:29:47 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/status/health                  [200] steady 173ms [0.9KB][0m  
+[2m[status][0m uptime=0d 5h 8m health=[32mHEALTHY[0m req=2 rps=0.03 avg=88ms cpu=0% mem=11001MB/16364MB db=4/901
+[2m[status][0m uptime=0d 5h 9m health=[32mHEALTHY[0m req=2 rps=0.02 avg=88ms cpu=0% mem=11153MB/16364MB db=4/901
+[2m[status][0m uptime=0d 5h 10m health=[32mHEALTHY[0m req=2 rps=0.01 avg=88ms cpu=0% mem=11108MB/16364MB db=4/901
+[2m[status][0m uptime=0d 5h 11m health=[32mHEALTHY[0m req=2 rps=0.01 avg=88ms cpu=0% mem=11108MB/16364MB db=4/901
+[2m[status][0m uptime=0d 5h 12m health=[32mHEALTHY[0m req=2 rps=0.01 avg=88ms cpu=0% mem=11037MB/16364MB db=4/901
+[2m[status][0m uptime=0d 5h 13m health=[32mHEALTHY[0m req=2 rps=0.01 avg=88ms cpu=0% mem=10905MB/16364MB db=4/901
+[2m[status][0m uptime=0d 5h 14m health=[32mHEALTHY[0m req=2 rps=0.00 avg=88ms cpu=0% mem=10914MB/16364MB db=3/901
+[2m[status][0m uptime=0d 5h 15m health=[32mHEALTHY[0m req=2 rps=0.00 avg=88ms cpu=0% mem=10977MB/16364MB db=3/901
+[2m[status][0m uptime=0d 5h 16m health=[32mHEALTHY[0m req=2 rps=0.00 avg=88ms cpu=0% mem=10892MB/16364MB db=3/901
+[2m[status][0m uptime=0d 5h 17m health=[32mHEALTHY[0m req=2 rps=0.00 avg=88ms cpu=0% mem=11024MB/16364MB db=3/901
+[2m[status][0m uptime=0d 5h 18m health=[32mHEALTHY[0m req=2 rps=0.00 avg=88ms cpu=0% mem=10912MB/16364MB db=3/901
+[2m[status][0m uptime=0d 5h 19m health=[32mHEALTHY[0m req=2 rps=0.00 avg=88ms cpu=0% mem=10897MB/16364MB db=3/901
+2:42:11 PM ⚠️ [33m[AUTH]    [0m [1mNo valid authentication for /api/auth/user[0m  
+2:42:11 PM [api] [!] GET    /api/auth/user                      [401] fast 2ms [0.0KB]
+2:42:11 PM ⚠️ [33m[SERVER]  [0m [1mGET    /api/auth/user                      [401] fast 2ms [0.0KB][0m  
+2:42:12 PM [api] [ok] GET    /api/status/health                  [200] quick 148ms [1.0KB]
+2:42:12 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/status/health                  [200] quick 148ms [1.0KB][0m  
+[2m[status][0m uptime=0d 5h 20m health=[32mHEALTHY[0m req=4 rps=0.01 avg=82ms cpu=0% mem=11140MB/16364MB db=3/901
+2:42:41 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/game/sync-tick[0m  
+2:42:41 PM [api] [!] POST   /api/game/sync-tick                 [401] fast 1ms [0.0KB]
+2:42:41 PM ⚠️ [33m[SERVER]  [0m [1mPOST   /api/game/sync-tick                 [401] fast 1ms [0.0KB][0m  
+2:42:42 PM [api] [ok] GET    /api/status/health                  [200] fast 25ms [0.9KB]
+2:42:42 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/status/health                  [200] fast 25ms [0.9KB][0m  
+2:43:11 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/game/sync-tick[0m  
+2:43:11 PM [api] [!] POST   /api/game/sync-tick                 [401] fast 1ms [0.0KB]
+2:43:11 PM ⚠️ [33m[SERVER]  [0m [1mPOST   /api/game/sync-tick                 [401] fast 1ms [0.0KB][0m  
+2:43:12 PM [api] [ok] GET    /api/status/health                  [200] quick 139ms [1.0KB]
+2:43:12 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/status/health                  [200] quick 139ms [1.0KB][0m  
+[2m[status][0m uptime=0d 5h 21m health=[32mHEALTHY[0m req=8 rps=0.01 avg=62ms cpu=0% mem=11160MB/16364MB db=4/901
+2:43:42 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/game/sync-tick[0m  
+2:43:42 PM [api] [!] POST   /api/game/sync-tick                 [401] fast 1ms [0.0KB]
+2:43:42 PM ⚠️ [33m[SERVER]  [0m [1mPOST   /api/game/sync-tick                 [401] fast 1ms [0.0KB][0m  
+2:43:42 PM [api] [ok] GET    /api/status/health                  [200] fast 29ms [0.9KB]
+2:43:42 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/status/health                  [200] fast 29ms [0.9KB][0m  
+2:44:11 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/game/sync-tick[0m  
+2:44:11 PM [api] [!] POST   /api/game/sync-tick                 [401] fast 1ms [0.0KB]
+2:44:11 PM ⚠️ [33m[SERVER]  [0m [1mPOST   /api/game/sync-tick                 [401] fast 1ms [0.0KB][0m  
+2:44:12 PM [api] [ok] GET    /api/status/health                  [200] quick 140ms [0.9KB]
+2:44:12 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/status/health                  [200] quick 140ms [0.9KB][0m  
+[2m[status][0m uptime=0d 5h 22m health=[32mHEALTHY[0m req=12 rps=0.01 avg=55ms cpu=0% mem=11080MB/16364MB db=5/901
+2:44:42 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/game/sync-tick[0m  
+2:44:42 PM [api] [!] POST   /api/game/sync-tick                 [401] fast 1ms [0.0KB]
+2:44:42 PM ⚠️ [33m[SERVER]  [0m [1mPOST   /api/game/sync-tick                 [401] fast 1ms [0.0KB][0m  
+2:44:42 PM [api] [ok] GET    /api/status/health                  [200] fast 27ms [1.0KB]
+2:44:42 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/status/health                  [200] fast 27ms [1.0KB][0m  
+2:45:11 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/game/sync-tick[0m  
+2:45:11 PM [api] [!] POST   /api/game/sync-tick                 [401] fast 1ms [0.0KB]
+2:45:11 PM ⚠️ [33m[SERVER]  [0m [1mPOST   /api/game/sync-tick                 [401] fast 1ms [0.0KB][0m  
+2:45:13 PM [api] [ok] GET    /api/status/health                  [200] quick 139ms [0.9KB]
+2:45:13 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/status/health                  [200] quick 139ms [0.9KB][0m  
+[2m[status][0m uptime=0d 5h 23m health=[32mHEALTHY[0m req=16 rps=0.02 avg=52ms cpu=0% mem=11153MB/16364MB db=6/901
+2:45:42 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/game/sync-tick[0m  
+2:45:42 PM [api] [!] POST   /api/game/sync-tick                 [401] fast 1ms [0.0KB]
+2:45:42 PM ⚠️ [33m[SERVER]  [0m [1mPOST   /api/game/sync-tick                 [401] fast 1ms [0.0KB][0m  
+2:45:43 PM [api] [ok] GET    /api/status/health                  [200] fast 23ms [1.0KB]
+2:45:43 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/status/health                  [200] fast 23ms [1.0KB][0m  
+2:46:11 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/game/sync-tick[0m  
+2:46:11 PM [api] [!] POST   /api/game/sync-tick                 [401] fast 1ms [0.0KB]
+2:46:11 PM ⚠️ [33m[SERVER]  [0m [1mPOST   /api/game/sync-tick                 [401] fast 1ms [0.0KB][0m  
+2:46:13 PM [api] [ok] GET    /api/status/health                  [200] quick 130ms [1.0KB]
+2:46:13 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/status/health                  [200] quick 130ms [1.0KB][0m  
+[2m[status][0m uptime=0d 5h 24m health=[32mHEALTHY[0m req=20 rps=0.02 avg=49ms cpu=0% mem=11127MB/16364MB db=6/901
+2:46:41 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/game/sync-tick[0m  
+2:46:41 PM [api] [!] POST   /api/game/sync-tick                 [401] fast 1ms [0.0KB]
+2:46:41 PM ⚠️ [33m[SERVER]  [0m [1mPOST   /api/game/sync-tick                 [401] fast 1ms [0.0KB][0m  
+2:46:43 PM [api] [ok] GET    /api/status/health                  [200] fast 22ms [0.9KB]
+2:46:43 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/status/health                  [200] fast 22ms [0.9KB][0m  
+2:47:11 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/game/sync-tick[0m  
+2:47:11 PM [api] [!] POST   /api/game/sync-tick                 [401] fast 1ms [0.0KB]
+2:47:11 PM ⚠️ [33m[SERVER]  [0m [1mPOST   /api/game/sync-tick                 [401] fast 1ms [0.0KB][0m  
+2:47:13 PM [api] [ok] GET    /api/status/health                  [200] quick 141ms [0.9KB]
+2:47:13 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/status/health                  [200] quick 141ms [0.9KB][0m  
+[2m[status][0m uptime=0d 5h 25m health=[32mHEALTHY[0m req=24 rps=0.02 avg=48ms cpu=0% mem=11284MB/16364MB db=6/901
+2:47:42 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/game/sync-tick[0m  
+2:47:42 PM [api] [!] POST   /api/game/sync-tick                 [401] fast 1ms [0.0KB]
+2:47:42 PM ⚠️ [33m[SERVER]  [0m [1mPOST   /api/game/sync-tick                 [401] fast 1ms [0.0KB][0m  
+2:47:43 PM [api] [ok] GET    /api/status/health                  [200] fast 21ms [0.9KB]
+2:47:43 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/status/health                  [200] fast 21ms [0.9KB][0m  
+2:48:11 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/game/sync-tick[0m  
+2:48:11 PM [api] [!] POST   /api/game/sync-tick                 [401] fast 1ms [0.0KB]
+2:48:11 PM ⚠️ [33m[SERVER]  [0m [1mPOST   /api/game/sync-tick                 [401] fast 1ms [0.0KB][0m  
+2:48:13 PM [api] [ok] GET    /api/status/health                  [200] quick 131ms [0.9KB]
+2:48:13 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/status/health                  [200] quick 131ms [0.9KB][0m  
+[2m[status][0m uptime=0d 5h 26m health=[32mHEALTHY[0m req=28 rps=0.02 avg=47ms cpu=0% mem=11282MB/16364MB db=6/901
+2:48:42 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/game/sync-tick[0m  
+2:48:42 PM [api] [!] POST   /api/game/sync-tick                 [401] fast 0ms [0.0KB]
+2:48:42 PM ⚠️ [33m[SERVER]  [0m [1mPOST   /api/game/sync-tick                 [401] fast 0ms [0.0KB][0m  
+2:48:43 PM [api] [ok] GET    /api/status/health                  [200] fast 22ms [1.0KB]
+2:48:43 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/status/health                  [200] fast 22ms [1.0KB][0m  
+2:48:59 PM ⚠️ [33m[AUTH]    [0m [1mNo valid authentication for /api/auth/user[0m  
+2:48:59 PM [api] [!] GET    /api/auth/user                      [401] fast 1ms [0.0KB]
+2:48:59 PM ⚠️ [33m[SERVER]  [0m [1mGET    /api/auth/user                      [401] fast 1ms [0.0KB][0m  
+2:49:00 PM [api] [ok] GET    /api/status/health                  [200] quick 136ms [0.9KB]
+2:49:00 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/status/health                  [200] quick 136ms [0.9KB][0m  
+2:49:02 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/turns[0m  
+2:49:02 PM [api] [!] GET    /api/turns                          [401] fast 1ms [0.0KB]
+2:49:02 PM ⚠️ [33m[SERVER]  [0m [1mGET    /api/turns                          [401] fast 1ms [0.0KB][0m  
+2:49:02 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/season-pass/progression[0m  
+2:49:02 PM [api] [!] GET    /api/season-pass/progression        [401] fast 1ms [0.0KB]
+2:49:02 PM ⚠️ [33m[SERVER]  [0m [1mGET    /api/season-pass/progression        [401] fast 1ms [0.0KB][0m  
+2:49:02 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/battle-pass/overview[0m  
+2:49:02 PM [api] [!] GET    /api/battle-pass/overview           [401] fast 0ms [0.0KB]
+2:49:02 PM ⚠️ [33m[SERVER]  [0m [1mGET    /api/battle-pass/overview           [401] fast 0ms [0.0KB][0m  
+2:49:02 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/settings/player/options[0m  
+2:49:02 PM [api] [!] GET    /api/settings/player/options        [401] fast 0ms [0.0KB]
+2:49:02 PM ⚠️ [33m[SERVER]  [0m [1mGET    /api/settings/player/options        [401] fast 0ms [0.0KB][0m  
+2:49:02 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/population/snapshot[0m  
+2:49:02 PM [api] [!] GET    /api/population/snapshot            [401] fast 1ms [0.0KB]
+2:49:02 PM ⚠️ [33m[SERVER]  [0m [1mGET    /api/population/snapshot            [401] fast 1ms [0.0KB][0m  
+2:49:02 PM [api] [ok] GET    /api/updates/manifest               [200] fast 12ms
+2:49:02 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/updates/manifest               [200] fast 12ms[0m  
+2:49:02 PM [api] [ok] GET    /api/updates/check                  [200] fast 8ms
+2:49:02 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/updates/check                  [200] fast 8ms[0m  
+2:49:10 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/empire-profile[0m  
+2:49:10 PM [api] [!] GET    /api/empire-profile                 [401] fast 1ms [0.0KB]
+2:49:10 PM ⚠️ [33m[SERVER]  [0m [1mGET    /api/empire-profile                 [401] fast 1ms [0.0KB][0m  
+2:49:10 PM [api] [i] GET    /api/empire-profile/config          [304] fast 0ms
+2:49:10 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/empire-profile/config          [304] fast 0ms[0m  
+2:49:10 PM [api] [i] GET    /api/updates/check                  [304] fast 6ms
+2:49:10 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/updates/check                  [304] fast 6ms[0m  
+2:49:10 PM [api] [i] GET    /api/updates/manifest               [304] fast 7ms
+2:49:10 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/updates/manifest               [304] fast 7ms[0m  
+2:49:11 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/game/sync-tick[0m  
+2:49:11 PM [api] [!] POST   /api/game/sync-tick                 [401] fast 2ms [0.0KB]
+2:49:11 PM ⚠️ [33m[SERVER]  [0m [1mPOST   /api/game/sync-tick                 [401] fast 2ms [0.0KB][0m  
+2:49:13 PM [api] [ok] GET    /api/status/health                  [200] quick 144ms [1.0KB]
+2:49:13 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/status/health                  [200] quick 144ms [1.0KB][0m  
+2:49:20 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/turns[0m  
+2:49:20 PM [api] [!] GET    /api/turns                          [401] fast 1ms [0.0KB]
+2:49:20 PM ⚠️ [33m[SERVER]  [0m [1mGET    /api/turns                          [401] fast 1ms [0.0KB][0m  
+2:49:29 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/game/sync-tick[0m  
+2:49:29 PM [api] [!] POST   /api/game/sync-tick                 [401] fast 1ms [0.0KB]
+2:49:29 PM ⚠️ [33m[SERVER]  [0m [1mPOST   /api/game/sync-tick                 [401] fast 1ms [0.0KB][0m  
+2:49:30 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/turns[0m  
+2:49:30 PM [api] [!] GET    /api/turns                          [401] fast 1ms [0.0KB]
+2:49:30 PM ⚠️ [33m[SERVER]  [0m [1mGET    /api/turns                          [401] fast 1ms [0.0KB][0m  
+[2m[status][0m uptime=0d 5h 27m health=[32mHEALTHY[0m req=48 rps=0.04 avg=34ms cpu=0% mem=11731MB/16364MB db=6/901
+2:49:40 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/turns[0m  
+2:49:40 PM [api] [!] GET    /api/turns                          [401] fast 1ms [0.0KB]
+2:49:40 PM ⚠️ [33m[SERVER]  [0m [1mGET    /api/turns                          [401] fast 1ms [0.0KB][0m  
+2:49:42 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/game/sync-tick[0m  
+2:49:42 PM [api] [!] POST   /api/game/sync-tick                 [401] fast 1ms [0.0KB]
+2:49:42 PM ⚠️ [33m[SERVER]  [0m [1mPOST   /api/game/sync-tick                 [401] fast 1ms [0.0KB][0m  
+2:49:43 PM [api] [ok] GET    /api/status/health                  [200] fast 24ms [0.9KB]
+2:49:43 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/status/health                  [200] fast 24ms [0.9KB][0m  
+2:49:50 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/turns[0m  
+2:49:50 PM [api] [!] GET    /api/turns                          [401] fast 2ms [0.0KB]
+2:49:50 PM ⚠️ [33m[SERVER]  [0m [1mGET    /api/turns                          [401] fast 2ms [0.0KB][0m  
+2:49:52 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/settings/player/options[0m  
+2:49:52 PM [api] [!] GET    /api/settings/player/options        [401] fast 1ms [0.0KB]
+2:49:52 PM ⚠️ [33m[SERVER]  [0m [1mGET    /api/settings/player/options        [401] fast 1ms [0.0KB][0m  
+2:49:52 PM [api] [i] GET    /api/updates/check                  [304] fast 1ms
+2:49:52 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/updates/check                  [304] fast 1ms[0m  
+2:49:52 PM [api] [i] GET    /api/updates/manifest               [304] fast 1ms
+2:49:52 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/updates/manifest               [304] fast 1ms[0m  
+2:49:52 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/refineries[0m  
+2:49:52 PM [api] [!] GET    /api/refineries                     [401] fast 1ms [0.0KB]
+2:49:52 PM ⚠️ [33m[SERVER]  [0m [1mGET    /api/refineries                     [401] fast 1ms [0.0KB][0m  
+2:49:59 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/game/sync-tick[0m  
+2:49:59 PM [api] [!] POST   /api/game/sync-tick                 [401] fast 1ms [0.0KB]
+2:49:59 PM ⚠️ [33m[SERVER]  [0m [1mPOST   /api/game/sync-tick                 [401] fast 1ms [0.0KB][0m  
+2:50:00 PM [api] [i] GET    /api/updates/check                  [304] fast 2ms
+2:50:00 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/updates/check                  [304] fast 2ms[0m  
+2:50:00 PM [api] [i] GET    /api/updates/manifest               [304] fast 2ms
+2:50:00 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/updates/manifest               [304] fast 2ms[0m  
+2:50:04 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/season-pass/progression[0m  
+2:50:04 PM [api] [!] GET    /api/season-pass/progression        [401] fast 1ms [0.0KB]
+2:50:04 PM ⚠️ [33m[SERVER]  [0m [1mGET    /api/season-pass/progression        [401] fast 1ms [0.0KB][0m  
+2:50:04 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/battle-pass/overview[0m  
+2:50:04 PM [api] [!] GET    /api/battle-pass/overview           [401] fast 0ms [0.0KB]
+2:50:04 PM ⚠️ [33m[SERVER]  [0m [1mGET    /api/battle-pass/overview           [401] fast 0ms [0.0KB][0m  
+2:50:04 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/population/snapshot[0m  
+2:50:04 PM [api] [!] GET    /api/population/snapshot            [401] fast 0ms [0.0KB]
+2:50:04 PM ⚠️ [33m[SERVER]  [0m [1mGET    /api/population/snapshot            [401] fast 0ms [0.0KB][0m  
+2:50:04 PM [api] [i] GET    /api/updates/check                  [304] fast 4ms
+2:50:04 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/updates/check                  [304] fast 4ms[0m  
+2:50:04 PM [api] [i] GET    /api/updates/manifest               [304] fast 4ms
+2:50:04 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/updates/manifest               [304] fast 4ms[0m  
+2:50:11 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/game/sync-tick[0m  
+2:50:11 PM [api] [!] POST   /api/game/sync-tick                 [401] fast 1ms [0.0KB]
+2:50:11 PM ⚠️ [33m[SERVER]  [0m [1mPOST   /api/game/sync-tick                 [401] fast 1ms [0.0KB][0m  
+2:50:14 PM [api] [ok] GET    /api/status/health                  [200] quick 141ms [1.0KB]
+2:50:14 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/status/health                  [200] quick 141ms [1.0KB][0m  
+2:50:14 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/turns[0m  
+2:50:14 PM [api] [!] GET    /api/turns                          [401] fast 1ms [0.0KB]
+2:50:14 PM ⚠️ [33m[SERVER]  [0m [1mGET    /api/turns                          [401] fast 1ms [0.0KB][0m  
+2:50:18 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/season-pass/overview[0m  
+2:50:18 PM [api] [!] GET    /api/season-pass/overview           [401] fast 1ms [0.0KB]
+2:50:18 PM ⚠️ [33m[SERVER]  [0m [1mGET    /api/season-pass/overview           [401] fast 1ms [0.0KB][0m  
+2:50:18 PM [api] [i] GET    /api/updates/check                  [304] fast 1ms
+2:50:18 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/updates/check                  [304] fast 1ms[0m  
+2:50:18 PM [api] [i] GET    /api/updates/manifest               [304] fast 1ms
+2:50:18 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/updates/manifest               [304] fast 1ms[0m  
+2:50:28 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/turns[0m  
+2:50:28 PM [api] [!] GET    /api/turns                          [401] fast 2ms [0.0KB]
+2:50:28 PM ⚠️ [33m[SERVER]  [0m [1mGET    /api/turns                          [401] fast 2ms [0.0KB][0m  
+2:50:28 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/settings/player/options[0m  
+2:50:28 PM [api] [!] GET    /api/settings/player/options        [401] fast 1ms [0.0KB]
+2:50:28 PM ⚠️ [33m[SERVER]  [0m [1mGET    /api/settings/player/options        [401] fast 1ms [0.0KB][0m  
+2:50:28 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/account/settings[0m  
+2:50:28 PM [api] [!] GET    /api/account/settings               [401] fast 0ms [0.0KB]
+2:50:28 PM ⚠️ [33m[SERVER]  [0m [1mGET    /api/account/settings               [401] fast 0ms [0.0KB][0m  
+2:50:28 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/admin/me[0m  
+2:50:28 PM [api] [!] GET    /api/admin/me                       [401] fast 0ms [0.0KB]
+2:50:28 PM ⚠️ [33m[SERVER]  [0m [1mGET    /api/admin/me                       [401] fast 0ms [0.0KB][0m  
+2:50:28 PM [api] [i] GET    /api/updates/check                  [304] fast 3ms
+2:50:28 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/updates/check                  [304] fast 3ms[0m  
+2:50:28 PM [api] [i] GET    /api/updates/manifest               [304] fast 2ms
+2:50:28 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/updates/manifest               [304] fast 2ms[0m  
+2:50:33 PM ⚠️ [33m[AUTH]    [0m [1mNo valid authentication for /api/auth/user[0m  
+2:50:33 PM [api] [!] GET    /api/auth/user                      [401] fast 1ms [0.0KB]
+2:50:33 PM ⚠️ [33m[SERVER]  [0m [1mGET    /api/auth/user                      [401] fast 1ms [0.0KB][0m  
+2:50:34 PM [api] [ok] GET    /api/status/health                  [200] steady 164ms [1.0KB]
+2:50:34 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/status/health                  [200] steady 164ms [1.0KB][0m  
+[2m[status][0m uptime=0d 5h 28m health=[32mHEALTHY[0m req=78 rps=0.06 avg=26ms cpu=2% mem=11605MB/16364MB db=6/901
+2:50:42 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/game/sync-tick[0m  
+2:50:42 PM [api] [!] POST   /api/game/sync-tick                 [401] fast 1ms [0.0KB]
+2:50:42 PM ⚠️ [33m[SERVER]  [0m [1mPOST   /api/game/sync-tick                 [401] fast 1ms [0.0KB][0m  
+2:50:44 PM [api] [ok] GET    /api/status/health                  [200] fast 22ms [0.9KB]
+2:50:44 PM ℹ️ [34m[SERVER]  [0m [1mGET    /api/status/health                  [200] fast 22ms [0.9KB][0m  
+2:51:12 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/game/sync-tick[0m  
+2:51:12 PM [api] [!] POST   /api/game/sync-tick                 [401] fast 0ms [0.0KB]
+2:51:12 PM ⚠️ [33m[SERVER]  [0m [1mPOST   /api/game/sync-tick                 [401] fast 0ms [0.0KB][0m  
+2:51:22 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/game/sync-tick[0m  
+2:51:22 PM [api] [!] POST   /api/game/sync-tick                 [401] fast 0ms [0.0KB]
+2:51:22 PM ⚠️ [33m[SERVER]  [0m [1mPOST   /api/game/sync-tick                 [401] fast 0ms [0.0KB][0m  
+[2m[status][0m uptime=0d 5h 29m health=[32mHEALTHY[0m req=82 rps=0.06 avg=25ms cpu=0% mem=11588MB/16364MB db=6/901
+2:51:42 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/game/sync-tick[0m  
+2:51:42 PM [api] [!] POST   /api/game/sync-tick                 [401] fast 0ms [0.0KB]
+2:51:42 PM ⚠️ [33m[SERVER]  [0m [1mPOST   /api/game/sync-tick                 [401] fast 0ms [0.0KB][0m  
+2:52:26 PM ⚠️ [33m[AUTH]    [0m [1mAuthentication failed for /api/game/sync-tick[0m  
+2:52:26 PM [api] [!] POST   /api/game/sync-tick                 [401] fast 1ms [0.0KB]
+2:52:26 PM ⚠️ [33m[SERVER]  [0m [1mPOST   /api/game/sync-tick                 [401] fast 1ms [0.0KB][0m  
+[2m[status][0m uptime=0d 5h 30m health=[32mHEALTHY[0m req=84 rps=0.06 avg=24ms cpu=0% mem=9562MB/16364MB db=6/901
+^C

@@ -1,0 +1,91 @@
+{
+    "name": "laravel/laravel",
+    "type": "project",
+    "description": "The skeleton application for the Laravel framework.",
+    "keywords": ["laravel", "framework"],
+    "license": "MIT",
+    "require": {
+        "php": "^8.5",
+        "lab404/laravel-impersonate": "^1.7",
+        "laravel/fortify": "^1.21",
+        "laravel/framework": "^12.0",
+        "laravel/reverb": "^1.7",
+        "laravel/tinker": "^2.9",
+        "laravel/ui": "^4.5",
+        "spatie/laravel-discord-alerts": "^1.7",
+        "spatie/laravel-permission": "^7.1"
+    },
+    "require-dev": {
+        "barryvdh/laravel-debugbar": "^4.0",
+        "barryvdh/laravel-ide-helper": "^3.0",
+        "brianium/paratest": "^7.5",
+        "driftingly/rector-laravel": "^2.1",
+        "fakerphp/faker": "^1.23",
+        "larastan/larastan": "^3.0",
+        "laravel/pint": "^1.19",
+        "laravel/sail": "^1.26",
+        "mockery/mockery": "^1.6",
+        "nunomaduro/collision": "^8.0",
+        "phpunit/phpunit": "^13.0",
+        "spatie/laravel-ignition": "^2.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "OGame\\": "app/",
+            "Php\\Rules\\": "php/Rules/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi"
+        ],
+        "post-update-cmd": [
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+        ],
+        "post-root-package-install": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ],
+        "post-create-project-cmd": [
+            "@php artisan key:generate --ansi",
+            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
+            "@php artisan migrate --graceful --ansi"
+        ],
+        "cs": [
+            "./vendor/bin/pint --parallel"
+        ],
+        "stan": [
+            "./vendor/bin/phpstan analyse --memory-limit=1G"
+        ],
+        "tests": [
+            "@php artisan test"
+        ],
+        "rector": [
+            "./vendor/bin/rector --memory-limit=1G"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "dont-discover": []
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true,
+            "kylekatarnls/update-helper": true
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
