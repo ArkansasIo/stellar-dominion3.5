@@ -104,6 +104,7 @@ const Missions = lazy(() => import("@/pages/Missions"));
 const CommerceHub = lazy(() => import("@/pages/CommerceHub"));
 const Population = lazy(() => import("@/pages/Population"));
 const Hazards = lazy(() => import("@/pages/Hazards"));
+const Diplomacy = lazy(() => import("@/pages/Diplomacy"));
 
 function LoadingSplash() {
   return (
@@ -304,6 +305,7 @@ function RouterContent() {
       <Route path="/commerce" component={CommerceHub} />
       <Route path="/population" component={Population} />
       <Route path="/hazards" component={Hazards} />
+      <Route path="/diplomacy" component={Diplomacy} />
       <Route path="/settings" component={Settings} />
       <Route path="/admin" component={Admin} />
       <Route path="/admin/database" component={DatabaseAdmin} />
