@@ -156,11 +156,39 @@ export default function Auth() {
   };
 
   const useDemoAccount = () => {
+    saveCredentials("demo", "demo");
+    setUsername("demo");
+    setPassword("demo");
     login();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+    setSubmitting(true);
+
+    if (!isLogin) {
+      try {
+        const res = await fetch("/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password, email, firstName }),
+        });
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({ message: "Registration failed" }));
+          setError(data.message);
+          setSubmitting(false);
+          return;
+        }
+      } catch (err) {
+        setError("Registration failed: network error");
+        setSubmitting(false);
+        return;
+      }
+    }
+
+    saveCredentials(username, password);
+    setSubmitting(false);
     login();
   };
 

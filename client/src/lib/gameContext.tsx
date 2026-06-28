@@ -1820,7 +1820,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   };
 
   const login = async () => {
-    setIsLoggedIn(true);
+    queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
   };
 
   const logout = async () => {
