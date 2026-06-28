@@ -31,8 +31,8 @@ import {
   Rocket,
   Factory,
   Orbit,
-  LucideIcon,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
@@ -103,6 +103,13 @@ function happinessColor(happiness: number) {
   if (happiness >= 40) return "text-amber-600";
   return "text-red-600";
 }
+
+const HAPPINESS_HEX: Record<string, string> = {
+  "text-emerald-600": "#059669",
+  "text-blue-600": "#2563eb",
+  "text-amber-600": "#d97706",
+  "text-red-600": "#dc2626",
+};
 
 function happinessLabel(happiness: number) {
   if (happiness >= 80) return "Ecstatic";
@@ -348,7 +355,7 @@ export default function Population() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="text-center">
-                      <div className="text-5xl font-orbitron font-bold" style={{ color: happinessColor(snapshot.population.happiness * 100).replace("text-", "") }}>
+                      <div className="text-5xl font-orbitron font-bold" style={{ color: HAPPINESS_HEX[happinessColor(snapshot.population.happiness * 100)] }}>
                         {Math.round(snapshot.population.happiness * 100)}%
                       </div>
                       <Badge className={cn("mt-2", happinessColor(snapshot.population.happiness * 100))} variant="outline">

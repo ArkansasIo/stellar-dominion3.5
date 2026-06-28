@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   LayoutDashboard, Pickaxe, Factory, FlaskConical, Rocket, Send, Globe,
-  Zap, Database, Box, Gem, User, Landmark, Mail, Shield, Hexagon, ShoppingBag, Orbit, Sword, Eye
+  Zap, Database, Box, Gem, User, Landmark, Mail, Shield, Hexagon, ShoppingBag, Orbit, Sword, Eye, Users
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -27,6 +27,7 @@ const navItems = [
   { href: "/market", icon: ShoppingBag, label: "Market" },
   { href: "/messages", icon: Mail, label: "Messages" },
   { href: "/artifacts", icon: Gem, label: "Artifacts" },
+  { href: "/population", icon: Users, label: "Population" },
 ];
 
 export default function Navigation() {
@@ -35,7 +36,7 @@ export default function Navigation() {
   const groupedLinks = [
     {
       title: "Empire Core",
-      items: navItems.filter((item) => ["/", "/resources", "/facilities", "/research", "/colonies", "/blueprints"].includes(item.href)),
+      items: navItems.filter((item) => ["/", "/resources", "/facilities", "/research", "/colonies", "/blueprints", "/population"].includes(item.href)),
     },
     {
       title: "Military",
