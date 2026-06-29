@@ -262,6 +262,7 @@ import { registerSporeDriveRoutes } from "./routes-spore-drive";
 import { registerWeeklyMissionRoutes } from "./routes-weekly-missions";
 import { registerGateTokenRoutes } from "./routes-gate-tokens";
 import { registerOGameCombatRoutes } from "./routes-ogame-combat";
+import { registerEmpireProgressionRoutes } from "./routes-empire-progression";
 import seasonRoutes from "./routes-season";
 import { db, pool } from "./db";
 import { adminUsers, users } from "../shared/schema";
@@ -352,6 +353,7 @@ import { eq, ilike, or } from "drizzle-orm";
   registerNewsRoutes(app);
   registerAdminConsoleRoutes(app);
   registerFittingRoutes(app);
+  registerEmpireProgressionRoutes(app);
   try {
     const updateManager = UpdateManager.getInstance();
     updateManager.setupRoutes(app);

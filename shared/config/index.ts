@@ -1080,3 +1080,179 @@ export {
   type RankDefinition,
 } from './progressionRanksConfig';
 
+// Empire Stats Config Exports
+export {
+  DEFAULT_EMPIRE_COMBAT_STATS,
+  DEFAULT_FLEET_FIREPOWER,
+  DEFAULT_FLEET_ACCURACY,
+  DEFAULT_CRITICAL_STRIKE,
+  DEFAULT_FLEET_DEFENSE,
+  DEFAULT_EVASION,
+  DEFAULT_FLEET_COMBAT,
+  DEFAULT_COMMANDER_STATS,
+  DEFAULT_EMPIRE_RESOURCES,
+  DEFAULT_FLEET_MOBILITY,
+  DEFAULT_EMPIRE_ATTRIBUTES,
+  DEFAULT_TECHNOLOGY,
+  DEFAULT_RESISTANCE,
+  DEFAULT_ELECTRONIC_WARFARE,
+  DEFAULT_PVP_STATS,
+  DEFAULT_PVE_STATS,
+  DEFAULT_TACTICAL_COMBAT,
+  DEFAULT_EMPIRE_BONUSES,
+  STAT_CATEGORY_LABELS,
+  STAT_DISPLAY_NAMES,
+  STAT_FORMAT,
+  formatStatValue,
+  calculateEffectiveDamage,
+  calculateAccuracy,
+  calculateEvasionChance,
+  calculateCriticalChance,
+  calculateShieldAbsorption,
+  calculateHullDamageReduction,
+  calculateEWARResistance,
+  calculateEWARSuccessChance,
+  calculateDamageResistance,
+  calculateWarpSpeed,
+  calculatePopulationGrowth,
+  calculateEnergyRegen,
+  calculateInfrastructureOutput,
+  EmpireStatId,
+  type EmpireStatCategory,
+  type WeaponDamageType,
+  type BattleRole,
+  type FleetFirepower,
+  type FleetAccuracy,
+  type CriticalStrikeSystems,
+  type FleetDefense,
+  type EvasionSystems,
+  type FleetCombatStats,
+  type CommanderStatistics,
+  type EmpireResources,
+  type FleetMobility,
+  type EmpireAttributes,
+  type TechnologyStats,
+  type ResistanceSystems,
+  type ElectronicWarfareStats,
+  type FleetDisruptionChance,
+  type PvPWarfareStats,
+  type PvEStats,
+  type TacticalCombatStats,
+  type EmpireBonuses,
+  type EmpireCombatStats,
+} from './empireStatsConfig';
+
+// Commander Stats Integration Exports
+export {
+  defaultCommanderBuffProfile,
+  commanderStatsToModifier,
+  applyCommanderBuffs,
+  buildCommanderBuffProfile,
+  calculateEmpireStatsWithCommander,
+  type CommanderStatModifier,
+  type CommanderBuffProfile,
+} from './commanderStatsIntegration';
+
+// Stat Metadata Exports
+export {
+  STAT_METADATA,
+  getStatsByCategory,
+  getStatsBySubCategory,
+  getStatsByTag,
+  getMetadata,
+  type StatSource,
+  type StatMetadata,
+} from './statMetadata';
+
+// Stat Progression Table Exports
+export {
+  TIER_EXAMPLES,
+  getTierExample,
+  getClosestTierExample,
+  type TierExample,
+} from './statProgressionTable';
+
+// Combat Formula Engine Exports
+export {
+  computeFinalDamage,
+  computeEWAR,
+  computeTotalEffectiveHP,
+  simulateCombatRound,
+  simulateFullCombat,
+  getFleetAccuracy,
+  getFleetEvasion,
+  getCriticalChance,
+  getHeavyStrikeChance,
+  getHeavyStrikeEvasion,
+  getPositionMultiplier,
+  EWAR_BASE_DURATIONS,
+  EWAR_RESISTANCE_MAP,
+  EWAR_CHANCE_MAP,
+  type DamageOutput,
+  type AttackContext,
+  type CombatRoundResult,
+  type CombatResult,
+  type EWAResult,
+  type EWARType,
+  type BattleMode as CombatBattleMode,
+  type WeaponCategory,
+  type AttackPosition,
+} from './combatFormulaEngine';
+
+// OGame Progression Config Exports
+export {
+  OGame_BUILDING_FORMULAS,
+  OGame_PRODUCTION_FORMULAS,
+  calculateBuildingCost as calculateOGameBuildingCost,
+  calculateBuildingProduction as calculateOGameBuildingProduction,
+  calculateBuildingCumulativeCost as calculateOGameBuildingCumulativeCost,
+  calculateBuildingTime as calculateOGameBuildingTime,
+  calculateResearchTime as calculateOGameResearchTime,
+  calculateFleetScore,
+  calculateDefenseScore,
+  calculateResearchScore,
+  calculateTotalEmpireScore,
+  calculateEnergyConsumption,
+  calculateAvailableEnergy,
+  calculateCargoCapacity,
+  calculateFleetSpeed,
+  calculatePlanetFields,
+  type BuildingCostFormula,
+  type ProductionFormula,
+} from './ogameProgressionConfig';
+
+// Civilization Tier Config Exports
+export {
+  CIVILIZATION_TIERS,
+  getCivilizationTier,
+  getNextCivilizationTier,
+  getTierProgress,
+  type CivilizationTier,
+} from './civilizationTierConfig';
+
+// Technology Age Config Exports
+export {
+  TECHNOLOGY_AGES,
+  getTechnologyAge,
+  getNextTechnologyAge,
+  type TechnologyAge,
+} from './technologyAgeConfig';
+
+// Empire Score Rank Config Exports
+export {
+  EMPIRE_SCORE_RANKS,
+  getEmpireScoreRank,
+  getNextEmpireScoreRank,
+  getScoreToNextRank,
+  type EmpireScoreRank,
+} from './empireScoreRankConfig';
+
+// Commander Level Config Exports
+export {
+  COMMANDER_LEVEL_UNLOCKS,
+  getCommanderLevelUnlocks,
+  getCommanderLevelBonus,
+  getNextCommanderLevelUnlock,
+  type CommanderLevelUnlock,
+} from './commanderLevelConfig';
+
