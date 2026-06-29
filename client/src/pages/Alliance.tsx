@@ -451,6 +451,7 @@ export default function Alliance() {
                     <TabsTrigger value="members" className="font-orbitron" data-testid="tab-members"><Users className="w-4 h-4 mr-2" /> Members</TabsTrigger>
                     <TabsTrigger value="systems" className="font-orbitron" data-testid="tab-systems"><Settings className="w-4 h-4 mr-2" /> Systems</TabsTrigger>
                     <TabsTrigger value="operations" className="font-orbitron" data-testid="tab-operations"><Target className="w-4 h-4 mr-2" /> Operations</TabsTrigger>
+                    <TabsTrigger value="bank" className="font-orbitron" data-testid="tab-bank"><TrendingUp className="w-4 h-4 mr-2" /> Bank</TabsTrigger>
                     <TabsTrigger value="diplomacy" className="font-orbitron" data-testid="tab-diplomacy"><Handshake className="w-4 h-4 mr-2" /> Diplomacy</TabsTrigger>
                     <TabsTrigger value="wars" className="font-orbitron" data-testid="tab-wars"><Swords className="w-4 h-4 mr-2" /> Wars</TabsTrigger>
                     <TabsTrigger value="comms" className="font-orbitron" data-testid="tab-comms"><MessageSquare className="w-4 h-4 mr-2" /> Comms</TabsTrigger>
@@ -783,9 +784,13 @@ export default function Alliance() {
                           </CardContent>
                        </Card>
                     </div>
-                 </TabsContent>
+                  </TabsContent>
 
-                 <TabsContent value="diplomacy" className="mt-6">
+                  <TabsContent value="bank" className="mt-6">
+                    <AllianceBankContent allianceId={alliance?.id ?? ""} />
+                  </TabsContent>
+
+                  <TabsContent value="diplomacy" className="mt-6">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                        <Card className="bg-white border-slate-200" data-testid="card-diplomacy-relations">
                           <CardHeader>
@@ -1090,5 +1095,222 @@ export default function Alliance() {
         </Tabs>
       </div>
     </GameLayout>
+  );
+}
+
+type BankTransaction = {
+  id: string;
+  allianceId: string;
+  userId: string;
+  type: "deposit" | "withdraw" | "tax" | "interest" | "fee";
+  resourceType: string;
+  amount: number;
+  balanceBefore: number;
+  balanceAfter: number;
+  description: string | null;
+  createdAt: string;
+};
+
+type BankData = {
+  resources: Record<string, number>;
+  treasuryCap: number;
+  taxRate: number;
+  maxTaxRate: number;
+  memberCount: number;
+  transactions: BankTransaction[];
+};
+
+function AllianceBankContent({ allianceId }: { allianceId: string }) {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [depositResource, setDepositResource] = useState("metal");
+  const [depositAmount, setDepositAmount] = useState("");
+  const [withdrawResource, setWithdrawResource] = useState("metal");
+  const [withdrawAmount, setWithdrawAmount] = useState("");
+
+  const { data: bank, refetch } = useQuery<BankData>({
+    queryKey: ["alliance-bank", allianceId],
+    queryFn: () => fetchJson<BankData>(`/api/alliances/${allianceId}/bank`),
+    enabled: !!allianceId,
+    refetchInterval: 30000,
+  });
+
+  const depositMutation = useMutation({
+    mutationFn: (body: { resourceType: string; amount: number }) =>
+      fetchJson(`/api/alliances/${allianceId}/bank/deposit`, {
+        method: "POST",
+        body: JSON.stringify(body),
+      }),
+    onSuccess: () => {
+      setDepositAmount("");
+      queryClient.invalidateQueries({ queryKey: ["alliance-bank", allianceId] });
+      toast({ title: "Deposit successful" });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Deposit failed", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const withdrawMutation = useMutation({
+    mutationFn: (body: { resourceType: string; amount: number }) =>
+      fetchJson(`/api/alliances/${allianceId}/bank/withdraw`, {
+        method: "POST",
+        body: JSON.stringify(body),
+      }),
+    onSuccess: () => {
+      setWithdrawAmount("");
+      queryClient.invalidateQueries({ queryKey: ["alliance-bank", allianceId] });
+      toast({ title: "Withdrawal successful" });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Withdrawal failed", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const resourceOptions = [
+    { value: "metal", label: "Metal" },
+    { value: "crystal", label: "Crystal" },
+    { value: "deuterium", label: "Deuterium" },
+    { value: "antimatter", label: "Antimatter" },
+    { value: "energy", label: "Energy" },
+    { value: "credits", label: "Credits" },
+  ];
+
+  if (!bank) {
+    return (
+      <Card className="bg-white border-slate-200">
+        <CardContent className="p-8 text-center text-slate-500">Loading bank data...</CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <Card className="bg-white border-slate-200">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-slate-900">
+            <TrendingUp className="w-5 h-5 text-emerald-600" /> Alliance Bank
+          </CardTitle>
+          <CardDescription>
+            Shared resource pool &bull; Tax rate: {(bank.taxRate * 100).toFixed(1)}% &bull; Treasury cap: {bank.treasuryCap.toLocaleString()} per resource
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
+            {resourceOptions.map((res) => (
+              <div key={res.value} className="rounded border border-slate-200 bg-slate-50 p-3 text-sm">
+                <div className="text-xs uppercase text-slate-500">{res.label}</div>
+                <div className="font-orbitron text-slate-900">
+                  {(bank.resources[res.value] || 0).toLocaleString()}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="rounded border border-slate-200 p-4 space-y-3">
+              <h4 className="font-semibold text-sm text-slate-900">Deposit Resources</h4>
+              <div className="flex gap-2">
+                <select
+                  className="rounded border border-slate-300 bg-white px-2 py-1 text-sm"
+                  value={depositResource}
+                  onChange={(e) => setDepositResource(e.target.value)}
+                >
+                  {resourceOptions.map((res) => (
+                    <option key={res.value} value={res.value}>{res.label}</option>
+                  ))}
+                </select>
+                <Input
+                  type="number"
+                  min={1}
+                  placeholder="Amount"
+                  className="flex-1"
+                  value={depositAmount}
+                  onChange={(e) => setDepositAmount(e.target.value)}
+                />
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    const amount = Math.floor(Number(depositAmount));
+                    if (amount > 0) depositMutation.mutate({ resourceType: depositResource, amount });
+                  }}
+                  disabled={!depositAmount || Number(depositAmount) <= 0 || depositMutation.isPending}
+                >
+                  Deposit
+                </Button>
+              </div>
+            </div>
+
+            <div className="rounded border border-slate-200 p-4 space-y-3">
+              <h4 className="font-semibold text-sm text-slate-900">Withdraw Resources</h4>
+              <div className="flex gap-2">
+                <select
+                  className="rounded border border-slate-300 bg-white px-2 py-1 text-sm"
+                  value={withdrawResource}
+                  onChange={(e) => setWithdrawResource(e.target.value)}
+                >
+                  {resourceOptions.map((res) => (
+                    <option key={res.value} value={res.value}>{res.label}</option>
+                  ))}
+                </select>
+                <Input
+                  type="number"
+                  min={1}
+                  placeholder="Amount"
+                  className="flex-1"
+                  value={withdrawAmount}
+                  onChange={(e) => setWithdrawAmount(e.target.value)}
+                />
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => {
+                    const amount = Math.floor(Number(withdrawAmount));
+                    if (amount > 0) withdrawMutation.mutate({ resourceType: withdrawResource, amount });
+                  }}
+                  disabled={!withdrawAmount || Number(withdrawAmount) <= 0 || withdrawMutation.isPending}
+                >
+                  Withdraw
+                </Button>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-white border-slate-200">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-slate-900">
+            <History className="w-5 h-5 text-blue-600" /> Transaction History
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {bank.transactions.length === 0 ? (
+            <div className="text-center text-slate-500 py-4">No transactions yet</div>
+          ) : (
+            <div className="space-y-2 max-h-80 overflow-y-auto">
+              {bank.transactions.map((tx) => (
+                <div key={tx.id} className="flex items-center justify-between rounded border border-slate-100 bg-slate-50 px-3 py-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <span className={`text-xs font-semibold uppercase ${
+                      tx.type === "deposit" ? "text-emerald-600" :
+                      tx.type === "withdraw" ? "text-red-600" :
+                      tx.type === "tax" ? "text-amber-600" :
+                      tx.type === "interest" ? "text-blue-600" : "text-slate-600"
+                    }`}>
+                      {tx.type}
+                    </span>
+                    <span className="text-slate-700">{tx.description || `${tx.type} of ${tx.amount.toLocaleString()} ${tx.resourceType}`}</span>
+                  </div>
+                  <div className="text-xs text-slate-400">
+                    {new Date(tx.createdAt).toLocaleString()}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }

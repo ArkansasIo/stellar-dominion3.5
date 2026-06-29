@@ -2,7 +2,7 @@ import { Router } from "express";
 import { isAuthenticated } from "./basicAuth";
 import { acsService } from "./services/acsService";
 import { db } from "./db";
-import { users, alliances, allianceMembers } from "../shared/schema";
+import { users, alliances, allianceMembers } from "../Source/Shared/schema";
 import { eq, and } from "drizzle-orm";
 
 export function registerOGameACSRoutes(app: Router) {

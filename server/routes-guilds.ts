@@ -3,7 +3,7 @@ import { and, desc, eq, sql } from "drizzle-orm";
 import { isAuthenticated } from "./basicAuth";
 import { db } from "./db";
 import { storage } from "./storage";
-import { guildMembers, guilds, users } from "../shared/schema";
+import { guildMembers, guilds, users } from "../Source/Shared/schema";
 
 type GuildChatMessage = {
   id: string;

@@ -3,9 +3,9 @@
  * ============================================================================
  */
 import { type Express } from "express";
-import { getDefaultSmithyState, MATERIALS, ENCHANTMENTS, CRAFTING_BLUEPRINTS, calculateSmithyLevel, experienceForNextLevel, processTemper, processMasterwork, processSalvage, processEnchant, processLearnBlueprint } from "../shared/config/smithySystem";
-import type { SmithyState } from "../shared/config/smithySystem";
-import type { EquipmentItem } from "../shared/config/equipmentTemperingSystem";
+import { getDefaultSmithyState, MATERIALS, ENCHANTMENTS, CRAFTING_BLUEPRINTS, calculateSmithyLevel, experienceForNextLevel, processTemper, processMasterwork, processSalvage, processEnchant, processLearnBlueprint } from "../Source/Shared/config/smithySystem";
+import type { SmithyState } from "../Source/Shared/config/smithySystem";
+import type { EquipmentItem } from "../Source/Shared/config/equipmentTemperingSystem";
 
 // In-memory state (would be DB-backed in production)
 const smithyStates: Record<string, SmithyState> = {};

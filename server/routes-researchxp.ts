@@ -7,7 +7,7 @@
 import express from 'express';
 import { isAuthenticated } from './basicAuth';
 import ResearchXPService from './services/researchXPService';
-import { RESEARCH_XP_CONFIG, XP_LEVEL_CONFIG } from '../shared/config/researchXPConfig';
+import { RESEARCH_XP_CONFIG, XP_LEVEL_CONFIG } from '../Source/Shared/config/researchXPConfig';
 
 const router = express.Router();
 

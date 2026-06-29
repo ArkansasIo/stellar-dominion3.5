@@ -1,4 +1,4 @@
-import { RESOURCE_CONFIG, Resources, ResourceLimits } from "../../shared/config/xenoberage/resourceConfig";
+import { RESOURCE_CONFIG, Resources, ResourceLimits } from "../../Source/Shared/config/xenoberage/resourceConfig";
 
 /**
  * Calculate ore production for a planet per tick.

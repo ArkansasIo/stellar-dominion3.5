@@ -4,7 +4,7 @@
  * @tag #npc #ai #engine #fleets #diplomacy #economy
  */
 
-import { NPC_RACES, type NPCRace } from '../../shared/config/npcRaces';
+import { NPC_RACES, type NPCRace } from '../../Source/Shared/config/npcRaces';
 import {
   RELATIONSHIP_MATRIX,
   ALLIANCE_BLOCS,
@@ -14,8 +14,8 @@ import {
   type TreatyType,
   type Treaty,
   type DiplomaticEvent,
-} from '../../shared/config/raceAlliances';
-import { PIRATE_FACTIONS, type PirateFaction } from '../../shared/config/pirateFactions';
+} from '../../Source/Shared/config/raceAlliances';
+import { PIRATE_FACTIONS, type PirateFaction } from '../../Source/Shared/config/pirateFactions';
 
 // ============================================================================
 // TYPES & INTERFACES

@@ -16,6 +16,7 @@ import {
   Pickaxe, 
   Factory, 
   FlaskConical, 
+  FlaskRound,
   Rocket, 
   Send, 
   Globe, 
@@ -25,6 +26,7 @@ import {
   Box,
   Gem,
   User,
+  UserCog,
   Landmark,
   Mail,
   Shield,
@@ -485,7 +487,10 @@ const menuSections: MenuSection[] = [
         title: "Leadership",
         description: "Manage identity, power structures, and ranking systems.",
         items: [
+          { href: "/diplomacy", icon: Shield, label: "Diplomacy", description: "Manage relations, treaties, embassies, and diplomatic history." },
           { href: "/commander", icon: User, label: "Commander", description: "Customize commander identity, stats, and personal progression." },
+          { href: "/officers", icon: UserCog, label: "Officers", description: "Recruit and manage officer corps for empire-wide bonuses." },
+          { href: "/lifeforms", icon: FlaskRound, label: "Lifeforms", description: "Select and manage your empire's lifeform species." },
           { href: "/government", icon: Landmark, label: "Government", description: "Review state structure, laws, and governing bonuses." },
           { href: "/factions", icon: Users, label: "Factions", description: "Navigate faction relations and influence networks." },
           { href: "/leaderboard", icon: Trophy, label: "Leaderboard", description: "Compare empire performance against other players." },
@@ -580,6 +585,7 @@ const getCommandTiles = (context: ActivePageContext | null): CommandTile[] => {
       ];
     case "Diplomacy":
       return [
+        { href: "/diplomacy", icon: Shield, label: "Diplomacy Center", description: "Direct diplomacy hub for treaties, relations, and negotiations.", kicker: "Treaties", assetPath: OGAMEX_FEATURED_ASSETS.DEFENSE.path },
         { href: "/alliance", icon: Shield, label: "Alliance Command", description: "Coordinate guilds, members, pacts, and alliance strategy.", kicker: "Allies", assetPath: OGAMEX_FEATURED_ASSETS.DEFENSE.path },
         { href: "/messages", icon: Mail, label: "Message Relay", description: "Review diplomacy traffic, reports, and system mail.", kicker: "Comms", assetPath: OGAMEX_FEATURED_ASSETS.BACKGROUND.path },
         { href: "/leaderboard", icon: Trophy, label: "Rankings", description: "Compare empire power, prestige, and commander standings.", kicker: "Ranks", assetPath: OGAMEX_FEATURED_ASSETS.RESEARCH.path },
@@ -1052,6 +1058,7 @@ export default function GameLayout({ children }: { children: React.ReactNode }) 
               ]
             : activePageContext?.section === "Diplomacy"
               ? [
+                  { label: "Diplomacy Center", href: "/diplomacy", icon: Shield, helper: "Manage treaties, relations, embassies, and pacts." },
                   { label: "Open Messages", href: "/messages", icon: Mail, helper: "Read reports, diplomacy, and system mail." },
                   { label: "Alliance Board", href: "/alliance", icon: Shield, helper: "Manage allies, members, and pacts." },
                   { label: "Ranking Feed", href: "/leaderboard", icon: Trophy, helper: "Check prestige, empire, and combat standings." },

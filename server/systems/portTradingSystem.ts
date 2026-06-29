@@ -1,6 +1,6 @@
-import { RESOURCE_CONFIG } from "../../shared/config/xenoberage/resourceConfig";
+import { RESOURCE_CONFIG } from "../../Source/Shared/config/xenoberage/resourceConfig";
 import { db } from "../db";
-import { playerStates } from "../../shared/schema";
+import { playerStates } from "../../Source/Shared/schema";
 import { eq } from "drizzle-orm";
 
 export const PORT_REGEN_RATE = RESOURCE_CONFIG.portRegenRate;

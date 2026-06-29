@@ -5,8 +5,8 @@
 
 import { db } from "../db";
 import { eq, and, desc } from "drizzle-orm";
-import { playerCurrency, currencyTransactions } from "../../shared/schema";
-import { CURRENCY_CONFIG } from "../../shared/config/currencyConfig";
+import { playerCurrency, currencyTransactions } from "../../Source/Shared/schema";
+import { CURRENCY_CONFIG } from "../../Source/Shared/config/currencyConfig";
 
 type CurrencyType = "silver" | "gold" | "platinum";
 

@@ -11,7 +11,7 @@ import {
   estimateWaterDemand,
   type PopulationClass,
   type ResourcePressureState,
-} from "../../shared/config/lifeSupportSystemsConfig";
+} from "../../Source/Shared/config/lifeSupportSystemsConfig";
 
 export const LIFE_SUPPORT_CONFIG = {
   baseFoodConsumptionPerPop: FOOD_SYSTEM.consumption.basePerPopulationPerHour,

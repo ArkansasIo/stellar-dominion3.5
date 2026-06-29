@@ -10,17 +10,17 @@
   "scripts": {
     "dev:client": "vite dev --port 5001",
     "dev:server": "tsx server/index.ts",
-    "dev": "tsx script/dev.ts",
-    "build": "tsx script/build.ts",
+    "dev": "tsx Scripts/dev.ts",
+    "build": "tsx Scripts/build.ts",
     "start": "node dist/index.cjs",
     "check": "tsc",
-    "smoke:life-support": "tsx script/smoke-life-support.ts",
+    "smoke:life-support": "tsx Scripts/smoke-life-support.ts",
     "db:push": "drizzle-kit push",
     "db:generate": "drizzle-kit generate",
-    "db:seed:ogame": "tsx script/seed-ogame-catalog.ts",
+    "db:seed:ogame": "tsx Scripts/seed-ogame-catalog.ts",
     "admin": "tsx server/adminCli.ts",
-    "admin:manage": "tsx script/manage-admin.ts",
-    "admin:create": "tsx script/create-new-admin.ts"
+    "admin:manage": "tsx Scripts/manage-admin.ts",
+    "admin:create": "tsx Scripts/create-new-admin.ts"
   },
   "dependencies": {
     "@blinkdotnew/sdk": "^2.3.9",

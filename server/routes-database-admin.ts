@@ -2,7 +2,7 @@ import type { Express, Request, Response } from "express";
 import { db, pool } from "./db";
 import { isAuthenticated } from "./basicAuth";
 import { hasAdminPermission } from "./adminPermissions";
-import { adminUsers } from "../shared/schema";
+import { adminUsers } from "../Source/Shared/schema";
 import { eq } from "drizzle-orm";
 
 /**

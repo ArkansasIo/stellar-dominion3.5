@@ -1,6 +1,6 @@
 import { db } from '../db';
 import { sql, eq, and } from 'drizzle-orm';
-import { friends, users } from '../../shared/schema';
+import { friends, users } from '../../Source/Shared/schema';
 
 const MAX_FRIENDS = 50;
 

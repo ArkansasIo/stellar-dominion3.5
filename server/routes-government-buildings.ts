@@ -19,7 +19,7 @@ import {
   getGovBuildingTypes,
   isGovBuildingClass,
   isGovBuildingType,
-} from '../shared/config/governmentBuildingStructuresConfig';
+} from '../Source/Shared/config/governmentBuildingStructuresConfig';
 
 export function registerGovernmentBuildingRoutes(app: Express) {
   /**

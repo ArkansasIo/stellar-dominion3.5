@@ -1,6 +1,6 @@
 import type { Express, Request, Response } from "express";
 import { db } from "./db";
-import { playerRefineries, playerStates } from "../shared/schema";
+import { playerRefineries, playerStates } from "../Source/Shared/schema";
 import { eq, and } from "drizzle-orm";
 import {
   REFINERY_TYPES,
@@ -10,7 +10,7 @@ import {
   calculateRefineryEfficiency,
   calculateRefineryThroughput,
   calculateRecipeYield,
-} from "../shared/config/resourceRefineryConfig";
+} from "../Source/Shared/config/resourceRefineryConfig";
 import { isAuthenticated } from "./basicAuth";
 
 function getUserId(req: Request): string {

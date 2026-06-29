@@ -1,6 +1,6 @@
-import { BANK_CONFIG } from "../../shared/config/xenoberage/bankConfig";
+import { BANK_CONFIG } from "../../Source/Shared/config/xenoberage/bankConfig";
 import { db } from "../db";
-import { playerStates } from "../../shared/schema";
+import { playerStates } from "../../Source/Shared/schema";
 import { eq, and } from "drizzle-orm";
 
 export interface IGBAccount {

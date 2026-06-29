@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { playerCurrency, currencyTransactions } from "../../shared/schema";
+import { playerCurrency, currencyTransactions } from "../../Source/Shared/schema";
 import { eq } from "drizzle-orm";
 
 export interface RewardBundle {

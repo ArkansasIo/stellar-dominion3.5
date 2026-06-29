@@ -1,12 +1,12 @@
 import { db } from "../db";
-import { gateTokens, gateTokenHistory, playerCurrency } from "../../shared/schema";
+import { gateTokens, gateTokenHistory, playerCurrency } from "../../Source/Shared/schema";
 import { eq, and } from "drizzle-orm";
 import { 
   TokenType, 
   getTokenConfig, 
   isValidTokenType,
   tokenAcquisitionRules 
-} from "../../shared/config/gateTokensConfig";
+} from "../../Source/Shared/config/gateTokensConfig";
 
 export class GateTokensService {
   /**

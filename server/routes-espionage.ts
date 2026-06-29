@@ -1,6 +1,6 @@
 import type { Express, Request, Response } from "express";
 import { db } from "./db";
-import { messages, playerStates, users } from "../shared/schema";
+import { messages, playerStates, users } from "../Source/Shared/schema";
 import { eq } from "drizzle-orm";
 
 // Middleware to check authentication

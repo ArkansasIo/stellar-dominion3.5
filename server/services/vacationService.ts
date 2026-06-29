@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { playerStates, missions, users } from "../../shared/schema";
+import { playerStates, missions, users } from "../../Source/Shared/schema";
 import { eq, and, sql, lt, gte } from "drizzle-orm";
 
 const VACATION_MODE_COOLDOWN_HOURS = 48;

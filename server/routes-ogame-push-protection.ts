@@ -1,7 +1,7 @@
 import { isAuthenticated } from "./basicAuth";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
-import { playerStates } from "../shared/schema";
+import { playerStates } from "../Source/Shared/schema";
 import { PushProtectionService } from "./services/pushProtectionService";
 import type { Express } from "express";
 

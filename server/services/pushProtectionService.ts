@@ -1,6 +1,6 @@
 import { db } from "../db";
 import { eq } from "drizzle-orm";
-import { playerStates } from "../../shared/schema";
+import { playerStates } from "../../Source/Shared/schema";
 
 export class PushProtectionService {
   static POINTS_RATIO_THRESHOLD = 3;

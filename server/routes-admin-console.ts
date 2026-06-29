@@ -5,7 +5,7 @@ import { storage } from "./storage";
 import {
   users, playerStates, guilds, guildMembers, alliances, allianceMembers,
   marketOrders, battleLogs, missions, moons, starbases
-} from "../shared/schema";
+} from "../Source/Shared/schema";
 
 function requireAdmin(req: Request, res: Response): string | null {
   const userId = req.session?.userId;

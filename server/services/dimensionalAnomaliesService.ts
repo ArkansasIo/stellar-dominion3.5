@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { dimensionalAnomalies, playerCurrency } from "../../shared/schema";
+import { dimensionalAnomalies, playerCurrency } from "../../Source/Shared/schema";
 import { eq, and } from "drizzle-orm";
 import { gateTokensService } from "./gateTokensService";
 import { rewardDistributionService } from "./rewardDistributionService";
@@ -9,7 +9,7 @@ import {
   getAnomaliesByRegion,
   type DimensionalAnomaly,
   type AnomalyRarity,
-} from "../../shared/config/dimensionalAnomaliesConfig";
+} from "../../Source/Shared/config/dimensionalAnomaliesConfig";
 
 export type EncounterType = "combat" | "hazard" | "discovery" | "treasure" | "lore" | "boss";
 

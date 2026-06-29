@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { playerStates, moonBases, moons, missions, users } from "../../shared/schema";
+import { playerStates, moonBases, moons, missions, users } from "../../Source/Shared/schema";
 import { eq, and, sql } from "drizzle-orm";
 
 const PHALANX_RANGE_PER_LEVEL = 1;

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db } from "./db";
-import { battles, playerStates, users } from "../shared/schema";
+import { battles, playerStates, users } from "../Source/Shared/schema";
 import { desc, eq, inArray, or } from "drizzle-orm";
 import { simulateBattle, calculateVictoryResources } from "./combatEngine";
 import { isAuthenticated as authenticateRequest } from "./basicAuth";

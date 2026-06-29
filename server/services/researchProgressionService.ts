@@ -5,7 +5,7 @@
 
 import { db } from "../db";
 import { eq, and } from "drizzle-orm";
-import { playerStates, queueItems } from "../../shared/schema";
+import { playerStates, queueItems } from "../../Source/Shared/schema";
 import {
   ALL_TECHNOLOGIES,
   RESEARCH_CONFIGS,
@@ -16,12 +16,12 @@ import {
   isResearchUnlocked,
   type ResearchBranch,
   type Research,
-} from "../../shared/config/researchProgression";
+} from "../../Source/Shared/config/researchProgression";
 import {
   TECH_PROGRESSION,
   type TechBranch,
   type TechnologyNode,
-} from "../../shared/config/technologyTreeConfig";
+} from "../../Source/Shared/config/technologyTreeConfig";
 
 type ActiveResearch = {
   techId: string;

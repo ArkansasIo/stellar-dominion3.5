@@ -1,7 +1,7 @@
 import type { Express, Request, Response } from "express";
 import { db } from "./db";
 import { storage } from "./storage";
-import { playerStates, users, alliances } from "../shared/schema";
+import { playerStates, users, alliances } from "../Source/Shared/schema";
 import { like, eq } from "drizzle-orm";
 
 type SystemObjectType = "planet" | "asteroid" | "nebula" | "blackhole" | "station" | "empty" | "comet";

@@ -8,7 +8,7 @@ import {
   type OrbitalStationClass,
   type OrbitalStationStats,
   type OrbitalStationSubStats,
-} from "../../shared/config/orbitalStationsConfig";
+} from "../../Source/Shared/config/orbitalStationsConfig";
 
 export const STATION_CONFIG = {
   maxStationsPerPlayer: 20,

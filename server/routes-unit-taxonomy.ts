@@ -15,7 +15,7 @@ import {
   getTierClass,
   getTaxonomyMeta,
   type UnitJobDomain,
-} from '../shared/config/unitJobTaxonomyConfig';
+} from '../Source/Shared/config/unitJobTaxonomyConfig';
 
 const VALID_DOMAINS: UnitJobDomain[] = ['civilization', 'military', 'government'];
 const ERROR_INVALID_DOMAIN = 'Invalid domain. Must be civilization, military, or government';

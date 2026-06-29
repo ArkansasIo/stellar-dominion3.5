@@ -1,7 +1,7 @@
 import { isAuthenticated } from "./basicAuth";
 import { db } from "./db";
 import { eq, sql } from "drizzle-orm";
-import { playerStates } from "../shared/schema";
+import { playerStates } from "../Source/Shared/schema";
 import { MoonDestructionService } from "./services/moonDestructionService";
 import type { Express } from "express";
 

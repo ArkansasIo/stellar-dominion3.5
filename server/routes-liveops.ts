@@ -3,12 +3,12 @@ import { and, eq } from "drizzle-orm";
 import { isAuthenticated } from "./basicAuth";
 import { db } from "./db";
 import { storage } from "./storage";
-import { items } from "../shared/schema";
+import { items } from "../Source/Shared/schema";
 import {
   COMMANDER_TALENT_TREE,
   getCommanderTierForLevel,
   getCommanderTitleByTier,
-} from "../shared/config/commanderTalentTreeConfig";
+} from "../Source/Shared/config/commanderTalentTreeConfig";
 import {
   BATTLE_PASS_CONFIG,
   BATTLE_PASS_MISSIONS,
@@ -28,7 +28,7 @@ import {
   type BattlePassReward,
   type SeasonPassReward,
   type StorefrontItem,
-} from "../shared/config/liveOpsContentConfig";
+} from "../Source/Shared/config/liveOpsContentConfig";
 
 function getUserId(req: Request): string {
   return (req.session as any)?.userId || "";

@@ -1,7 +1,7 @@
 import { db } from "../db";
 import { eq, sql } from "drizzle-orm";
-import { playerStates } from "../../shared/schema";
-import { OGAME_CATALOG_ENTRY_MAP } from "../../shared/config/ogameCatalogConfig";
+import { playerStates } from "../../Source/Shared/schema";
+import { OGAME_CATALOG_ENTRY_MAP } from "../../Source/Shared/config/ogameCatalogConfig";
 
 const MISSILE_SILO_ID = "missileSilo";
 const ABM_ID = "antiBallisticMissile";

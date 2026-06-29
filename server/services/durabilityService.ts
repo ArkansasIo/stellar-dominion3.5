@@ -12,8 +12,8 @@ import {
   repairHistory,
   durabilityDegradationLog,
   playerStates,
-} from "../../shared/schema";
-import { DURABILITY_CONFIG } from "../../shared/config/durabilityConfig";
+} from "../../Source/Shared/schema";
+import { DURABILITY_CONFIG } from "../../Source/Shared/config/durabilityConfig";
 
 type ItemType = "equipment" | "fleet" | "building";
 

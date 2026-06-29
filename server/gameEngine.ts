@@ -6,7 +6,7 @@ import TurnSystemService, { turnSystemService } from './services/turnSystemServi
 import { researchMilestoneEventService } from './services/researchMilestoneEventService';
 import { CelestialService } from './services/celestialService';
 import { db } from './db';
-import { playerStates } from '../shared/schema';
+import { playerStates } from '../Source/Shared/schema';
 import { eq } from 'drizzle-orm';
 
 type ResourceCost = { metal: number; crystal: number; deuterium: number };

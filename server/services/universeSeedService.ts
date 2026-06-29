@@ -1,5 +1,5 @@
 import { storage } from "../storage";
-import { UNIVERSE_CONFIG } from "../../shared/config/universeConfig";
+import { UNIVERSE_CONFIG } from "../../Source/Shared/config/universeConfig";
 
 type StarType = keyof typeof UNIVERSE_CONFIG.starTypes;
 type PlanetType = keyof typeof UNIVERSE_CONFIG.planetTypes;

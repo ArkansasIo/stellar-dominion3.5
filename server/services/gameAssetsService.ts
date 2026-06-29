@@ -15,7 +15,7 @@ import {
   AssetUsageStatistics,
   ASSET_CATEGORIES,
   ASSET_VERSIONS,
-} from '../../shared/config/gameAssetsConfig';
+} from '../../Source/Shared/config/gameAssetsConfig';
 
 export class GameAssetsService {
   private static tablesReady = false;

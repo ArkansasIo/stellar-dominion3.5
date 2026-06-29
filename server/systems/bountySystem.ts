@@ -1,6 +1,6 @@
-import { BOUNTY_CONFIG, Bounty as BountyType } from "../../shared/config/xenoberage/bountyConfig";
+import { BOUNTY_CONFIG, Bounty as BountyType } from "../../Source/Shared/config/xenoberage/bountyConfig";
 import { db, runTransaction } from "../db";
-import { bounties, playerStates } from "../../shared/schema";
+import { bounties, playerStates } from "../../Source/Shared/schema";
 import { eq, and } from "drizzle-orm";
 
 /**

@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { playerStates } from "../shared/schema";
+import { playerStates } from "../Source/Shared/schema";
 import { eq } from "drizzle-orm";
 
 // Combat configuration

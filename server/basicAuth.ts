@@ -5,7 +5,7 @@ import { storage } from "./storage";
 import { logger } from "./logger";
 import crypto from "crypto";
 import { db } from "./db";
-import { adminUsers, users, type User } from "../shared/schema";
+import { adminUsers, users, type User } from "../Source/Shared/schema";
 import { eq, ilike, or } from "drizzle-orm";
 import { getRolePermissions, normalizeAdminRole } from "./adminPermissions";
 import { requireAdminIp, logAdminActivity } from "./middleware/adminIpCheck";

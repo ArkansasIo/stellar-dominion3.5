@@ -8,7 +8,7 @@ import {
   calculateLabBonuses,
   calculateLabUpkeep,
   CUSTOM_LAB_CONFIG,
-} from "../../shared/config/customLabConfig";
+} from "../../Source/Shared/config/customLabConfig";
 import { db } from "../db";
 import { sql } from "drizzle-orm";
 

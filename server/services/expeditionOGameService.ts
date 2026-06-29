@@ -1,6 +1,6 @@
 import { db } from '../db';
 import { eq, sql } from 'drizzle-orm';
-import { systemSettings, playerStates, missions } from '../../shared/schema';
+import { systemSettings, playerStates, missions } from '../../Source/Shared/schema';
 
 export const EXP_NOTHING = 0;
 export const EXP_ALIENS = 1;

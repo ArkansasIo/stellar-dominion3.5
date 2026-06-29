@@ -7,7 +7,7 @@
 
 import { db } from '../db';
 import { sql, eq, and } from 'drizzle-orm';
-import { playerStates, queueItems, users } from '../../shared/schema';
+import { playerStates, queueItems, users } from '../../Source/Shared/schema';
 
 export type BotBlockCategory = 'Start' | 'End' | 'Label' | 'Branch' | 'Cond' | 'Action';
 

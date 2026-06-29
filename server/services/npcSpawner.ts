@@ -5,10 +5,10 @@
  * @tag #npc #spawner #fleets #pirates #mercenaries #service
  */
 
-import { NPC_RACES, type NPCRace } from '../../shared/config/npcRaces';
-import { PIRATE_FACTIONS, type PirateFaction } from '../../shared/config/pirateFactions';
-import { MERCENARY_GUILDS, CONTRACT_TYPES, type MercenaryGuild, type ContractType } from '../../shared/config/mercenaryContracts';
-import { UNIVERSE_CONFIG } from '../../shared/config/universeConfig';
+import { NPC_RACES, type NPCRace } from '../../Source/Shared/config/npcRaces';
+import { PIRATE_FACTIONS, type PirateFaction } from '../../Source/Shared/config/pirateFactions';
+import { MERCENARY_GUILDS, CONTRACT_TYPES, type MercenaryGuild, type ContractType } from '../../Source/Shared/config/mercenaryContracts';
+import { UNIVERSE_CONFIG } from '../../Source/Shared/config/universeConfig';
 
 // ============================================================================
 // TYPES & INTERFACES

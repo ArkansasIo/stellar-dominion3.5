@@ -7,7 +7,7 @@
 import express from 'express';
 import { isAuthenticated } from './basicAuth';
 import TurnSystemService from './services/turnSystemService';
-import { TURN_CONFIG, RESEARCH_TURN_MECHANICS } from '../shared/config/turnSystemConfig';
+import { TURN_CONFIG, RESEARCH_TURN_MECHANICS } from '../Source/Shared/config/turnSystemConfig';
 
 const router = express.Router();
 

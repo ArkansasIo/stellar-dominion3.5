@@ -5,19 +5,19 @@ import {
   itemLevels,
   empireProfiles,
   trialAttempts,
-} from "../shared/schema";
+} from "../Source/Shared/schema";
 import { eq, and } from "drizzle-orm";
 import { db } from "./db";
 import { isAuthenticated } from "./basicAuth";
 import {
   TRIAL_TIERS,
-} from "../shared/config/trialsConfig";
+} from "../Source/Shared/config/trialsConfig";
 import {
   calculateTotalPower,
   getPowerTierName,
   getPowerTierColor,
   POWER_SOURCES,
-} from "../shared/config/powerLevelConfig";
+} from "../Source/Shared/config/powerLevelConfig";
 import {
   ITEM_LEVEL_TIERS,
   calculateItemStats,
@@ -27,7 +27,7 @@ import {
   addItemExperience,
   getItemLevelTierName,
   getItemLevelTierColor,
-} from "../shared/config/itemLevelConfig";
+} from "../Source/Shared/config/itemLevelConfig";
 import { trialsService } from "./services/trialsService";
 
 function getUserId(req: Request): string {

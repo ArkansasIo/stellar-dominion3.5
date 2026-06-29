@@ -11,7 +11,7 @@ import {
   calculateRepairCost,
   type BlueprintInstance,
   type PrinterJob,
-} from "../shared/config/blueprintChargeSystem";
+} from "../Source/Shared/config/blueprintChargeSystem";
 import { isAuthenticated } from "./basicAuth";
 
 function getUserId(req: Request): string {

@@ -13,7 +13,7 @@ import {
   calculateProgressPerTurn,
   calculateOfflineTurns,
   canCompleteThisTurn,
-} from '../../shared/config/turnSystemConfig';
+} from '../../Source/Shared/config/turnSystemConfig';
 import { pool } from '../db';
 import { gameEngine } from '../gameEngine';
 

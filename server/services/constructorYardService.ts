@@ -10,7 +10,7 @@ import {
   calculateYardUpgradeTimeSec,
   calculateYardScaledStats,
   calculateYardScaledSubStats,
-} from '../../shared/config/constructorYardSystemsConfig';
+} from '../../Source/Shared/config/constructorYardSystemsConfig';
 
 const CONSTRUCTOR_YARD_STATE_PREFIX = 'constructor_yard_state';
 

@@ -17,7 +17,7 @@ import {
   type SporeDriveAttributes,
   type SporeDriveTypeConfig,
   type SporeDriveJump,
-} from "../../shared/config/sporeDriveSystem";
+} from "../../Source/Shared/config/sporeDriveSystem";
 
 export const SPORE_CONFIG = {
   baseSporeCostPerLightYear: 1.8,

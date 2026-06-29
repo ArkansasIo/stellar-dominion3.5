@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { moonBases, moons, playerStates } from "../../shared/schema";
+import { moonBases, moons, playerStates } from "../../Source/Shared/schema";
 import { eq, and, sql } from "drizzle-orm";
 
 const JUMP_GATE_DEUTERIUM_COST_PER_UNIT: Record<string, number> = {

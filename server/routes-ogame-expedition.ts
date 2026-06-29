@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { isAuthenticated } from "./basicAuth";
 import { db } from "./db";
-import { playerStates, users, expeditions } from "../shared/schema";
+import { playerStates, users, expeditions } from "../Source/Shared/schema";
 import { eq, sql } from "drizzle-orm";
 
 const RESOURCE_CLASS_MULTIPLIERS = {

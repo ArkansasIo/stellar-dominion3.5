@@ -2,7 +2,7 @@ import type { Express, Request, Response } from 'express';
 import { eq } from 'drizzle-orm';
 import { isAuthenticated } from './basicAuth';
 import { db } from './db';
-import { playerStates } from '../shared/schema';
+import { playerStates } from '../Source/Shared/schema';
 import { storage } from './storage';
 import {
   UNIT_SYSTEM_TEMPLATES,
@@ -18,7 +18,7 @@ import {
   type UnitDomain,
   type PlayerUnitSystemState,
   type CombatSideInput,
-} from '../shared/config/unitSystemsConfig';
+} from '../Source/Shared/config/unitSystemsConfig';
 
 const UNIT_SYSTEM_SETTINGS_PREFIX = 'player_unit_system';
 

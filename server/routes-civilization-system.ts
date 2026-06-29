@@ -7,8 +7,8 @@
 import type { Express } from 'express';
 import { CivilizationSystemService } from './services/civilizationSystemService';
 import { isAuthenticated } from './basicAuth';
-import { getAllSubsystems } from '../shared/config/civilizationSubsystemsConfig';
-import { ALL_CIVILIZATION_JOBS } from '../shared/config/civilizationJobsConfig';
+import { getAllSubsystems } from '../Source/Shared/config/civilizationSubsystemsConfig';
+import { ALL_CIVILIZATION_JOBS } from '../Source/Shared/config/civilizationJobsConfig';
 
 export function registerCivilizationSystemRoutes(app: Express): void {
   /**

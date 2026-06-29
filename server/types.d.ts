@@ -1,5 +1,5 @@
 import "express-session";
-import type { User } from "../shared/schema";
+import type { User } from "../Source/Shared/schema";
 
 declare module "express-session" {
   interface SessionData {

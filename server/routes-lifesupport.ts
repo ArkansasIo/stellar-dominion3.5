@@ -23,7 +23,7 @@ import {
   estimateFoodDemand,
   estimateWaterDemand,
   type PopulationClass,
-} from "../shared/config";
+} from "../Source/Shared/config";
 
 function toNumber(value: unknown, fallback = 0): number {
   const numeric = Number(value);

@@ -1,7 +1,7 @@
-import { COMBAT_CONFIG } from "../../shared/config/xenoberage/combatConfig";
-import { FEATURE_FLAGS_CONFIG } from "../../shared/config/xenoberage/featureFlagsConfig";
+import { COMBAT_CONFIG } from "../../Source/Shared/config/xenoberage/combatConfig";
+import { FEATURE_FLAGS_CONFIG } from "../../Source/Shared/config/xenoberage/featureFlagsConfig";
 import { db } from "../db";
-import { playerStates } from "../../shared/schema";
+import { playerStates } from "../../Source/Shared/schema";
 import { eq } from "drizzle-orm";
 
 export interface ScanResult {

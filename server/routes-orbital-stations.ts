@@ -9,8 +9,8 @@ import {
   calculateStationUpgradeCost, calculateStationBuildTime,
   calculateStationDefenseScore, calculateStationOffenseScore,
   calculateStationProduction, calculateGlobalOrbitalBonuses, processStationTick,
-} from "../shared/config/orbitalStationsSystem";
-import type { OrbitalStationsState, OrbitalStation, OrbitalPlatformType, SatelliteType, DefenseSystemType, OffenseSystemType, ShieldSystemType } from "../shared/config/orbitalStationsSystem";
+} from "../Source/Shared/config/orbitalStationsSystem";
+import type { OrbitalStationsState, OrbitalStation, OrbitalPlatformType, SatelliteType, DefenseSystemType, OffenseSystemType, ShieldSystemType } from "../Source/Shared/config/orbitalStationsSystem";
 
 const stationStates: Record<string, OrbitalStationsState> = {};
 

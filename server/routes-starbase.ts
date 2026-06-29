@@ -1,6 +1,6 @@
 import { type Express } from "express";
 import { db } from "./db";
-import { starbases } from "../shared/schema";
+import { starbases } from "../Source/Shared/schema";
 import { eq, and, desc } from "drizzle-orm";
 import {
   STARBASE_TYPES,
@@ -10,7 +10,7 @@ import {
   calculateStarbaseStats,
   getModulesForStarbase,
   type StarbaseType,
-} from "../shared/config/starbaseConfig";
+} from "../Source/Shared/config/starbaseConfig";
 
 export function registerStarbaseRoutes(app: Express) {
   // Get all starbases for the current player

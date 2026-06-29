@@ -16,7 +16,7 @@ import {
   type GachaCommanderConfig,
   type PityState,
   type PullResult,
-} from "../../shared/config/commander/gacha/commanderGachaCommandNexus";
+} from "../../Source/Shared/config/commander/gacha/commanderGachaCommandNexus";
 
 export const GACHA_CONFIG = {
   defaultPity: { totalPullsOnBanner: 0, currentPity4Star: 0, currentPity5Star: 0, hasGuaranteed4Star: false, hasGuaranteed5Star: false },

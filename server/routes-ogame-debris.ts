@@ -2,7 +2,7 @@ import { Router } from "express";
 import { isAuthenticated } from "./basicAuth";
 import { debrisService } from "./services/debrisService";
 import { db } from "./db";
-import { battles, playerStates } from "../shared/schema";
+import { battles, playerStates } from "../Source/Shared/schema";
 import { eq, sql } from "drizzle-orm";
 
 export function registerOGameDebrisRoutes(app: Router) {

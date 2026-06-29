@@ -4,7 +4,7 @@ import {
   abyssalGateTokens,
   raidChestRewards,
   abyssalGateRewards,
-} from "../../shared/schema";
+} from "../../Source/Shared/schema";
 import { eq, and } from "drizzle-orm";
 import { gateTokensService } from "./gateTokensService";
 import { rewardDistributionService } from "./rewardDistributionService";
@@ -14,14 +14,14 @@ import {
   calculateTokensEarned,
   rollChestRewards,
   rollRaidRewards,
-} from "../../shared/config/dimensionalContractConfig";
+} from "../../Source/Shared/config/dimensionalContractConfig";
 import {
   ABYSSAL_GATE_TIERS,
   getAbyssalGateTier,
   calculateAbyssalTokensEarned,
   rollAbyssalChestRewards,
   rollAbyssalGateRewards,
-} from "../../shared/config/abyssalGateConfig";
+} from "../../Source/Shared/config/abyssalGateConfig";
 
 export interface RaidResult {
   success: boolean;

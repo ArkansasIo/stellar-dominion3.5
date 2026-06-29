@@ -1,1 +1,0 @@
-{!! $subtab_content !!}

@@ -9,7 +9,7 @@ import {
   type SeasonTechNode,
   calculateSeasonXPFromActivity,
   calculateTokenReward,
-} from "../../shared/config/seasonConfig";
+} from "../../Source/Shared/config/seasonConfig";
 
 const seasonStates = new Map<string, SeasonPassState>();
 

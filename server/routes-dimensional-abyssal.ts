@@ -4,22 +4,22 @@ import {
   playerPowerLevels,
   itemLevels,
   empireProfiles,
-} from "../shared/schema";
+} from "../Source/Shared/schema";
 import { eq, and } from "drizzle-orm";
 import { db } from "./db";
 import { isAuthenticated } from "./basicAuth";
 import {
   DIMENSIONAL_CONTRACT_TIERS,
-} from "../shared/config/dimensionalContractConfig";
+} from "../Source/Shared/config/dimensionalContractConfig";
 import {
   ABYSSAL_GATE_TIERS,
-} from "../shared/config/abyssalGateConfig";
+} from "../Source/Shared/config/abyssalGateConfig";
 import {
   calculateTotalPower,
   getPowerTierName,
   getPowerTierColor,
   POWER_SOURCES,
-} from "../shared/config/powerLevelConfig";
+} from "../Source/Shared/config/powerLevelConfig";
 import {
   ITEM_LEVEL_TIERS,
   calculateItemStats,
@@ -29,7 +29,7 @@ import {
   addItemExperience,
   getItemLevelTierName,
   getItemLevelTierColor,
-} from "../shared/config/itemLevelConfig";
+} from "../Source/Shared/config/itemLevelConfig";
 import { dimensionalAbyssalService } from "./services/dimensionalAbyssalService";
 
 function getUserId(req: Request): string {

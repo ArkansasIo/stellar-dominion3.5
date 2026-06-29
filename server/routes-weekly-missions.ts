@@ -9,7 +9,7 @@ import {
   calculateWeeklyBonus,
   type WeeklyMissionState,
   type WeeklyMissionAssignment,
-} from "../shared/config/weeklyMissionsConfig";
+} from "../Source/Shared/config/weeklyMissionsConfig";
 
 const isAuthenticated = (req: any, res: any, next: any) => {
   if (!req.session?.userId) return res.status(401).json({ message: "Not authenticated" });

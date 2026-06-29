@@ -1,9 +1,10 @@
 import type { Express, Request, Response } from "express";
-import { eq, inArray } from "drizzle-orm";
+import { eq, inArray, desc } from "drizzle-orm";
 import { isAuthenticated } from "./basicAuth";
 import { storage } from "./storage";
 import { db } from "./db";
-import { users } from "../shared/schema";
+import { users, allianceBankTransactions } from "../Source/Shared/schema";
+import { ALLIANCE_SYSTEM_CONFIG } from "../Source/Shared/config/allianceSystemConfig";
 
 type DiplomacyState = "war" | "hostile" | "neutral" | "friendly" | "allied";
 
@@ -688,6 +689,222 @@ export function registerAllianceRoutes(app: Express) {
     } catch (error) {
       console.error("Failed to resolve alliance operation:", error);
       res.status(500).json({ message: "Failed to resolve alliance operation" });
+    }
+  });
+
+  // ---- Alliance Bank ----
+
+  const ALLIANCE_BANK_MAX_RATE = 0.25;
+
+  function getResourceBalance(resources: unknown, resourceType: string): number {
+    const r = (resources as any) || {};
+    return Number(r[resourceType] ?? 0);
+  }
+
+  function setResourceBalance(resources: unknown, resourceType: string, amount: number): any {
+    const r = { ...((resources as any) || {}), metal: 0, crystal: 0, deuterium: 0 };
+    r[resourceType] = Math.max(0, Math.floor(amount));
+    return r;
+  }
+
+  app.get("/api/alliances/:id/bank", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const allianceId = req.params.id;
+      const { membership } = await requireAllianceMembership(req, allianceId);
+
+      if (!membership) {
+        return res.status(403).json({ message: "Alliance membership required" });
+      }
+
+      const alliance = await storage.getAllianceById(allianceId);
+      if (!alliance) {
+        return res.status(404).json({ message: "Alliance not found" });
+      }
+
+      const transactions = await db
+        .select()
+        .from(allianceBankTransactions)
+        .where(eq(allianceBankTransactions.allianceId, allianceId))
+        .orderBy(desc(allianceBankTransactions.createdAt))
+        .limit(100);
+
+      const memberCount = (await storage.getAllianceMembers(allianceId)).length;
+
+      res.json({
+        resources: alliance.resources,
+        treasuryCap: ALLIANCE_SYSTEM_CONFIG.tax.treasuryCap,
+        taxRate: ALLIANCE_SYSTEM_CONFIG.tax.rate,
+        maxTaxRate: ALLIANCE_SYSTEM_CONFIG.tax.maxRate,
+        memberCount,
+        transactions,
+      });
+    } catch (error) {
+      console.error("Failed to load alliance bank:", error);
+      res.status(500).json({ message: "Failed to load alliance bank" });
+    }
+  });
+
+  app.post("/api/alliances/:id/bank/deposit", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const allianceId = req.params.id;
+      const { userId, membership } = await requireAllianceMembership(req, allianceId);
+
+      if (!membership) {
+        return res.status(403).json({ message: "Alliance membership required" });
+      }
+
+      const resourceType = String(req.body?.resourceType || "").trim();
+      const amount = Math.floor(Number(req.body?.amount) || 0);
+
+      if (!["metal", "crystal", "deuterium", "antimatter", "energy", "credits"].includes(resourceType)) {
+        return res.status(400).json({ message: "Invalid resource type" });
+      }
+
+      if (amount <= 0) {
+        return res.status(400).json({ message: "Amount must be positive" });
+      }
+
+      const alliance = await storage.getAllianceById(allianceId);
+      if (!alliance) {
+        return res.status(404).json({ message: "Alliance not found" });
+      }
+
+      const currentResources = (alliance.resources as any) || {};
+      const currentResourceAmount = Number(currentResources[resourceType] ?? 0);
+      const treasuryCap = ALLIANCE_SYSTEM_CONFIG.tax.treasuryCap;
+
+      if (currentResourceAmount + amount > treasuryCap) {
+        return res.status(409).json({
+          message: `Bank has reached its treasury cap for ${resourceType}`,
+          maxDeposit: Math.max(0, treasuryCap - currentResourceAmount),
+        });
+      }
+
+      const updatedResources = { ...currentResources };
+      updatedResources[resourceType] = (updatedResources[resourceType] || 0) + amount;
+
+      await storage.updateAlliance(allianceId, { resources: updatedResources });
+
+      await db.insert(allianceBankTransactions).values({
+        allianceId,
+        userId,
+        type: "deposit",
+        resourceType,
+        amount,
+        balanceBefore: currentResourceAmount,
+        balanceAfter: currentResourceAmount + amount,
+        description: `Deposit of ${amount.toLocaleString()} ${resourceType}`,
+      });
+
+      res.json({
+        success: true,
+        resources: updatedResources,
+        deposited: { resourceType, amount },
+      });
+    } catch (error) {
+      console.error("Failed to deposit to alliance bank:", error);
+      res.status(500).json({ message: "Failed to deposit to alliance bank" });
+    }
+  });
+
+  app.post("/api/alliances/:id/bank/withdraw", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const allianceId = req.params.id;
+      const { userId, membership } = await requireAllianceMembership(req, allianceId);
+
+      if (!membership) {
+        return res.status(403).json({ message: "Alliance membership required" });
+      }
+
+      const rank = (membership.member as any)?.rank || "recruit";
+      const allowedRanks = ["leader", "co-leader", "officer"];
+      if (!allowedRanks.includes(rank)) {
+        return res.status(403).json({ message: "Only officers and above can withdraw from the bank" });
+      }
+
+      const resourceType = String(req.body?.resourceType || "").trim();
+      const amount = Math.floor(Number(req.body?.amount) || 0);
+
+      if (!["metal", "crystal", "deuterium", "antimatter", "energy", "credits"].includes(resourceType)) {
+        return res.status(400).json({ message: "Invalid resource type" });
+      }
+
+      if (amount <= 0) {
+        return res.status(400).json({ message: "Amount must be positive" });
+      }
+
+      const alliance = await storage.getAllianceById(allianceId);
+      if (!alliance) {
+        return res.status(404).json({ message: "Alliance not found" });
+      }
+
+      const currentResources = (alliance.resources as any) || {};
+      const currentResourceAmount = Number(currentResources[resourceType] ?? 0);
+
+      if (currentResourceAmount < amount) {
+        return res.status(409).json({
+          message: `Insufficient ${resourceType} in bank`,
+          available: currentResourceAmount,
+        });
+      }
+
+      const updatedResources = { ...currentResources };
+      updatedResources[resourceType] = (updatedResources[resourceType] || 0) - amount;
+
+      await storage.updateAlliance(allianceId, { resources: updatedResources });
+
+      await db.insert(allianceBankTransactions).values({
+        allianceId,
+        userId,
+        type: "withdraw",
+        resourceType,
+        amount,
+        balanceBefore: currentResourceAmount,
+        balanceAfter: currentResourceAmount - amount,
+        description: `Withdrawal of ${amount.toLocaleString()} ${resourceType}`,
+      });
+
+      res.json({
+        success: true,
+        resources: updatedResources,
+        withdrawn: { resourceType, amount },
+      });
+    } catch (error) {
+      console.error("Failed to withdraw from alliance bank:", error);
+      res.status(500).json({ message: "Failed to withdraw from alliance bank" });
+    }
+  });
+
+  app.put("/api/alliances/:id/bank/tax-rate", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const allianceId = req.params.id;
+      const { userId, membership } = await requireAllianceMembership(req, allianceId);
+
+      if (!membership) {
+        return res.status(403).json({ message: "Alliance membership required" });
+      }
+
+      const rank = (membership.member as any)?.rank || "recruit";
+      if (!["leader", "co-leader"].includes(rank)) {
+        return res.status(403).json({ message: "Only leader or co-leader can change tax rate" });
+      }
+
+      const rate = Number(req.body?.rate) ?? 0;
+      if (rate < 0 || rate > ALLIANCE_BANK_MAX_RATE) {
+        return res.status(400).json({ message: `Tax rate must be between 0 and ${ALLIANCE_BANK_MAX_RATE}` });
+      }
+
+      await storage.setSetting(
+        `alliance_tax_rate:${allianceId}`,
+        { rate, updatedAt: new Date().toISOString(), updatedBy: userId },
+        `Tax rate for alliance ${allianceId}`,
+        "alliance"
+      );
+
+      res.json({ success: true, taxRate: rate });
+    } catch (error) {
+      console.error("Failed to update tax rate:", error);
+      res.status(500).json({ message: "Failed to update tax rate" });
     }
   });
 }

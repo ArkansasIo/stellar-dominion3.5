@@ -1,4 +1,4 @@
-import { UNIVERSE_CONFIG } from "../../shared/config/xenoberage/universeConfig";
+import { UNIVERSE_CONFIG } from "../../Source/Shared/config/xenoberage/universeConfig";
 
 export interface PlayerScore {
   userId: string;

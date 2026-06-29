@@ -1,4 +1,4 @@
-import { COLONIZATION_CONFIG } from "../../shared/config/xenoberage/colonizationConfig";
+import { COLONIZATION_CONFIG } from "../../Source/Shared/config/xenoberage/colonizationConfig";
 
 export interface ApocalypseEvent {
   type: "space_plague" | "plasma_storm" | "doomsday" | "none";
