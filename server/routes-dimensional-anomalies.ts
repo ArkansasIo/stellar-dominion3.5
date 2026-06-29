@@ -1,6 +1,6 @@
 import type { Express, Request, Response } from "express";
 import { db } from "./db";
-import { dimensionalAnomalies } from "../shared/schema";
+import { dimensionalAnomalies } from "../Source/Shared/schema";
 import { eq } from "drizzle-orm";
 import { isAuthenticated } from "./basicAuth";
 import {
@@ -8,7 +8,7 @@ import {
   ANOMALY_REGIONS,
   getAnomalyById,
   getAnomalyStats,
-} from "../shared/config/dimensionalAnomaliesConfig";
+} from "../Source/Shared/config/dimensionalAnomaliesConfig";
 import { dimensionalAnomaliesService } from "./services/dimensionalAnomaliesService";
 import { progressionPipelineService } from "./services/progressionPipelineService";
 import { rewardDistributionService } from "./services/rewardDistributionService";

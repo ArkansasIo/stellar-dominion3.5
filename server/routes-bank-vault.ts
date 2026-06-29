@@ -10,8 +10,8 @@ import {
   addToVault, removeFromVault, depositCurrency, withdrawCurrency,
   exchangeCurrency, purchaseInsurance, upgradeVault,
   getVaultItemsByTab, calculateTotalVaultValue,
-} from "../shared/config/commanderBankVault";
-import type { CommanderBankVaultState, CurrencyType, VaultTab, VaultItem } from "../shared/config/commanderBankVault";
+} from "../Source/Shared/config/commanderBankVault";
+import type { CommanderBankVaultState, CurrencyType, VaultTab, VaultItem } from "../Source/Shared/config/commanderBankVault";
 
 const bankVaultStates: Record<string, CommanderBankVaultState> = {};
 

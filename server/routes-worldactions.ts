@@ -2,7 +2,7 @@ import { Router } from "express";
 import { isAuthenticated } from "./basicAuth";
 import { db } from "./db";
 import { storage } from "./storage";
-import { playerStates } from "../shared/schema";
+import { playerStates } from "../Source/Shared/schema";
 import { eq } from "drizzle-orm";
 
 const router = Router();

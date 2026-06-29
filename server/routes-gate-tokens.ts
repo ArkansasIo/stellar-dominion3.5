@@ -1,6 +1,6 @@
 import { Router, type Request, type Response } from "express";
 import { gateTokensService } from "./services/gateTokensService";
-import { TokenType, isValidTokenType } from "../shared/config/gateTokensConfig";
+import { TokenType, isValidTokenType } from "../Source/Shared/config/gateTokensConfig";
 import { isAuthenticated as requireAuth } from "./basicAuth";
 
 const router = Router();

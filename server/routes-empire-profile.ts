@@ -1,7 +1,7 @@
 import type { Express, Request, Response } from "express";
 import { storage } from "./storage";
 import { db } from "./db";
-import { empireProfiles } from "../shared/schema";
+import { empireProfiles } from "../Source/Shared/schema";
 import { eq } from "drizzle-orm";
 import {
   EMPIRE_ATTRIBUTES,
@@ -10,7 +10,7 @@ import {
   getDefaultEmpireAttributes,
   getEmpireOverallLevel,
   getEmpirePowerRating,
-} from "../shared/config/empireProfileConfig";
+} from "../Source/Shared/config/empireProfileConfig";
 import { isAuthenticated } from "./basicAuth";
 
 function getUserId(req: Request): string {

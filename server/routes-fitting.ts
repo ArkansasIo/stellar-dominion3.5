@@ -1,7 +1,7 @@
 import type { Express, Request, Response } from "express";
 import { isAuthenticated } from "./basicAuth";
 import { storage } from "./storage";
-import type { ShipModule } from "../shared/config/shipFittingConfig";
+import type { ShipModule } from "../Source/Shared/config/shipFittingConfig";
 
 let SHIP_FITTING_MODULES: Record<string, ShipModule> = {};
 

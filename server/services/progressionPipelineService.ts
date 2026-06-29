@@ -1,7 +1,7 @@
 import { db } from "../db";
 import { eq, and, desc, sql } from "drizzle-orm";
-import { dimensionalAnomalies, dimensionalContracts, abyssalGateTokens } from "../../shared/schema";
-import { DIMENSIONAL_ANOMALIES } from "../../shared/config/dimensionalAnomaliesConfig";
+import { dimensionalAnomalies, dimensionalContracts, abyssalGateTokens } from "../../Source/Shared/schema";
+import { DIMENSIONAL_ANOMALIES } from "../../Source/Shared/config/dimensionalAnomaliesConfig";
 
 interface ProgressionState {
   playerId: string;

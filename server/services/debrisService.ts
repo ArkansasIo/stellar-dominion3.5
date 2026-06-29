@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { battles, playerStates, missions, users } from "../../shared/schema";
+import { battles, playerStates, missions, users } from "../../Source/Shared/schema";
 import { eq, and, sql } from "drizzle-orm";
 
 const DEBRIS_RATES = {

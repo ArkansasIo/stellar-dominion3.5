@@ -11,7 +11,7 @@ import {
   playerCurrency,
   currencyTransactions,
   playerStates,
-} from "../../shared/schema";
+} from "../../Source/Shared/schema";
 
 const BANK_LEVELS: Record<number, {
   maxDeposit: number;

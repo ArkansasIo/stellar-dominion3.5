@@ -20,7 +20,7 @@ import {
   calculateUnlockTime,
   initializeUserGovernmentProgression,
 } from './services/governmentProgressionService';
-import { GOVERNMENT_PROGRESSION_TREE_DEFINITION } from '../shared/config/governmentProgressionTreeConfig';
+import { GOVERNMENT_PROGRESSION_TREE_DEFINITION } from '../Source/Shared/config/governmentProgressionTreeConfig';
 
 function getUserId(req: Request): string {
   return (req.session as any)?.userId || '';

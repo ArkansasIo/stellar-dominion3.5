@@ -3,7 +3,7 @@ import {
   trials,
   trialAttempts,
   trialLeaderboard,
-} from "../../shared/schema";
+} from "../../Source/Shared/schema";
 import { eq, and } from "drizzle-orm";
 import { gateTokensService } from "./gateTokensService";
 import { rewardDistributionService } from "./rewardDistributionService";
@@ -12,7 +12,7 @@ import {
   getTrialTier,
   calculateTrialPoints,
   calculateWaveDifficulty,
-} from "../../shared/config/trialsConfig";
+} from "../../Source/Shared/config/trialsConfig";
 
 export interface StartTrialResult {
   success: boolean;

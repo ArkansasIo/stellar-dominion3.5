@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { isAuthenticated } from "./basicAuth";
 import { db } from "./db";
 import { storage } from "./storage";
-import { users } from "../shared/schema";
+import { users } from "../Source/Shared/schema";
 
 function getUserId(req: Request): string {
   return (req.session as any)?.userId || "";

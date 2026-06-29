@@ -1,6 +1,6 @@
 import type { Express, Request, Response } from "express";
 import { db } from "./db";
-import { playerStates, moonBases } from "../shared/schema";
+import { playerStates, moonBases } from "../Source/Shared/schema";
 import { eq } from "drizzle-orm";
 import {
   ENHANCED_MOON_TYPES,
@@ -10,8 +10,8 @@ import {
   generateMoonStatus,
   calculateMoonRarity,
   type EnhancedMoon,
-} from "../shared/config/enhancedMoonSystem";
-import type { MoonType } from "../shared/config/moonsProgression";
+} from "../Source/Shared/config/enhancedMoonSystem";
+import type { MoonType } from "../Source/Shared/config/moonsProgression";
 
 // In-memory moon storage (in production, this would be in the database)
 const MOON_DATABASE: Record<string, EnhancedMoon> = {};

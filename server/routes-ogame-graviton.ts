@@ -1,8 +1,8 @@
 import { isAuthenticated } from "./basicAuth";
 import { db } from "./db";
 import { eq, sql } from "drizzle-orm";
-import { playerStates } from "../shared/schema";
-import { OGAME_CATALOG_ENTRY_MAP } from "../shared/config/ogameCatalogConfig";
+import { playerStates } from "../Source/Shared/schema";
+import { OGAME_CATALOG_ENTRY_MAP } from "../Source/Shared/config/ogameCatalogConfig";
 import type { Express } from "express";
 
 const GRAVITON_ENTRY = OGAME_CATALOG_ENTRY_MAP.gravitonTech;

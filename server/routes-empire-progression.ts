@@ -22,7 +22,7 @@ import {
   TIER_EXAMPLES,
   getTierExample,
   getClosestTierExample,
-} from "../shared/config";
+} from "../Source/Shared/config";
 import { combatFormulaService } from "./services/combatFormulaService";
 
 export function registerEmpireProgressionRoutes(app: Router) {

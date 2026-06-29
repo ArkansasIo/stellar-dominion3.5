@@ -14,7 +14,7 @@ import {
   rollDiscoveryType,
   PlayerResearchXP,
   ResearchDiscovery,
-} from '../../shared/config/researchXPConfig';
+} from '../../Source/Shared/config/researchXPConfig';
 import { pool } from '../db';
 
 export class ResearchXPService {

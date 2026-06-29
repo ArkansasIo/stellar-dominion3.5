@@ -3,7 +3,7 @@ import { desc, eq } from "drizzle-orm";
 import { db } from "./db";
 import { isAuthenticated } from "./basicAuth";
 import { storage } from "./storage";
-import { adminUsers, users, playerStates } from "../shared/schema";
+import { adminUsers, users, playerStates } from "../Source/Shared/schema";
 import { UniverseResetService } from "./services/universeResetService";
 import {
   type AdminPermission,

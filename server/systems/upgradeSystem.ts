@@ -1,8 +1,8 @@
-import { PROGRESSION_CONFIG, ShipEquipment } from "../../shared/config/xenoberage/progressionConfig";
-import { DEVICE_CONFIG, DeviceType } from "../../shared/config/xenoberage/deviceConfig";
-import { COLONIZATION_CONFIG } from "../../shared/config/xenoberage/colonizationConfig";
+import { PROGRESSION_CONFIG, ShipEquipment } from "../../Source/Shared/config/xenoberage/progressionConfig";
+import { DEVICE_CONFIG, DeviceType } from "../../Source/Shared/config/xenoberage/deviceConfig";
+import { COLONIZATION_CONFIG } from "../../Source/Shared/config/xenoberage/colonizationConfig";
 import { db } from "../db";
-import { playerStates } from "../../shared/schema";
+import { playerStates } from "../../Source/Shared/schema";
 import { eq } from "drizzle-orm";
 
 /**

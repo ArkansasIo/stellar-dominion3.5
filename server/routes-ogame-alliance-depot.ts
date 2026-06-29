@@ -1,7 +1,7 @@
 import { isAuthenticated } from "./basicAuth";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
-import { playerStates, alliances, allianceMembers } from "../shared/schema";
+import { playerStates, alliances, allianceMembers } from "../Source/Shared/schema";
 import type { Express } from "express";
 
 export function registerOGameAllianceDepotRoutes(app: Express) {

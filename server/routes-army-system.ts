@@ -7,7 +7,7 @@
 import type { Express } from 'express';
 import { ArmySystemService } from './services/armySystemService';
 import { isAuthenticated } from './basicAuth';
-import { getAllArmySubsystems, getAvailableArmyUnits } from '../shared/config/armySubsystemsConfig';
+import { getAllArmySubsystems, getAvailableArmyUnits } from '../Source/Shared/config/armySubsystemsConfig';
 import {
   BATTLE_SYSTEM_PROFILES,
   COMBAT_EFFECT_LIBRARY,

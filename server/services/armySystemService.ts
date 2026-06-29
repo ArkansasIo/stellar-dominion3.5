@@ -9,7 +9,7 @@ import type {
   MilitaryForce,
   MilitaryCampaign,
   ArmySubsystem,
-} from '../../shared/types/civilization';
+} from '../../Source/Shared/types/civilization';
 import {
   getAllArmySubsystems,
   getArmySubsystemById,
@@ -17,7 +17,7 @@ import {
   calculateSquadCombatPower,
   calculateFormationBonus,
   calculateTotalCrewRequired,
-} from '../../shared/config/armySubsystemsConfig';
+} from '../../Source/Shared/config/armySubsystemsConfig';
 
 /**
  * In-memory storage for army data

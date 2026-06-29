@@ -14,7 +14,7 @@ import {
   validateTradeRequest,
   calculateFairnessScore,
   isPlayerEligibleForTrading,
-} from "../../shared/config/researchTradingConfig";
+} from "../../Source/Shared/config/researchTradingConfig";
 
 const TRADE_EXPIRATION_HOURS = 48;
 

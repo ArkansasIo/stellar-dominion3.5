@@ -1,6 +1,6 @@
 import { db } from "../db";
 import { eq, sql, and } from "drizzle-orm";
-import { playerStates, missions } from "../../shared/schema";
+import { playerStates, missions } from "../../Source/Shared/schema";
 
 interface Occupation {
   planetId: string;

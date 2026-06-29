@@ -2,7 +2,7 @@ import { Router } from "express";
 import { isAuthenticated } from "./basicAuth";
 import { fleetMissionService } from "./services/fleetMissionService";
 import { db } from "./db";
-import { missions, playerStates } from "../shared/schema";
+import { missions, playerStates } from "../Source/Shared/schema";
 import { eq, and, sql } from "drizzle-orm";
 
 export function registerOGameFleetRoutes(app: Router) {

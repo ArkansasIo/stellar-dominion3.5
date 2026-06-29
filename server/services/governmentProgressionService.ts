@@ -17,7 +17,7 @@ import {
   canUnlockNode,
   calculateNodeCost,
   calculateUnlockTime,
-} from '../../shared/config/governmentProgressionTreeConfig';
+} from '../../Source/Shared/config/governmentProgressionTreeConfig';
 
 const GOVERNMENT_PROGRESSION_PREFIX = 'government_progression';
 

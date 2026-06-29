@@ -16,7 +16,7 @@ import {
   EXPEDITION_LEVELS,
   TIER_MAP,
   LEVEL_MAP,
-} from "../shared/expeditionData";
+} from "../Source/Shared/expeditionData";
 
 export function registerExpeditionRoutes(app: Express) {
   const expeditionReadLimiter = (_req: Request, _res: Response, next: () => void) => next();

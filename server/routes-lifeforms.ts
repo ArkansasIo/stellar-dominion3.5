@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { isAuthenticated } from "./basicAuth";
 import { db } from "./db";
-import { playerStates } from "../shared/schema";
+import { playerStates } from "../Source/Shared/schema";
 import { eq } from "drizzle-orm";
-import { LIFEFORM_DEFINITIONS, LIFEFORM_MAP, DEFAULT_LIFEFORM } from "../shared/config/lifeformConfig";
+import { LIFEFORM_DEFINITIONS, LIFEFORM_MAP, DEFAULT_LIFEFORM } from "../Source/Shared/config/lifeformConfig";
 
 export function registerLifeformRoutes(app: Router) {
   app.get("/api/lifeforms", isAuthenticated as any, async (_req: any, res: any) => {

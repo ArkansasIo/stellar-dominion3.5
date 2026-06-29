@@ -1,6 +1,6 @@
 import { db } from "../db";
 import { eq, and, sql, desc } from "drizzle-orm";
-import { playerStates, scanCooldowns, celestialMarketplace } from "../../shared/schema";
+import { playerStates, scanCooldowns, celestialMarketplace } from "../../Source/Shared/schema";
 
 const CELESTIAL_TYPES = {
   planet: {

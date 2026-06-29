@@ -1,6 +1,6 @@
 import { db } from '../db';
 import { sql } from 'drizzle-orm';
-import { playerStates } from '../../shared/schema';
+import { playerStates } from '../../Source/Shared/schema';
 
 export class EconomyService {
   static async getResources(playerId: string) {

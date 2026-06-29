@@ -9,7 +9,7 @@ import {
   completeUpgrade,
   completeAllReadyUpgrades,
 } from './services/constructorYardService';
-import { getYardEntryById, type YardDomain } from '../shared/config/constructorYardSystemsConfig';
+import { getYardEntryById, type YardDomain } from '../Source/Shared/config/constructorYardSystemsConfig';
 
 function getUserId(req: Request): string {
   return (req.session as any)?.userId || '';

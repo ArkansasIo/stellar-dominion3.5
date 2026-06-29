@@ -5,7 +5,7 @@
 
 import { db } from "../db";
 import { eq, and } from "drizzle-orm";
-import { playerStates, messages } from "../../shared/schema";
+import { playerStates, messages } from "../../Source/Shared/schema";
 
 export const ESPIONAGE_CONFIG = {
   missionCosts: {

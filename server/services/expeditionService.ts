@@ -5,7 +5,7 @@
 
 import { db } from "../db";
 import { eq, and } from "drizzle-orm";
-import { playerStates, expeditions } from "../../shared/schema";
+import { playerStates, expeditions } from "../../Source/Shared/schema";
 import {
   EXPEDITION_CATEGORIES,
   EXPEDITION_TYPES,
@@ -15,7 +15,7 @@ import {
   TYPE_MAP,
   TIER_MAP,
   LEVEL_MAP,
-} from "../../shared/expeditionData";
+} from "../../Source/Shared/expeditionData";
 
 export const EXPEDITION_REWARDS = {
   resources: {

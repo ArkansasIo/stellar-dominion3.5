@@ -25,7 +25,7 @@ import {
   type BattleMode as CombatBattleMode,
   type WeaponCategory,
   type AttackPosition,
-} from "../../shared/config";
+} from "../../Source/Shared/config";
 
 export interface CombatSimulationRequest {
   attacker: Partial<EmpireCombatStats>;

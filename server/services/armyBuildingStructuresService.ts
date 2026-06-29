@@ -18,7 +18,7 @@ import {
   type ArmyBuildingStructureArchetype,
   type ArmyBuildingStats,
   type ArmyBuildingSubStats,
-} from '../../shared/config/armyBuildingStructuresConfig';
+} from '../../Source/Shared/config/armyBuildingStructuresConfig';
 
 // ============================================================================
 // DATA TYPES

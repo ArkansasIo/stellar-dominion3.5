@@ -8,7 +8,7 @@ import {
   getGovernmentLeadersByClass,
   getGovernmentLeaderTypes,
   getGovernmentLeaderClasses,
-} from '../shared/config/governmentLeadersConfig';
+} from '../Source/Shared/config/governmentLeadersConfig';
 
 const GOVERNMENT_APPOINTMENTS_PREFIX = 'government_appointments';
 const GOVERNMENT_SYSTEMS_PREFIX = 'government_systems';

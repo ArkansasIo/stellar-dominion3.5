@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { playerStates, missions, battles } from "../../shared/schema";
+import { playerStates, missions, battles } from "../../Source/Shared/schema";
 import { eq, and, sql } from "drizzle-orm";
 import { simulateBattle } from "../combat";
 import { OGameShipDatabase } from "../combat/BattleEngine";

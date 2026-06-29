@@ -1,6 +1,6 @@
 import { db } from '../db';
 import { sql } from 'drizzle-orm';
-import { messages } from '../../shared/schema';
+import { messages } from '../../Source/Shared/schema';
 
 export type MessageType = 'standard' | 'trade_offer' | 'battle_report' | 'espionage_report' | 'system';
 type MessageFolder = 'inbox' | 'sent' | 'archived';

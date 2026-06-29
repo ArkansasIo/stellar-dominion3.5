@@ -2,7 +2,7 @@ import { Router } from "express";
 import { isAuthenticated } from "./basicAuth";
 import { phalanxService } from "./services/phalanxService";
 import { db } from "./db";
-import { moons, moonBases } from "../shared/schema";
+import { moons, moonBases } from "../Source/Shared/schema";
 import { eq, and } from "drizzle-orm";
 
 export function registerOGamePhalanxRoutes(app: Router) {

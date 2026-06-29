@@ -10,7 +10,7 @@ import {
   AchievementProgress,
   PlayerAchievements,
   getAchievementById,
-} from "../../shared/config/achievementSystemConfig";
+} from "../../Source/Shared/config/achievementSystemConfig";
 
 const RESERVED_TIERS: Record<string, number> = {
   bronze: 100,

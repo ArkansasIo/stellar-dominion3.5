@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { playerStates, users, battles } from "../../shared/schema";
+import { playerStates, users, battles } from "../../Source/Shared/schema";
 import { eq, and, sql, desc, lt, gte } from "drizzle-orm";
 
 const OUTLAW_THRESHOLD_RATIO = 0.25;

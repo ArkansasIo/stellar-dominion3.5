@@ -1,7 +1,7 @@
 import { db } from "../db";
-import { playerStates } from "../../shared/schema";
+import { playerStates } from "../../Source/Shared/schema";
 import { eq } from "drizzle-orm";
-import { OGAME_CATALOG_ENTRY_MAP } from "../../shared/config/ogameCatalogConfig";
+import { OGAME_CATALOG_ENTRY_MAP } from "../../Source/Shared/config/ogameCatalogConfig";
 
 const OFFICER_IDS = ["commanderOfficer", "admiralOfficer", "engineerOfficer", "geologistOfficer", "technocratOfficer"];
 

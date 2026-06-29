@@ -1,6 +1,6 @@
-import { COLONIZATION_CONFIG, ColonyState, BaseRequirements } from "../../shared/config/xenoberage/colonizationConfig";
+import { COLONIZATION_CONFIG, ColonyState, BaseRequirements } from "../../Source/Shared/config/xenoberage/colonizationConfig";
 import { db } from "../db";
-import { playerColonies } from "../../shared/schema";
+import { playerColonies } from "../../Source/Shared/schema";
 
 /**
  * Create a new colony on a planet.

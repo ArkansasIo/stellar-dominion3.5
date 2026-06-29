@@ -12,8 +12,8 @@ import {
   getSeasonAllianceBuffs,
   refreshDailyMissions,
 } from "./services/seasonService";
-import { SEASON_DEFINITIONS } from "../shared/config/seasonConfig";
-import { UNIVERSE_LIST, getSeasonalUniverses, getPermanentUniverses, getMigrationPlan } from "../shared/config/universeTypesConfig";
+import { SEASON_DEFINITIONS } from "../Source/Shared/config/seasonConfig";
+import { UNIVERSE_LIST, getSeasonalUniverses, getPermanentUniverses, getMigrationPlan } from "../Source/Shared/config/universeTypesConfig";
 
 const router = Router();
 

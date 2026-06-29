@@ -10,14 +10,14 @@ import type {
   WorkforceAssignment,
   WorkforceProjection,
   CivilizationPlayerState,
-} from '../../shared/types/civilization';
+} from '../../Source/Shared/types/civilization';
 import {
   getAllSubsystems,
   getSubsystemById,
   getSubsystemsByType,
   calculateSubsystemBonuses,
-} from '../../shared/config/civilizationSubsystemsConfig';
-import { ALL_CIVILIZATION_JOBS } from '../../shared/config/civilizationJobsConfig';
+} from '../../Source/Shared/config/civilizationSubsystemsConfig';
+import { ALL_CIVILIZATION_JOBS } from '../../Source/Shared/config/civilizationJobsConfig';
 
 /**
  * In-memory storage for player civilization states

@@ -1,6 +1,6 @@
 import type { Express, Request, Response } from "express";
 import { db } from "./db";
-import { playerStates, users, marketOrders, messages } from "../shared/schema";
+import { playerStates, users, marketOrders, messages } from "../Source/Shared/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { isAuthenticated, isAdmin } from "./basicAuth";
 import { logger, type LogLevel, type LogCategory } from "./logger";

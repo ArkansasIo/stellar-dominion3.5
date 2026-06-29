@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { playerStates, missions, users, alliances, allianceMembers, battles } from "../../shared/schema";
+import { playerStates, missions, users, alliances, allianceMembers, battles } from "../../Source/Shared/schema";
 import { eq, and, sql, inArray } from "drizzle-orm";
 
 interface ACSFleet {

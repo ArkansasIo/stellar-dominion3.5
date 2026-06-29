@@ -265,7 +265,7 @@ import { registerOGameCombatRoutes } from "./routes-ogame-combat";
 import { registerEmpireProgressionRoutes } from "./routes-empire-progression";
 import seasonRoutes from "./routes-season";
 import { db, pool } from "./db";
-import { adminUsers, users } from "../shared/schema";
+import { adminUsers, users } from "../Source/Shared/schema";
 import { eq, ilike, or } from "drizzle-orm";
 
 (async () => {

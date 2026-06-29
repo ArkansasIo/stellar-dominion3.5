@@ -1,7 +1,7 @@
 import type { Express, Request, Response } from "express";
 import { eq, inArray } from "drizzle-orm";
 import { db } from "./db";
-import { playerStates, users } from "../shared/schema";
+import { playerStates, users } from "../Source/Shared/schema";
 
 // Middleware to check authentication
 function isAuthenticated(req: Request, res: Response, next: Function) {

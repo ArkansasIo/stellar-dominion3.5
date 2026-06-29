@@ -1,8 +1,8 @@
 import type { Express, Request, Response } from "express";
 import { isAuthenticated } from "./basicAuth";
 import { storage } from "./storage";
-import { ALL_PLANET_TYPES } from "../shared/config/planetTypesConfig";
-import { HAZARD_TYPES, assessPlanetHazards, type HazardSeverity } from "../shared/config/hazardSystemConfig";
+import { ALL_PLANET_TYPES } from "../Source/Shared/config/planetTypesConfig";
+import { HAZARD_TYPES, assessPlanetHazards, type HazardSeverity } from "../Source/Shared/config/hazardSystemConfig";
 
 function getUserId(req: Request): string {
   return (req.session as any)?.userId || "";

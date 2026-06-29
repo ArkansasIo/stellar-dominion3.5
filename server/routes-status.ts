@@ -7,7 +7,7 @@ import type { Express, Request, Response } from 'express';
 import { ServerStatusService } from './services/serverStatusService';
 import { isAuthenticated } from './basicAuth';
 import { db } from './db';
-import { adminUsers } from '../shared/schema';
+import { adminUsers } from '../Source/Shared/schema';
 import { eq } from 'drizzle-orm';
 
 function getUserId(req: Request) {

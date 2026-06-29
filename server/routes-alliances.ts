@@ -3,8 +3,8 @@ import { eq, inArray, desc } from "drizzle-orm";
 import { isAuthenticated } from "./basicAuth";
 import { storage } from "./storage";
 import { db } from "./db";
-import { users, allianceBankTransactions } from "../shared/schema";
-import { ALLIANCE_SYSTEM_CONFIG } from "../shared/config/allianceSystemConfig";
+import { users, allianceBankTransactions } from "../Source/Shared/schema";
+import { ALLIANCE_SYSTEM_CONFIG } from "../Source/Shared/config/allianceSystemConfig";
 
 type DiplomacyState = "war" | "hostile" | "neutral" | "friendly" | "allied";
 

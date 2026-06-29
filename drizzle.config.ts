@@ -8,7 +8,7 @@ const dbUrl = envUrl.includes("neon.tech") || !envUrl
 
 export default defineConfig({
   out: "./migrations",
-  schema: "./shared/schema.ts",
+  schema: "./Source/Shared/schema.ts",
   dialect: "postgresql",
   dbCredentials: {
     url: dbUrl,

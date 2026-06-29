@@ -13,7 +13,7 @@ import {
   type SporeDrive,
   type SporeDriveMode,
   type SporeDriveState,
-} from "../shared/config/sporeDriveSystem";
+} from "../Source/Shared/config/sporeDriveSystem";
 
 // In-memory spore drive storage (in production, this would be in the database)
 const SPORE_DRIVE_DATABASE: Record<string, SporeDrive> = {};
