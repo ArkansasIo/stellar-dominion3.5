@@ -1,5 +1,5 @@
 /**
- * Quantum Singularity Theme - Stellar Dominion
+ * Quantum Singularity Theme - Universe Civilization: Empire at War
  *
  * Theme #10 in the Theme System (see themeSystemConfig.ts).
  *

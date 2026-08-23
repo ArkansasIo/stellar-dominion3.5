@@ -106,7 +106,7 @@ function HazardRow({ item }: { item: HazardOverviewItem }) {
   return (
     <Card className={cn("border transition-all", item.safeForColonization ? "border-slate-200" : "border-red-200 bg-red-50/30")}>
       <CardContent className="p-4">
-        <div className="flex items-center justify-between cursor-pointer" onClick={() => setExpanded(!expanded)}>
+        <div className="flex items-center justify-between cursor-pointer" role="button" tabIndex={0} aria-expanded={expanded} aria-label={`${expanded ? "Collapse" : "Expand"} hazard details for ${item.name}`} onClick={() => setExpanded(!expanded)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setExpanded(!expanded); } }}>
           <div className="flex items-center gap-3 min-w-0">
             <div className={cn("w-3 h-3 rounded-full shrink-0", severityBadgeColor(item.overallSeverity))} />
             <div className="min-w-0">

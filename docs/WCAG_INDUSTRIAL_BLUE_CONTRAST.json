@@ -1,0 +1,115 @@
+{
+  "standard": "WCAG 2 contrast ratios for specified opaque token pairs",
+  "passed": 12,
+  "failed": 0,
+  "results": [
+    {
+      "role": "Primary text on deep panel",
+      "foreground": "#e7f8ff",
+      "background": "#071d35",
+      "level": "AA normal",
+      "ratio": 15.59,
+      "minimum": 4.5,
+      "passes": true
+    },
+    {
+      "role": "Secondary text on deep panel",
+      "foreground": "#b7dff0",
+      "background": "#071d35",
+      "level": "AA normal",
+      "ratio": 11.99,
+      "minimum": 4.5,
+      "passes": true
+    },
+    {
+      "role": "Muted status text on deep panel",
+      "foreground": "#9bcbe5",
+      "background": "#071d35",
+      "level": "AA normal",
+      "ratio": 9.76,
+      "minimum": 4.5,
+      "passes": true
+    },
+    {
+      "role": "Bright cyan interface text on deep panel",
+      "foreground": "#55d7ff",
+      "background": "#071d35",
+      "level": "AA normal",
+      "ratio": 10.15,
+      "minimum": 4.5,
+      "passes": true
+    },
+    {
+      "role": "Signal cyan on deep panel",
+      "foreground": "#6ce5ff",
+      "background": "#071d35",
+      "level": "AA normal",
+      "ratio": 11.56,
+      "minimum": 4.5,
+      "passes": true
+    },
+    {
+      "role": "Teal feature accent on deep panel",
+      "foreground": "#42d3c5",
+      "background": "#071d35",
+      "level": "AA normal",
+      "ratio": 9.19,
+      "minimum": 4.5,
+      "passes": true
+    },
+    {
+      "role": "Indigo logic accent on deep panel",
+      "foreground": "#8a9dff",
+      "background": "#071d35",
+      "level": "AA normal",
+      "ratio": 6.75,
+      "minimum": 4.5,
+      "passes": true
+    },
+    {
+      "role": "Navigation primary text",
+      "foreground": "#ddffff",
+      "background": "#061c1c",
+      "level": "AA normal",
+      "ratio": 16.65,
+      "minimum": 4.5,
+      "passes": true
+    },
+    {
+      "role": "Navigation secondary text",
+      "foreground": "#b9e6f5",
+      "background": "#061c1c",
+      "level": "AA normal",
+      "ratio": 13.19,
+      "minimum": 4.5,
+      "passes": true
+    },
+    {
+      "role": "Focus ring against focus surface",
+      "foreground": "#6ce5ff",
+      "background": "#020d1c",
+      "level": "AA non-text UI",
+      "ratio": 13.27,
+      "minimum": 3,
+      "passes": true
+    },
+    {
+      "role": "Cyan button label",
+      "foreground": "#ffffff",
+      "background": "#197ca9",
+      "level": "AA normal",
+      "ratio": 4.67,
+      "minimum": 4.5,
+      "passes": true
+    },
+    {
+      "role": "Hover background against primary text",
+      "foreground": "#e7f8ff",
+      "background": "#12609a",
+      "level": "AA normal",
+      "ratio": 6.09,
+      "minimum": 4.5,
+      "passes": true
+    }
+  ]
+}

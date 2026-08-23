@@ -1,5 +1,5 @@
 /**
- * Theme System Configuration - 9 Visual Themes for Stellar Dominion
+ * Theme System Configuration - 9 Visual Themes for Universe Civilization: Empire at War
  * 
  * Each theme provides a complete visual identity with:
  *   - Background colors/gradients

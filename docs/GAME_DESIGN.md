@@ -1,6 +1,6 @@
 <!-- FILE: GAME_DESIGN.md -->
 <!-- STATUS: REWRITTEN | UPDATED: 2026-06-18 -->
-# Game Design Document - Stellar Dominion
+# Game Design Document - Universe Civilization: Empire at War
 
 > **Source:** All source files referenced inline.
 

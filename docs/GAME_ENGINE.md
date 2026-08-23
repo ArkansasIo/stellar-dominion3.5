@@ -1,6 +1,6 @@
-# Stellar Dominion — Game Engine Technical Reference
+# Universe Civilization: Empire at War — Game Engine Technical Reference
 
-Internal documentation for the custom-built game engines powering Stellar Dominion.
+Internal documentation for the custom-built game engines powering Universe Civilization: Empire at War.
 
 ---
 
@@ -19,7 +19,7 @@ Internal documentation for the custom-built game engines powering Stellar Domini
 
 ## Architecture Overview
 
-Stellar Dominion does not use a traditional game engine (Unity, Unreal, Godot). It is a **custom browser MMORPG** built entirely from scratch with a TypeScript monorepo. The game logic runs server-side on Node.js/Express, with React 19 handling the client UI and WebSocket providing real-time updates.
+Universe Civilization: Empire at War does not use a traditional game engine (Unity, Unreal, Godot). It is a **custom browser MMORPG** built entirely from scratch with a TypeScript monorepo. The game logic runs server-side on Node.js/Express, with React 19 handling the client UI and WebSocket providing real-time updates.
 
 ```
 ┌──────────────────────────────────────────────────┐

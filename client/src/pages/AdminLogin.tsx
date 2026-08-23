@@ -11,7 +11,7 @@ const ROLE_LABELS: Record<string, { label: string; color: string; rank: number }
   devadmin:      { label: "DEV ADMIN",          color: "text-amber-300",   rank: 5 },
   administrator: { label: "HEAD ADMINISTRATOR", color: "text-cyan-300",    rank: 4 },
   suadmin:       { label: "SUB-ADMINISTRATOR",  color: "text-blue-300",    rank: 3 },
-  moderator:     { label: "MODERATOR",          color: "text-green-300",   rank: 2 },
+  moderator:     { label: "MODERATOR",          color: "text-cyan-200",   rank: 2 },
   viewer:        { label: "VIEWER",             color: "text-slate-400",   rank: 1 },
 };
 
@@ -38,8 +38,8 @@ const SCANLINE_STYLE = `
   to   { opacity: 1; transform: translateY(0); }
 }
 @keyframes glow-pulse {
-  0%,100% { text-shadow: 0 0 6px rgba(34,197,94,.6); }
-  50%      { text-shadow: 0 0 18px rgba(34,197,94,1), 0 0 30px rgba(34,197,94,.4); }
+  0%,100% { text-shadow: 0 0 6px rgba(66,211,197,.6); }
+  50%      { text-shadow: 0 0 18px rgba(66,211,197,1), 0 0 30px rgba(66,211,197,.4); }
 }
 .admin-login-scanline { animation: scanline 8s linear infinite; }
 .admin-login-flicker  { animation: flicker 6s infinite; }
@@ -172,7 +172,7 @@ export default function AdminLogin() {
   const role = getRoleInfo(authedUser?.adminRole);
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-4 relative overflow-hidden admin-login-flicker font-mono">
+    <div className="admin-login-screen min-h-screen bg-[#020d1c] flex items-center justify-center p-4 relative overflow-hidden admin-login-flicker font-mono">
       <style>{SCANLINE_STYLE}</style>
 
       {/* ── Star background ──────────────────────────────────── */}
@@ -196,7 +196,7 @@ export default function AdminLogin() {
       <div
         className="admin-login-scanline absolute left-0 right-0 h-20 pointer-events-none"
         style={{
-          background: "linear-gradient(transparent 0%, rgba(0,255,100,.015) 50%, transparent 100%)",
+          background: "linear-gradient(transparent 0%, rgba(108,229,255,.022) 50%, transparent 100%)",
           zIndex: 50,
         }}
       />
@@ -205,35 +205,35 @@ export default function AdminLogin() {
       <div
         className="absolute inset-0 pointer-events-none opacity-5"
         style={{
-          backgroundImage: "linear-gradient(rgba(0,255,80,.5) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,80,.5) 1px,transparent 1px)",
+          backgroundImage: "linear-gradient(rgba(25,124,169,.55) 1px,transparent 1px),linear-gradient(90deg,rgba(25,124,169,.55) 1px,transparent 1px)",
           backgroundSize: "40px 40px",
         }}
       />
 
       {/* ── Back link ────────────────────────────────────────── */}
-      <Link href="/" className="absolute top-4 left-4 flex items-center gap-1.5 text-xs text-green-500 hover:text-green-300 transition-colors z-20">
+      <Link href="/" className="absolute top-4 left-4 flex items-center gap-1.5 text-xs text-cyan-400 hover:text-cyan-200 transition-colors z-20">
         <ArrowLeft className="w-3 h-3" />
         Back to game
       </Link>
 
       {/* ── Main card ────────────────────────────────────────── */}
       <div
-        className="relative w-full max-w-md z-10"
+        className="sd-admin-login-card relative w-full max-w-md z-10"
         style={{
-          border: "1px solid rgba(0,200,80,.25)",
-          boxShadow: "0 0 40px rgba(0,200,80,.08), 0 0 1px rgba(0,200,80,.4), inset 0 0 60px rgba(0,0,0,.6)",
-          background: "rgba(0,8,2,.92)",
+          border: "1px solid rgba(25,124,169,.25)",
+          boxShadow: "0 0 40px rgba(25,124,169,.08), 0 0 1px rgba(25,124,169,.4), inset 0 0 60px rgba(0,0,0,.6)",
+          background: "rgba(2,13,28,.92)",
         }}
       >
         {/* ── Title bar ──────────────────────────────────────── */}
-        <div className="flex items-center justify-between px-4 py-2 border-b" style={{ borderColor: "rgba(0,200,80,.15)" }}>
+        <div className="flex items-center justify-between px-4 py-2 border-b" style={{ borderColor: "rgba(25,124,169,.15)" }}>
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-red-500/70" />
             <div className="w-2 h-2 rounded-full bg-yellow-500/70" />
-            <div className="w-2 h-2 rounded-full bg-green-500/70" />
-            <span className="ml-2 text-green-500 text-[10px] tracking-widest uppercase">admin-clearance-v2.0</span>
+            <div className="w-2 h-2 rounded-full bg-cyan-500/70" />
+            <span className="ml-2 text-cyan-400 text-[10px] tracking-widest uppercase">admin-clearance-v2.0</span>
           </div>
-          <span className="text-green-400 text-[10px]">{new Date().toISOString().slice(0, 10)}</span>
+          <span className="text-cyan-300 text-[10px]">{new Date().toISOString().slice(0, 10)}</span>
         </div>
 
         <div className="px-6 pt-5 pb-6 space-y-5">
@@ -243,15 +243,15 @@ export default function AdminLogin() {
             <div className="flex justify-center mb-3">
               <div
                 className="w-14 h-14 rounded-full flex items-center justify-center"
-                style={{ border: "1px solid rgba(0,200,80,.3)", background: "rgba(0,200,80,.06)", boxShadow: "0 0 20px rgba(0,200,80,.1)" }}
+                style={{ border: "1px solid rgba(25,124,169,.3)", background: "rgba(25,124,169,.06)", boxShadow: "0 0 20px rgba(25,124,169,.1)" }}
               >
-                <ShieldCheck className="w-7 h-7 text-green-400" style={{ filter: "drop-shadow(0 0 6px rgba(0,255,80,.5))" }} />
+                <ShieldCheck className="w-7 h-7 text-cyan-300" style={{ filter: "drop-shadow(0 0 6px rgba(108,229,255,.5))" }} />
               </div>
             </div>
-            <h1 className="text-green-300 text-sm tracking-[0.25em] uppercase font-bold admin-login-glow">
-              Stellar Dominion
+            <h1 className="text-cyan-200 text-sm tracking-[0.25em] uppercase font-bold admin-login-glow">
+              Universe Civilization: Empire at War
             </h1>
-            <p className="text-green-500 text-[10px] tracking-widest uppercase">
+            <p className="text-cyan-400 text-[10px] tracking-widest uppercase">
               Admin Clearance System · Level {step}/3
             </p>
           </div>
@@ -268,24 +268,24 @@ export default function AdminLogin() {
                     <div
                       className="w-8 h-8 rounded-full flex items-center justify-center text-xs transition-all duration-300"
                       style={{
-                        border: done ? "1px solid rgba(34,197,94,.6)" : current ? "1px solid rgba(0,255,80,.8)" : "1px solid rgba(0,200,80,.2)",
-                        background: done ? "rgba(34,197,94,.15)" : current ? "rgba(0,255,80,.1)" : "transparent",
-                        boxShadow: current ? "0 0 12px rgba(0,255,80,.3)" : "none",
+                        border: done ? "1px solid rgba(66,211,197,.6)" : current ? "1px solid rgba(108,229,255,.8)" : "1px solid rgba(25,124,169,.2)",
+                        background: done ? "rgba(66,211,197,.15)" : current ? "rgba(108,229,255,.1)" : "transparent",
+                        boxShadow: current ? "0 0 12px rgba(108,229,255,.3)" : "none",
                       }}
                     >
                       {done
-                        ? <CheckCircle2 className="w-4 h-4 text-green-400" />
-                        : <Icon className={`w-3.5 h-3.5 ${current ? "text-green-300" : "text-green-600"}`} />
+                        ? <CheckCircle2 className="w-4 h-4 text-cyan-300" />
+                        : <Icon className={`w-3.5 h-3.5 ${current ? "text-cyan-200" : "text-cyan-500"}`} />
                       }
                     </div>
-                    <span className={`text-[9px] tracking-widest uppercase ${current ? "text-green-400" : done ? "text-green-600" : "text-green-500"}`}>
+                    <span className={`text-[9px] tracking-widest uppercase ${current ? "text-cyan-300" : done ? "text-cyan-500" : "text-cyan-400"}`}>
                       {s.label}
                     </span>
                   </div>
                   {i < STEP_META.length - 1 && (
                     <div
                       className="w-14 h-px mx-1 mb-4 transition-all duration-500"
-                      style={{ background: step > s.num + 1 ? "rgba(34,197,94,.5)" : step > s.num ? "rgba(0,255,80,.4)" : "rgba(0,200,80,.15)" }}
+                      style={{ background: step > s.num + 1 ? "rgba(66,211,197,.5)" : step > s.num ? "rgba(108,229,255,.4)" : "rgba(25,124,169,.15)" }}
                     />
                   )}
                 </div>
@@ -297,30 +297,30 @@ export default function AdminLogin() {
           {status === "success" && authedUser ? (
             <div className="admin-login-slide text-center space-y-4 py-4">
               <div className="flex justify-center">
-                <CheckCircle2 className="w-12 h-12 text-green-400" style={{ filter: "drop-shadow(0 0 12px rgba(0,255,80,.8))" }} />
+                <CheckCircle2 className="w-12 h-12 text-cyan-300" style={{ filter: "drop-shadow(0 0 12px rgba(108,229,255,.8))" }} />
               </div>
               <div>
-                <p className="text-green-300 text-sm font-bold tracking-widest uppercase">ACCESS GRANTED</p>
-                <p className="text-green-600 text-xs mt-1">Clearance verified — establishing session</p>
+                <p className="text-cyan-200 text-sm font-bold tracking-widest uppercase">ACCESS GRANTED</p>
+                <p className="text-cyan-500 text-xs mt-1">Clearance verified — establishing session</p>
               </div>
               <div
                 className="rounded p-3 space-y-1 text-xs"
-                style={{ border: "1px solid rgba(0,200,80,.2)", background: "rgba(0,200,80,.04)" }}
+                style={{ border: "1px solid rgba(25,124,169,.2)", background: "rgba(25,124,169,.04)" }}
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-green-700">OPERATOR</span>
-                  <span className="text-green-300 font-bold">{authedUser.username.toUpperCase()}</span>
+                  <span className="text-cyan-600">OPERATOR</span>
+                  <span className="text-cyan-200 font-bold">{authedUser.username.toUpperCase()}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-green-700">CLEARANCE</span>
+                  <span className="text-cyan-600">CLEARANCE</span>
                   <span className={`font-bold ${role.color}`}>LEVEL {role.rank} — {role.label}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-green-700">STATUS</span>
-                  <span className="text-green-400">● SESSION ACTIVE</span>
+                  <span className="text-cyan-600">STATUS</span>
+                  <span className="text-cyan-300">● SESSION ACTIVE</span>
                 </div>
               </div>
-              <div className="flex items-center justify-center gap-2 text-xs text-green-700">
+              <div className="flex items-center justify-center gap-2 text-xs text-cyan-600">
                 <Loader2 className="w-3 h-3 animate-spin" />
                 Redirecting to Admin Control Panel…
               </div>
@@ -332,14 +332,14 @@ export default function AdminLogin() {
 
                 {/* Prompt label */}
                 <div className="space-y-0.5">
-                  <div className="flex items-center gap-2 text-[10px] text-green-500 uppercase tracking-widest">
+                  <div className="flex items-center gap-2 text-[10px] text-cyan-400 uppercase tracking-widest">
                     <span>STEP {step}/3</span>
-                    <span className="text-green-700">·</span>
+                    <span className="text-cyan-600">·</span>
                     <span>{STEP_META[step - 1].desc}</span>
                   </div>
                   <div
                     className="h-px w-full"
-                    style={{ background: "linear-gradient(to right, rgba(0,200,80,.4), transparent)" }}
+                    style={{ background: "linear-gradient(to right, rgba(25,124,169,.4), transparent)" }}
                   />
                 </div>
 
@@ -347,29 +347,29 @@ export default function AdminLogin() {
                 {step >= 2 && (
                   <div
                     className="flex items-center justify-between px-3 py-1.5 text-xs"
-                    style={{ border: "1px solid rgba(0,200,80,.12)", background: "rgba(0,200,80,.03)" }}
+                    style={{ border: "1px solid rgba(25,124,169,.12)", background: "rgba(25,124,169,.03)" }}
                   >
-                    <span className="text-green-500">OPERATOR</span>
-                    <span className="text-green-400">{identifier}</span>
+                    <span className="text-cyan-400">OPERATOR</span>
+                    <span className="text-cyan-300">{identifier}</span>
                   </div>
                 )}
 
                 {/* Input field */}
                 <div className="space-y-1">
-                  <label className="text-[10px] text-green-600 uppercase tracking-widest block">
+                  <label className="text-[10px] text-cyan-500 uppercase tracking-widest block">
                     {STEP_META[step - 1].label}
                   </label>
                   <div
                     className="flex items-center gap-2 px-3"
                     style={{
-                      border: status === "error" ? "1px solid rgba(239,68,68,.5)" : "1px solid rgba(0,200,80,.3)",
+                      border: status === "error" ? "1px solid rgba(239,68,68,.5)" : "1px solid rgba(25,124,169,.3)",
                       background: "rgba(0,0,0,.6)",
                       boxShadow: status === "error" ? "0 0 8px rgba(239,68,68,.1)" : "0 0 0 0 transparent",
                     }}
                   >
-                    {step === 1 && <User     className="w-3.5 h-3.5 text-green-500 shrink-0" />}
-                    {step === 2 && <Lock     className="w-3.5 h-3.5 text-green-500 shrink-0" />}
-                    {step === 3 && <KeyRound className="w-3.5 h-3.5 text-green-500 shrink-0" />}
+                    {step === 1 && <User     className="w-3.5 h-3.5 text-cyan-400 shrink-0" />}
+                    {step === 2 && <Lock     className="w-3.5 h-3.5 text-cyan-400 shrink-0" />}
+                    {step === 3 && <KeyRound className="w-3.5 h-3.5 text-cyan-400 shrink-0" />}
 
                     <input
                       ref={inputRef}
@@ -381,7 +381,7 @@ export default function AdminLogin() {
                       value={currentValue}
                       onChange={(e) => { setCurrentValue(e.target.value); setError(""); setStatus("idle"); }}
                       onKeyDown={handleKeyDown}
-                      className="flex-1 bg-transparent text-green-200 text-sm py-2.5 outline-none placeholder-green-600 tracking-wider"
+                      className="flex-1 bg-transparent text-cyan-100 text-sm py-2.5 outline-none placeholder-cyan-600 tracking-wider"
                       placeholder={step === 1 ? "username or email" : step === 2 ? "••••••••••••" : step === 3 ? "ACCESS-CODE" : ""}
                       autoComplete={step === 1 ? "username" : step === 2 ? "current-password" : "off"}
                       spellCheck={false}
@@ -391,7 +391,7 @@ export default function AdminLogin() {
                       <button
                         type="button"
                         onClick={() => step === 2 ? setShowPass((v) => !v) : setShowCode((v) => !v)}
-                        className="text-green-500 hover:text-green-300 transition-colors"
+                        className="text-cyan-400 hover:text-cyan-200 transition-colors"
                       >
                         {(step === 2 ? showPass : showCode)
                           ? <EyeOff className="w-3.5 h-3.5" />
@@ -429,8 +429,8 @@ export default function AdminLogin() {
                   {step > 1 && (
                     <button
                       onClick={() => { setStep((s) => (s - 1) as Step); setError(""); setStatus("idle"); }}
-                      className="px-3 py-2 text-xs text-green-500 hover:text-green-300 transition-colors flex items-center gap-1"
-                      style={{ border: "1px solid rgba(0,200,80,.15)" }}
+                      className="px-3 py-2 text-xs text-cyan-400 hover:text-cyan-200 transition-colors flex items-center gap-1"
+                      style={{ border: "1px solid rgba(25,124,169,.15)" }}
                     >
                       <ArrowLeft className="w-3 h-3" /> Back
                     </button>
@@ -442,14 +442,14 @@ export default function AdminLogin() {
                     className="flex-1 py-2.5 text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 transition-all duration-200"
                     style={{
                       border: canProceed() && status !== "checking"
-                        ? "1px solid rgba(0,255,80,.5)"
-                        : "1px solid rgba(0,200,80,.15)",
+                        ? "1px solid rgba(108,229,255,.5)"
+                        : "1px solid rgba(25,124,169,.15)",
                       background: canProceed() && status !== "checking"
-                        ? "rgba(0,255,80,.08)"
+                        ? "rgba(108,229,255,.08)"
                         : "transparent",
-                      color: canProceed() && status !== "checking" ? "#86efac" : "#9ca3af",
+                      color: canProceed() && status !== "checking" ? "#b9e6f5" : "#9ca3af",
                       boxShadow: canProceed() && status !== "checking"
-                        ? "0 0 12px rgba(0,255,80,.1)"
+                        ? "0 0 12px rgba(108,229,255,.1)"
                         : "none",
                     }}
                   >
@@ -498,17 +498,17 @@ export default function AdminLogin() {
           {/* ── Footer ───────────────────────────────────────── */}
           <div
             className="pt-2 space-y-2"
-            style={{ borderTop: "1px solid rgba(0,200,80,.08)" }}
+            style={{ borderTop: "1px solid rgba(25,124,169,.08)" }}
           >
             {status !== "success" && (
               <button
                 onClick={resetForm}
-                className="w-full text-center text-[10px] text-green-500 hover:text-green-300 transition-colors"
+                className="w-full text-center text-[10px] text-cyan-400 hover:text-cyan-200 transition-colors"
               >
                 Reset all fields
               </button>
             )}
-            <p className="text-center text-[10px] text-green-500">
+            <p className="text-center text-[10px] text-cyan-400">
               All admin sessions are fully audited and logged
             </p>
           </div>
@@ -517,14 +517,14 @@ export default function AdminLogin() {
 
       {/* ── Bottom status bar ────────────────────────────────── */}
       <div className="absolute bottom-3 left-0 right-0 flex justify-center">
-        <div className="flex items-center gap-4 text-[10px] text-green-500 tracking-widest">
+        <div className="flex items-center gap-4 text-[10px] text-cyan-400 tracking-widest">
           <span>STELLAR-DOMINION</span>
-          <span className="text-green-700">·</span>
+          <span className="text-cyan-600">·</span>
           <span>ADMIN-AUTH-PROTOCOL</span>
-          <span className="text-green-700">·</span>
-          <span className="text-green-300">SECURE CHANNEL</span>
-          <span className="text-green-700">·</span>
-          <span className="admin-login-blink text-green-400">●</span>
+          <span className="text-cyan-600">·</span>
+          <span className="text-cyan-200">SECURE CHANNEL</span>
+          <span className="text-cyan-600">·</span>
+          <span className="admin-login-blink text-cyan-300">●</span>
         </div>
       </div>
     </div>

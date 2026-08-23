@@ -4,9 +4,9 @@
 
 export const SERVER_SETTINGS = {
   gameName: "Universe_Civilization: Empire-At-War",
-  releaseVersion: "Alpha 1.5.0",
+  releaseVersion: "Alpha 1.5.1",
   universeId: "Nexus-Alpha",
-  buildChannel: "Development",
+  buildChannel: "Production",
 
   // Ports & networking
   defaultPort: 5000,

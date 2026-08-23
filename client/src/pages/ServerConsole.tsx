@@ -134,7 +134,7 @@ function buildBootLines(m: Metrics): TLine[] {
 const MAIN_MENU_LINES: TLine[] = [
   mkLine(""),
   mkLine("  ╔══════════════════════════════════════════════════════╗", "text-magenta-400" ),
-  mkLine("  ║  🛡️  STELLAR DOMINION ADMIN PANEL — Main Menu       ║", "text-purple-300 font-bold"),
+  mkLine("  ║  🛡️  UNIVERSE CIVILIZATION: EMPIRE AT WAR ADMIN PANEL — Main Menu       ║", "text-purple-300 font-bold"),
   mkLine("  ╚══════════════════════════════════════════════════════╝", "text-purple-500"),
   mkLine(""),
   mkLine("  Select an option:", "text-white font-bold"),
@@ -736,7 +736,7 @@ export default function ServerConsole() {
           <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
           <div className="w-3 h-3 rounded-full bg-green-500/80" />
           <span className="ml-3 text-green-500/70 text-xs tracking-widest uppercase">
-            Stellar Dominion :: Admin Terminal v2.0
+            Universe Civilization: Empire at War :: Admin Terminal v2.0
           </span>
         </div>
         <div className="flex items-center gap-4 text-xs text-green-900">

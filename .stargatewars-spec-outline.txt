@@ -1,0 +1,180 @@
+1:# STARGATEWARS
+3:## Complete Game Design & Systems Specification
+15:# 1. Executive Summary
+51:# 2. Design Pillars
+53:## 2.1 Persistent World
+59:## 2.2 Player-Driven Conflict
+76:## 2.3 Asymmetric Races
+91:# 3. Core Game State
+122:# 4. Resource System
+124:## 4.1 Primary Resources
+128:### Naquadah
+150:### Attack Turns
+156:### Untrained Units
+175:# 5. Secondary Resources
+177:## Market Turns
+183:## Mercenaries
+199:# 6. Turn Engine
+224:# 7. Turn Storage
+238:# 8. Economy
+240:## 8.1 Natural Income
+256:# 9. Income Modifiers
+260:### Commander State
+264:### Officer System
+276:### DefCon
+294:# 10. Bank / Vault
+320:# 11. Unit Production
+347:# 12. Personnel System
+369:# 13. Untrained Units
+383:# 14. Miners
+399:# 15. Lifers
+418:# 16. Attack Troops
+431:# 17. Super Attack Troops
+456:# 18. Defense Troops
+469:# 19. Super Defense Troops
+482:# 20. Covert Agents
+500:# 21. Anti-Intelligence Agents
+515:# 22. Covert Level
+531:# 23. Anti-Covert Level
+544:# 24. Technology System
+561:# 25. Siege / Offense Technology
+576:# 26. Fortification / Defense Technology
+589:# 27. Covert Technology
+600:# 28. Anti-Covert Technology
+611:# 29. Unique Technology
+627:# 30. Combat System
+651:# 31. Standard Attack
+693:# 32. Combat Inputs
+709:# 33. Strike Action Formula
+732:# 34. Defense Action Formula
+753:# 35. Covert Action Formula
+777:# 36. Anti-Covert Action Formula
+799:# 37. Rank System
+827:# 38. Information-Hiding System
+841:# 39. Recon / Spy
+860:# 40. Sabotage
+879:# 41. Covert Capacity
+891:# 42. Realm Alert / DefCon
+928:# 43. Raiding
+940:# 44. Loot System
+962:# 45. Casualty System
+972:# 46. Weapon Durability
+992:# 47. Armory
+1014:# 48. Mothership System
+1026:# 49. Mothership Components
+1030:### Volley Bays
+1034:### Shield Bays
+1038:### Fleet Hangars
+1046:# 50. Mothership Equipment
+1060:# 51. Mothership Action
+1075:# 52. Mothership Exploration
+1089:# 53. Planet System
+1108:# 54. Planet Acquisition
+1118:# 55. Planet Creation
+1138:# 56. Planet Conquest
+1152:# 57. Planet Standard Bonuses
+1165:# 58. Planet Bonus Types
+1167:## Attack
+1177:## Defense
+1185:## Covert / Anti-Covert
+1193:## Unit Production
+1201:## Income
+1211:# 59. Planet Sizes
+1231:# 60. Planet Defenses
+1248:# 61. Commander System
+1274:# 62. Commander Income System
+1290:# 63. Officer Unit-Production Relationship
+1300:# 64. Recruitment System
+1315:# 65. Alliance System
+1335:# 66. Alliance Design
+1354:# 67. Commander vs Alliance Hierarchy
+1366:# 68. Market
+1383:# 69. Private Trade Broker
+1408:# 70. Mercenary Market
+1423:# 71. Black Market
+1442:# 72. Supporter Status
+1466:# 73. Protected Planet Treaty
+1476:# 74. Vacation Mode
+1493:# 75. Race Changes
+1514:# 76. Messaging System
+1532:# 77. Intelligence Logs
+1549:# 78. Attack Logs
+1565:# 79. Rankings
+1590:# 80. Glory and Reputation
+1604:# 81. Ascension
+1634:# 82. Ascension Requirements
+1647:# 83. Ascension Conversion
+1665:# 84. Ascension Persistence
+1679:# 85. Ascended Races
+1692:# 86. Re-Ascension
+1718:# 87. Ascension Titles
+1742:# 88. Player Lifecycle
+1788:# 89. Core Gameplay Loop
+1790:## Economic Loop
+1806:## Military Loop
+1824:## Covert Loop
+1842:## Prestige Loop
+1862:# 90. Information Architecture
+1967:# 91. Recommended Modern Data Model
+2012:# 92. Player Schema
+2071:# 93. Combat Resolver Architecture
+2099:# 94. Turn Processor Architecture
+2120:# 95. Market Engine
+2138:# 96. Espionage Engine
+2157:# 97. Planet Engine
+2176:# 98. Ascension Engine
+2193:# 99. Anti-Abuse Rules
+2215:# 100. Anti-Farming Design
+2243:# 101. Economic Sinks
+2267:# 102. Economic Sources
+2282:# 103. Strategic Archetypes
+2286:## Military Raider
+2295:## Fortress
+2305:## Spy Master
+2314:## Industrialist
+2324:## Fleet Commander
+2332:## Political Leader
+2341:## Balanced Ranker
+2354:# 104. Core Progression Graph
+2399:# 105. Functional Requirements for a Recreation
+2403:## Account
+2413:## Resource
+2421:## Economy
+2430:## Military
+2441:## Covert
+2451:## World
+2460:## Social
+2469:## Progression
+2479:## Protection
+2489:# 106. Modernized Server Architecture
+2522:# 107. Recommended Database Tables
+2567:# 108. API Surface
+2638:# 109. Server-Side Security Requirements
+2673:# 110. Deterministic Combat
+2698:# 111. Event-Sourcing Recommendation
+2727:# 112. UI Recreation
+2731:## Main HUD
+2755:# 113. Target Selection UI
+2782:# 114. Battle Report
+2810:# 115. Balance Model
+2840:# 116. Design Philosophy
+2864:# 117. Complete Systems Matrix
+2887:# 118. Reconstructed Master Formula Set
+2889:## Natural Income
+2898:## Bank Capacity
+2905:## UP Cost
+2912:## Strike
+2925:## Defense
+2938:## Covert
+2955:## Anti-Covert
+2972:## Overall Rank
+2987:## Planet Attack Bonus
+2996:## Planet Defense Bonus
+3005:## Planet Covert
+3014:## Planet UP
+3023:## Planet Income
+3036:# 119. Features Confirmed From the Available Documentation
+3108:# 120. Items Requiring Further Historical Verification
+3135:# 121. Modern Recreation Target
+3159:# 122. Core Game Identity
+3216:# 123. Source Notes

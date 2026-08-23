@@ -83,7 +83,7 @@ export default function Privacy() {
 
           <section>
             <h3 className="font-semibold text-slate-900 mb-2">7. Children's Privacy</h3>
-            <p>universe-empire-domions is not intended for children under 13. We do not knowingly collect information from children under 13.</p>
+            <p>Universe Civilization: Empire at War is not intended for children under 13. We do not knowingly collect information from children under 13.</p>
           </section>
 
           <section>

@@ -46,7 +46,7 @@ export default function AccountSetup() {
   const [selectedRace, setSelectedRace] = useState<RaceId>(DEFAULT_RACE);
   const [selectedGovernment, setSelectedGovernment] = useState<GovernmentId>(DEFAULT_GOVERNMENT);
   const [selectedRealm, setSelectedRealm] = useState("");
-  const [empireName, setEmpireName] = useState("Stellar Dominion");
+  const [empireName, setEmpireName] = useState("Universe Civilization: Empire at War");
   const [homeWorldName, setHomeWorldName] = useState("New Colony");
   const [selectedEmpireSlot, setSelectedEmpireSlot] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -63,7 +63,7 @@ export default function AccountSetup() {
     if (isDataLoaded && !hasUserInteracted) {
       setSelectedRace(isRaceId(commander.race) ? commander.race : DEFAULT_RACE);
       setSelectedGovernment(isGovernmentId(government.type) ? government.type : DEFAULT_GOVERNMENT);
-      setEmpireName(commander.empireName || commander.name || "Stellar Dominion");
+      setEmpireName(commander.empireName || commander.name || "Universe Civilization: Empire at War");
       setHomeWorldName(planetName || "New Colony");
     }
   }, [commander?.race, commander?.empireName, government?.type, planetName, hasUserInteracted, isDataLoaded]);
@@ -110,7 +110,7 @@ export default function AccountSetup() {
     const updatedCommander = {
       ...commander,
       race: safeRace,
-      empireName: empireName.trim().slice(0, 64) || "Stellar Dominion",
+      empireName: empireName.trim().slice(0, 64) || "Universe Civilization: Empire at War",
       empireSlot: selectedEmpireSlot, // Save slot info
     };
 

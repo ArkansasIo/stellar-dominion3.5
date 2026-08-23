@@ -63,7 +63,7 @@ class ServerAdminCLI {
   private header(title: string) {
     console.clear();
     console.log(this.colors.bright + this.colors.magenta + '╔════════════════════════════════════════════════╗' + this.colors.reset);
-    console.log(this.colors.bright + this.colors.magenta + '║' + this.colors.reset + this.colors.bright + `  🛡️  STELLAR DOMINION ADMIN - ${title}`.padEnd(43) + this.colors.magenta + '║' + this.colors.reset);
+    console.log(this.colors.bright + this.colors.magenta + '║' + this.colors.reset + this.colors.bright + `  🛡️  UNIVERSE CIVILIZATION: EMPIRE AT WAR ADMIN - ${title}`.padEnd(43) + this.colors.magenta + '║' + this.colors.reset);
     console.log(this.colors.bright + this.colors.magenta + '╚════════════════════════════════════════════════╝' + this.colors.reset + '\n');
   }
 
@@ -792,7 +792,7 @@ class ServerAdminCLI {
 
   async start() {
     console.clear();
-    console.log(this.colors.bright + this.colors.magenta + '\n  🛡️  STELLAR DOMINION SERVER ADMIN PANEL\n' + this.colors.reset);
+    console.log(this.colors.bright + this.colors.magenta + '\n  🛡️  UNIVERSE CIVILIZATION: EMPIRE AT WAR SERVER ADMIN PANEL\n' + this.colors.reset);
     await new Promise(resolve => setTimeout(resolve, 800));
     await this.adminLogin();
   }

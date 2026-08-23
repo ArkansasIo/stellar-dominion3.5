@@ -588,7 +588,7 @@ const SEASON_COSMETICS: SeasonCosmetic[] = [
   { id: "cs_frame_starborn", name: "Starborn Frame", type: "avatar_frame", rarity: "rare", tokenCost: 250, description: "A radiant frame forged from captured starlight.", exclusiveToSeason: "any" },
   { id: "cs_frame_void_walker", name: "Void Walker Frame", type: "avatar_frame", rarity: "epic", tokenCost: 500, description: "A dark matter infused frame pulsing with void energy.", exclusiveToSeason: "any" },
   { id: "cs_frame_eternal", name: "Eternal Frame", type: "avatar_frame", rarity: "mythic", tokenCost: 1500, description: "An immortal frame that glows with the essence of eternity.", exclusiveToSeason: "any" },
-  { id: "cs_banner_stellar_dominion", name: "Stellar Dominion Banner", type: "profile_banner", rarity: "common", tokenCost: 30, description: "Official Stellar Dominion season banner.", exclusiveToSeason: "any" },
+  { id: "cs_banner_stellar_dominion", name: "Universe Civilization: Empire at War Banner", type: "profile_banner", rarity: "common", tokenCost: 30, description: "Official Universe Civilization: Empire at War season banner.", exclusiveToSeason: "any" },
   { id: "cs_banner_war_era", name: "War Era Banner", type: "profile_banner", rarity: "rare", tokenCost: 200, description: "Battle-scarred banner from the galactic wars.", exclusiveToSeason: "any" },
   { id: "cs_banner_ancient_power", name: "Ancient Power Banner", type: "profile_banner", rarity: "legendary", tokenCost: 700, description: "Banner infused with the power of ancient civilizations.", exclusiveToSeason: "any" },
   { id: "cs_hq_war_forge", name: "War Forge HQ", type: "alliance_hq", rarity: "epic", tokenCost: 600, description: "Your alliance HQ becomes a massive war forge.", exclusiveToSeason: "any" },

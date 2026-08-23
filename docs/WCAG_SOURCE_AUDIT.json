@@ -1,0 +1,128 @@
+{
+  "generatedAt": "2026-08-23T05:26:00.955Z",
+  "scanned": {
+    "sourceFiles": 272,
+    "styleFiles": 11,
+    "files": 283
+  },
+  "global": {
+    "focusVisibleRules": 6,
+    "focusRules": 2,
+    "reducedMotionRules": 1,
+    "viewportMeta": "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />"
+  },
+  "findings": [
+    {
+      "level": "review",
+      "rule": "noninteractive-click",
+      "file": "client/src/components/layout/GameLayout.tsx",
+      "count": 3,
+      "message": "Non-interactive elements with click handlers require keyboard and semantic review."
+    },
+    {
+      "level": "review",
+      "rule": "noninteractive-click",
+      "file": "client/src/components/ui/input-group.tsx",
+      "count": 1,
+      "message": "Non-interactive elements with click handlers require keyboard and semantic review."
+    },
+    {
+      "level": "review",
+      "rule": "title-control",
+      "file": "client/src/components/ui/sidebar.tsx",
+      "count": 1,
+      "message": "Title text is not a reliable accessible name by itself."
+    },
+    {
+      "level": "review",
+      "rule": "noninteractive-click",
+      "file": "client/src/pages/BattleLogs.tsx",
+      "count": 1,
+      "message": "Non-interactive elements with click handlers require keyboard and semantic review."
+    },
+    {
+      "level": "review",
+      "rule": "noninteractive-click",
+      "file": "client/src/pages/DatabaseAdmin.tsx",
+      "count": 1,
+      "message": "Non-interactive elements with click handlers require keyboard and semantic review."
+    },
+    {
+      "level": "review",
+      "rule": "noninteractive-click",
+      "file": "client/src/pages/DimensionalHub.tsx",
+      "count": 1,
+      "message": "Non-interactive elements with click handlers require keyboard and semantic review."
+    },
+    {
+      "level": "review",
+      "rule": "noninteractive-click",
+      "file": "client/src/pages/FittingEnhanced.tsx",
+      "count": 1,
+      "message": "Non-interactive elements with click handlers require keyboard and semantic review."
+    },
+    {
+      "level": "review",
+      "rule": "title-control",
+      "file": "client/src/pages/GalaxySystems.tsx",
+      "count": 1,
+      "message": "Title text is not a reliable accessible name by itself."
+    },
+    {
+      "level": "review",
+      "rule": "noninteractive-click",
+      "file": "client/src/pages/Government.tsx",
+      "count": 1,
+      "message": "Non-interactive elements with click handlers require keyboard and semantic review."
+    },
+    {
+      "level": "review",
+      "rule": "noninteractive-click",
+      "file": "client/src/pages/Hazards.tsx",
+      "count": 1,
+      "message": "Non-interactive elements with click handlers require keyboard and semantic review."
+    },
+    {
+      "level": "review",
+      "rule": "noninteractive-click",
+      "file": "client/src/pages/Market.tsx",
+      "count": 1,
+      "message": "Non-interactive elements with click handlers require keyboard and semantic review."
+    },
+    {
+      "level": "review",
+      "rule": "noninteractive-click",
+      "file": "client/src/pages/Messages.tsx",
+      "count": 2,
+      "message": "Non-interactive elements with click handlers require keyboard and semantic review."
+    },
+    {
+      "level": "review",
+      "rule": "title-control",
+      "file": "client/src/pages/Navigation.tsx",
+      "count": 1,
+      "message": "Title text is not a reliable accessible name by itself."
+    },
+    {
+      "level": "review",
+      "rule": "noninteractive-click",
+      "file": "client/src/pages/ServerConsole.tsx",
+      "count": 1,
+      "message": "Non-interactive elements with click handlers require keyboard and semantic review."
+    },
+    {
+      "level": "review",
+      "rule": "noninteractive-click",
+      "file": "client/src/pages/Skills.tsx",
+      "count": 1,
+      "message": "Non-interactive elements with click handlers require keyboard and semantic review."
+    },
+    {
+      "level": "review",
+      "rule": "noninteractive-click",
+      "file": "client/src/pages/UniverseGenerator.tsx",
+      "count": 1,
+      "message": "Non-interactive elements with click handlers require keyboard and semantic review."
+    }
+  ]
+}

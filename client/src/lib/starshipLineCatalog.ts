@@ -135,7 +135,7 @@ export const STARSHIP_LINE_BLUEPRINTS: StarshipLineBlueprint[] = SHIPYARD_CATEGO
       role: seed.role,
       sequence,
       name: variant,
-      description: `${variant} belongs to ${category.name}, a Spaceship Command-inspired doctrine line redesigned for Stellar Dominion around ${category.doctrine.toLowerCase()}`,
+      description: `${variant} belongs to ${category.name}, a Spaceship Command-inspired doctrine line redesigned for Universe Civilization: Empire at War around ${category.doctrine.toLowerCase()}`,
       doctrine: category.doctrine,
       stats: {
         hull: Math.floor((920 + powerBase * 7.4) * capitalWeight),

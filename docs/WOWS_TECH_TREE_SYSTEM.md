@@ -1,6 +1,6 @@
 # World of Warships-Style Technology Tree System
 
-Branching progression system for Stellar Dominion — each race has a unique tech tree with fork points, side branches, and cross-dependencies.
+Branching progression system for Universe Civilization: Empire at War — each race has a unique tech tree with fork points, side branches, and cross-dependencies.
 
 ---
 
@@ -60,7 +60,7 @@ Inspired by World of Warships tech trees:
 
 Each race has **5 main branches** mirroring WoWs ship classes:
 
-| Branch | WoWs Equivalent | Stellar Dominion Focus |
+| Branch | WoWs Equivalent | Universe Civilization: Empire at War Focus |
 |--------|----------------|----------------------|
 | **Hull** | Ship hulls | Empire infrastructure, buildings, defenses |
 | **Weapons** | Main battery | Offensive technologies, ship weapons |

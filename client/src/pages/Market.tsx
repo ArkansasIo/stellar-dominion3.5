@@ -443,7 +443,7 @@ const AuctionHouseContent = () => {
             />
           </div>
           <Select value={itemTypeFilter} onValueChange={setItemTypeFilter}>
-            <SelectTrigger className="w-40" data-testid="select-item-type">
+            <SelectTrigger aria-label="Filter auctions by item type" className="w-40" data-testid="select-item-type">
               <SelectValue placeholder="Item Type" />
             </SelectTrigger>
             <SelectContent>
@@ -456,7 +456,7 @@ const AuctionHouseContent = () => {
             </SelectContent>
           </Select>
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-40" data-testid="select-sort-by">
+            <SelectTrigger aria-label="Sort auction results" className="w-40" data-testid="select-sort-by">
               <SelectValue placeholder="Sort By" />
             </SelectTrigger>
             <SelectContent>

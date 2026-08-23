@@ -459,7 +459,7 @@ export function getBattlePassTierProgress(xp: number) {
 export const STORY_ACTS: StoryActDefinition[] = ACT_THEMES.map((theme, index) => ({
   act: index + 1,
   title: theme.title,
-  synopsis: `Act ${index + 1} focuses on ${theme.theme}, escalating your empire toward stellar dominion.`,
+  synopsis: `Act ${index + 1} focuses on ${theme.theme}, escalating your empire toward Universe Civilization: Empire at War.`,
 }));
 
 const MAIN_MISSIONS_PER_CHAPTER = Math.max(1, Math.floor(STORY_MAIN_MISSIONS_PER_ACT / STORY_CHAPTERS_PER_ACT));

@@ -285,7 +285,7 @@ export default function Commander() {
    const [selectedLeaderClass, setSelectedLeaderClass] = useState<string>("all");
    const [selectedTalentTier, setSelectedTalentTier] = useState<number>(1);
    const [commanderNameDraft, setCommanderNameDraft] = useState<string>(commander?.name || "Commander");
-   const [empireNameDraft, setEmpireNameDraft] = useState<string>(commander?.empireName || "Stellar Dominion");
+   const [empireNameDraft, setEmpireNameDraft] = useState<string>(commander?.empireName || "Universe Civilization: Empire at War");
    const [homeWorldNameDraft, setHomeWorldNameDraft] = useState<string>(planetName || "New Colony");
    const [profileDraft, setProfileDraft] = useState<CommanderProfilePayload>({
       callsign: "",
@@ -299,7 +299,7 @@ export default function Commander() {
    }, [commander?.name]);
 
    useEffect(() => {
-      setEmpireNameDraft(commander?.empireName || "Stellar Dominion");
+      setEmpireNameDraft(commander?.empireName || "Universe Civilization: Empire at War");
    }, [commander?.empireName]);
 
    useEffect(() => {
@@ -737,7 +737,7 @@ export default function Commander() {
                             </div>
                             <div className="grid grid-cols-2 gap-2 text-xs">
                               <div className="rounded border border-slate-200 bg-slate-50 px-3 py-2">
-                                Empire: <span className="font-semibold text-slate-900">{empireName || "Stellar Dominion"}</span>
+                                Empire: <span className="font-semibold text-slate-900">{empireName || "Universe Civilization: Empire at War"}</span>
                               </div>
                               <div className="rounded border border-slate-200 bg-slate-50 px-3 py-2">
                                 Home World: <span className="font-semibold text-slate-900">{planetName || "New Colony"}</span>

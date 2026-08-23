@@ -60,7 +60,7 @@ async function saveAnnouncements(announcements: ServerAnnouncement[]): Promise<v
 const SEED_NEWS: NewsArticle[] = [
   {
     id: "news_001",
-    title: "Stellar Dominion v1.6.0 — Galactic Command Update",
+    title: "Universe Civilization: Empire at War v1.6.0 — Galactic Command Update",
     content: "The latest update brings Starbase Infrastructure, Moon Colonization, and a complete overhaul of the fleet combat system. New module slots allow deep customization of your starbases. Moon bases now generate passive resources and unlock unique research paths.",
     category: "update",
     author: "Stellar Command",
@@ -143,7 +143,7 @@ const SEED_NEWS: NewsArticle[] = [
 const SEED_ANNOUNCEMENTS: ServerAnnouncement[] = [
   {
     id: "ann_001",
-    message: "Welcome to Stellar Dominion! Server maintenance scheduled for Sunday 04:00 UTC.",
+    message: "Welcome to Universe Civilization: Empire at War! Server maintenance scheduled for Sunday 04:00 UTC.",
     priority: "medium",
     createdAt: new Date(Date.now() - 1 * 3600000).toISOString(),
   },

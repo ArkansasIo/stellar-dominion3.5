@@ -1,6 +1,6 @@
 <!-- FILE: UML.md -->
 <!-- STATUS: REWRITTEN | UPDATED: 2026-06-18 -->
-# UML Reference - Stellar Dominion
+# UML Reference - Universe Civilization: Empire at War
 
 Simplified UML reference for quick navigation.
 

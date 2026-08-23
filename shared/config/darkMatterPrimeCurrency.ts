@@ -1,7 +1,7 @@
 /**
  * DARK MATTER — PRIME CURRENCY SYSTEM
  * ============================================================================
- * Dark Matter is the premium "prime" currency of the Stellar Dominion universe.
+ * Dark Matter is the premium "prime" currency of the Universe Civilization: Empire at War universe.
  * It can be earned through gameplay, purchased, or exchanged from other currencies.
  * Used for premium upgrades, gacha pulls, speed-ups, cosmetics, and exclusive items.
  */

@@ -15,11 +15,14 @@ import {
   ArrowUpCircle, Users, Trophy, Swords, Eye, MessageSquare, Bell
 } from "lucide-react";
 import { getPlanetDetails } from "@/lib/planetUtils";
+import { calculateResourceProduction } from "@/lib/resourceMath";
+import { sumLegacyUnits } from "@/lib/unitState";
 import Navigation from "./Navigation";
 import { Link } from "wouter";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { UnifiedCommandBridge } from "@/components/stargate/UnifiedCommandBridge";
 
 const TEMP_THEME_IMAGE = "/theme-temp.png";
 
@@ -111,19 +114,20 @@ export default function Overview() {
   
   const displayUsername = username || localStorage.getItem("stellar_username") || "Commander";
 
-  const metalProduction = Math.floor(30 * buildings.metalMine * 1.1);
-  const crystalProduction = Math.floor(20 * buildings.crystalMine * 1.05);
-  const deuteriumProduction = Math.floor(10 * buildings.deuteriumSynthesizer * 1.02);
-  const energyProduction = Math.floor(20 * buildings.solarPlant) - Math.floor(10 * (buildings.metalMine + buildings.crystalMine + buildings.deuteriumSynthesizer));
+  const production = calculateResourceProduction(buildings);
+  const metalProduction = production.metal;
+  const crystalProduction = production.crystal;
+  const deuteriumProduction = production.deuterium;
+  const energyProduction = production.energy;
 
-  const totalFleetPower = Object.values(units).reduce((sum, count) => sum + (count * 100), 0);
+  const totalFleetPower = sumLegacyUnits(units) * 100;
   const totalResearchLevels = Object.values(research).reduce((sum, level) => sum + level, 0);
   const unreadMessages = messages.filter((m: any) => !m.read && m.to === "Commander").length;
 
   const buildQueue = queue.filter(q => q.type === "building");
   const researchQueue = queue.filter(q => q.type === "research");
   const unitQueue = queue.filter(q => q.type === "unit");
-  const totalUnits = Object.values(units).reduce((sum, count) => sum + count, 0);
+  const totalUnits = sumLegacyUnits(units);
 
   const missionBreakdown = {
     outbound: activeMissions.filter((mission) => mission.status === "outbound").length,
@@ -360,6 +364,8 @@ export default function Overview() {
             </CardContent>
           </Card>
         </div>
+
+        <UnifiedCommandBridge />
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           <Card className="bg-white border-slate-200 shadow-sm" data-testid="card-quick-actions">

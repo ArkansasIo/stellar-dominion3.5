@@ -18,6 +18,7 @@ import {
   Image,
   List,
   Moon,
+  Monitor,
   Package,
   Search,
   Sun,
@@ -25,7 +26,7 @@ import {
 
 const TEMP_THEME_IMAGE = "/theme-temp.png";
 
-type ThemePreset = "og-white" | "black-style" | "imperial-gold";
+type ThemePreset = "og-white" | "black-style" | "imperial-gold" | "windows-blue";
 
 type AssetItem = {
   id: string;
@@ -62,6 +63,13 @@ const THEMES: Array<{
   icon: typeof Sun;
   preview: string;
 }> = [
+  {
+    id: "windows-blue",
+    name: "Industrial Blue Command",
+    description: "Near-black navy command shell, electric cyan telemetry, teal active features, and indigo logic panels.",
+    icon: Monitor,
+    preview: "border-[#197ca9] bg-gradient-to-br from-[#092b4b] via-[#071d35] to-[#020d1c] text-[#e7f8ff]",
+  },
   {
     id: "og-white",
     name: "Command White",
@@ -150,7 +158,7 @@ export default function GameAssetsGallery() {
           display: {
             ...(current.display || {}),
             themePreset,
-            darkMode: themePreset !== "og-white",
+            darkMode: ["black-style", "imperial-gold"].includes(themePreset),
           },
         }),
       });

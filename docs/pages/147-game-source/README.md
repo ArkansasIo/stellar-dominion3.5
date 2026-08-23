@@ -137,4 +137,4 @@ This PHP backend is being **migrated to TypeScript**.
 
 ---
 
-*Part of Stellar Dominion 3.5 documentation*
+*Part of Universe Civilization: Empire at War documentation*

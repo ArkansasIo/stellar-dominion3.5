@@ -54,9 +54,10 @@ export class ServerStatusService {
     this.serviceMetrics.responseTimes.push(responseTime);
     this.serviceMetrics.requestTimestamps.push(now);
 
-    if (statusCode >= 200 && statusCode < 300) {
+    if (statusCode >= 200 && statusCode < 400) {
       this.serviceMetrics.successCount++;
-    } else {
+    } else if (statusCode >= 500) {
+      // Health status reflects service failures, not expected client/authentication responses.
       this.serviceMetrics.errorCount++;
     }
 

@@ -42,7 +42,7 @@ export default function Terms() {
         <CardContent className="space-y-6 text-sm text-slate-600 max-h-[60vh] overflow-y-auto">
           <section>
             <h3 className="font-semibold text-slate-900 mb-2">1. Acceptance of Terms</h3>
-            <p>By accessing and playing universe-empire-domions, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use the game.</p>
+            <p>By accessing and playing Universe Civilization: Empire at War, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use the game.</p>
           </section>
 
           <section>
@@ -63,7 +63,7 @@ export default function Terms() {
 
           <section>
             <h3 className="font-semibold text-slate-900 mb-2">4. Virtual Items</h3>
-            <p>All in-game items, resources, and currencies are virtual and have no real-world value. They remain the property of universe-empire-domions.</p>
+            <p>All in-game items, resources, and currencies are virtual and have no real-world value. They remain the property of Universe Civilization: Empire at War.</p>
           </section>
 
           <section>
@@ -78,7 +78,7 @@ export default function Terms() {
 
           <section>
             <h3 className="font-semibold text-slate-900 mb-2">7. Disclaimer</h3>
-            <p>universe-empire-domions is provided "as is" without warranties of any kind. We are not liable for any damages arising from your use of the game.</p>
+            <p>Universe Civilization: Empire at War is provided "as is" without warranties of any kind. We are not liable for any damages arising from your use of the game.</p>
           </section>
 
           <section>

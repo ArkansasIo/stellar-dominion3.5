@@ -23,11 +23,12 @@ import {
   ShieldAlert,
   AlertTriangle,
 } from "lucide-react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { MENU_ASSETS } from "@shared/config";
+import { BUILD_INFO } from "@shared/config/buildConfig";
 
-const GAME_VERSION = "Alpha 1.5.0";
+const GAME_VERSION = BUILD_INFO.releaseLabel;
 const UNIVERSE_ID = "Nexus-Alpha";
 const TEMP_THEME_IMAGE = "/theme-temp.png";
 
@@ -98,6 +99,7 @@ function formatTimeAgo(timestamp?: number) {
 export default function Auth() {
   const { isLoading, login } = useGame();
   const queryClient = useQueryClient();
+  const [, setLocation] = useLocation();
   const [isLogin, setIsLogin] = useState(true);
   const [isForgot, setIsForgot] = useState(false);
   const [username, setUsername] = useState("");
@@ -155,17 +157,50 @@ export default function Auth() {
     localStorage.removeItem("stellar_password");
   };
 
-  const useDemoAccount = () => {
-    saveCredentials("player1", "password123");
-    setUsername("player1");
-    setPassword("password123");
-    login();
+  const submitLogin = async (user: string, pass: string) => {
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: user, password: pass }),
+        credentials: "include",
+      });
+      const payload = await response.json().catch(() => ({ message: "Login failed" }));
+      if (!response.ok) {
+        setError(payload.message || "Invalid username or password");
+        return false;
+      }
+      saveCredentials(user, pass);
+      await login();
+      setLocation("/");
+      return true;
+    } catch {
+      setError("Login failed: network error");
+      return false;
+    }
+  };
+
+  const useDemoAccount = async () => {
+    const demoUsername = "player1";
+    const demoPassword = "password123";
+    setUsername(demoUsername);
+    setPassword(demoPassword);
+    setError("");
+    setSubmitting(true);
+    await submitLogin(demoUsername, demoPassword);
+    setSubmitting(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setSubmitting(true);
+
+    if (isLogin) {
+      await submitLogin(username, password);
+      setSubmitting(false);
+      return;
+    }
 
     if (!isLogin) {
       try {
@@ -189,7 +224,7 @@ export default function Auth() {
 
     saveCredentials(username, password);
     setSubmitting(false);
-    login();
+    await login();
   };
 
   const handleForgotPassword = async (e: React.FormEvent) => {
@@ -242,22 +277,22 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-3 pt-20 pb-14 relative overflow-hidden">
-      <header className="fixed top-0 inset-x-0 h-16 border-b border-slate-200 bg-white/95 backdrop-blur-sm z-30">
+    <div className="sd-auth-shell min-h-screen bg-white flex items-center justify-center p-3 pt-20 pb-14 relative overflow-hidden">
+      <header className="sd-auth-header fixed top-0 inset-x-0 h-16 border-b border-slate-200 bg-white/95 backdrop-blur-sm z-30">
         <div className="max-w-6xl mx-auto h-full px-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Button asChild variant="outline" size="sm" className="text-xs text-slate-700 border-slate-300 hover:bg-slate-100">
+            <Button asChild variant="outline" size="sm" className="sd-auth-repo-link text-xs text-slate-700 border-slate-300 hover:bg-slate-100">
               <a href="https://github.com/ArkansasIo/universe-empire-domions" target="_blank" rel="noopener noreferrer" data-testid="button-github-top-left">
                 <Github className="w-4 h-4 mr-1" /> GitHub
               </a>
             </Button>
-            <Button asChild variant="outline" size="sm" className="text-xs text-cyan-700 border-cyan-300 hover:bg-cyan-50">
+            <Button asChild variant="outline" size="sm" className="sd-auth-repo-link text-xs text-cyan-700 border-cyan-300 hover:bg-cyan-50">
               <a href="https://github.com/ArkansasIo/stellar-dominion3" target="_blank" rel="noopener noreferrer" data-testid="button-stellar-dominion3-github">
-                <Github className="w-4 h-4 mr-1" /> Stellar Dominion 3
+                <Github className="w-4 h-4 mr-1" /> Universe Civilization: Empire at War
               </a>
             </Button>
             <Rocket className="w-5 h-5 text-primary" />
-            <span className="font-orbitron font-bold text-sm text-slate-900 tracking-wide">universe-empire-domions</span>
+            <span className="font-orbitron font-bold text-sm text-slate-900 tracking-wide">Universe Civilization: Empire at War</span>
           </div>
           <div className="flex items-center gap-1">
             <Link href="/forums"><Button variant="ghost" size="sm" className="text-xs text-slate-600 hover:text-slate-900">Forums</Button></Link>
@@ -283,17 +318,17 @@ export default function Auth() {
 
       <div className="relative z-10 w-full max-w-5xl mx-auto">
         <div className="grid gap-4 xl:grid-cols-2 items-stretch">
-          <Card className="flex min-h-0 w-full flex-col border border-slate-300 bg-white text-slate-900 shadow-lg transition-shadow duration-300 hover:shadow-xl xl:max-h-[calc(100vh-8rem)]">
+          <Card className="sd-auth-login-card flex min-h-0 w-full flex-col border border-slate-300 bg-white text-slate-900 shadow-lg transition-shadow duration-300 hover:shadow-xl xl:max-h-[calc(100vh-8rem)]">
             <CardHeader className="pb-2 text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-slate-800 to-slate-900 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg overflow-hidden">
+              <div className="sd-auth-identity-icon w-16 h-16 bg-gradient-to-br from-slate-800 to-slate-900 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg overflow-hidden">
                 <img
                   src={MENU_ASSETS.NAVIGATION.EXPLORATION.path}
-                  alt="universe-empire-domions"
+                  alt="Universe Civilization: Empire at War"
                   className="w-10 h-10 object-contain"
                   onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }}
                 />
               </div>
-              <CardTitle className="text-3xl font-orbitron font-bold tracking-wider text-slate-900 xl:text-[2rem]">universe-empire-domions</CardTitle>
+              <CardTitle className="text-3xl font-orbitron font-bold tracking-wider text-slate-900 xl:text-[2rem]">Universe Civilization: Empire at War</CardTitle>
               <CardDescription className="mt-2 font-rajdhani text-base font-medium text-slate-700">Command your fleet. Conquer the stars.</CardDescription>
             </CardHeader>
 
@@ -309,7 +344,7 @@ export default function Auth() {
                   </div>
                   <div className="bg-white border border-green-200 p-3 rounded flex items-center justify-between font-mono text-sm">
                     <span className="text-slate-900 break-all">{tempPassword}</span>
-                    <button type="button" onClick={copyPassword} className="ml-2 shrink-0 p-1 hover:bg-slate-100 rounded transition-colors" data-testid="button-copy-password">
+                    <button type="button" aria-label="Copy temporary password" onClick={copyPassword} className="ml-2 shrink-0 p-1 hover:bg-slate-100 rounded transition-colors" data-testid="button-copy-password">
                       {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4 text-slate-600" />}
                     </button>
                   </div>
@@ -330,7 +365,7 @@ export default function Auth() {
                 </div>
               ) : (
                 <>
-                  <div className="bg-slate-50 border border-slate-300 p-3 rounded-lg text-xs text-slate-700 flex gap-2 items-start">
+                  <div className="sd-auth-instruction-card bg-slate-50 border border-slate-300 p-3 rounded-lg text-xs text-slate-700 flex gap-2 items-start">
                     <Shield className="w-4 h-4 shrink-0 mt-0.5 text-slate-600" />
                     <p>{isForgot ? "Enter your account details to reset your password." : (isLogin ? "Enter your credentials to command your fleet." : "Create an account to start your conquest.")}</p>
                   </div>
@@ -338,20 +373,25 @@ export default function Auth() {
                   <form onSubmit={isForgot ? handleForgotPassword : handleSubmit} className="space-y-4">
                     {isLogin && !isForgot && (
                       <div className="space-y-3">
-                        <Button type="button" onClick={useDemoAccount} variant="outline" className="w-full border-slate-300 text-slate-700 hover:bg-slate-100" data-testid="button-demo-login" disabled={submitting}>
+                        <Button type="button" onClick={useDemoAccount} variant="outline" className="sd-auth-demo-button w-full border-slate-300 text-slate-700 hover:bg-slate-100" data-testid="button-demo-login" disabled={submitting}>
                           Use Demo Account (player1)
                         </Button>
-                        <div className="rounded-lg border border-red-200 bg-red-50/80 p-3">
-                          <div className="flex items-start gap-2 text-red-900">
-                            <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" />
-                            <div className="space-y-2">
-                              <p className="text-xs font-semibold uppercase tracking-[0.2em]">Administrator Access</p>
-                              <p className="text-xs text-red-800">
+                        <div className="sd-admin-access-card rounded-lg border p-3">
+                          <div className="flex items-start gap-3">
+                            <div className="sd-admin-access-icon mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md border">
+                              <ShieldCheck className="h-4 w-4" aria-hidden="true" />
+                            </div>
+                            <div className="min-w-0 space-y-2">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <p className="sd-admin-access-title text-xs font-semibold uppercase tracking-[0.2em]">Administrator Access</p>
+                                <span className="sd-admin-access-badge rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em]">Restricted</span>
+                              </div>
+                              <p className="sd-admin-access-copy text-xs">
                                 Founder, owner, and dev-admin accounts use the dedicated control login.
                               </p>
                               <Link href="/admin-login">
-                                <Button type="button" variant="outline" size="sm" className="border-red-300 bg-white text-red-900 hover:bg-red-100" data-testid="button-admin-login-link">
-                                  Open Admin Login
+                                <Button type="button" variant="outline" size="sm" className="sd-admin-access-button" data-testid="button-admin-login-link">
+                                  <ShieldCheck className="mr-1.5 h-3.5 w-3.5" /> Open Admin Login
                                 </Button>
                               </Link>
                             </div>
@@ -496,7 +536,7 @@ export default function Auth() {
             <CardFooter className="flex flex-col items-center gap-3 border-t border-slate-300 pb-5 pt-5">
               <Link href="/about">
                 <Button variant="ghost" className="text-slate-700 hover:text-slate-900 transition-colors" data-testid="button-about">
-                  <Info className="w-4 h-4 mr-2" /> About universe-empire-domions
+                  <Info className="w-4 h-4 mr-2" /> About Universe Civilization: Empire at War
                 </Button>
               </Link>
               <div className="flex items-center gap-4 text-xs text-slate-600">
@@ -511,7 +551,7 @@ export default function Auth() {
             </CardFooter>
           </Card>
 
-          <aside className="flex min-h-0 flex-col rounded-2xl border border-slate-200 bg-white shadow-lg overflow-hidden xl:max-h-[calc(100vh-8rem)]">
+          <aside className="sd-auth-health-panel flex min-h-0 flex-col rounded-2xl border border-slate-200 bg-white shadow-lg overflow-hidden xl:max-h-[calc(100vh-8rem)]">
             <div className="border-b border-slate-200 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 px-4 py-4 text-white">
               <div className="flex items-center gap-3 mb-3">
                 <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-400/10 ring-1 ring-emerald-200/20">
@@ -591,9 +631,9 @@ export default function Auth() {
         </div>
       </div>
 
-      <div className="fixed bottom-0 inset-x-0 border-t border-slate-300 bg-white/95 backdrop-blur-sm z-20">
+      <div className="sd-auth-footer fixed bottom-0 inset-x-0 border-t border-slate-300 bg-white/95 backdrop-blur-sm z-20">
         <div className="max-w-4xl mx-auto px-4 py-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-slate-600">
-          <span className="font-semibold text-slate-700">universe-empire-domions</span>
+          <span className="font-semibold text-slate-700">Universe Civilization: Empire at War</span>
           <span>&bull;</span>
           <span>Version {GAME_VERSION}</span>
           <span>&bull;</span>
@@ -622,7 +662,7 @@ export default function Auth() {
         </div>
       </div>
 
-      <Button asChild variant="outline" size="sm" className="fixed bottom-20 right-4 z-30 border-slate-300 text-slate-700 hover:bg-slate-100">
+      <Button asChild variant="outline" size="sm" className="sd-auth-license-button fixed bottom-20 right-4 z-30 border-slate-300 text-slate-700 hover:bg-slate-100">
         <a href="https://github.com/ArkansasIo/universe-empire-domions/blob/master/LICENSE" target="_blank" rel="noopener noreferrer" data-testid="button-license-bottom-right">
           <FileText className="w-4 h-4 mr-1" /> License
         </a>

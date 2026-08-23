@@ -142,6 +142,115 @@
   --sd-resource-alloy: #b8c58b;
 }
 
+:root[data-sd-theme="windows-blue"] {
+  --sd-theme-surface: light;
+  --sd-text-primary: #102a4c;
+  --sd-text-secondary: #58708e;
+  --sd-text-highlight: #0b63ce;
+
+  --sd-button-top: #f8fbff;
+  --sd-button-bottom: #cfe2f7;
+  --sd-button-top-hover: #ffffff;
+  --sd-button-bottom-hover: #b8d8f5;
+  --sd-button-top-active: #2785e7;
+  --sd-button-bottom-active: #0d5fb9;
+  --sd-button-frame: #7eaddb;
+  --sd-button-frame-active: #0b6ed5;
+
+  --sd-panel-top: rgba(255, 255, 255, 0.90);
+  --sd-panel-bottom: rgba(214, 232, 249, 0.92);
+  --sd-panel-border: #8eb9e4;
+  --sd-panel-glow: rgba(22, 119, 220, 0.18);
+
+  --sd-star-glow: #ffd262;
+  --sd-orbit-lines: #67aeea;
+  --sd-hyperlanes: #0b6ed5;
+  --sd-nebula-a: rgba(31, 111, 205, 0.16);
+  --sd-nebula-b: rgba(125, 198, 255, 0.26);
+
+  --sd-shell-bg: #eaf4ff;
+  --sd-shell-nebula-a: rgba(58, 132, 215, 0.18);
+  --sd-shell-nebula-b: rgba(183, 225, 255, 0.52);
+  --sd-scene-accent-a: rgba(255, 216, 94, 0.12);
+  --sd-scene-accent-b: rgba(20, 112, 210, 0.12);
+
+  --sd-sidebar-top: rgba(245, 250, 255, 0.97);
+  --sd-sidebar-bottom: rgba(205, 225, 246, 0.97);
+  --sd-sidebar-radial: rgba(38, 127, 219, 0.16);
+  --sd-sidebar-status-top: rgba(243, 249, 255, 0.97);
+  --sd-sidebar-status-bottom: rgba(199, 220, 243, 0.97);
+
+  --sd-command-bar-top: rgba(250, 253, 255, 0.98);
+  --sd-command-bar-bottom: rgba(212, 230, 248, 0.98);
+  --sd-top-link-top: rgba(255, 255, 255, 0.94);
+  --sd-top-link-bottom: rgba(222, 237, 252, 0.94);
+  --sd-realm-shell-top: rgba(245, 251, 255, 0.98);
+  --sd-realm-shell-bottom: rgba(206, 226, 247, 0.98);
+  --sd-realm-status-top: rgba(24, 122, 222, 0.17);
+  --sd-realm-status-bottom: rgba(13, 91, 184, 0.25);
+
+  --sd-table-top: rgba(255, 255, 255, 0.96);
+  --sd-table-bottom: rgba(221, 237, 252, 0.96);
+  --sd-table-head-top: rgba(225, 240, 253, 0.98);
+  --sd-table-head-bottom: rgba(197, 220, 244, 0.98);
+  --sd-table-footer-top: rgba(237, 247, 255, 0.96);
+  --sd-table-footer-bottom: rgba(210, 229, 248, 0.96);
+
+  --sd-input-top: rgba(255, 255, 255, 0.98);
+  --sd-input-bottom: rgba(225, 239, 253, 0.98);
+  --sd-select-content-top: rgba(255, 255, 255, 0.99);
+  --sd-select-content-bottom: rgba(215, 234, 252, 0.99);
+  --sd-tabs-top: rgba(244, 251, 255, 0.98);
+  --sd-tabs-bottom: rgba(211, 231, 250, 0.98);
+  --sd-badge-top: rgba(245, 251, 255, 0.98);
+  --sd-badge-bottom: rgba(207, 229, 249, 0.98);
+
+  --sd-resource-metal: #60758a;
+  --sd-resource-energy: #b77900;
+  --sd-resource-crystal: #c24668;
+  --sd-resource-science: #0b6ed5;
+  --sd-resource-alloy: #27855d;
+}
+
+:root[data-sd-theme="windows-blue"] .sd-game-shell {
+  background:
+    radial-gradient(circle at 84% 8%, rgba(115, 194, 255, 0.48), transparent 27rem),
+    radial-gradient(circle at 5% 88%, rgba(45, 128, 221, 0.18), transparent 30rem),
+    linear-gradient(145deg, #f7fbff 0%, #e4f1ff 48%, #cfe4f8 100%);
+}
+
+:root[data-sd-theme="windows-blue"] .sd-topbar,
+:root[data-sd-theme="windows-blue"] .sd-command-bar,
+:root[data-sd-theme="windows-blue"] .sd-panel,
+:root[data-sd-theme="windows-blue"] [class*="sd-panel"] {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 10px 28px rgba(18, 79, 142, 0.12);
+}
+
+:root[data-sd-theme="windows-blue"] .sd-win-command {
+  color: #102a4c;
+}
+
+:root[data-sd-theme="windows-blue"] .sd-win-command .sd-win-window {
+  border: 1px solid rgba(84, 150, 214, 0.58);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(220, 237, 253, 0.90));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.98), 0 12px 24px rgba(24, 96, 166, 0.12);
+}
+
+:root[data-sd-theme="windows-blue"] .sd-win-command .sd-win-window :is(.text-white, [class*="text-slate-"]) {
+  color: #183b63 !important;
+}
+
+:root[data-sd-theme="windows-blue"] .sd-win-command .sd-win-window :is(input, [role="combobox"]) {
+  border-color: #94bde5;
+  background: linear-gradient(180deg, #ffffff, #e6f2ff);
+  color: #16395f;
+}
+
+:root[data-sd-theme="windows-blue"] .sd-win-command .sd-win-window .bg-slate-900,
+:root[data-sd-theme="windows-blue"] .sd-win-command .sd-win-window .bg-slate-950 {
+  background: linear-gradient(180deg, rgba(247, 252, 255, 0.94), rgba(211, 232, 251, 0.94)) !important;
+}
+
 :root,
 :root[data-sd-theme="og-white"] {
   --sd-theme-surface: light;
@@ -226,4 +335,849 @@
 
 .sd-highlight-text {
   color: var(--sd-text-highlight);
+}
+
+/* Industrial-blue command-center redesign for the Windows Blue preset. */
+:root[data-sd-theme="windows-blue"] {
+  --sd-theme-surface: dark;
+  --sd-text-primary: #e7f8ff;
+  --sd-text-secondary: #b7dff0;
+  --sd-text-highlight: #55d7ff;
+
+  --sd-button-top: #104b79;
+  --sd-button-bottom: #061c1c;
+  --sd-button-top-hover: #12609a;
+  --sd-button-bottom-hover: #071e36;
+  --sd-button-top-active: #197ca9;
+  --sd-button-bottom-active: #0b345a;
+  --sd-button-frame: #185b88;
+  --sd-button-frame-active: #55d7ff;
+
+  --sd-panel-top: #092b4b;
+  --sd-panel-bottom: #071d35;
+  --sd-panel-border: #185b88;
+  --sd-panel-glow: rgba(40, 189, 231, 0.14);
+  --sd-accent-cyan: #28bde7;
+  --sd-accent-cyan-soft: #2baed6;
+  --sd-accent-cyan-bright: #55d7ff;
+  --sd-accent-cyan-interface: #62d8ff;
+  --sd-accent-cyan-signal: #6ce5ff;
+  --sd-accent-teal: #42d3c5;
+  --sd-accent-indigo: #8a9dff;
+
+  --sd-star-glow: #42d3c5;
+  --sd-orbit-lines: #2baed6;
+  --sd-hyperlanes: #55d7ff;
+  --sd-nebula-a: rgba(25, 124, 169, 0.17);
+  --sd-nebula-b: rgba(138, 157, 255, 0.10);
+  --sd-shell-bg: #000000;
+  --sd-shell-nebula-a: rgba(9, 43, 75, 0.36);
+  --sd-shell-nebula-b: rgba(6, 28, 28, 0.30);
+  --sd-scene-accent-a: rgba(40, 189, 231, 0.12);
+  --sd-scene-accent-b: rgba(138, 157, 255, 0.10);
+
+  --sd-sidebar-top: rgba(6, 28, 28, 0.98);
+  --sd-sidebar-bottom: rgba(7, 30, 54, 0.98);
+  --sd-sidebar-radial: rgba(40, 189, 231, 0.14);
+  --sd-sidebar-status-top: rgba(9, 43, 75, 0.94);
+  --sd-sidebar-status-bottom: rgba(2, 13, 28, 0.96);
+
+  --sd-command-bar-top: rgba(2, 20, 20, 0.96);
+  --sd-command-bar-bottom: rgba(11, 52, 90, 0.94);
+  --sd-top-link-top: rgba(7, 30, 54, 0.92);
+  --sd-top-link-bottom: rgba(2, 13, 28, 0.92);
+  --sd-realm-shell-top: rgba(9, 43, 75, 0.94);
+  --sd-realm-shell-bottom: rgba(2, 13, 28, 0.96);
+  --sd-realm-status-top: rgba(66, 211, 197, 0.22);
+  --sd-realm-status-bottom: rgba(25, 124, 169, 0.28);
+
+  --sd-table-top: rgba(9, 43, 75, 0.96);
+  --sd-table-bottom: rgba(2, 13, 28, 0.98);
+  --sd-table-head-top: rgba(16, 75, 121, 0.92);
+  --sd-table-head-bottom: rgba(7, 30, 54, 0.96);
+  --sd-table-footer-top: rgba(11, 52, 90, 0.88);
+  --sd-table-footer-bottom: rgba(2, 13, 28, 0.94);
+
+  --sd-input-top: rgba(2, 13, 28, 0.98);
+  --sd-input-bottom: rgba(7, 30, 54, 0.98);
+  --sd-select-content-top: rgba(2, 13, 28, 0.99);
+  --sd-select-content-bottom: rgba(7, 30, 54, 0.99);
+  --sd-tabs-top: rgba(16, 75, 121, 0.72);
+  --sd-tabs-bottom: rgba(2, 13, 28, 0.94);
+  --sd-badge-top: rgba(16, 75, 121, 0.88);
+  --sd-badge-bottom: rgba(2, 13, 28, 0.94);
+
+  --sd-resource-metal: #e7f8ff;
+  --sd-resource-energy: #42d3c5;
+  --sd-resource-crystal: #8a9dff;
+  --sd-resource-science: #55d7ff;
+  --sd-resource-alloy: #6ce5ff;
+}
+
+:root[data-sd-theme="windows-blue"] .sd-game-shell {
+  color: #e7f8ff;
+  background:
+    radial-gradient(circle at 84% 8%, rgba(25, 124, 169, 0.24), transparent 30rem),
+    radial-gradient(circle at 4% 90%, rgba(138, 157, 255, 0.12), transparent 32rem),
+    linear-gradient(145deg, #000000 0%, #020d1c 48%, #061c1c 100%);
+}
+
+:root[data-sd-theme="windows-blue"] .sd-topbar,
+:root[data-sd-theme="windows-blue"] .sd-command-bar,
+:root[data-sd-theme="windows-blue"] .sd-panel,
+:root[data-sd-theme="windows-blue"] [class*="sd-panel"] {
+  border-color: #185b88;
+  box-shadow: inset 0 1px 0 rgba(108, 229, 255, 0.12), 0 12px 30px rgba(0, 0, 0, 0.34);
+}
+
+:root[data-sd-theme="windows-blue"] .sd-win-command,
+:root[data-sd-theme="windows-blue"] .sd-win-command :is(.text-slate-900, .text-slate-800, .text-slate-700, .text-slate-600, .text-slate-500, .text-slate-400) {
+  color: #b9e6f5 !important;
+}
+
+:root[data-sd-theme="windows-blue"] .sd-win-command .sd-win-window {
+  border-color: #185b88;
+  background: linear-gradient(180deg, rgba(9, 43, 75, 0.96), rgba(7, 29, 53, 0.98));
+  box-shadow: inset 0 1px 0 rgba(108, 229, 255, 0.10), 0 14px 28px rgba(0, 0, 0, 0.34);
+}
+
+:root[data-sd-theme="windows-blue"] .sd-win-command .sd-win-window :is(.bg-white, .bg-slate-50, .bg-slate-100, .bg-cyan-50, .bg-blue-50) {
+  background-color: rgba(2, 13, 28, 0.72) !important;
+}
+
+:root[data-sd-theme="windows-blue"] .sd-win-command .sd-win-window :is(input, textarea, [role="combobox"], select) {
+  border-color: #197ca9;
+  background: linear-gradient(180deg, #020d1c, #071e36);
+  color: #e7f8ff;
+}
+
+:root[data-sd-theme="windows-blue"] .sd-sidebar-shell .sd-sidebar-item:hover,
+:root[data-sd-theme="windows-blue"] .sd-sidebar-shell .sd-sidebar-section-link:hover,
+:root[data-sd-theme="windows-blue"] .sd-sidebar-shell .sd-sidebar-item--active,
+:root[data-sd-theme="windows-blue"] .sd-sidebar-shell .sd-sidebar-section--active {
+  background: linear-gradient(90deg, rgba(16, 75, 121, 0.94), rgba(18, 96, 154, 0.54)) !important;
+  color: #ddffff !important;
+}
+
+:root[data-sd-theme="windows-blue"] .sd-sidebar-shell .sd-sidebar-group-link,
+:root[data-sd-theme="windows-blue"] .sd-sidebar-shell .sd-sidebar-item {
+  color: #b9e6f5;
+  border-color: rgba(25, 124, 169, 0.36);
+}
+
+:root[data-sd-theme="windows-blue"] .sd-industrial-logic-panel {
+  border-color: #8a9dff;
+  background: linear-gradient(135deg, rgba(138, 157, 255, 0.16), rgba(2, 13, 28, 0.92));
+}
+
+:root[data-sd-theme="windows-blue"] .sd-topbar {
+  border-color: #185b88 !important;
+  background: linear-gradient(90deg, rgba(2, 20, 20, 0.98), rgba(12, 47, 47, 0.97), rgba(11, 52, 90, 0.98)) !important;
+  color: #e7f8ff;
+}
+
+:root[data-sd-theme="windows-blue"] .sd-sidebar-shell {
+  border-color: #185b88 !important;
+  background: linear-gradient(180deg, rgba(6, 28, 28, 0.98), rgba(7, 30, 54, 0.98)) !important;
+}
+
+:root[data-sd-theme="windows-blue"] .sd-main-stage {
+  background: linear-gradient(145deg, rgba(0, 0, 0, 0.72), rgba(2, 13, 28, 0.86)) !important;
+  scrollbar-color: #197ca9 transparent;
+}
+
+:root[data-sd-theme="windows-blue"] .sd-footer-shell {
+  border-color: #185b88 !important;
+  background: rgba(2, 13, 28, 0.94) !important;
+  color: #9bcbe5 !important;
+}
+
+:root[data-sd-theme="windows-blue"] .sd-footer-shell .text-slate-700 {
+  color: #e2f7ff !important;
+}
+
+:root[data-sd-theme="windows-blue"] .sd-panel-header {
+  border-color: #197ca9 !important;
+  background: linear-gradient(90deg, #021414, #0c2f2f 48%, #0b345a) !important;
+}
+
+:root[data-sd-theme="windows-blue"] .sd-panel-header + div {
+  border-color: #185b88 !important;
+  background: linear-gradient(90deg, rgba(9, 43, 75, 0.92), rgba(7, 29, 53, 0.96)) !important;
+}
+
+:root[data-sd-theme="windows-blue"] .sd-panel :is(.bg-white, .bg-slate-50, .bg-white\/90, .bg-slate-50\/70, .bg-slate-50\/55, .bg-cyan-50) {
+  background-color: rgba(2, 13, 28, 0.72) !important;
+}
+
+:root[data-sd-theme="windows-blue"] .sd-panel :is(.border-slate-200, .border-slate-300, .border-cyan-200) {
+  border-color: rgba(25, 124, 169, 0.62) !important;
+}
+
+:root[data-sd-theme="windows-blue"] .sd-panel .text-slate-600,
+:root[data-sd-theme="windows-blue"] .sd-panel .text-slate-500,
+:root[data-sd-theme="windows-blue"] .sd-panel .text-slate-400 {
+  color: #9bcbe5 !important;
+}
+
+:root[data-sd-theme="windows-blue"] .sd-panel .text-slate-800,
+:root[data-sd-theme="windows-blue"] .sd-panel .text-slate-700 {
+  color: #e7f8ff !important;
+}
+
+:root[data-sd-theme="windows-blue"] .sd-realm-shell,
+:root[data-sd-theme="windows-blue"] .sd-submenu-indicator,
+:root[data-sd-theme="windows-blue"] .sd-collapsed-notice {
+  border-color: rgba(25, 124, 169, 0.68) !important;
+  background: linear-gradient(180deg, rgba(9, 43, 75, 0.90), rgba(2, 13, 28, 0.94)) !important;
+}
+
+:root[data-sd-theme="windows-blue"] .sd-realm-status {
+  border-color: rgba(66, 211, 197, 0.7) !important;
+  background: rgba(66, 211, 197, 0.12) !important;
+  color: #6ce5ff !important;
+}
+
+:root[data-sd-theme="windows-blue"] :is(.sd-topbar, .sd-sidebar-shell, .sd-main-stage, .sd-footer-shell) .text-slate-900,
+:root[data-sd-theme="windows-blue"] :is(.sd-topbar, .sd-sidebar-shell, .sd-main-stage, .sd-footer-shell) .text-slate-800,
+:root[data-sd-theme="windows-blue"] :is(.sd-topbar, .sd-sidebar-shell, .sd-main-stage, .sd-footer-shell) .text-slate-700 {
+  color: #e7f8ff !important;
+}
+
+:root[data-sd-theme="windows-blue"] :is(.sd-topbar, .sd-sidebar-shell, .sd-main-stage, .sd-footer-shell) .text-slate-600,
+:root[data-sd-theme="windows-blue"] :is(.sd-topbar, .sd-sidebar-shell, .sd-main-stage, .sd-footer-shell) .text-slate-500,
+:root[data-sd-theme="windows-blue"] :is(.sd-topbar, .sd-sidebar-shell, .sd-main-stage, .sd-footer-shell) .text-slate-400 {
+  color: #b7dff0 !important;
+}
+
+:root[data-sd-theme="windows-blue"] .sd-win-command .sd-win-window .text-white,
+:root[data-sd-theme="windows-blue"] .sd-win-command .sd-win-window .text-slate-100,
+:root[data-sd-theme="windows-blue"] .sd-win-command .sd-win-window .text-slate-200 {
+  color: #ffffff !important;
+}
+
+:root[data-sd-theme="windows-blue"] .sd-sidebar-shell .bg-slate-50\/50,
+:root[data-sd-theme="windows-blue"] .sd-sidebar-shell .bg-slate-50,
+:root[data-sd-theme="windows-blue"] .sd-sidebar-shell .bg-slate-100 {
+  background: rgba(2, 13, 28, 0.78) !important;
+}
+
+:root[data-sd-theme="windows-blue"] .sd-sidebar-shell .hover\:bg-slate-100:hover,
+:root[data-sd-theme="windows-blue"] .sd-sidebar-shell .hover\:bg-white\/70:hover {
+  background: rgba(16, 75, 121, 0.72) !important;
+}
+
+:root[data-sd-theme="windows-blue"] .sd-sidebar-shell .text-muted-foreground,
+:root[data-sd-theme="windows-blue"] .sd-sidebar-shell .text-slate-500,
+:root[data-sd-theme="windows-blue"] .sd-sidebar-shell .text-slate-400 {
+  color: #b7dff0 !important;
+}
+
+:root[data-sd-theme="windows-blue"] .sd-sidebar-shell .text-slate-900,
+:root[data-sd-theme="windows-blue"] .sd-sidebar-shell .text-slate-800,
+:root[data-sd-theme="windows-blue"] .sd-sidebar-shell .text-slate-700 {
+  color: #e2f7ff !important;
+}
+
+/* Portal-based dialog overlays inherit the Industrial Blue command palette. */
+:root[data-sd-theme="windows-blue"] [role="dialog"] {
+  border-color: #197ca9 !important;
+  background: linear-gradient(145deg, #020d1c, #071d35) !important;
+  color: #e7f8ff !important;
+  box-shadow: 0 24px 72px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(108, 229, 255, 0.10) !important;
+}
+
+:root[data-sd-theme="windows-blue"] [role="dialog"] :is(.bg-white, .bg-slate-50, .bg-slate-100) {
+  background-color: rgba(9, 43, 75, 0.72) !important;
+}
+
+:root[data-sd-theme="windows-blue"] [role="dialog"] :is(.border-slate-200, .border-slate-300, .border-slate-700) {
+  border-color: rgba(25, 124, 169, 0.68) !important;
+}
+
+:root[data-sd-theme="windows-blue"] [role="dialog"] :is(.text-slate-900, .text-slate-800, .text-slate-700) {
+  color: #e7f8ff !important;
+}
+
+:root[data-sd-theme="windows-blue"] [role="dialog"] :is(.text-slate-600, .text-slate-500, .text-slate-400) {
+  color: #b7dff0 !important;
+}
+
+:root[data-sd-theme="windows-blue"] [data-radix-dialog-overlay] {
+  background: rgba(0, 0, 0, 0.78) !important;
+  backdrop-filter: blur(8px);
+}
+
+/* Shared accessibility baseline for every game page and overlay. */
+:root,
+:root[data-sd-theme="og-white"] {
+  --sd-focus-ring: #0b63ce;
+  --sd-focus-ring-surface: #ffffff;
+}
+
+:root[data-sd-theme="black-style"] {
+  --sd-focus-ring: #6ec5ff;
+  --sd-focus-ring-surface: #060c14;
+}
+
+:root[data-sd-theme="imperial-gold"] {
+  --sd-focus-ring: #ffd978;
+  --sd-focus-ring-surface: #080604;
+}
+
+:root[data-sd-theme="windows-blue"] {
+  --sd-focus-ring: #6ce5ff;
+  --sd-focus-ring-surface: #020d1c;
+}
+
+:where(a[href], button:not(:disabled), [role="button"]:not([aria-disabled="true"]), input:not(:disabled), textarea:not(:disabled), select:not(:disabled), [role="combobox"], [role="tab"], [role="switch"], [tabindex]:not([tabindex="-1"])):focus-visible {
+  outline: 3px solid var(--sd-focus-ring) !important;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 2px var(--sd-focus-ring-surface), 0 0 0 5px color-mix(in srgb, var(--sd-focus-ring) 56%, transparent) !important;
+}
+
+:where(input, textarea, select):focus-visible {
+  border-color: var(--sd-focus-ring) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (forced-colors: active) {
+  :where(a[href], button, input, textarea, select, [role="button"], [role="combobox"], [role="tab"], [role="switch"]):focus-visible {
+    outline: 3px solid Highlight !important;
+    outline-offset: 3px;
+    forced-color-adjust: auto;
+  }
+}
+
+/* Command-console header: identity and controls are intentionally separated from live resources. */
+.sd-command-header-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.sd-command-brand-panel {
+  min-height: 5.5rem;
+  padding: 0.75rem;
+  border: 1px solid rgba(79, 107, 134, 0.38);
+  background: linear-gradient(135deg, rgba(8, 31, 47, 0.62), rgba(10, 41, 67, 0.3));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.sd-command-control-deck {
+  justify-content: flex-start;
+}
+
+.sd-command-utility-links {
+  align-self: flex-end;
+}
+
+.sd-command-update-actions {
+  min-height: 2rem;
+}
+
+.sd-command-realm-row {
+  min-height: 2.5rem;
+}
+
+.sd-command-resource-deck {
+  position: relative;
+  min-height: 3.45rem;
+  isolation: isolate;
+}
+
+.sd-command-resource-deck::before {
+  position: sticky;
+  left: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  padding: 0 0.45rem;
+  border-right: 1px solid rgba(25, 124, 169, 0.55);
+  color: #9bcbe5;
+  background: linear-gradient(90deg, #020d1c 76%, rgba(2, 13, 28, 0.82));
+  font-family: var(--sd-font-display);
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  content: "RESOURCES";
+}
+
+:root[data-sd-theme="windows-blue"] .sd-command-header {
+  background:
+    linear-gradient(90deg, rgba(2, 13, 28, 0.98), rgba(7, 30, 54, 0.98) 43%, rgba(2, 20, 20, 0.98)) !important;
+  box-shadow: inset 0 -1px 0 rgba(108, 229, 255, 0.16), 0 10px 24px rgba(0, 0, 0, 0.26) !important;
+}
+
+:root[data-sd-theme="windows-blue"] .sd-command-brand-panel {
+  border-color: rgba(25, 124, 169, 0.66);
+  background:
+    radial-gradient(circle at 0 0, rgba(66, 211, 197, 0.14), transparent 42%),
+    linear-gradient(135deg, rgba(2, 20, 20, 0.96), rgba(7, 30, 54, 0.88));
+  box-shadow: inset 0 1px 0 rgba(108, 229, 255, 0.14), inset 4px 0 0 rgba(66, 211, 197, 0.62);
+}
+
+:root[data-sd-theme="windows-blue"] .sd-command-control-deck {
+  padding: 0.35rem;
+  border: 1px solid rgba(24, 91, 136, 0.58);
+  background: rgba(2, 13, 28, 0.36);
+  box-shadow: inset 0 1px 0 rgba(108, 229, 255, 0.08);
+}
+
+:root[data-sd-theme="windows-blue"] .sd-command-update-actions > :is(button, a > button) {
+  border-color: rgba(25, 124, 169, 0.62) !important;
+  background-color: rgba(2, 13, 28, 0.64) !important;
+  color: #dff7ff !important;
+}
+
+:root[data-sd-theme="windows-blue"] .sd-command-resource-deck {
+  border-color: #197ca9 !important;
+  background:
+    linear-gradient(90deg, rgba(2, 13, 28, 0.99), rgba(4, 29, 52, 0.98), rgba(2, 13, 28, 0.99)) !important;
+  box-shadow: inset 0 1px 0 rgba(108, 229, 255, 0.18), 0 8px 20px rgba(0, 0, 0, 0.28) !important;
+}
+
+:root[data-sd-theme="windows-blue"] .sd-command-resource-deck .sd-ogame-resource-cell:hover,
+:root[data-sd-theme="windows-blue"] .sd-command-resource-deck .sd-ogame-turn-cell:hover {
+  background: rgba(25, 124, 169, 0.2);
+}
+
+@media (min-width: 768px) {
+  .sd-command-header-grid {
+    align-items: stretch;
+  }
+
+  .sd-command-control-deck {
+    align-items: stretch;
+  }
+
+  .sd-command-update-actions,
+  .sd-command-realm-row {
+    justify-content: flex-end;
+  }
+
+  .sd-command-resource-deck {
+    align-self: stretch;
+  }
+}
+
+@media (max-width: 767px) {
+  .sd-command-brand-panel {
+    min-height: 0;
+  }
+
+  .sd-command-resource-deck::before {
+    position: static;
+  }
+}
+
+/* Compact footer command-status bar. */
+.sd-command-footer {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 -8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.sd-command-footer-brand {
+  min-height: 2.35rem;
+}
+
+.sd-command-footer-status-grid {
+  font-family: var(--sd-font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+}
+
+.sd-command-footer-status {
+  display: flex;
+  min-width: 0;
+  min-height: 2.2rem;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.1rem;
+  padding: 0.32rem 0.48rem;
+  border: 1px solid rgba(79, 107, 134, 0.42);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.62), rgba(233, 241, 248, 0.72));
+  color: #334155;
+  font-size: 0.64rem;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.sd-command-footer-label {
+  overflow: hidden;
+  color: #64748b;
+  font-family: var(--sd-font-display);
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+}
+
+.sd-command-footer-status--interactive {
+  cursor: pointer;
+  transition: border-color 160ms var(--ease-out, ease-out), background-color 160ms var(--ease-out, ease-out), color 160ms var(--ease-out, ease-out);
+}
+
+.sd-command-footer-status--interactive:hover {
+  border-color: rgba(25, 124, 169, 0.72);
+  background: rgba(226, 247, 255, 0.96);
+  color: #075985;
+}
+
+:root[data-sd-theme="windows-blue"] .sd-command-footer {
+  border-color: #197ca9 !important;
+  background:
+    linear-gradient(90deg, rgba(2, 13, 28, 0.98), rgba(7, 30, 54, 0.98) 50%, rgba(2, 20, 20, 0.98)) !important;
+  box-shadow: inset 0 1px 0 rgba(108, 229, 255, 0.14), 0 -10px 24px rgba(0, 0, 0, 0.28) !important;
+}
+
+:root[data-sd-theme="windows-blue"] .sd-command-footer-brand {
+  padding-left: 0.15rem;
+}
+
+:root[data-sd-theme="windows-blue"] .sd-command-footer-status {
+  border-color: rgba(25, 124, 169, 0.6);
+  background: linear-gradient(180deg, rgba(9, 43, 75, 0.78), rgba(2, 13, 28, 0.9));
+  color: #e7f8ff;
+  box-shadow: inset 0 1px 0 rgba(108, 229, 255, 0.08);
+}
+
+:root[data-sd-theme="windows-blue"] .sd-command-footer-label {
+  color: #9bcbe5;
+}
+
+:root[data-sd-theme="windows-blue"] .sd-command-footer-status--interactive:hover {
+  border-color: #42d3c5;
+  background: rgba(16, 75, 121, 0.88);
+  color: #ffffff;
+}
+
+@media (max-width: 639px) {
+  .sd-command-footer-status {
+    font-size: 0.6rem;
+  }
+}
+
+/* Dedicated administrator-access panel on the public login surface. */
+.sd-admin-access-card {
+  border-color: #197ca9;
+  background:
+    radial-gradient(circle at 100% 0, rgba(66, 211, 197, 0.14), transparent 48%),
+    linear-gradient(135deg, #020d1c, #071d35);
+  box-shadow: inset 0 1px 0 rgba(108, 229, 255, 0.12), 0 8px 18px rgba(2, 13, 28, 0.14);
+}
+
+.sd-admin-access-icon {
+  border-color: rgba(66, 211, 197, 0.62);
+  background: rgba(66, 211, 197, 0.1);
+  color: #6ce5ff;
+  box-shadow: 0 0 12px rgba(40, 189, 231, 0.16);
+}
+
+.sd-admin-access-title {
+  color: #e7f8ff;
+}
+
+.sd-admin-access-copy {
+  color: #b7dff0;
+}
+
+.sd-admin-access-badge {
+  border: 1px solid rgba(25, 124, 169, 0.76);
+  background: rgba(25, 124, 169, 0.16);
+  color: #6ce5ff;
+}
+
+.sd-admin-access-button {
+  border-color: rgba(66, 211, 197, 0.7) !important;
+  background: rgba(25, 124, 169, 0.18) !important;
+  color: #e7f8ff !important;
+  box-shadow: inset 0 1px 0 rgba(108, 229, 255, 0.1);
+}
+
+.sd-admin-access-button:hover {
+  border-color: #6ce5ff !important;
+  background: rgba(16, 75, 121, 0.72) !important;
+  color: #ffffff !important;
+}
+
+/* Dedicated admin clearance surface aligned with the Industrial Blue command console. */
+.admin-login-screen {
+  background:
+    radial-gradient(circle at 50% 32%, rgba(25, 124, 169, 0.18), transparent 35%),
+    radial-gradient(circle at 18% 88%, rgba(66, 211, 197, 0.08), transparent 28%),
+    #020d1c;
+}
+
+.sd-admin-login-card {
+  border-color: #197ca9 !important;
+  background:
+    radial-gradient(circle at 100% 0, rgba(66, 211, 197, 0.1), transparent 42%),
+    linear-gradient(145deg, rgba(2, 13, 28, 0.98), rgba(7, 29, 53, 0.96)) !important;
+  box-shadow: 0 0 40px rgba(25, 124, 169, 0.16), 0 0 1px rgba(108, 229, 255, 0.52), inset 0 0 60px rgba(0, 0, 0, 0.38) !important;
+}
+
+.sd-admin-login-card input:focus {
+  box-shadow: 0 0 0 2px rgba(108, 229, 255, 0.34);
+}
+
+/* Public Index and player-auth entry surfaces share the Industrial Blue command palette. */
+.sd-index-shell,
+.sd-auth-shell {
+  color: #e7f8ff;
+  background:
+    radial-gradient(circle at 84% 5%, rgba(25, 124, 169, 0.19), transparent 31%),
+    radial-gradient(circle at 8% 75%, rgba(66, 211, 197, 0.10), transparent 28%),
+    #020d1c !important;
+}
+
+.sd-index-header,
+.sd-auth-header {
+  border-color: #185b88 !important;
+  background: linear-gradient(90deg, rgba(2, 20, 20, 0.97), rgba(7, 30, 54, 0.98), rgba(2, 13, 28, 0.97)) !important;
+  box-shadow: inset 0 -1px 0 rgba(108, 229, 255, 0.12), 0 8px 22px rgba(0, 0, 0, 0.22) !important;
+}
+
+.sd-index-header :is(.text-slate-900, .text-slate-700, .text-slate-600),
+.sd-auth-header :is(.text-slate-900, .text-slate-700, .text-slate-600) {
+  color: #dff7ff !important;
+}
+
+.sd-index-header :is(button, a):hover,
+.sd-auth-header :is(button, a):hover {
+  color: #6ce5ff !important;
+}
+
+.sd-index-mobile-nav {
+  border-color: #185b88 !important;
+  background: #020d1c !important;
+}
+
+.sd-index-hero {
+  background: linear-gradient(150deg, #020d1c, #071d35 50%, #061c1c) !important;
+}
+
+.sd-index-hero-overlay {
+  background: linear-gradient(180deg, rgba(2, 13, 28, 0.74), rgba(2, 13, 28, 0.56) 48%, #020d1c 100%) !important;
+}
+
+.sd-index-hero :is(.text-slate-900, .text-slate-700, .text-slate-600) {
+  color: #e7f8ff !important;
+}
+
+.sd-index-hero .text-slate-500 {
+  color: #b7dff0 !important;
+}
+
+.sd-index-hero .border-blue-200,
+.sd-index-hero .border-slate-300 {
+  border-color: rgba(25, 124, 169, 0.75) !important;
+}
+
+.sd-index-hero .bg-blue-50 {
+  background: rgba(25, 124, 169, 0.15) !important;
+}
+
+.sd-index-hero .text-blue-700 {
+  color: #6ce5ff !important;
+}
+
+.sd-index-stat {
+  border-color: rgba(25, 124, 169, 0.72) !important;
+  background: linear-gradient(145deg, rgba(9, 43, 75, 0.86), rgba(2, 13, 28, 0.9)) !important;
+  box-shadow: inset 0 1px 0 rgba(108, 229, 255, 0.1), 0 10px 22px rgba(0, 0, 0, 0.16) !important;
+}
+
+.sd-index-stat .text-blue-600 {
+  color: #6ce5ff !important;
+}
+
+.sd-index-features,
+.sd-index-directory {
+  border-color: #185b88 !important;
+  background: linear-gradient(180deg, rgba(7, 29, 53, 0.96), rgba(2, 13, 28, 0.98)) !important;
+}
+
+.sd-index-features :is(.text-slate-900, .text-slate-800),
+.sd-index-directory :is(.text-slate-900, .text-slate-800) {
+  color: #e7f8ff !important;
+}
+
+.sd-index-features .text-slate-600,
+.sd-index-directory .text-slate-500 {
+  color: #b7dff0 !important;
+}
+
+.sd-index-feature-card {
+  border-color: rgba(24, 91, 136, 0.72) !important;
+  background: linear-gradient(145deg, rgba(9, 43, 75, 0.88), rgba(2, 13, 28, 0.96)) !important;
+  box-shadow: inset 0 1px 0 rgba(108, 229, 255, 0.08), 0 12px 26px rgba(0, 0, 0, 0.18) !important;
+}
+
+.sd-index-feature-card:hover {
+  border-color: #42d3c5 !important;
+  transform: translateY(-2px);
+}
+
+.sd-index-cta-section {
+  background: #020d1c !important;
+}
+
+.sd-index-cta {
+  border: 1px solid rgba(25, 124, 169, 0.78);
+  background:
+    radial-gradient(circle at 85% 15%, rgba(66, 211, 197, 0.16), transparent 28%),
+    linear-gradient(135deg, #021414, #0c2f2f 46%, #0b345a) !important;
+  box-shadow: inset 0 1px 0 rgba(108, 229, 255, 0.14), 0 20px 44px rgba(0, 0, 0, 0.3) !important;
+}
+
+.sd-index-footer {
+  border-color: #185b88 !important;
+  background: #020d1c !important;
+}
+
+.sd-index-footer :is(.text-slate-400, .text-slate-600) {
+  color: #9bcbe5 !important;
+}
+
+.sd-auth-login-card,
+.sd-auth-health-panel {
+  border-color: #197ca9 !important;
+  background: linear-gradient(145deg, rgba(9, 43, 75, 0.94), rgba(2, 13, 28, 0.98)) !important;
+  color: #e7f8ff !important;
+  box-shadow: inset 0 1px 0 rgba(108, 229, 255, 0.12), 0 18px 36px rgba(0, 0, 0, 0.28) !important;
+}
+
+.sd-auth-login-card :is(.text-slate-900, .text-slate-800, .text-slate-700),
+.sd-auth-health-panel :is(.text-slate-900, .text-slate-800, .text-slate-700) {
+  color: #e7f8ff !important;
+}
+
+.sd-auth-login-card :is(.text-slate-600, .text-slate-500),
+.sd-auth-health-panel :is(.text-slate-600, .text-slate-500) {
+  color: #b7dff0 !important;
+}
+
+.sd-auth-identity-icon {
+  border: 1px solid rgba(66, 211, 197, 0.58);
+  background: linear-gradient(145deg, rgba(25, 124, 169, 0.46), rgba(2, 20, 20, 0.96)) !important;
+  box-shadow: 0 0 20px rgba(40, 189, 231, 0.16) !important;
+}
+
+.sd-auth-instruction-card,
+.sd-auth-health-panel :is(.bg-slate-50, .bg-white) {
+  border-color: rgba(25, 124, 169, 0.62) !important;
+  background: rgba(2, 13, 28, 0.68) !important;
+}
+
+.sd-auth-login-card input {
+  border-color: rgba(25, 124, 169, 0.7) !important;
+  background: rgba(2, 13, 28, 0.82) !important;
+  color: #e7f8ff !important;
+}
+
+.sd-auth-login-card input::placeholder {
+  color: #7facbf !important;
+}
+
+.sd-auth-login-card input:focus {
+  border-color: #6ce5ff !important;
+  box-shadow: 0 0 0 2px rgba(108, 229, 255, 0.22) !important;
+}
+
+.sd-auth-login-card .bg-slate-900 {
+  background: linear-gradient(90deg, #0b345a, #197ca9) !important;
+  color: #ffffff !important;
+}
+
+.sd-auth-health-panel > div:first-child {
+  border-color: #197ca9 !important;
+  background: linear-gradient(90deg, #021414, #0c2f2f 48%, #0b345a) !important;
+}
+
+.sd-auth-health-panel .bg-emerald-400\/10 {
+  background: rgba(66, 211, 197, 0.12) !important;
+}
+
+.sd-auth-health-panel .ring-emerald-200\/20 {
+  --tw-ring-color: rgba(66, 211, 197, 0.36) !important;
+}
+
+.sd-auth-health-panel .text-emerald-200,
+.sd-auth-health-panel .text-emerald-200\/80 {
+  color: #6ce5ff !important;
+}
+
+.sd-auth-footer {
+  border-color: #185b88 !important;
+  background: rgba(2, 13, 28, 0.96) !important;
+  box-shadow: inset 0 1px 0 rgba(108, 229, 255, 0.1), 0 -8px 18px rgba(0, 0, 0, 0.2) !important;
+}
+
+.sd-auth-footer :is(.text-slate-700, .text-slate-600) {
+  color: #b7dff0 !important;
+}
+
+.sd-auth-license-button {
+  border-color: rgba(25, 124, 169, 0.76) !important;
+  background: rgba(2, 13, 28, 0.92) !important;
+  color: #dff7ff !important;
+}
+
+.sd-auth-license-button:hover {
+  border-color: #6ce5ff !important;
+  background: rgba(16, 75, 121, 0.86) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sd-index-feature-card:hover {
+    transform: none;
+  }
+}
+
+/* Explicit entry-control treatment prevents inherited light outline buttons on public command surfaces. */
+.sd-index-header-secondary,
+.sd-auth-repo-link {
+  border-color: rgba(25, 124, 169, 0.7) !important;
+  background: rgba(2, 13, 28, 0.72) !important;
+  color: #dff7ff !important;
+}
+
+.sd-index-header-primary,
+.sd-index-primary-cta,
+.sd-auth-demo-button {
+  border: 1px solid rgba(108, 229, 255, 0.62) !important;
+  background: linear-gradient(90deg, #0b345a, #197ca9) !important;
+  color: #ffffff !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 8px 18px rgba(2, 13, 28, 0.24) !important;
+}
+
+.sd-index-header-primary:hover,
+.sd-index-primary-cta:hover,
+.sd-auth-demo-button:hover {
+  border-color: #6ce5ff !important;
+  background: linear-gradient(90deg, #104b79, #2baed6) !important;
+  color: #ffffff !important;
+}
+
+.sd-index-secondary-cta {
+  border-color: rgba(66, 211, 197, 0.7) !important;
+  background: rgba(2, 13, 28, 0.72) !important;
+  color: #dff7ff !important;
+}
+
+.sd-index-secondary-cta:hover,
+.sd-index-header-secondary:hover,
+.sd-auth-repo-link:hover {
+  border-color: #6ce5ff !important;
+  background: rgba(16, 75, 121, 0.82) !important;
+  color: #ffffff !important;
 }

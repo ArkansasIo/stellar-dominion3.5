@@ -25,7 +25,7 @@ export class ConsoleMenu {
   private displayHeader() {
     console.clear();
     console.log(this.colors.bright + this.colors.cyan + '╔════════════════════════════════════════════════╗' + this.colors.reset);
-    console.log(this.colors.bright + this.colors.cyan + '║' + this.colors.reset + this.colors.bright + '         🖥️  STELLAR DOMINION SERVER CONSOLE     ' + this.colors.cyan + '║' + this.colors.reset);
+    console.log(this.colors.bright + this.colors.cyan + '║' + this.colors.reset + this.colors.bright + '         🖥️  UNIVERSE CIVILIZATION: EMPIRE AT WAR SERVER CONSOLE     ' + this.colors.cyan + '║' + this.colors.reset);
     console.log(this.colors.bright + this.colors.cyan + '╚════════════════════════════════════════════════╝' + this.colors.reset + '\n');
   }
 

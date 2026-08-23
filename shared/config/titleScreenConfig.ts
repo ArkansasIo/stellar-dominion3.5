@@ -108,9 +108,9 @@ export const DEFAULT_TITLE_SCREEN_CONFIG: TitleScreenConfig = {
   tagline: 'Connecting to Nexus Command System',
   
   version: {
-    display: 'Alpha 1.5.0',
+    display: 'Alpha 1.5.1',
     buildType: 'alpha',
-    buildLabel: 'Live Preview Build',
+    buildLabel: 'Nexus Alpha Build 2026082301',
   },
   
   loadingMessages: [

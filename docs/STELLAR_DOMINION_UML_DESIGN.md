@@ -2,9 +2,9 @@
 <!-- STATUS: REWRITTEN | UPDATED: 2026-06-18 -->
 <!-- FLAGS: uml, architecture, design, reference, documentation -->
 <!-- COVERS: stellar-dominion, full-stack, game-systems -->
-# Stellar Dominion - Complete UML Architecture & Design Document
+# Universe Civilization: Empire at War - Complete UML Architecture & Design Document
 
-> **Stellar Dominion** — A Next-Generation 4X Space Strategy MMORPG (TypeScript/React/PostgreSQL)
+> **Universe Civilization: Empire at War** — A Next-Generation 4X Space Strategy MMORPG (TypeScript/React/PostgreSQL)
 > Repository: universe-empire-dominion3
 
 ---
@@ -25,7 +25,7 @@
 
 ## 1. System Overview
 
-Stellar Dominion is a full-stack TypeScript MMORPG built with:
+Universe Civilization: Empire at War is a full-stack TypeScript MMORPG built with:
 - **Frontend**: React 18 + Vite + React Query + Tailwind CSS
 - **Backend**: Express.js + Drizzle ORM
 - **Database**: PostgreSQL

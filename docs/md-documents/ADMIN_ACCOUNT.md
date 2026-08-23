@@ -1,6 +1,6 @@
 # Admin Account Information
 
-This document reflects the current admin login paths and default permissions used by Stellar Dominion in this workspace.
+This document reflects the current admin login paths and default permissions used by Universe Civilization: Empire at War in this workspace.
 
 ---
 

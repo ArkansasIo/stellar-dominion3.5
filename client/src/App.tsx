@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { GameProvider } from "@/lib/gameContext";
 import { Rocket } from "lucide-react";
+import { BUILD_INFO } from "@shared/config/buildConfig";
 
 import { useGame } from "@/lib/gameContext";
 
@@ -109,6 +110,14 @@ const Population = lazy(() => import("@/pages/Population"));
 const Hazards = lazy(() => import("@/pages/Hazards"));
 const GalaxySystems = lazy(() => import("@/pages/GalaxySystems"));
 const GalaxySystemDetail = lazy(() => import("@/pages/GalaxySystemDetail"));
+const StargateCommand = lazy(() => import("@/pages/StargateCommand"));
+const StargateArsenal = lazy(() => import("@/pages/StargateArsenal"));
+const StargateSystems = lazy(() => import("@/pages/StargateSystems"));
+const StargateMarket = lazy(() => import("@/pages/StargateMarket"));
+const StargateWorlds = lazy(() => import("@/pages/StargateWorlds"));
+const StargateSocial = lazy(() => import("@/pages/StargateSocial"));
+const StargateProgression = lazy(() => import("@/pages/StargateProgression"));
+const StargateOperations = lazy(() => import("@/pages/StargateOperations"));
 
 function LoadingSplash() {
   return (
@@ -122,7 +131,7 @@ function LoadingSplash() {
         </div>
 
         <h1 className="font-orbitron text-4xl font-bold text-white tracking-widest mb-2">
-          Universe-<span className="bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent">Empires-Dominions</span>
+          Universe Civilization:<span className="bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent"> Empire at War</span>
         </h1>
         <p className="text-slate-300 font-rajdhani text-xs tracking-widest uppercase mb-5">
           Connecting to Nexus Command System
@@ -136,7 +145,7 @@ function LoadingSplash() {
       </div>
 
       <div className="absolute bottom-6 text-slate-500 text-xs font-mono">
-        <span className="text-blue-400">Alpha 1.5.0</span> • Live Preview Build
+        <span className="text-blue-400">{BUILD_INFO.releaseLabel}</span> • Build {BUILD_INFO.buildNumber} • {BUILD_INFO.buildId}
       </div>
     </div>
   );
@@ -209,6 +218,8 @@ function RouterContent() {
       <Switch>
         <Route path="/threejs-viewer" component={ThreeDViewerPortal} />
         <Route path="/admin-login" component={AdminLogin} />
+        <Route path="/auth" component={AccountSetup} />
+        <Route path="/dashboard" component={AccountSetup} />
         <Route path="/admin" component={Admin} />
         <Route path="/admin/database" component={DatabaseAdmin} />
         <Route path="/admin/mods" component={AdminMods} />
@@ -229,6 +240,8 @@ function RouterContent() {
     <Switch>
       <Route path="/threejs-viewer" component={ThreeDViewerPortal} />
       <Route path="/admin-login" component={AdminLogin} />
+      <Route path="/auth" component={Overview} />
+      <Route path="/dashboard" component={Overview} />
       <Route path="/" component={Overview} />
       <Route path="/about" component={About} />
       <Route path="/forums" component={Forums} />
@@ -310,6 +323,23 @@ function RouterContent() {
       <Route path="/leaderboard" component={Leaderboard} />
       <Route path="/assets-gallery" component={GameAssetsGallery} />
       <Route path="/espionage" component={Espionage} />
+      <Route path="/stargate-command/:section" component={StargateCommand} />
+      <Route path="/stargate-arsenal/:section" component={StargateArsenal} />
+      <Route path="/stargate-intelligence/:section" component={StargateArsenal} />
+      <Route path="/stargate-market/:section" component={StargateMarket} />
+      <Route path="/stargate-worlds/:section" component={StargateWorlds} />
+      <Route path="/stargate-social/:section" component={StargateSocial} />
+      <Route path="/stargate-progression/:section" component={StargateProgression} />
+      <Route path="/stargate-operations/:section" component={StargateOperations} />
+      <Route path="/stargate-systems/:section" component={StargateSystems} />
+      <Route path="/stargate-command" component={StargateCommand} />
+      <Route path="/stargate-arsenal" component={StargateArsenal} />
+      <Route path="/stargate-systems" component={StargateSystems} />
+      <Route path="/stargate-market" component={StargateMarket} />
+      <Route path="/stargate-worlds" component={StargateWorlds} />
+      <Route path="/stargate-social" component={StargateSocial} />
+      <Route path="/stargate-progression" component={StargateProgression} />
+      <Route path="/stargate-operations" component={StargateOperations} />
       <Route path="/missions" component={Missions} />
       <Route path="/commerce" component={CommerceHub} />
       <Route path="/population" component={Population} />

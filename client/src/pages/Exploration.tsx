@@ -414,7 +414,7 @@ export default function Exploration() {
               <Card className="bg-white border-slate-200">
                 <CardHeader>
                   <CardTitle className="text-lg">Frontier Systems Added</CardTitle>
-                  <CardDescription>Missing EVE-style loops translated into Stellar Dominion systems and menus.</CardDescription>
+                  <CardDescription>Missing EVE-style loops translated into Universe Civilization: Empire at War systems and menus.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {FRONTIER_FEATURES.map((feature) => (

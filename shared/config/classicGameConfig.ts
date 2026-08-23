@@ -54,7 +54,7 @@ export const UNIVERSE_CONFIG = {
 // ─── Game Identity ──────────────────────────────────────────────────────────
 
 export const GAME_IDENTITY = {
-  gameName: "Stellar Dominion",
+  gameName: "Universe Civilization: Empire at War",
   releaseVersion: "2.0.0",
   defaultLanguage: "english",
   footerStyle: "new" as "old" | "new",

@@ -1,4 +1,4 @@
-# Theme System — Stellar Dominion
+# Theme System — Universe Civilization: Empire at War
 
 **Source:** `shared/config/themeSystemConfig.ts`
 

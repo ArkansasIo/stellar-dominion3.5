@@ -45,7 +45,7 @@ INSERT INTO system_settings (key, value, description) VALUES
 ('maintenance_mode', 'false', 'Whether the server is in maintenance'),
 ('max_players', '1000', 'Maximum number of concurrent players'),
 ('tick_rate', '6', 'Server tick rate in minutes'),
-('version', '"Alpha 1.5.0"', 'Current game version'),
+('version', '"Alpha 1.5.1"', 'Current game version'),
 ('universe_name', '"Nexus-Alpha"', 'Current universe name'),
 ('newbie_protection_days', '7', 'Days of newbie protection'),
 ('inactive_timeout_days', '30', 'Days before inactive players are archived');

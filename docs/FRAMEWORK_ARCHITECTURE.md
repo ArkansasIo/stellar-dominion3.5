@@ -8,7 +8,7 @@
 
 ## Overview
 
-Stellar Dominion uses a 5-layer architecture separating presentation, client logic, API transport, server logic, and data persistence.
+Universe Civilization: Empire at War uses a 5-layer architecture separating presentation, client logic, API transport, server logic, and data persistence.
 
 ---
 

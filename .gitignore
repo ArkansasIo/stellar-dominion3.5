@@ -124,3 +124,8 @@ __pycache__/
 *.env.*
 script/__pycache__/
 ogamex-source/.git-vendored-backup/
+.github/workflows/
+game-source/
+universe-empire-dominion3/
+.postgres_data/
+output/

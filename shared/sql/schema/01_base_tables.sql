@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS player_states (
     turns_data JSONB DEFAULT '{"totalTurnsGenerated": 0, "currentTurn": 0, "lastTurnTimestamp": 0, "turnsAvailable": 0, "currentResearchTurns": 0, "researchTurnHistory": []}',
     research_xp JSONB DEFAULT '{"totalXP": 0, "currentLevelXP": 0, "currentLevel": 1, "researchesCompleted": 0, "discoveredTechs": []}',
     government JSONB DEFAULT '{"type": "democracy", "policies": [], "stats": {"stability": 60, "publicSupport": 50, "efficiency": 50, "militaryReadiness": 40, "corruption": 10}, "taxRate": 20}',
-    commander JSONB DEFAULT '{"name": "Commander", "empireName": "Stellar Dominion", "race": "terran", "class": "admiral", "subClass": null, "stats": {"level": 1, "xp": 0, "warfare": 1, "logistics": 1, "science": 1, "engineering": 1}}',
+    commander JSONB DEFAULT '{"name": "Commander", "empireName": "Universe Civilization: Empire at War", "race": "terran", "class": "admiral", "subClass": null, "stats": {"level": 1, "xp": 0, "warfare": 1, "logistics": 1, "science": 1, "engineering": 1}}',
     units JSONB DEFAULT '{"lightFighter": 5, "smallCargo": 2, "espionageProbe": 10, "marine": 50, "colonist": 100}',
     megastructures JSONB DEFAULT '[]',
     artifacts JSONB DEFAULT '[]',

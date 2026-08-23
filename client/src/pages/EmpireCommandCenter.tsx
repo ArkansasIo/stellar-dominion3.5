@@ -12,7 +12,10 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { calculateResourceProduction } from "@/lib/resourceMath";
+import { sumLegacyUnits } from "@/lib/unitState";
 import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
+import { UnifiedCommandBridge } from "@/components/stargate/UnifiedCommandBridge";
 
 type PlanetSummary = {
   id: string;
@@ -82,18 +85,14 @@ export default function EmpireCommandCenter() {
 
   const megastructuresQuery = useQuery<MegaStructuresResponse>({ queryKey: ["/api/megastructures/player"] });
 
-  const totalUnits = useMemo(() => Object.values(units).reduce((sum, amount) => sum + amount, 0), [units]);
+  const totalUnits = useMemo(() => sumLegacyUnits(units), [units]);
   const totalResearch = useMemo(() => Object.values(research).reduce((sum, amount) => sum + amount, 0), [research]);
   const totalBuildings = useMemo(() => Object.values(buildings).reduce((sum, amount) => sum + amount, 0), [buildings]);
   const totalOrbitalStructures = useMemo(() => Object.values(orbitalBuildings).reduce((sum, amount) => sum + amount, 0), [orbitalBuildings]);
   const unreadMessages = messages.filter((message) => !message.read).length;
   const defenseScore = defenseQuery.data?.summary?.totalDefenseScore || 0;
 
-  const resourceRate = useMemo(() => ({
-    metal: Math.floor((buildings.metalMine || 0) * 30 * (1 + 0.1 * (buildings.metalMine || 0))),
-    crystal: Math.floor((buildings.crystalMine || 0) * 20 * (1 + 0.1 * (buildings.crystalMine || 0))),
-    deuterium: Math.floor((buildings.deuteriumSynthesizer || 0) * 10 * (1 + 0.1 * (buildings.deuteriumSynthesizer || 0))),
-  }), [buildings]);
+  const resourceRate = useMemo(() => calculateResourceProduction(buildings), [buildings]);
 
   const planets = planetsQuery.data?.planets || [];
   const colonizedPlanets = planets.filter((p) => p.colonized);
@@ -182,6 +181,8 @@ export default function EmpireCommandCenter() {
             </CardContent>
           </Card>
         </div>
+
+        <UnifiedCommandBridge />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card>
@@ -362,7 +363,7 @@ export default function EmpireCommandCenter() {
             <div className="flex gap-2">
               <Link href="/planet-command"><Button><Shield className="w-4 h-4 mr-2" /> Planet Command</Button></Link>
               <Link href="/stations"><Button variant="outline"><Orbit className="w-4 h-4 mr-2" /> Stations</Button></Link>
-              <Link href="/starbases"><Button variant="outline"><Star className="w-4 h-4 mr-2" /> Starbases</Button></Link>
+              <Link href="/stations"><Button variant="outline"><Star className="w-4 h-4 mr-2" /> Station Control</Button></Link>
             </div>
           </TabsContent>
 

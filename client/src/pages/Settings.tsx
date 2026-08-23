@@ -48,7 +48,7 @@ type PlayerOptions = {
    };
    display: {
       darkMode: boolean;
-   themePreset: "black-style" | "og-white" | "imperial-gold";
+   themePreset: "black-style" | "og-white" | "imperial-gold" | "windows-blue";
       compactView: boolean;
       showAnimations: boolean;
       showResourceRates: boolean;
@@ -119,7 +119,7 @@ type AdminAccountsResponse = {
    accounts: AdminAccountRecord[];
 };
 
-type ThemePreset = "black-style" | "og-white" | "imperial-gold";
+type ThemePreset = "black-style" | "og-white" | "imperial-gold" | "windows-blue";
 
 const ADMIN_ROLE_OPTIONS = [
    { value: "administrator", label: "Admin", description: "Server controls, moderation, and admin account provisioning." },
@@ -156,6 +156,14 @@ const THEME_PRESET_OPTIONS: Array<{
       helper: "Neon accents, dark panels, and the current black interface style.",
       icon: Moon,
       previewClassName: "border-cyan-400/50 bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.18),transparent_38%),linear-gradient(180deg,#182331,#070b11)]",
+   },
+   {
+      value: "windows-blue",
+      label: "Industrial Blue Command",
+      description: "A near-black navy command center with electric cyan telemetry and teal active-state cues.",
+      helper: "Industrial panels, blue command chrome, cyan status light, and indigo logic surfaces for strategic operations.",
+      icon: Monitor,
+      previewClassName: "border-[#197ca9] bg-[radial-gradient(circle_at_top_right,rgba(40,189,231,0.22),transparent_38%),linear-gradient(180deg,#092b4b,#020d1c)]",
    },
    {
       value: "og-white",
@@ -242,7 +250,7 @@ export default function Settings() {
   
   const [displaySettings, setDisplaySettings] = useState({
     darkMode: false,
-    themePreset: "og-white" as ThemePreset,
+    themePreset: "windows-blue" as ThemePreset,
     compactView: false,
     showAnimations: true,
     showResourceRates: true,
@@ -340,8 +348,8 @@ export default function Settings() {
 
       setNotifications(playerOptions.notifications);
       setDisplaySettings({
-         darkMode: playerOptions.display.themePreset !== "og-white",
-         themePreset: playerOptions.display.themePreset || "og-white",
+         darkMode: ["black-style", "imperial-gold"].includes(playerOptions.display.themePreset),
+         themePreset: playerOptions.display.themePreset || "windows-blue",
          compactView: playerOptions.display.compactView,
          showAnimations: playerOptions.display.showAnimations,
          showResourceRates: playerOptions.display.showResourceRates,
@@ -958,7 +966,7 @@ export default function Settings() {
                                       setDisplaySettings({
                                          ...displaySettings,
                                          themePreset: themeOption.value,
-                                         darkMode: themeOption.value !== "og-white",
+                                         darkMode: ["black-style", "imperial-gold"].includes(themeOption.value),
                                       })
                                    }
                                 >

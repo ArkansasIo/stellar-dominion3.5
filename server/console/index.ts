@@ -17,7 +17,7 @@ import { logger } from '../logger.js';
 async function main(): Promise<void> {
   console.log('\n');
   console.log('╔════════════════════════════════════════════════╗');
-  console.log('║     🖥️  STELLAR DOMINION BACKEND CONSOLE      ║');
+  console.log('║     🖥️  UNIVERSE CIVILIZATION: EMPIRE AT WAR BACKEND CONSOLE      ║');
   console.log('║          Server Management Interface           ║');
   console.log('╚════════════════════════════════════════════════╝');
   console.log('\nInitializing console...\n');

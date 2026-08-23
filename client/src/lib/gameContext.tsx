@@ -467,7 +467,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 
   const [commander, setCommander] = useState<CommanderState & { empireSlot?: number }>({
     name: "Commander",
-    empireName: "Stellar Dominion",
+    empireName: "Universe Civilization: Empire at War",
     race: "terran",
     class: "admiral",
     subClass: null,
@@ -907,7 +907,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     const normalizedCommander = (state as any).commander
       ? {
           ...(state as any).commander,
-          empireName: (state as any).commander.empireName || (state as any).commander.name || "Stellar Dominion",
+          empireName: (state as any).commander.empireName || (state as any).commander.name || "Universe Civilization: Empire at War",
           equipment: normalizeCommanderEquipment((state as any).commander.equipment),
           inventory: Array.isArray((state as any).commander.inventory) ? (state as any).commander.inventory : [],
         }
@@ -1896,7 +1896,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
        units,
        megastructures,
        commander,
-       empireName: commander?.empireName || "Stellar Dominion",
+       empireName: commander?.empireName || "Universe Civilization: Empire at War",
        government,
        planetName,
        coordinates, 

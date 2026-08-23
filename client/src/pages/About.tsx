@@ -31,7 +31,7 @@ export default function About() {
           <div className="w-20 h-20 bg-slate-900 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
             <Rocket className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-4xl font-orbitron font-bold text-slate-900 mb-4">universe-empire-domions</h1>
+          <h1 className="text-4xl font-orbitron font-bold text-slate-900 mb-4">Universe Civilization: Empire at War</h1>
           <p className="text-xl text-slate-600 font-rajdhani max-w-2xl mx-auto">
             A 4X space strategy MMORPG where you build your empire, command fleets, and conquer the galaxy.
           </p>

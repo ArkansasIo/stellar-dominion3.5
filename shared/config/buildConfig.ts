@@ -1,23 +1,30 @@
 export const BUILD_INFO = {
-  appName: "Stellar Dominion",
-  buildName: "Nexus Alpha",
-  version: "4.0.0",
-  patchVersion: "4.0.0-alpha.1",
-  buildChannel: "Development" as "Development" | "Production" | "Staging",
-  buildNumber: 4001,
-  buildDate: "2026-06-23",
-  buildTime: "UTC 00:00",
-  gitCommit: "fc3e2c1",
+  appName: "Universe Civilization: Empire at War",
+  buildName: "Nexus Alpha Command Release",
+  releaseLabel: "Alpha 1.5.1",
+  version: "1.5.1",
+  patchVersion: "Alpha 1.5.1",
+  buildChannel: "Production" as "Development" | "Production" | "Staging",
+  buildNumber: 2026082301,
+  buildId: "NEXUS-ALPHA-20260823.01",
+  buildDate: "2026-08-23",
+  buildTime: "EDT 19:36",
+  buildTimestamp: "2026-08-23T19:36:00-04:00",
+  gitCommit: "release-managed",
   gitBranch: "main",
   devName: "Stephen",
   devAlias: "ArkansasIo",
+  developerId: "ARKANSASIO-DEV-001",
   studioName: "ArkansasIo Studio",
-  copyright: "2025-2026 Stephen",
+  publisherName: "ArkansasIo",
+  publisherId: "ARKANSASIO-PUBLISHER-001",
+  releaseStatus: "Current" as "Current" | "Preview" | "Archived",
+  copyright: "2025-2026 Stephen / ArkansasIo",
   license: "MIT License",
   universeId: "Nexus-Alpha",
   engineVersion: "1.0.0",
   protocolVersion: "v2",
-  minClientVersion: "3.5.0",
+  minClientVersion: "1.5.1",
   apiVersion: "v2",
   supportEmail: "support@stellardominion.com",
   websiteUrl: "https://stellardominion.com",
@@ -43,15 +50,15 @@ export const BUILD_INFO = {
 export type BuildInfo = typeof BUILD_INFO;
 
 export function getBuildLabel(): string {
-  return `${BUILD_INFO.appName} ${BUILD_INFO.version} (${BUILD_INFO.buildName})`;
+  return `${BUILD_INFO.appName} ${BUILD_INFO.releaseLabel} (${BUILD_INFO.buildName})`;
 }
 
 export function getFooterBuildString(): string {
-  return `v${BUILD_INFO.version} • Build ${BUILD_INFO.buildNumber} • ${BUILD_INFO.gitCommit}`;
+  return `${BUILD_INFO.releaseLabel} • Build ${BUILD_INFO.buildNumber} • ${BUILD_INFO.buildId}`;
 }
 
 export function getDisplayVersion(): string {
-  return `v${BUILD_INFO.version}`;
+  return BUILD_INFO.releaseLabel;
 }
 
 export function getPatchLabel(): string {

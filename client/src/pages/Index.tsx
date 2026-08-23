@@ -67,8 +67,8 @@ export default function Index() {
   const [email, setEmail] = useState("");
 
   return (
-    <div className="min-h-screen bg-white">
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-b border-slate-200 shadow-sm">
+    <div className="sd-index-shell min-h-screen bg-white">
+      <header className="sd-index-header fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-b border-slate-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center space-x-3">
@@ -93,10 +93,10 @@ export default function Index() {
             </nav>
 
             <div className="hidden md:flex items-center space-x-3">
-              <Button variant="ghost" size="sm" onClick={() => setLocation("/auth")} className="text-slate-700 hover:text-blue-600">
+              <Button variant="ghost" size="sm" onClick={() => setLocation("/auth")} className="sd-index-header-secondary text-slate-700 hover:text-blue-600">
                 Sign In
               </Button>
-              <Button size="sm" onClick={() => setLocation("/auth")} className="bg-blue-600 hover:bg-blue-500">
+              <Button size="sm" onClick={() => setLocation("/auth")} className="sd-index-header-primary bg-blue-600 hover:bg-blue-500">
                 Register
               </Button>
             </div>
@@ -111,7 +111,7 @@ export default function Index() {
         </div>
 
         {mobileMenuOpen && (
-          <div className="md:hidden bg-white border-t border-slate-200 px-4 py-4 space-y-3">
+          <div className="sd-index-mobile-nav md:hidden bg-white border-t border-slate-200 px-4 py-4 space-y-3">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -135,14 +135,14 @@ export default function Index() {
       </header>
 
       <main>
-        <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden">
+        <section className="sd-index-hero relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden">
           <div className="absolute inset-0 pointer-events-none">
             <img
               src="/hero-bg.jpg"
               alt=""
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/40 to-white" />
+            <div className="sd-index-hero-overlay absolute inset-0 bg-gradient-to-b from-white/80 via-white/40 to-white" />
           </div>
           <div className="absolute top-20 left-10 w-72 h-72 bg-blue-200/30 rounded-full blur-3xl" />
           <div className="absolute bottom-20 right-10 w-96 h-96 bg-cyan-200/30 rounded-full blur-3xl" />
@@ -160,7 +160,7 @@ export default function Index() {
                   CIVILIZATION
                 </span>
                 <br />
-                EMPIRES AT WAR
+                EMPIRE AT WAR
               </h1>
 
               <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto mb-10 font-rajdhani">
@@ -171,7 +171,7 @@ export default function Index() {
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Button
                   size="lg"
-                  className="px-10 py-6 text-lg font-bold rounded-full shadow-xl shadow-blue-500/20 hover:shadow-blue-500/30 bg-blue-600 hover:bg-blue-500 text-white"
+                  className="sd-index-primary-cta px-10 py-6 text-lg font-bold rounded-full shadow-xl shadow-blue-500/20 hover:shadow-blue-500/30 bg-blue-600 hover:bg-blue-500 text-white"
                   onClick={() => setLocation("/auth")}
                 >
                   <Rocket className="w-5 h-5 mr-2" />
@@ -180,7 +180,7 @@ export default function Index() {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="px-10 py-6 text-lg font-bold rounded-full border-slate-300 text-slate-700 hover:bg-slate-100"
+                  className="sd-index-secondary-cta px-10 py-6 text-lg font-bold rounded-full border-slate-300 text-slate-700 hover:bg-slate-100"
                   onClick={() => setLocation("/about")}
                 >
                   Learn More
@@ -191,7 +191,7 @@ export default function Index() {
 
             <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto">
               {stats.map((stat) => (
-                <div key={stat.label} className="text-center p-4 rounded-xl bg-white/70 backdrop-blur-sm border border-slate-200 shadow-sm">
+                <div key={stat.label} className="sd-index-stat text-center p-4 rounded-xl bg-white/70 backdrop-blur-sm border border-slate-200 shadow-sm">
                   <div className="text-2xl md:text-3xl font-orbitron font-bold text-blue-600">{stat.value}</div>
                   <div className="text-xs text-slate-500 mt-1 uppercase tracking-wider">{stat.label}</div>
                 </div>
@@ -200,7 +200,7 @@ export default function Index() {
           </div>
         </section>
 
-        <section className="py-20 bg-slate-50/50">
+        <section className="sd-index-features py-20 bg-slate-50/50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-orbitron font-bold text-slate-900 mb-4">
@@ -213,7 +213,7 @@ export default function Index() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {features.map((feature) => (
-                <Card key={feature.title} className="bg-white border-slate-200 hover:border-blue-200 hover:shadow-md transition-all group">
+                <Card key={feature.title} className="sd-index-feature-card bg-white border-slate-200 hover:border-blue-200 hover:shadow-md transition-all group">
                   <CardContent className="p-6">
                     <div className={cn(
                       "w-12 h-12 rounded-xl bg-gradient-to-br flex items-center justify-center mb-4 shadow-sm",
@@ -230,9 +230,9 @@ export default function Index() {
           </div>
         </section>
 
-        <section className="py-20">
+        <section className="sd-index-cta-section py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl p-10 md:p-16 text-center shadow-xl">
+            <div className="sd-index-cta bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl p-10 md:p-16 text-center shadow-xl">
               <Badge className="mb-4 bg-blue-500/10 text-blue-300 border-blue-500/30">Get Started</Badge>
               <h2 className="text-3xl md:text-4xl font-orbitron font-bold text-white mb-4">
                 Ready to Conquer the Galaxy?
@@ -257,7 +257,7 @@ export default function Index() {
           </div>
         </section>
 
-        <section className="py-16 bg-slate-50 border-t border-slate-200">
+        <section className="sd-index-directory py-16 bg-slate-50 border-t border-slate-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               <div className="md:col-span-1">
@@ -320,11 +320,11 @@ export default function Index() {
         </section>
       </main>
 
-      <footer className="border-t border-slate-200 bg-white">
+      <footer className="sd-index-footer border-t border-slate-200 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-xs text-slate-400">
-              &copy; 2026 Universe Civilization: Empires at War. All rights reserved.
+              &copy; 2026 Universe Civilization: Empire at War. All rights reserved.
             </p>
             <div className="flex items-center gap-4">
               <Link href="/about" className="text-xs text-slate-400 hover:text-slate-600 transition-colors">Privacy</Link>

@@ -81,6 +81,8 @@ export function calculateBuildTime(buildingType: string, currentLevel: number, r
 
 function normalizeResources(raw: any): ResourceState {
   return {
+    // Preserve strategic and future resource keys when conventional economy ticks persist.
+    ...(raw && typeof raw === "object" ? raw : {}),
     metal: Math.max(0, Number(raw?.metal || 0)),
     crystal: Math.max(0, Number(raw?.crystal || 0)),
     deuterium: Math.max(0, Number(raw?.deuterium || 0)),

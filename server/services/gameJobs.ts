@@ -1,6 +1,7 @@
 import { pool } from "../db";
 import { registerCronJob, recordGameTick, registerTimerFireHandler, startTimerPoller, cronLog, ensureCronTables, type CronJobResult } from "./cronService";
 import { GAME_SETTINGS } from "../config/gameSettings";
+import { calculateProduction } from "../gameEngine";
 import { registerExtendedGameJobs } from "./gameJobsExtended";
 
 const { intervals: INT, loginBonus: BONUS, resourceProduction: PROD } = GAME_SETTINGS;
@@ -552,10 +553,12 @@ async function resourceTickHandler(_job: any, params: any): Promise<CronJobResul
         const deuteriumSynth = buildings.deuteriumSynthesizer || 0;
         const solarPlant = buildings.solarPlant || 0;
 
-        const metalProd = Math.floor(PROD.metalMultiplier * metalMine * (1 + metalMine / 10) * elapsedHours);
-        const crystalProd = Math.floor(PROD.crystalMultiplier * crystalMine * (1 + crystalMine / 10) * elapsedHours);
-        const deuteriumProd = Math.floor(PROD.deuteriumMultiplier * deuteriumSynth * (1 + deuteriumSynth / 12) * elapsedHours);
-        const energyProd = Math.floor(PROD.energyMultiplier * solarPlant * (1 + solarPlant / 10) * elapsedHours);
+        // Keep scheduled persistence aligned with the production API and client resource counter.
+        const productionPerHour = calculateProduction(buildings);
+        const metalProd = Math.floor(productionPerHour.metal * elapsedHours);
+        const crystalProd = Math.floor(productionPerHour.crystal * elapsedHours);
+        const deuteriumProd = Math.floor(productionPerHour.deuterium * elapsedHours);
+        const energyProd = Math.floor(PROD.energyMultiplier * 20 * solarPlant * (1 + solarPlant / 10) * elapsedHours);
         const energyConsumed = Math.floor((10 * metalMine + 10 * crystalMine + 20 * deuteriumSynth) * elapsedHours);
         const netEnergy = Math.max(0, energyProd - energyConsumed);
 
