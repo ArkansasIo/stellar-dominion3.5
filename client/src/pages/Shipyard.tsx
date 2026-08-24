@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
-  BACKGROUND_ASSETS,
+  GENERATED_GAME_ART,
   MENU_ASSETS,
   OGAMEX_FEATURED_ASSETS,
   SHIP_ASSETS,
@@ -170,7 +170,7 @@ const UnitCard = ({
 
   return (
     <Card className={cn("bg-white border-slate-200 hover:border-primary/50 transition-all group overflow-hidden shadow-sm flex flex-col h-full", !meetsRequirement && "opacity-60")} data-testid={`card-unit-${item.id}`}>
-      <div className={cn("h-32 relative border-b border-slate-200 bg-cover bg-center", item.class === "titan" && "from-red-50 to-red-100", item.class === "super" && "from-purple-50 to-purple-100")} style={{ backgroundImage: `linear-gradient(rgba(248,250,252,0.92), rgba(241,245,249,0.88)), url(${BACKGROUND_ASSETS.SHIPYARD.path})` }}>
+      <div className={cn("h-32 relative border-b border-slate-200 bg-cover bg-center", item.class === "titan" && "from-red-50 to-red-100", item.class === "super" && "from-purple-50 to-purple-100")} style={{ backgroundImage: `linear-gradient(rgba(248,250,252,0.92), rgba(241,245,249,0.88)), url(${GENERATED_GAME_ART.SHIPYARD_CARRIER.path})` }}>
         <div className="absolute inset-0 flex items-center justify-center">
           <img src={getUnitImagePath(item)} alt={item.name} className="w-24 h-24 object-contain" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = TEMP_THEME_IMAGE; }} />
         </div>
@@ -216,7 +216,7 @@ function ConstructorYardPanel({ title, description, domain, entries, status, onS
   return (
     <div className="space-y-4">
       <Card className="overflow-hidden border-slate-200 shadow-sm">
-        <div className="border-b border-slate-200 px-5 py-4 text-white bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.85), rgba(15,23,42,0.92)), url(${domain === "mothership" ? OGAMEX_FEATURED_ASSETS.SHIPS.path : BACKGROUND_ASSETS.SHIPYARD.path})` }}>
+        <div className="border-b border-slate-200 px-5 py-4 text-white bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.85), rgba(15,23,42,0.92)), url(${domain === "mothership" ? OGAMEX_FEATURED_ASSETS.SHIPS.path : GENERATED_GAME_ART.SHIPYARD_CARRIER.path})` }}>
           <div className="flex items-start gap-4">
             <img src={domain === "mothership" ? SHIP_ASSETS.SPECIAL.CARRIER.path : MENU_ASSETS.BUILDINGS.SHIPYARD.path} alt={title} className="w-14 h-14 rounded-xl bg-white/10 border border-white/10 p-2 object-contain" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = TEMP_THEME_IMAGE; }} />
             <div>
@@ -324,7 +324,7 @@ export default function Shipyard() {
   return (
     <GameLayout>
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <section className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.78), rgba(15,23,42,0.92)), url(${BACKGROUND_ASSETS.SHIPYARD.path})` }}>
+        <section className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.78), rgba(15,23,42,0.92)), url(${GENERATED_GAME_ART.SHIPYARD_CARRIER.path})` }}>
           <div className="grid gap-6 p-5 lg:grid-cols-[1.4fr_0.8fr] lg:p-6">
             <div className="space-y-4 text-white">
               <div className="inline-flex items-center gap-2 rounded-full border border-cyan-200/20 bg-cyan-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-100"><Factory className="w-3.5 h-3.5" />Fleet Fabrication Wing</div>

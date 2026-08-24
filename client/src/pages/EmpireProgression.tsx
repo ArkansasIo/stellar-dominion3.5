@@ -1,4 +1,7 @@
 import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
+import { Link } from "wouter";
+import { useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import GameLayout from "@/components/layout/GameLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,10 +14,20 @@ import {
   getKardashevUpgradeSnapshot,
 } from "@/lib/kardashevUpgradeCatalog";
 import { KARDASHEV_SCALE, type KardashevLevel } from "@/lib/kardashevScale";
+import {
+  countOwnedPlanets,
+  getKardashevOperationalBonuses,
+} from "@shared/config/kardashevOperationalBonuses";
 import { Crown, Factory, FlaskConical, Orbit, Rocket, Star, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const TEMP_THEME_IMAGE = "/theme-temp.png";
+
+type PlayerTelemetryState = {
+  knownPlanets?: unknown;
+  planetName?: string;
+  kardashevSystems?: Record<string, number>;
+};
 
 function formatLargeNumber(num: number): string {
   if (num >= 1e12) return `${(num / 1e12).toFixed(1)}T`;
@@ -36,6 +49,11 @@ export default function EmpireProgression() {
     upgradeKardashevSystem,
   } = useGame();
 
+  const { data: serverState } = useQuery<PlayerTelemetryState>({
+    queryKey: ["/api/player/state"],
+    queryFn: async () => (await apiRequest("GET", "/api/player/state")).json(),
+  });
+
   const researchTotal = Object.values(research).reduce((sum, value) => sum + (value || 0), 0);
   const infrastructureTotal = Object.values(infrastructureSystems).reduce((sum, value) => sum + (value || 0), 0);
   const technologyDivisionTotal = Object.values(technologyDivisionSystems).reduce((sum, value) => sum + (value || 0), 0);
@@ -44,6 +62,12 @@ export default function EmpireProgression() {
   const currentLevel = getCurrentKardashevUpgradeLevel(kardashevSystems);
   const nextLevel = Math.min(18, currentLevel + 1) as KardashevLevel;
   const currentTier = KARDASHEV_SCALE[currentLevel];
+  const operationalBonuses = getKardashevOperationalBonuses(kardashevSystems);
+  const ownedPlanets = countOwnedPlanets(
+    serverState?.knownPlanets,
+    undefined,
+    serverState?.planetName,
+  );
   const nextTier = currentLevel < 18 ? KARDASHEV_SCALE[nextLevel] : null;
   const nextSystem = KARDASHEV_UPGRADE_SYSTEMS.find((system) => system.level === nextLevel);
 
@@ -79,21 +103,54 @@ export default function EmpireProgression() {
           </div>
         </section>
 
-        <Card className="border-amber-200 bg-gradient-to-r from-amber-50 via-white to-orange-50">
+          <Card className="border-blue-800/60 bg-gradient-to-r from-slate-950 via-blue-950/90 to-slate-950 text-blue-50 shadow-lg shadow-blue-950/20">
           <CardContent className="p-6">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
-                <p className="text-sm uppercase tracking-[0.2em] text-slate-500">Current Level</p>
-                <h2 className="mt-2 text-3xl font-bold text-slate-900">{currentTier.name}</h2>
-                <p className="mt-2 max-w-2xl text-slate-600">{currentTier.description}</p>
+                <p className="text-sm uppercase tracking-[0.2em] text-blue-300">Current Level</p>
+                <h2 className="mt-2 text-3xl font-bold text-white">{currentTier.name}</h2>
+                <p className="mt-2 max-w-2xl text-blue-200/75">{currentTier.description}</p>
               </div>
               <div className="text-right">
                 <Badge className="bg-amber-500 px-4 py-2 text-xl text-white">Level {currentLevel}</Badge>
-                <p className="mt-3 text-xs uppercase tracking-[0.18em] text-slate-500">{18 - currentLevel} tiers remaining</p>
+                <p className="mt-3 text-xs uppercase tracking-[0.18em] text-blue-300">{18 - currentLevel} tiers remaining</p>
               </div>
             </div>
           </CardContent>
         </Card>
+
+        <section className="overflow-hidden rounded-2xl border border-cyan-800/60 bg-gradient-to-br from-slate-950 via-blue-950/90 to-slate-950 p-5 text-blue-50 shadow-lg shadow-blue-950/20" data-testid="kardashev-active-bonuses">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <div className="text-xs font-bold uppercase tracking-[0.22em] text-cyan-300">Live Operations Telemetry</div>
+              <h2 className="mt-2 text-xl font-orbitron font-bold text-white">Tier {operationalBonuses.level} effects are active</h2>
+              <p className="mt-1 text-sm text-blue-200/75">These modifiers are applied server-side to battle resolution and interstellar colonization.</p>
+            </div>
+            <Badge className="border border-cyan-400/40 bg-cyan-400/10 text-cyan-100">{operationalBonuses.tierName}</Badge>
+          </div>
+          <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-xl border border-blue-800/60 bg-blue-900/35 p-4">
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-300">Fleet Power</div>
+              <div className="mt-2 flex items-baseline gap-2 text-2xl font-orbitron font-bold text-white"><span>+{operationalBonuses.fleetPowerPercent}%</span><span className="text-sm font-normal text-cyan-200">×{operationalBonuses.fleetPowerMultiplier.toFixed(2)}</span></div>
+              <div className="mt-1 text-xs text-blue-200/70">Battle attack stats multiplier</div>
+            </div>
+            <div className="rounded-xl border border-blue-800/60 bg-blue-900/35 p-4">
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-300">Defense Power</div>
+              <div className="mt-2 flex items-baseline gap-2 text-2xl font-orbitron font-bold text-white"><span>+{operationalBonuses.defensePowerPercent}%</span><span className="text-sm font-normal text-cyan-200">×{operationalBonuses.defensePowerMultiplier.toFixed(2)}</span></div>
+              <div className="mt-1 text-xs text-blue-200/70">Garrison and counter-fire multiplier</div>
+            </div>
+            <div className="rounded-xl border border-blue-800/60 bg-blue-900/35 p-4">
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-300">Colony Capacity</div>
+              <div className="mt-2 text-2xl font-orbitron font-bold text-white">{ownedPlanets} / {operationalBonuses.maxPlanets}</div>
+              <div className="mt-1 text-xs text-blue-200/70">Owned planets before next expansion</div>
+            </div>
+            <div className="rounded-xl border border-blue-800/60 bg-blue-900/35 p-4">
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-300">Fleet Command Ceiling</div>
+              <div className="mt-2 text-2xl font-orbitron font-bold text-white">{operationalBonuses.maxFleets}</div>
+              <div className="mt-1 text-xs text-blue-200/70">Strategic fleet formations available</div>
+            </div>
+          </div>
+        </section>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
           <Card className="border-slate-200 bg-white">
@@ -121,6 +178,29 @@ export default function EmpireProgression() {
             </CardContent>
           </Card>
         </div>
+
+        <section className="overflow-hidden rounded-2xl border border-blue-800/60 bg-gradient-to-br from-slate-950 via-blue-950/90 to-slate-950 p-5 text-blue-50 shadow-lg shadow-blue-950/20" data-testid="kardashev-control-matrix">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.22em] text-cyan-300"><TrendingUp className="h-4 w-4" /> Ascension Control Matrix</div>
+              <h2 className="mt-2 text-2xl font-orbitron font-bold text-white">Build the civilization, unlock the tier</h2>
+              <p className="mt-1 max-w-3xl text-sm leading-6 text-blue-200/75">The Kardashev loop converts research knowledge and industrial infrastructure into megastructure mastery, then turns each unlocked tier into stronger production, science, fleet, and expansion capacity.</p>
+            </div>
+            <Badge className="border border-blue-400/40 bg-blue-400/10 text-blue-100">{readiness}% next-tier readiness</Badge>
+          </div>
+          <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-4">
+            <div className="rounded-xl border border-blue-800/60 bg-blue-900/35 p-4"><div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-300"><FlaskConical className="h-3.5 w-3.5" /> Discover</div><div className="mt-2 text-xl font-orbitron font-bold text-white">{researchTotal}</div><div className="mt-1 text-xs text-blue-200/70">Research levels fund new unlocks.</div></div>
+            <div className="rounded-xl border border-blue-800/60 bg-blue-900/35 p-4"><div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-300"><Factory className="h-3.5 w-3.5" /> Industrialize</div><div className="mt-2 text-xl font-orbitron font-bold text-white">{infrastructureTotal}</div><div className="mt-1 text-xs text-blue-200/70">Infrastructure creates build capacity.</div></div>
+            <div className="rounded-xl border border-blue-800/60 bg-blue-900/35 p-4"><div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-300"><Orbit className="h-3.5 w-3.5" /> Ascend</div><div className="mt-2 text-xl font-orbitron font-bold text-white">{megastructureTotal}</div><div className="mt-1 text-xs text-blue-200/70">Megastructures prove civilization scale.</div></div>
+            <div className="rounded-xl border border-blue-800/60 bg-blue-900/35 p-4"><div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-300"><Rocket className="h-3.5 w-3.5" /> Apply</div><div className="mt-2 text-xl font-orbitron font-bold text-white">{technologyDivisionTotal}</div><div className="mt-1 text-xs text-blue-200/70">Technology divisions convert unlocks into capability.</div></div>
+          </div>
+          <div className="mt-4 flex flex-wrap gap-2 border-t border-blue-800/50 pt-4">
+            <Link href="/research"><Button size="sm" className="bg-blue-600 text-white hover:bg-blue-500">Open Research</Button></Link>
+            <Link href="/facilities"><Button size="sm" variant="outline" className="border-blue-500/50 text-blue-100 hover:bg-blue-900/50">Expand Infrastructure</Button></Link>
+            <Link href="/megastructures"><Button size="sm" variant="outline" className="border-blue-500/50 text-blue-100 hover:bg-blue-900/50">Master Megastructures</Button></Link>
+            <Link href="/technology-tree"><Button size="sm" variant="outline" className="border-blue-500/50 text-blue-100 hover:bg-blue-900/50">Plan Technology</Button></Link>
+          </div>
+        </section>
 
         {nextTier && nextSystem && (
           <Card className="border-blue-200 bg-blue-50/60">

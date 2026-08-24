@@ -135,6 +135,8 @@ export const playerStates = pgTable("player_states", {
   tierBonuses: jsonb("tier_bonuses").notNull().default({}),
   
   kardashevProgress: jsonb("kardashev_progress").notNull().default({ metal: 0, crystal: 0, deuterium: 0, research: 0 }),
+  // Kardashev auxiliary systems and contiguous unlocked tier levels.
+  kardashevSystems: jsonb("kardashev_systems").notNull().default({}),
   
   // Turn system (3-5 turns per minute)
   totalTurns: integer("total_turns").notNull().default(0),

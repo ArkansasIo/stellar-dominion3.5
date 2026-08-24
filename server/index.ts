@@ -255,6 +255,7 @@ import worldActionsRoutes from "./routes-worldactions";
 import tradesRoutes from "./routes-trades";
 import messagesRoutes from "./routes-messages";
 import { seedOgameCatalogIfNeeded } from "./services/ogameCatalogService";
+import { seedBossCatalogIfNeeded } from "./services/bossCatalogService";
 import { registerPhpMyAdminRoutes } from "./routes-phpmyadmin";
 import { registerMoonRoutes } from "./routes-moons";
 import { registerSporeDriveRoutes } from "./routes-spore-drive";
@@ -275,6 +276,23 @@ import { eq, ilike, or } from "drizzle-orm";
 
 (async () => {
   await setupAuth(app);
+
+  try {
+    const bossSeedSummary = await seedBossCatalogIfNeeded();
+    if (bossSeedSummary.seeded) {
+      log(
+        `Seeded boss catalog: ${bossSeedSummary.bosses} bosses, ${bossSeedSummary.events} raid events`,
+        "startup",
+        "success",
+      );
+    }
+  } catch (error) {
+    log(
+      `Boss catalog seed skipped: ${(error as Error).message}`,
+      "startup",
+      "warn",
+    );
+  }
 
   try {
     const seedSummary = await seedOgameCatalogIfNeeded();

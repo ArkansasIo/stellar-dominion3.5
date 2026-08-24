@@ -212,7 +212,7 @@ const SidebarItem = ({
       touchMode && (indentLevel === 2 ? "min-h-[46px]" : "min-h-[50px]"),
       active 
         ? "sd-sidebar-item--active bg-primary/10 border-primary text-primary font-bold" 
-        : "border-transparent hover:bg-slate-200 hover:text-primary hover:border-primary/50 text-muted-foreground",
+        : "border-transparent hover:bg-blue-900/45 hover:text-blue-100 hover:border-blue-400/60 text-muted-foreground",
       className
     )} onClick={onSelect}>
       <Icon className="w-4 h-4" />
@@ -256,7 +256,7 @@ const CollapsibleMenu = ({
           "sd-sidebar-section flex items-stretch border-l-2 transition-all duration-200",
           hasActiveChild
             ? "sd-sidebar-section--active bg-primary/5 border-primary/50 text-primary"
-            : "border-transparent text-muted-foreground hover:text-slate-700"
+            : "border-transparent text-muted-foreground hover:text-blue-200"
         )}
       >
         <Link href={sectionHref} data-testid={`link-menu-${title.toLowerCase().replace(/\s+/g, '-')}`}>
@@ -283,21 +283,21 @@ const CollapsibleMenu = ({
           aria-expanded={isOpen}
           aria-controls={contentId}
           className={cn(
-            "sd-sidebar-toggle flex w-12 items-center justify-center border-l border-slate-200/70 transition-colors duration-200",
+            "sd-sidebar-toggle flex w-12 items-center justify-center border-l border-blue-800/60 transition-colors duration-200",
             touchMode && "min-h-[50px]",
-            hasActiveChild ? "bg-primary/5 text-primary" : "hover:bg-slate-100 text-slate-500"
+            hasActiveChild ? "bg-blue-500/10 text-blue-200" : "hover:bg-blue-900/40 text-blue-300"
           )}
         >
           {isOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
         </button>
       </div>
       {isOpen && (
-        <div id={contentId} className="bg-slate-50/50">
+        <div id={contentId} className="bg-blue-950/30">
           {groups.map((group) => (
             <div key={group.title} className="py-1">
               <Link href={getGroupHref(group)} data-testid={`link-group-${group.title.toLowerCase().replace(/\s+/g, '-')}`}>
                 <div
-                  className="sd-sidebar-group-link px-6 py-2 text-[10px] font-bold tracking-[0.24em] text-slate-400 uppercase cursor-pointer transition-colors duration-200 hover:bg-white/70 hover:text-primary"
+                  className="sd-sidebar-group-link px-6 py-2 text-[10px] font-bold tracking-[0.24em] text-blue-300 uppercase cursor-pointer transition-colors duration-200 hover:bg-blue-900/45 hover:text-blue-100"
                   onClick={onSelect}
                 >
                   {group.title}
@@ -325,41 +325,47 @@ const CollapsibleMenu = ({
 
 const menuSections: MenuSection[] = [
   {
-    title: "Empire",
+    title: "Empire Core",
     icon: Building2,
-    description: "Manage planets, colonies, infrastructure, and civilization growth.",
+    description: "Four-selection empire command: command, infrastructure, expansion, and civilization.",
     groups: [
       {
-        title: "Command",
-        description: "Core empire oversight and planetary command tools.",
+        title: "Command Center",
+        description: "Oversee the empire, active worlds, and direct planetary orders.",
         items: [
-          { href: "/empire-command-center", icon: Crown, label: "Command Center", description: "Review empire status, strategic alerts, and central command tools." },
-          { href: "/empire-view", icon: LayoutDashboard, label: "Empire View", description: "See your empire at a glance across worlds and systems." },
+          { href: "/empire-command-center", icon: Crown, label: "Command Center", description: "Review empire status, alerts, readiness, and central command tools." },
+          { href: "/empire-view", icon: LayoutDashboard, label: "Empire View", description: "See the empire at a glance across worlds and systems." },
           { href: "/empire-planets", icon: Globe, label: "Empire Planets", description: "Browse controlled planets and inspect planet detail pages.", activePrefixes: ["/planet/"] },
           { href: "/planet-command", icon: Rocket, label: "Planet Command", description: "Issue direct orders for planetary production and control." },
         ],
       },
       {
-        title: "Infrastructure",
-        description: "Expand production chains and build out planetary capacity.",
+        title: "Industry & Utilities",
+        description: "Manage the production, energy, capacity, and orbital infrastructure loop.",
         items: [
-          { href: "/resources", icon: Pickaxe, label: "Resources", description: "Track and improve metal, crystal, energy, and strategic reserves." },
-          { href: "/power-grid", icon: Network, label: "Stellar Power Grid", description: "Generate, transmit, store, and autonomously route power across worlds and resource fields." },
+          { href: "/resources", icon: Pickaxe, label: "Resources", description: "Track metal, crystal, energy, and strategic reserves." },
+          { href: "/power-grid", icon: Network, label: "Stellar Power Grid", description: "Generate, transmit, store, and route power across worlds." },
           { href: "/facilities", icon: Factory, label: "Facilities", description: "Construct and upgrade industrial, research, and support facilities." },
-          { href: "/colonies", icon: Home, label: "Colonies", description: "Manage colonization targets, colony slots, and expansion plans." },
-          { href: "/population", icon: Users, label: "Population", description: "Manage population demographics, citizen class assignment, and growth." },
           { href: "/stations", icon: Satellite, label: "Stations", description: "Control orbital stations, outposts, and support platforms." },
-          { href: "/megastructures", icon: CircleDot, label: "Megastructures", description: "Develop late-game empire-scale construction projects.", activePrefixes: ["/megastructures/"] },
-          { href: "/megastructures/dyson", icon: Sun, label: "Dyson Program", description: "Stellar harvesting sub-systems and Dyson sphere detail pages.", activePrefixes: ["/megastructures/dyson"] },
         ],
       },
       {
-        title: "Civilization",
-        description: "Shape society progression and large-scale empire milestones.",
+        title: "Expansion Systems",
+        description: "Turn industrial capacity into colonies, population growth, and empire-scale projects.",
         items: [
-          { href: "/civilization-systems", icon: Users, label: "Civilization Systems", description: "Review your civilization systems, bonuses, and societal traits." },
-          { href: "/civilization-management", icon: Building2, label: "Civilization Mgmt", description: "Adjust policies and manage civilization-wide development." },
-          { href: "/empire-progression", icon: Award, label: "Kardashev Scale", description: "Track empire advancement through long-term progression tiers." },
+          { href: "/colonies", icon: Home, label: "Colonies", description: "Manage colonization targets, colony slots, and expansion plans." },
+          { href: "/population", icon: Users, label: "Population", description: "Manage demographics, citizen classes, and growth." },
+          { href: "/megastructures", icon: CircleDot, label: "Megastructures", description: "Develop late-game empire-scale construction projects.", activePrefixes: ["/megastructures/"] },
+          { href: "/megastructures/dyson", icon: Sun, label: "Dyson Program", description: "Operate stellar harvesting systems and Dyson detail pages.", activePrefixes: ["/megastructures/dyson"] },
+        ],
+      },
+      {
+        title: "Civilization Progression",
+        description: "Shape society doctrine, government systems, and long-term empire milestones.",
+        items: [
+          { href: "/civilization-systems", icon: Users, label: "Civilization Systems", description: "Review civilization systems, bonuses, and societal traits." },
+          { href: "/civilization-management", icon: Building2, label: "Civilization Mgmt", description: "Adjust policies and civilization-wide development." },
+          { href: "/empire-progression", icon: Award, label: "Kardashev Scale", description: "Track advancement through long-term progression tiers." },
         ],
       },
     ],
@@ -367,35 +373,44 @@ const menuSections: MenuSection[] = [
   {
     title: "Research",
     icon: FlaskConical,
-    description: "Unlock technologies, manage labs, and catalog discoveries.",
+    description: "Eight-selection science command: labs, technology, discoveries, and intelligence.",
     groups: [
       {
-        title: "Labs",
-        description: "Operate research centers and queue scientific projects.",
+        title: "Research Core",
+        description: "Manage research queues, skills, analytics, and the science game loop.",
         items: [
-          { href: "/research", icon: FlaskConical, label: "Research Hub", description: "View current research priorities and laboratory output." },
-          { href: "/skills", icon: BookOpen, label: "Skills Training", description: "Train character skills for improved performance." },
-          { href: "/research-lab", icon: Zap, label: "Research Management", description: "Allocate research capacity and manage active development." },
-          { href: "/research-analytics", icon: ScrollText, label: "Research Analytics", description: "Track discovery streaks, tier spread, and science performance." },
+          { href: "/research", icon: FlaskConical, label: "Research Hub", description: "Set research priorities and inspect current laboratory output." },
+          { href: "/research-lab", icon: Zap, label: "Research Management", description: "Allocate capacity, queue projects, and resolve completion functions." },
+          { href: "/skills", icon: BookOpen, label: "Skills Training", description: "Train commander skills and apply progression modifiers." },
+          { href: "/research-analytics", icon: ScrollText, label: "Research Analytics", description: "Track level pace, discovery streaks, and science performance." },
         ],
       },
       {
-        title: "Tech Trees",
-        description: "Navigate structured technology paths and reference systems.",
+        title: "Technology Systems",
+        description: "Navigate dependency trees, legacy branches, and technical reference systems.",
         items: [
-          { href: "/technology-tree", icon: GraduationCap, label: "Technology Tree", description: "Browse upgrade dependencies and long-term tech routes." },
-          { href: "/tech-tree", icon: FlaskConical, label: "Tech Tree Legacy", description: "Open the alternate tech tree route and keep the legacy page linked into navigation." },
-          { href: "/ogame-compendium", icon: Database, label: "OGame Compendium", description: "Reference structured technology, economy, and combat data." },
+          { href: "/technology-tree", icon: GraduationCap, label: "Technology Tree", description: "Browse dependencies, unlock gates, and long-term tech routes." },
+          { href: "/tech-tree", icon: FlaskConical, label: "Tech Tree Legacy", description: "Open the legacy tree while retaining its route and page coverage." },
+          { href: "/ogame-compendium", icon: Database, label: "OGame Compendium", description: "Reference structured economy, technology, and combat systems." },
         ],
       },
       {
-        title: "Discoveries",
-        description: "Catalog rare finds, advanced designs, and recovered relics.",
+        title: "Discovery Vault",
+        description: "Convert discoveries into equipment, artifacts, relics, and production plans.",
         items: [
           { href: "/blueprints", icon: FileText, label: "Blueprints", description: "Review unlocked designs and production-ready schematics." },
-          { href: "/artifacts", icon: Hexagon, label: "Artifacts", description: "Inspect rare artifacts that modify empire capabilities." },
+          { href: "/artifacts", icon: Hexagon, label: "Artifacts", description: "Inspect rare modifiers and their gameplay effects." },
           { href: "/relics", icon: Gem, label: "Relics", description: "Manage relic bonuses and rare discovery effects." },
           { href: "/knowledge-library", icon: BookOpen, label: "Knowledge Library", description: "Study mastery tracks, class tiers, and cross-discipline synergies." },
+        ],
+      },
+      {
+        title: "Science Intelligence",
+        description: "Use research data to plan builds, counter threats, and optimize empire scaling.",
+        items: [
+          { href: "/research-analytics", icon: ScrollText, label: "Science Telemetry", description: "Compare research throughput and identify bottlenecks." },
+          { href: "/knowledge-library", icon: BookOpen, label: "Doctrine Index", description: "Cross-reference doctrines, bonuses, and system interactions." },
+          { href: "/assets-gallery", icon: Image, label: "Science Assets", description: "Inspect linked research art and system assets." },
         ],
       },
     ],
@@ -403,67 +418,55 @@ const menuSections: MenuSection[] = [
   {
     title: "Military",
     icon: Swords,
-    description: "Command fleets, armies, expeditions, and combat operations.",
+    description: "Eight-selection war command: forces, strategy, operations, and raids.",
     groups: [
       {
-        title: "Forces",
-        description: "Build and organize space and ground units.",
+        title: "Fleet & Forces",
+        description: "Build, fit, train, and deploy space and ground formations.",
         items: [
-          { href: "/shipyard", icon: Rocket, label: "Shipyard", description: "Construct ships and prepare new fleets for deployment." },
-          { href: "/fitting", icon: Settings, label: "Ship Fitting", description: "Customize ship modules, weapons, and equipment." },
+          { href: "/shipyard", icon: Rocket, label: "Shipyard", description: "Construct ships and prepare fleets for deployment." },
+          { href: "/fitting", icon: Settings, label: "Ship Fitting", description: "Customize modules, weapons, and equipment loadouts." },
           { href: "/fleet", icon: Send, label: "Fleet Command", description: "Dispatch fleets, track missions, and manage formations." },
-          { href: "/orbital-defense", icon: Satellite, label: "Orbital Defense", description: "Build and command offensive satellites, shield platforms, carriers, and orbital fortresses." },
+          { href: "/orbital-defense", icon: Satellite, label: "Orbital Defense", description: "Build satellites, shield platforms, carriers, and fortresses." },
           { href: "/army", icon: Users, label: "Army", description: "Review land units, formations, and force composition." },
           { href: "/army-management", icon: Swords, label: "Army Management", description: "Train, equip, and reorganize planetary armies." },
-          { href: "/training-center", icon: GraduationCap, label: "Training Center", description: "Unlock training tracks, staff academies, and manage force capacity." },
+          { href: "/training-center", icon: GraduationCap, label: "Training Center", description: "Manage staff academies, training tracks, and force capacity." },
         ],
       },
       {
-        title: "Stargate Command",
-        description: "Core strategy, combat readiness, intelligence, and strategic systems.",
+        title: "Strategic Systems",
+        description: "Run the strategic game loop: readiness, intelligence, economy, and system diagnostics.",
         items: [
-          { href: "/stargate-command", icon: Radar, label: "Strategic Command", description: "Turns, economy, personnel, technology, DefCon, raids, and reconnaissance.", activePrefixes: ["/stargate-command"] },
-          { href: "/stargate-arsenal", icon: Hammer, label: "Arsenal & Intelligence", description: "Equipment, covert upgrades, sabotage, and intelligence reports.", activePrefixes: ["/stargate-arsenal", "/stargate-intelligence"] },
-          { href: "/stargate-systems", icon: Box, label: "System Directory", description: "Review module status, balance boundaries, and strategic API coverage.", activePrefixes: ["/stargate-systems"] },
+          { href: "/stargate-command", icon: Radar, label: "Strategic Command", description: "Manage turns, personnel, DefCon, reconnaissance, and combat readiness.", activePrefixes: ["/stargate-command"] },
+          { href: "/stargate-arsenal", icon: Hammer, label: "Arsenal & Intelligence", description: "Configure equipment, covert upgrades, sabotage, and intelligence.", activePrefixes: ["/stargate-arsenal", "/stargate-intelligence"] },
+          { href: "/stargate-systems", icon: Box, label: "System Directory", description: "Review module health, balance boundaries, and strategic API coverage.", activePrefixes: ["/stargate-systems"] },
+          { href: "/stargate-market", icon: ShoppingBag, label: "Strategic Market", description: "Trade Naquadah, issue offers, and recruit mercenaries.", activePrefixes: ["/stargate-market"] },
+          { href: "/stargate-worlds", icon: Globe, label: "Mothership & Worlds", description: "Upgrade motherships and apply world bonuses and defenses.", activePrefixes: ["/stargate-worlds"] },
         ],
       },
       {
-        title: "Expansion & Economy",
-        description: "Trade, exploration, worlds, and mothership development.",
-        items: [
-          { href: "/stargate-market", icon: ShoppingBag, label: "Strategic Market", description: "Naquadah exchange, trade offers, and mercenary recruitment.", activePrefixes: ["/stargate-market"] },
-          { href: "/stargate-worlds", icon: Globe, label: "Mothership & Worlds", description: "Mothership upgrades, exploration, world bonuses, and defenses.", activePrefixes: ["/stargate-worlds"] },
-        ],
-      },
-      {
-        title: "Alliance & Operations",
-        description: "Social command, progression, protection, reports, and event operations.",
-        items: [
-          { href: "/stargate-social", icon: Users, label: "Commanders & Alliances", description: "Commander profile, officers, alliances, and notices.", activePrefixes: ["/stargate-social"] },
-          { href: "/stargate-progression", icon: Trophy, label: "Rankings & Ascension", description: "Live rankings, Glory, Reputation, and Ascension readiness.", activePrefixes: ["/stargate-progression"] },
-          { href: "/stargate-operations", icon: Shield, label: "Protection & Reports", description: "Vacation protection, anti-farming, events, and operational audit.", activePrefixes: ["/stargate-operations"] },
-        ],
-      },
-      {
-        title: "Operations",
-        description: "Run missions, battles, espionage, and after-action reviews.",
+        title: "Combat Operations",
+        description: "Resolve missions, battles, occupation pressure, espionage, and after-action review.",
         items: [
           { href: "/expeditions", icon: Compass, label: "Expeditions", description: "Launch deep-space missions for risk, reward, and discovery." },
           { href: "/missions", icon: Briefcase, label: "Missions", description: "Dispatch fleets on strategic missions across the galaxy." },
           { href: "/espionage", icon: Eye, label: "Espionage", description: "Gather intelligence and conduct covert operations." },
-          { href: "/combat", icon: ShieldAlert, label: "Combat Center", description: "Engage combat systems and active battle mechanics." },
-          { href: "/ground-combat", icon: Swords, label: "Ground Combat", description: "Assemble invasion troops, shock units, and special ops detachments." },
-          { href: "/planet-occupation", icon: TowerControl, label: "Planet Occupation", description: "Control captured worlds through garrisons, suppression, extraction, and fortifications." },
+          { href: "/combat", icon: ShieldAlert, label: "Combat Center", description: "Engage tactical battle mechanics and resolve encounters." },
+          { href: "/ground-combat", icon: Swords, label: "Ground Combat", description: "Assemble invasion troops, shock units, and special operations." },
+          { href: "/planet-occupation", icon: TowerControl, label: "Planet Occupation", description: "Control captured worlds through garrisons and suppression." },
           { href: "/battle-logs", icon: ScrollText, label: "Battle Logs", description: "Review previous engagements and combat outcomes." },
         ],
       },
       {
-        title: "Raids",
-        description: "Coordinate raid loops, target discovery, and boss encounters.",
+        title: "Raids & Alliances",
+        description: "Coordinate raid groups, bosses, commanders, alliances, rankings, and protection.",
         items: [
-          { href: "/raids", icon: Swords, label: "Raid Operations", description: "Coordinate raid entry points and active raid campaigns." },
-          { href: "/raid-finder", icon: Search, label: "Raid Finder", description: "Search for available raids and suitable objectives." },
-          { href: "/raid-bosses", icon: Crown, label: "Raid Bosses", description: "Track elite raid bosses and encounter preparation." },
+          { href: "/raids", icon: Swords, label: "Raid Operations", description: "Coordinate raid entry points and active campaigns." },
+          { href: "/raid-finder", icon: Search, label: "Raid Finder", description: "Search available raids and suitable objectives." },
+          { href: "/raid-bosses", icon: Crown, label: "Raid Bosses", description: "Prepare for elite bosses, arc mechanics, and reward drops." },
+          { href: "/stargate-social", icon: Users, label: "Commanders & Alliances", description: "Coordinate officers, alliances, and notices.", activePrefixes: ["/stargate-social"] },
+          { href: "/stargate-progression", icon: Trophy, label: "Rankings & Ascension", description: "Track Glory, Reputation, rankings, and ascension readiness.", activePrefixes: ["/stargate-progression"] },
+          { href: "/stargate-operations", icon: Shield, label: "Protection & Reports", description: "Manage vacation protection, anti-farming, events, and audits.", activePrefixes: ["/stargate-operations"] },
         ],
       },
     ],
@@ -513,26 +516,38 @@ const menuSections: MenuSection[] = [
     ],
   },
   {
-    title: "Diplomacy",
+    title: "Galaxy & Social",
     icon: Shield,
-    description: "Lead your people, manage alliances, and build social networks.",
+    description: "Four-selection galaxy and social command: identity, factions, alliances, and communications.",
     groups: [
       {
-        title: "Leadership",
-        description: "Manage identity, power structures, and ranking systems.",
+        title: "Identity & Government",
+        description: "Manage commander identity, political structure, laws, and governing bonuses.",
         items: [
           { href: "/commander", icon: User, label: "Commander", description: "Customize commander identity, stats, and personal progression." },
           { href: "/government", icon: Landmark, label: "Government", description: "Review state structure, laws, and governing bonuses." },
+        ],
+      },
+      {
+        title: "Factions & Standing",
+        description: "Track faction relations, influence networks, empire prestige, and rankings.",
+        items: [
           { href: "/factions", icon: Users, label: "Factions", description: "Navigate faction relations and influence networks." },
           { href: "/leaderboard", icon: Trophy, label: "Leaderboard", description: "Compare empire performance against other players." },
         ],
       },
       {
-        title: "Alliances",
-        description: "Coordinate communication, guilds, and allied diplomacy.",
+        title: "Alliance Network",
+        description: "Build cooperative structures, guild identity, membership, and group strategy.",
         items: [
           { href: "/alliance", icon: Shield, label: "Alliance", description: "Manage alliance structure, members, and cooperative play." },
           { href: "/guilds", icon: Crown, label: "Guilds", description: "Organize guild participation and long-term group identity." },
+        ],
+      },
+      {
+        title: "Social Relay",
+        description: "Coordinate trusted contacts and process diplomatic and operational communications.",
+        items: [
           { href: "/friends", icon: Users, label: "Friends", description: "Track friends, contacts, and cooperative player lists." },
           { href: "/messages", icon: Mail, label: "Messages", description: "Read diplomatic, social, and operational communications." },
         ],
@@ -586,7 +601,7 @@ const adminItems: NavItem[] = [
 
 const getCommandTiles = (context: ActivePageContext | null): CommandTile[] => {
   switch (context?.section) {
-    case "Empire":
+    case "Empire Core":
       return [
         { href: "/empire-planets", icon: Globe, label: "Planet Grid", description: "Jump across core worlds, colonies, and moons from one empire map.", kicker: "Worlds", assetPath: PLANET_ASSETS.TERRESTRIAL.EARTH_LIKE.path },
         { href: "/resources", icon: Pickaxe, label: "Resource Control", description: "Tune raw extraction, storage balance, and supply throughput.", kicker: "Economy", assetPath: OGAMEX_FEATURED_ASSETS.BACKGROUND.path },
@@ -614,7 +629,7 @@ const getCommandTiles = (context: ActivePageContext | null): CommandTile[] => {
         { href: "/warp-network", icon: Network, label: "Warp Corridors", description: "Plot stargates, hyperspace lanes, and warp relays.", kicker: "Transit", assetPath: OGAMEX_FEATURED_ASSETS.SHIPS.path },
         { href: "/celestial-browser", icon: Search, label: "Celestial Index", description: "Browse stars, planets, moons, and interstellar objects.", kicker: "Catalog", assetPath: OGAMEX_FEATURED_ASSETS.MOON.path },
       ];
-    case "Diplomacy":
+    case "Galaxy & Social":
       return [
         { href: "/alliance", icon: Shield, label: "Alliance Command", description: "Coordinate guilds, members, pacts, and alliance strategy.", kicker: "Allies", assetPath: OGAMEX_FEATURED_ASSETS.DEFENSE.path },
         { href: "/messages", icon: Mail, label: "Message Relay", description: "Review diplomacy traffic, reports, and system mail.", kicker: "Comms", assetPath: OGAMEX_FEATURED_ASSETS.BACKGROUND.path },
@@ -642,7 +657,7 @@ const getSystemConnections = (context: ActivePageContext | null): NavItem[] => {
   if (!context) return [];
 
   const routes: Record<string, NavItem[]> = {
-    Empire: [
+    "Empire Core": [
       { href: "/resources", icon: Pickaxe, label: "Industry Input", description: "Collect resources before committing to construction or expansion." },
       { href: "/facilities", icon: Factory, label: "Build Capacity", description: "Turn available resources into production, research, and support capacity." },
       { href: "/research", icon: FlaskConical, label: "Research Unlocks", description: "Convert infrastructure capacity into technologies and strategic options." },
@@ -666,7 +681,7 @@ const getSystemConnections = (context: ActivePageContext | null): NavItem[] => {
       { href: "/stargate-worlds", icon: Globe, label: "Develop Worlds", description: "Turn discoveries into persistent strategic worlds and defensive positions." },
       { href: "/stargate-command", icon: Radar, label: "Plan Operations", description: "Use strategic turns and intelligence to act on discovered opportunities." },
     ],
-    Diplomacy: [
+    "Galaxy & Social": [
       { href: "/messages", icon: Mail, label: "Coordinate", description: "Review reports and communicate before alliance or trade decisions." },
       { href: "/alliance", icon: Shield, label: "Organize Allies", description: "Convert contacts into coordinated alliance capabilities." },
       { href: "/leaderboard", icon: Trophy, label: "Assess Standing", description: "Compare visible empire strength and target or partner positioning." },
@@ -734,7 +749,7 @@ const getActivePageContext = (location: string, isAdmin: boolean): ActivePageCon
 
 const getPageInfrastructure = (context: ActivePageContext): InfrastructureDetail[] => {
   const sectionInfrastructure: Record<string, Omit<InfrastructureDetail, "label">[]> = {
-    Empire: [
+    "Empire Core": [
       { value: "Production → Storage → Expansion", helper: "Resource flow that supports colonies, facilities, and empire growth.", icon: Factory, toneClass: "text-blue-700" },
       { value: "Planet • Moon • Station", helper: "Command layers connected to the active base selector.", icon: Globe, toneClass: "text-cyan-700" },
       { value: "Queues + Resources", helper: "Primary live inputs used by empire management pages.", icon: Database, toneClass: "text-amber-700" },
@@ -758,7 +773,7 @@ const getPageInfrastructure = (context: ActivePageContext): InfrastructureDetail
       { value: "Coordinates + Missions", helper: "Current location and active survey fleets drive available discoveries.", icon: Map, toneClass: "text-violet-700" },
       { value: "Secure the corridor", helper: "Evaluate travel risk and support range before extending the frontier.", icon: Network, toneClass: "text-emerald-700" },
     ],
-    Diplomacy: [
+    "Galaxy & Social": [
       { value: "Contact → Negotiate → Coordinate", helper: "Relationship loop for alliances, messages, rankings, and groups.", icon: Users, toneClass: "text-violet-700" },
       { value: "Alliance • Mail • Social", helper: "Diplomatic pages share membership, communication, and reputation data.", icon: Mail, toneClass: "text-blue-700" },
       { value: "Standing + Reports", helper: "Unread communications and faction context shape available responses.", icon: ScrollText, toneClass: "text-amber-700" },
@@ -901,7 +916,7 @@ function GameSidebar({
             icon={section.icon}
             groups={section.groups}
             location={location}
-            defaultOpen={section.title === "Empire"}
+            defaultOpen={section.title === "Empire Core"}
             onSelect={onNavigate}
             touchMode={touchMode}
           />
@@ -920,25 +935,7 @@ function GameSidebar({
           />
         ))}
 
-        {isAdmin && (
-          <>
-            <div className="sd-sidebar-admin-label px-4 mt-4 mb-2 text-xs font-bold text-red-600 uppercase tracking-widest flex items-center gap-2">
-              <ShieldAlert className="w-3 h-3" /> Administration
-            </div>
-            {adminItems.map((item) => (
-              <SidebarItem
-                key={item.href}
-                href={item.href}
-                icon={item.icon}
-                label={item.label}
-                active={isNavItemActive(item, location)}
-                className="text-red-600 hover:bg-red-50 hover:text-red-700"
-                onSelect={onNavigate}
-                touchMode={touchMode}
-              />
-            ))}
-          </>
-        )}
+        {/* Administrative routes remain available by direct protected URL, but are intentionally hidden from normal player navigation. */}
       </nav>
 
       <div className="p-4 border-t border-slate-200">
@@ -1373,11 +1370,11 @@ export default function GameLayout({ children }: { children: React.ReactNode }) 
             "sd-command-realm-row flex items-center gap-2",
             isMobile ? "w-full flex-wrap" : "justify-end"
           )}>
-            <div className="sd-realm-label text-[10px] font-bold uppercase tracking-[0.24em] text-slate-400">
+            <div className="sd-realm-label text-[10px] font-bold uppercase tracking-[0.24em] text-blue-300">
               Active Realm
             </div>
             <div className={cn(
-              "sd-realm-shell flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-2 py-2",
+              "sd-realm-shell flex items-center gap-2 rounded-xl border border-blue-500/40 bg-blue-950/80 px-2 py-2 shadow-[0_0_18px_rgba(37,99,235,0.18)]",
               isMobile ? "w-full" : "min-w-[270px]"
             )}>
               <Globe className="h-4 w-4 text-primary shrink-0" />
@@ -1389,7 +1386,7 @@ export default function GameLayout({ children }: { children: React.ReactNode }) 
                   });
                 }}
               >
-                <SelectTrigger aria-label="Select active realm" className="h-8 border-0 bg-transparent px-0 text-sm shadow-none focus:ring-0">
+                <SelectTrigger aria-label="Select active realm" className="h-8 border-0 bg-transparent px-0 text-sm text-blue-100 shadow-none focus:ring-0">
                   <SelectValue placeholder="Select realm" />
                 </SelectTrigger>
                 <SelectContent>
@@ -1401,7 +1398,7 @@ export default function GameLayout({ children }: { children: React.ReactNode }) 
                 </SelectContent>
               </Select>
               {selectedRealm && (
-                <div className="sd-realm-status rounded-full border border-cyan-200 bg-cyan-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.18em] text-cyan-700">
+                <div className="sd-realm-status rounded-full border border-blue-400/40 bg-blue-500/20 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.18em] text-blue-200">
                   {selectedRealm.status}
                 </div>
               )}

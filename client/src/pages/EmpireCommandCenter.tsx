@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { Crown, Factory, Globe, Hammer, Moon, Orbit, Shield, Ship, Sparkles, Star, Users, Rocket, Swords, BookOpen, BarChart3, Bell, Settings, Zap, Clock, TrendingUp, Target, Navigation } from "lucide-react";
+import { Crown, Factory, Globe, Hammer, Moon, Orbit, Shield, Ship, Sparkles, Star, Users, Rocket, Swords, BookOpen, BarChart3, Bell, Settings, Zap, Clock, TrendingUp, Target, Navigation, Pickaxe } from "lucide-react";
 
 import GameLayout from "@/components/layout/GameLayout";
 import { useGame } from "@/lib/gameContext";
@@ -14,7 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { calculateResourceProduction } from "@/lib/resourceMath";
 import { sumLegacyUnits } from "@/lib/unitState";
-import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
+import { BACKGROUND_ASSETS, GENERATED_GAME_ART, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
 import { UnifiedCommandBridge } from "@/components/stargate/UnifiedCommandBridge";
 
 type PlanetSummary = {
@@ -93,6 +93,14 @@ export default function EmpireCommandCenter() {
   const defenseScore = defenseQuery.data?.summary?.totalDefenseScore || 0;
 
   const resourceRate = useMemo(() => calculateResourceProduction(buildings), [buildings]);
+  const hourlyMaterialOutput = resourceRate.metal + resourceRate.crystal + resourceRate.deuterium;
+  const dailyMaterialOutput = hourlyMaterialOutput * 24;
+  const powerStatus = resourceRate.energy >= 0 ? "Powered" : "Power constrained";
+  const economyBottleneck = resourceRate.energy < 0
+    ? "Increase Solar Plant or reduce mine load before expanding extraction."
+    : resourceRate.deuterium < resourceRate.crystal
+      ? "Deuterium is the current strategic bottleneck for fleets and advanced systems."
+      : "Production is balanced; reinvest surplus into facilities or expansion.";
 
   const planets = planetsQuery.data?.planets || [];
   const colonizedPlanets = planets.filter((p) => p.colonized);
@@ -181,6 +189,31 @@ export default function EmpireCommandCenter() {
             </CardContent>
           </Card>
         </div>
+
+        <section className="grid grid-cols-1 gap-4 lg:grid-cols-2" data-testid="empire-operational-art">
+          <Link href="/shipyard" className="group overflow-hidden rounded-2xl border border-blue-900/60 bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950 shadow-lg shadow-blue-950/20 transition hover:-translate-y-0.5 hover:border-cyan-400/60">
+            <div className="relative h-44 overflow-hidden">
+              <img src={GENERATED_GAME_ART.SHIPYARD_CARRIER.path} alt="Capital carrier under construction in an orbital shipyard" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-blue-950/55 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-4 text-white">
+                <div className="text-[10px] font-bold uppercase tracking-[0.24em] text-cyan-300">Fleet Fabrication</div>
+                <div className="mt-1 font-orbitron text-lg font-bold">Shipyard Carrier Program</div>
+                <div className="mt-1 text-xs text-blue-100/75">Open construction queues and expand the capital fleet.</div>
+              </div>
+            </div>
+          </Link>
+          <Link href="/resources" className="group overflow-hidden rounded-2xl border border-blue-900/60 bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950 shadow-lg shadow-blue-950/20 transition hover:-translate-y-0.5 hover:border-cyan-400/60">
+            <div className="relative h-44 overflow-hidden">
+              <img src={GENERATED_GAME_ART.ASTEROID_MINING_FRONTIER.path} alt="Automated mining platforms in an asteroid frontier" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-blue-950/55 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-4 text-white">
+                <div className="text-[10px] font-bold uppercase tracking-[0.24em] text-cyan-300">Resource Frontier</div>
+                <div className="mt-1 font-orbitron text-lg font-bold">Asteroid Mining Operations</div>
+                <div className="mt-1 text-xs text-blue-100/75">Tune extraction output, refinery throughput, and energy reserves.</div>
+              </div>
+            </div>
+          </Link>
+        </section>
 
         <UnifiedCommandBridge />
 
@@ -464,6 +497,51 @@ export default function EmpireCommandCenter() {
                 </CardContent>
               </Card>
             </div>
+            <Card className="border-blue-800/60 bg-gradient-to-br from-slate-950 via-blue-950/90 to-slate-950 text-blue-50 shadow-lg shadow-blue-950/20">
+              <CardHeader className="border-b border-blue-800/50 pb-4">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2 text-base text-blue-100"><TrendingUp className="h-4 w-4 text-cyan-300" /> Empire Core Economy Loop</CardTitle>
+                    <p className="mt-1 text-xs text-blue-200/70">Extract → Power → Process → Expand → Reinvest</p>
+                  </div>
+                  <Badge className={resourceRate.energy >= 0 ? "border border-cyan-400/40 bg-cyan-400/10 text-cyan-200" : "border border-amber-400/40 bg-amber-400/10 text-amber-200"}>{powerStatus}</Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4 p-4">
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
+                  <div className="rounded-lg border border-blue-800/60 bg-blue-900/35 p-3">
+                    <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-300">1 · Extract</div>
+                    <div className="mt-2 text-lg font-orbitron font-bold text-white">{hourlyMaterialOutput.toLocaleString()}/h</div>
+                    <div className="mt-1 text-xs text-blue-200/70">Metal + crystal + deuterium</div>
+                  </div>
+                  <div className="rounded-lg border border-blue-800/60 bg-blue-900/35 p-3">
+                    <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-300">2 · Power</div>
+                    <div className="mt-2 text-lg font-orbitron font-bold text-white">{resourceRate.energy >= 0 ? "+" : ""}{resourceRate.energy.toLocaleString()}/h</div>
+                    <div className="mt-1 text-xs text-blue-200/70">Solar generation minus mine load</div>
+                  </div>
+                  <div className="rounded-lg border border-blue-800/60 bg-blue-900/35 p-3">
+                    <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-300">3 · Process</div>
+                    <div className="mt-2 text-lg font-orbitron font-bold text-white">{num(totalBuildings)} levels</div>
+                    <div className="mt-1 text-xs text-blue-200/70">Facilities convert stock into capacity</div>
+                  </div>
+                  <div className="rounded-lg border border-blue-800/60 bg-blue-900/35 p-3">
+                    <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-300">4 · Reinvest</div>
+                    <div className="mt-2 text-lg font-orbitron font-bold text-white">{dailyMaterialOutput.toLocaleString()}</div>
+                    <div className="mt-1 text-xs text-blue-200/70">Projected material output / day</div>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-3 rounded-lg border border-blue-800/50 bg-slate-950/60 p-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-300">Control guidance</div>
+                    <p className="mt-1 text-sm text-blue-100/80">{economyBottleneck}</p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Link href="/resources"><Button size="sm" className="border-blue-500/50 bg-blue-600/80 text-white hover:bg-blue-500"><Pickaxe className="mr-1 h-3 w-3" /> Open production</Button></Link>
+                    <Link href="/power-grid"><Button size="sm" variant="outline" className="border-blue-500/50 text-blue-100 hover:bg-blue-900/50"><Zap className="mr-1 h-3 w-3" /> Balance power</Button></Link>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
             <div className="flex flex-wrap gap-2">
               <Link href="/facilities"><Button variant="outline">Facilities</Button></Link>
               <Link href="/resources"><Button variant="outline">Resources</Button></Link>

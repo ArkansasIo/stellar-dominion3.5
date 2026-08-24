@@ -28,6 +28,7 @@ import {
   setRaidSpecialization,
   type RaidRole,
 } from "./services/raidOperationsService";
+import { RAID_EVENTS } from "@shared/config/bossTaxonomyConfig";
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
@@ -136,6 +137,15 @@ const SAMPLE_EVENTS = [
   { id: "evt-3", name: "Warp Anomaly", description: "A rift in space-time has been detected. Exploration rewards tripled.", eventClass: "epic", status: "upcoming", participants: 0, rewards: { xp: 500, crystal: 10000 }, startsAt: new Date(Date.now() + 1800000).toISOString() },
   { id: "evt-4", name: "Ancient Titan Resurgence", description: "Titan constructs have been reactivated deep in sector 9. All commanders get +25% XP.", eventClass: "legendary", status: "completed", participants: 892, rewards: {}, endsAt: new Date(Date.now() - 3600000).toISOString() },
 ];
+
+const BOSS_RAID_EVENTS = RAID_EVENTS.map((event) => ({
+  ...event,
+  participants: 0,
+  recommendedTier: event.minimumLevel,
+  recommendedLevel: event.minimumLevel,
+  participationMode: "cooperative",
+  endsAt: new Date(Date.now() + event.duration * 60000).toISOString(),
+}));
 
 const eventParticipants = new Map<string, Set<string>>();
 
@@ -486,17 +496,17 @@ export function registerMissingRoutes(app: Express) {
   app.get("/api/events", isAuthenticated, (req: Request, res: Response) => {
     const userId = getUserId(req);
     res.json(
-      SAMPLE_EVENTS.map((event) => ({
+      [...SAMPLE_EVENTS, ...BOSS_RAID_EVENTS].map((event) => ({
         ...event,
         joined: eventParticipants.get(event.id)?.has(userId) ?? false,
-        participantLimit: event.eventClass === "legendary" ? 16 : event.eventClass === "epic" ? 12 : 8,
+        participantLimit: (event as any).participantLimit || (event.eventClass === "legendary" ? 16 : event.eventClass === "epic" ? 12 : 8),
       }))
     );
   });
 
   app.post("/api/events/:eventId/join", isAuthenticated, (req: Request, res: Response) => {
     const userId = getUserId(req);
-    const event = SAMPLE_EVENTS.find((entry) => entry.id === req.params.eventId);
+    const event = [...SAMPLE_EVENTS, ...BOSS_RAID_EVENTS].find((entry) => entry.id === req.params.eventId);
 
     if (!event) {
       return res.status(404).json({ error: "Event not found" });

@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
+import { GENERATED_GAME_ART, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
 import {
   Check,
   ChevronLeft,
@@ -182,7 +182,7 @@ export default function GameAssetsGallery() {
     <GameLayout>
       <div className="asset-vault space-y-5">
         <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
-          <img src={BACKGROUND_ASSETS.STAR_FIELD.path} alt="Game Asset Command Vault" className="absolute inset-0 w-full h-full object-cover" />
+          <img src={GENERATED_GAME_ART.GALAXY_COMMAND_HERO.path} alt="Game Asset Command Vault" className="absolute inset-0 w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-blue-950/60 to-transparent" />
           <div className="relative z-10 p-6 flex items-center gap-6">
             <div className="flex gap-2 items-center">
@@ -193,7 +193,7 @@ export default function GameAssetsGallery() {
             <div>
               <h1 className="font-orbitron text-3xl font-black text-white drop-shadow sm:text-4xl">Game Asset Command Vault</h1>
               <p className="mt-1 max-w-3xl text-sm leading-6 text-blue-200">
-                Browse the live client art, the full OGameX archive, and both Universe Empires visual collections from one searchable interface.
+                Browse the live client art, the new original command-art pack, the full OGameX archive, and both Universe Empires visual collections from one searchable interface.
               </p>
             </div>
           </div>

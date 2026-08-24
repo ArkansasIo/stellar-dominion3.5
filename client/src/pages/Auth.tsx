@@ -281,16 +281,6 @@ export default function Auth() {
       <header className="sd-auth-header fixed top-0 inset-x-0 h-16 border-b border-slate-200 bg-white/95 backdrop-blur-sm z-30">
         <div className="max-w-6xl mx-auto h-full px-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Button asChild variant="outline" size="sm" className="sd-auth-repo-link text-xs text-slate-700 border-slate-300 hover:bg-slate-100">
-              <a href="https://github.com/ArkansasIo/universe-empire-domions" target="_blank" rel="noopener noreferrer" data-testid="button-github-top-left">
-                <Github className="w-4 h-4 mr-1" /> GitHub
-              </a>
-            </Button>
-            <Button asChild variant="outline" size="sm" className="sd-auth-repo-link text-xs text-cyan-700 border-cyan-300 hover:bg-cyan-50">
-              <a href="https://github.com/ArkansasIo/stellar-dominion3" target="_blank" rel="noopener noreferrer" data-testid="button-stellar-dominion3-github">
-                <Github className="w-4 h-4 mr-1" /> Universe Civilization: Empire at War
-              </a>
-            </Button>
             <Rocket className="w-5 h-5 text-primary" />
             <span className="font-orbitron font-bold text-sm text-slate-900 tracking-wide">Universe Civilization: Empire at War</span>
           </div>
@@ -376,27 +366,7 @@ export default function Auth() {
                         <Button type="button" onClick={useDemoAccount} variant="outline" className="sd-auth-demo-button w-full border-slate-300 text-slate-700 hover:bg-slate-100" data-testid="button-demo-login" disabled={submitting}>
                           Use Demo Account (player1)
                         </Button>
-                        <div className="sd-admin-access-card rounded-lg border p-3">
-                          <div className="flex items-start gap-3">
-                            <div className="sd-admin-access-icon mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md border">
-                              <ShieldCheck className="h-4 w-4" aria-hidden="true" />
-                            </div>
-                            <div className="min-w-0 space-y-2">
-                              <div className="flex flex-wrap items-center gap-2">
-                                <p className="sd-admin-access-title text-xs font-semibold uppercase tracking-[0.2em]">Administrator Access</p>
-                                <span className="sd-admin-access-badge rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em]">Restricted</span>
-                              </div>
-                              <p className="sd-admin-access-copy text-xs">
-                                Founder, owner, and dev-admin accounts use the dedicated control login.
-                              </p>
-                              <Link href="/admin-login">
-                                <Button type="button" variant="outline" size="sm" className="sd-admin-access-button" data-testid="button-admin-login-link">
-                                  <ShieldCheck className="mr-1.5 h-3.5 w-3.5" /> Open Admin Login
-                                </Button>
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
+
                       </div>
                     )}
 
@@ -641,32 +611,10 @@ export default function Auth() {
           <span>&bull;</span>
           <span>Universe {UNIVERSE_ID}</span>
           <span>&bull;</span>
-          <a href="https://github.com/ArkansasIo/stellar-dominion3" target="_blank" rel="noopener noreferrer" className="font-semibold text-cyan-700 hover:text-cyan-900 hover:underline">
-            stellar-dominion3
-          </a>
-          <span>&bull;</span>
           <span>Developer: Stephen</span>
-          <span>&bull;</span>
-          <span>
-            Publisher:{" "}
-            <a
-              href="https://github.com/ArkansasIo"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-semibold text-cyan-700 hover:text-cyan-900 hover:underline"
-              data-testid="link-auth-footer-publisher"
-            >
-              ArkansasIo
-            </a>
-          </span>
         </div>
       </div>
 
-      <Button asChild variant="outline" size="sm" className="sd-auth-license-button fixed bottom-20 right-4 z-30 border-slate-300 text-slate-700 hover:bg-slate-100">
-        <a href="https://github.com/ArkansasIo/universe-empire-domions/blob/master/LICENSE" target="_blank" rel="noopener noreferrer" data-testid="button-license-bottom-right">
-          <FileText className="w-4 h-4 mr-1" /> License
-        </a>
-      </Button>
     </div>
   );
 }

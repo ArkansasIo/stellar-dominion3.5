@@ -49,7 +49,10 @@ function walkAssets(source: AssetSource): AssetLibraryItem[] {
       if (!IMAGE_EXTENSIONS.has(extension)) continue;
 
       const relativePath = path.relative(source.root, absolutePath).replace(/\\/g, "/");
-      const category = relativePath.includes("/") ? relativePath.split("/")[0] : "general";
+      const pathSegments = relativePath.split("/");
+      const category = pathSegments[0] === "assets"
+        ? pathSegments[1] || "general"
+        : pathSegments[0] || "general";
       const id = `${source.collection}-${relativePath}`.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 
       items.push({

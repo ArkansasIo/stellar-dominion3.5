@@ -2,6 +2,10 @@ import type { Express, Request, Response } from "express";
 import { db } from "./db";
 import { playerStates } from "../shared/schema";
 import { eq } from "drizzle-orm";
+import {
+  countOwnedPlanets,
+  getKardashevOperationalBonusesForPlayer,
+} from "@shared/config/kardashevOperationalBonuses";
 
 interface SubPlaneState {
   moonModules: Record<string, number>;
@@ -495,6 +499,25 @@ export function registerPlanetRoutes(app: Express) {
       }
 
       const resources = playerState.resources as any;
+      const kardashev = getKardashevOperationalBonusesForPlayer(playerState);
+      const currentPlanets = countOwnedPlanets(
+        playerState.knownPlanets,
+        userId,
+        playerState.planetName || undefined,
+      );
+
+      if (currentPlanets >= kardashev.maxPlanets) {
+        return res.status(409).json({
+          error: "Kardashev planet capacity reached",
+          code: "KARDASHEV_PLANET_CAP",
+          tier: kardashev.level,
+          tierName: kardashev.tierName,
+          currentPlanets,
+          maxPlanets: kardashev.maxPlanets,
+          expansion: kardashev,
+        });
+      }
+
       const colonizationCost = {
         metal: 10000,
         crystal: 5000,
@@ -513,7 +536,7 @@ export function registerPlanetRoutes(app: Express) {
         });
       }
 
-      // Deduct resources and colonize planet
+      // Deduct resources and persist the new colony in the player-scoped list.
       const newResources = {
         ...resources,
         metal: resources.metal - colonizationCost.metal,
@@ -521,9 +544,24 @@ export function registerPlanetRoutes(app: Express) {
         deuterium: resources.deuterium - colonizationCost.deuterium,
       };
 
+      const knownPlanets = Array.isArray(playerState.knownPlanets)
+        ? [...(playerState.knownPlanets as any[])]
+        : [];
+      knownPlanets.push({
+        id: planet.id,
+        name: planet.name,
+        coordinates: planet.coordinates,
+        owner: playerState.planetName || "Player",
+        ownerId: userId,
+        owned: true,
+        colonized: true,
+        colonizedAt: new Date().toISOString(),
+      });
+
       await db.update(playerStates)
-        .set({ 
+        .set({
           resources: newResources,
+          knownPlanets,
           updatedAt: new Date(),
         })
         .where(eq(playerStates.userId, userId));
@@ -541,10 +579,19 @@ export function registerPlanetRoutes(app: Express) {
         roboticsFactory: 0,
       };
 
-      res.json({ 
+      const newPlanetCount = currentPlanets + 1;
+      res.json({
         message: "Planet colonized successfully",
         planet,
         newResources,
+        expansion: {
+          tier: kardashev.level,
+          tierName: kardashev.tierName,
+          currentPlanets: newPlanetCount,
+          maxPlanets: kardashev.maxPlanets,
+          remainingCapacity: Math.max(0, kardashev.maxPlanets - newPlanetCount),
+          maxFleets: kardashev.maxFleets,
+        },
       });
     } catch (error) {
       console.error("Error colonizing planet:", error);

@@ -12,6 +12,11 @@ import { requireAdminIp, logAdminActivity } from "./middleware/adminIpCheck";
 
 const NON_ADMIN_USERNAMES = new Set(["player1", "player2", "player3"]);
 const NON_ADMIN_EMAIL_SUFFIX = "@universe-empire-domions.game";
+const DEVELOPMENT_DEMO_ACCOUNTS = [
+  { username: "player1", password: "password123" },
+  { username: "player2", password: "password123" },
+  { username: "player3", password: "password123" },
+] as const;
 let adminUsersTableExistsCache: boolean | null = null;
 
 async function hasAdminUsersTable(): Promise<boolean> {
@@ -301,6 +306,33 @@ async function ensureNamedAdminAccount(options: {
   return user;
 }
 
+async function ensureDevelopmentDemoAccounts() {
+  if (process.env.NODE_ENV !== "development") {
+    return;
+  }
+
+  const enabled = (process.env.ENABLE_DEMO_ACCOUNTS || "true").trim().toLowerCase();
+  if (["0", "false", "no", "off"].includes(enabled)) {
+    return;
+  }
+
+  for (const account of DEVELOPMENT_DEMO_ACCOUNTS) {
+    const email = `${account.username}${NON_ADMIN_EMAIL_SUFFIX}`;
+    let user = await resolveUserByIdentifier(account.username) || await resolveUserByIdentifier(email);
+    if (!user) {
+      await storage.createUser({
+        username: account.username,
+        email,
+        firstName: account.username,
+        passwordHash: hashPassword(account.password),
+      });
+      logger.info("AUTH", `Development demo user created: ${account.username}`);
+    } else {
+      await syncDevPasswordIfNeeded(user, account.password, `Development demo (${account.username})`);
+    }
+  }
+}
+
 async function ensureBootstrapAdminAccounts() {
   try {
     await ensureBootstrapAdminAccount();
@@ -363,6 +395,7 @@ export async function setupAuth(app: Express) {
 
   try {
     await ensureBootstrapAdminAccounts();
+    await ensureDevelopmentDemoAccounts();
     if (isDevAuthBypassEnabled()) {
       await ensureDevBypassUser();
       logger.warn("AUTH", "DEV_AUTH_BYPASS is enabled; protected routes will auto-authenticate locally");

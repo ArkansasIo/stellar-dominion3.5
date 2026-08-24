@@ -640,6 +640,49 @@ export const BACKGROUND_ASSETS = {
 } as const;
 
 // ============================================================================
+// GENERATED SCI-FI GAME ART
+// ============================================================================
+
+/** Original blue command-console artwork used by gameplay page heroes and cards. */
+export const GENERATED_GAME_ART = {
+  GALAXY_COMMAND_HERO: {
+    id: "generated-galaxy-command-hero",
+    name: "Galaxy Command Hero",
+    path: "/assets/generated/galaxy-command-hero.png",
+    size: ASSET_SIZES.BG_FULLSCREEN,
+    description: "Strategic command carrier above a luminous galaxy.",
+  },
+  PLANETARY_OUTPOST: {
+    id: "generated-planetary-outpost",
+    name: "Planetary Outpost",
+    path: "/assets/generated/planetary-outpost.png",
+    size: ASSET_SIZES.BANNER_MEDIUM,
+    description: "Orbital elevator and colony domes above a habitable world.",
+  },
+  SHIPYARD_CARRIER: {
+    id: "generated-shipyard-carrier",
+    name: "Shipyard Carrier",
+    path: "/assets/generated/shipyard-carrier.png",
+    size: ASSET_SIZES.BANNER_MEDIUM,
+    description: "Capital carrier under construction inside an orbital shipyard.",
+  },
+  RESEARCH_HOLOGRAM: {
+    id: "generated-research-hologram",
+    name: "Research Hologram",
+    path: "/assets/generated/research-hologram.png",
+    size: ASSET_SIZES.BANNER_MEDIUM,
+    description: "Deep-space research chamber with a projected star map.",
+  },
+  ASTEROID_MINING_FRONTIER: {
+    id: "generated-asteroid-mining-frontier",
+    name: "Asteroid Mining Frontier",
+    path: "/assets/generated/asteroid-mining-frontier.png",
+    size: ASSET_SIZES.BANNER_MEDIUM,
+    description: "Automated mining platforms and ore haulers in an asteroid belt.",
+  },
+} as const;
+
+// ============================================================================
 // SHARED 3D VIEW PLACEHOLDER ASSETS
 // ============================================================================
 
@@ -793,6 +836,7 @@ export function getAssetById(
     SHIP_ASSETS,
     TECH_BRANCH_ASSETS,
     BACKGROUND_ASSETS,
+    GENERATED_GAME_ART,
     THREE_D_VIEW_ASSETS,
   });
 }
@@ -844,6 +888,7 @@ export function getAssetsByCategory(category: string): any[] {
     ],
     techs: Object.values(TECH_BRANCH_ASSETS),
     backgrounds: Object.values(BACKGROUND_ASSETS),
+    "generated-art": Object.values(GENERATED_GAME_ART),
     "3d-views": Object.values(THREE_D_VIEW_ASSETS),
   };
 
@@ -858,6 +903,7 @@ export const ASSET_CATEGORIES = {
   SHIPS: "ships",
   TECHS: "techs",
   BACKGROUNDS: "backgrounds",
+  GENERATED_ART: "generated-art",
   THREE_D_VIEWS: "3d-views",
 } as const;
 
@@ -950,6 +996,7 @@ export function getAssetPack(packName: string): any[] {
     "ship-armor": Object.values(SHIP_ASSETS.FIGHTERS),
     "tech-branches": Object.values(TECH_BRANCH_ASSETS),
     "3d-scene-pack": Object.values(THREE_D_VIEW_ASSETS),
+    "generated-art-pack": Object.values(GENERATED_GAME_ART),
   };
 
   return packs[packName] || [];
@@ -982,6 +1029,7 @@ export function generatePlaceholderAssetManifest(): { [key: string]: { width: nu
     SHIP_ASSETS,
     TECH_BRANCH_ASSETS,
     BACKGROUND_ASSETS,
+    GENERATED_GAME_ART,
     THREE_D_VIEW_ASSETS,
   });
 

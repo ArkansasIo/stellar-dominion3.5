@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Crown, Shield, Swords, Zap } from "lucide-react";
 import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
+import { BOSS_TAXONOMY, VOID_EMPEROR_DOSSIER } from "@shared/config/bossTaxonomyConfig";
 
 const TEMP_THEME_IMAGE = "/theme-temp.png";
 
@@ -228,6 +229,54 @@ export default function RaidBosses() {
           </CardContent>
         </Card>
 
+        <Card className="border-slate-200 bg-slate-950 text-white shadow-sm">
+          <CardHeader>
+            <div className="flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <CardTitle className="font-orbitron text-xl">Nine Boss Classes</CardTitle>
+                <p className="mt-1 text-sm text-slate-300">Nine doctrines, 27 subclasses, 54 boss types, and 108 subtype mechanics.</p>
+              </div>
+              <Badge className="border-fuchsia-400/40 bg-fuchsia-500/15 text-fuchsia-200">Arc Boss Protocol</Badge>
+            </div>
+          </CardHeader>
+          <CardContent className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {BOSS_TAXONOMY.map((bossClass) => (
+              <div key={bossClass.id} className="overflow-hidden rounded-xl border border-white/10 bg-white/5">
+                <div className="relative h-32 overflow-hidden">
+                  <img src={bossClass.imagePath} alt={bossClass.name} className="h-full w-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent" />
+                  <div className="absolute bottom-3 left-3 right-3">
+                    <div className="text-lg font-orbitron font-bold">{bossClass.name}</div>
+                    <div className="text-xs text-slate-300">{bossClass.doctrine}</div>
+                  </div>
+                </div>
+                <div className="space-y-3 p-3">
+                  <div className="rounded border border-fuchsia-400/20 bg-fuchsia-500/10 p-2">
+                    <div className="text-[10px] uppercase tracking-[0.18em] text-fuchsia-200">Arc Boss</div>
+                    <div className="mt-1 text-sm font-semibold text-white">{bossClass.arcBoss.name}</div>
+                    <div className="text-xs text-slate-300">{bossClass.arcBoss.title}</div>
+                    <div className="mt-2 flex flex-wrap gap-1">
+                      {bossClass.arcBoss.eventIds.map((eventId) => <Badge key={eventId} variant="outline" className="border-fuchsia-300/30 text-[10px] text-fuchsia-100">{eventId.replace(`event-${bossClass.id}-`, "").replace(/-/g, " ")}</Badge>)}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    {bossClass.subclasses.map((bossSubclass) => (
+                      <div key={bossSubclass.id} className="rounded border border-white/10 bg-black/10 p-2">
+                        <div className="text-xs font-semibold text-slate-100">{bossSubclass.name}</div>
+                        <div className="mt-1 space-y-1">
+                          {bossSubclass.types.map((bossType) => (
+                            <div key={bossType.id} className="text-[11px] text-slate-400"><span className="text-slate-200">{bossType.name}</span> · {bossType.subtypes.join(" / ")}</div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
         <div className="flex flex-wrap gap-2">
           {rarityFilters.map((rarity) => (
             <Button
@@ -407,6 +456,69 @@ export default function RaidBosses() {
                       </div>
                     </div>
                   </div>
+
+                  {selectedBoss.id === VOID_EMPEROR_DOSSIER.bossId && (
+                    <div className="space-y-4 rounded-xl border border-violet-300/40 bg-slate-950 p-4 text-white shadow-inner">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <div className="text-[10px] uppercase tracking-[0.2em] text-violet-300">Arc Boss Combat Dossier</div>
+                          <div className="mt-1 font-orbitron text-lg font-bold">{VOID_EMPEROR_DOSSIER.title}</div>
+                          <div className="text-xs text-slate-400">{VOID_EMPEROR_DOSSIER.subtitle}</div>
+                        </div>
+                        <Badge className="border-violet-300/30 bg-violet-500/20 text-violet-100">TRANSCENDENT</Badge>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div className="rounded border border-white/10 bg-white/5 p-2"><div className="text-slate-400">Level</div><div className="mt-1 font-bold">{VOID_EMPEROR_DOSSIER.encounter.recommendedLevel}+</div></div>
+                        <div className="rounded border border-white/10 bg-white/5 p-2"><div className="text-slate-400">Squad</div><div className="mt-1 font-bold">{VOID_EMPEROR_DOSSIER.encounter.squadSize}</div></div>
+                        <div className="rounded border border-white/10 bg-white/5 p-2"><div className="text-slate-400">Damage window</div><div className="mt-1 font-bold">{VOID_EMPEROR_DOSSIER.encounter.damageWindow}</div></div>
+                        <div className="rounded border border-white/10 bg-white/5 p-2"><div className="text-slate-400">Arena</div><div className="mt-1 font-bold">4 gravity lanes</div></div>
+                      </div>
+
+                      <div>
+                        <div className="mb-2 text-xs font-bold uppercase tracking-wider text-violet-200">Phase Mechanics</div>
+                        <div className="space-y-2">
+                          {VOID_EMPEROR_DOSSIER.phases.map((phase) => (
+                            <div key={phase.phase} className="rounded border border-white/10 bg-white/5 p-3">
+                              <div className="flex flex-wrap items-center justify-between gap-2"><div className="font-semibold text-violet-100">{phase.phase}</div><Badge variant="outline" className="border-white/20 text-[10px] text-slate-300">{phase.trigger}</Badge></div>
+                              <div className="mt-2 text-xs leading-relaxed text-slate-300"><span className="font-semibold text-slate-100">Mechanic:</span> {phase.mechanic}</div>
+                              <div className="mt-2 text-xs leading-relaxed text-emerald-200"><span className="font-semibold">Counterplay:</span> {phase.counterplay}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className="mb-2 text-xs font-bold uppercase tracking-wider text-violet-200">Core Mechanics</div>
+                        <div className="space-y-2">
+                          {VOID_EMPEROR_DOSSIER.mechanics.map((mechanic) => (
+                            <div key={mechanic.name} className="rounded border border-white/10 bg-black/20 p-2 text-xs"><div className="flex justify-between gap-2"><span className="font-semibold text-white">{mechanic.name}</span><span className="text-violet-300">{mechanic.category}</span></div><div className="mt-1 text-slate-400">{mechanic.detail}</div></div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className="mb-2 text-xs font-bold uppercase tracking-wider text-violet-200">Role Counterplay</div>
+                        <div className="grid gap-2 sm:grid-cols-2">
+                          {VOID_EMPEROR_DOSSIER.roleCounterplay.map((counter) => <div key={counter.role} className="rounded border border-white/10 bg-white/5 p-2 text-xs"><div className="font-semibold text-amber-200">{counter.role}</div><div className="mt-1 text-slate-300">{counter.assignment}</div><div className="mt-1 text-slate-500">Priority: {counter.priority}</div></div>)}
+                        </div>
+                      </div>
+
+                      <div className="rounded border border-red-400/30 bg-red-500/10 p-3 text-xs">
+                        <div className="font-bold uppercase tracking-wider text-red-200">Enrage Protocol</div>
+                        <div className="mt-2 text-slate-300"><span className="font-semibold text-red-100">Soft enrage:</span> {VOID_EMPEROR_DOSSIER.enrage.softEnrage}</div>
+                        <div className="mt-2 text-slate-300"><span className="font-semibold text-red-100">Hard enrage ({VOID_EMPEROR_DOSSIER.enrage.timer}):</span> {VOID_EMPEROR_DOSSIER.enrage.hardEnrage}</div>
+                      </div>
+
+                      <div>
+                        <div className="mb-2 text-xs font-bold uppercase tracking-wider text-violet-200">Reward Drop Table</div>
+                        <div className="overflow-hidden rounded border border-white/10">
+                          <div className="grid grid-cols-[1.25fr,0.7fr,0.55fr,0.7fr] gap-2 bg-white/10 px-2 py-2 text-[10px] uppercase tracking-wider text-slate-400"><span>Drop</span><span>Tier</span><span>Chance</span><span>Qty</span></div>
+                          {VOID_EMPEROR_DOSSIER.drops.map((drop) => <div key={drop.item} className="grid grid-cols-[1.25fr,0.7fr,0.55fr,0.7fr] gap-2 border-t border-white/10 px-2 py-2 text-[11px]"><span className="font-semibold text-slate-100">{drop.item}</span><span className="text-slate-400">{drop.category}</span><span className="text-emerald-300">{drop.chance}</span><span className="text-amber-200">{drop.quantity}</span><span className="col-span-4 text-[10px] text-slate-500">{drop.detail}</span></div>)}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </>
               )}
             </CardContent>

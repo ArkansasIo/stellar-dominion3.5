@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { Box, Gem, Database, Zap, ArrowUpCircle, Hammer, Clock, TrendingUp, Warehouse, Factory, BarChart3 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
-import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
+import { GENERATED_GAME_ART, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
 import { calculateResourceProduction, calculateStorageCapacity } from "@/lib/resourceMath";
 import { getRefineryStage, getRefineryUpgradeSnapshot, type RefinerySystemDefinition } from "@/lib/refinerySystemsCatalog";
 
@@ -276,7 +276,7 @@ export default function Resources() {
   return (
     <GameLayout>
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <section className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.78), rgba(15,23,42,0.92)), url(${BACKGROUND_ASSETS.ASTEROID_FIELD.path})` }}>
+        <section className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.78), rgba(15,23,42,0.92)), url(${GENERATED_GAME_ART.ASTEROID_MINING_FRONTIER.path})` }}>
           <div className="p-5 lg:p-6 space-y-4 text-white">
             <div className="flex items-center gap-2">
               <img src={MENU_ASSETS.RESOURCES.METAL.path} alt="Icon" className="w-8 h-8 rounded-lg border border-white/10 bg-white/10 p-1.5 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />

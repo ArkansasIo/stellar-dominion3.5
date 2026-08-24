@@ -14,7 +14,7 @@ import {
 } from "@/lib/technologyDivisionCatalog";
 import { getCurrentKardashevUpgradeLevel } from "@/lib/kardashevUpgradeCatalog";
 import { cn } from "@/lib/utils";
-import { BACKGROUND_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
+import { GENERATED_GAME_ART, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
 import {
   ArrowUpCircle,
   Atom,
@@ -185,7 +185,7 @@ export default function Research() {
     <GameLayout>
       <div className="space-y-6">
         <div className="relative rounded-xl overflow-hidden shadow-lg mb-2" style={{ minHeight: 140 }}>
-          <img src={BACKGROUND_ASSETS.RESEARCH_LAB.path} alt="Research" className="absolute inset-0 w-full h-full object-cover" />
+          <img src={GENERATED_GAME_ART.RESEARCH_HOLOGRAM.path} alt="Research" className="absolute inset-0 w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-blue-950/60 to-transparent" />
           <div className="relative z-10 p-6 flex items-center gap-6">
             <div className="flex gap-2 items-center">

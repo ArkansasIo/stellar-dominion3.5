@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS player_states (
   cron_jobs jsonb NOT NULL DEFAULT '[]',
   empire_level integer NOT NULL DEFAULT 1,
   kardashev_progress jsonb NOT NULL DEFAULT '{"metal": 0, "crystal": 0, "deuterium": 0, "research": 0}',
+  kardashev_systems jsonb NOT NULL DEFAULT '{}',
   total_turns integer NOT NULL DEFAULT 0,
   current_turns integer NOT NULL DEFAULT 0,
   last_turn_update timestamp DEFAULT CURRENT_TIMESTAMP,
@@ -45,6 +46,8 @@ CREATE TABLE IF NOT EXISTS player_states (
   created_at timestamp DEFAULT CURRENT_TIMESTAMP,
   updated_at timestamp DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE player_states ADD COLUMN IF NOT EXISTS kardashev_systems jsonb NOT NULL DEFAULT '{}';
 
 CREATE TABLE IF NOT EXISTS messages (
   id varchar PRIMARY KEY DEFAULT gen_random_uuid(),

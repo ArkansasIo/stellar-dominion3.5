@@ -12,6 +12,7 @@ import {
   getTierForLevel,
   type BattleMode,
 } from "@shared/config";
+import { getKardashevOperationalBonusesForPlayer } from "@shared/config/kardashevOperationalBonuses";
 
 function toUnitCountMap(units: Record<string, any>): Record<string, number> {
   return Object.entries(units || {}).reduce((acc, [unitType, value]) => {
@@ -143,6 +144,7 @@ export function registerCombatRoutes(app: Router) {
       const units = state.units as any || {};
       const research = state.research as any || {};
       const buildings = state.buildings as any || {};
+      const kardashev = getKardashevOperationalBonusesForPlayer(state);
 
       // Calculate total fleet power
       const UNIT_POWER = {
@@ -173,7 +175,7 @@ export function registerCombatRoutes(app: Router) {
 
       res.json({
         totalUnits: Object.values(units).reduce((a: number, b: any) => a + (b as number), 0),
-        fleetPower: Math.floor(fleetPower * (1 + weaponsBonus)),
+        fleetPower: Math.floor(fleetPower * (1 + weaponsBonus) * kardashev.fleetPowerMultiplier),
         unitComposition: units,
         research: {
           weaponsTech: research.weaponsTech || 0,
@@ -184,7 +186,10 @@ export function registerCombatRoutes(app: Router) {
           attack: weaponsBonus,
           defense: shieldingBonus,
           armor: armorBonus,
+          kardashevFleetPower: kardashev.fleetPowerPercent / 100,
+          kardashevDefensePower: kardashev.defensePowerPercent / 100,
         },
+        kardashev,
         shipyard: buildings.shipyard || 0,
         progression: {
           level: combatLevel,
@@ -250,6 +255,8 @@ export function registerCombatRoutes(app: Router) {
 
       const attacker = attackerResult[0];
       const defender = defenderResult[0];
+      const attackerKardashev = getKardashevOperationalBonusesForPlayer(attacker);
+      const defenderKardashev = getKardashevOperationalBonusesForPlayer(defender);
 
       // Check attacker has units
       const attackerUnits = toUnitCountMap(attacker.units as Record<string, any>);
@@ -272,7 +279,9 @@ export function registerCombatRoutes(app: Router) {
             return acc;
           }, {} as any),
           research: attacker.research as any,
-          bonusMultiplier: 1 + ((attacker.research as any)?.militaryTech || 0) * 0.02,
+          bonusMultiplier:
+            attackerKardashev.fleetPowerMultiplier *
+            (1 + ((attacker.research as any)?.militaryTech || 0) * 0.02),
         },
         {
           units: Object.entries(defender.units || {}).reduce((acc, [type, count]) => {
@@ -280,7 +289,9 @@ export function registerCombatRoutes(app: Router) {
             return acc;
           }, {} as any),
           research: defender.research as any,
-          bonusMultiplier: 1 + ((defender.research as any)?.defenseTech || 0) * 0.02,
+          bonusMultiplier:
+            defenderKardashev.defensePowerMultiplier *
+            (1 + ((defender.research as any)?.defenseTech || 0) * 0.02),
         }
       );
 
@@ -380,6 +391,7 @@ export function registerCombatRoutes(app: Router) {
           battleProfile: pvpProfile,
           attackerProgression: buildProgressionSnapshot("commander", attackerLevel),
           defenderProgression: buildProgressionSnapshot("commander", defenderLevel),
+          kardashev: { attacker: attackerKardashev, defender: defenderKardashev },
           activeEffects: COMBAT_EFFECT_LIBRARY.slice(0, 4),
           plunder,
           newAttackerUnits,
@@ -440,6 +452,7 @@ export function registerCombatRoutes(app: Router) {
           battleProfile: pvpProfile,
           attackerProgression: buildProgressionSnapshot("commander", attackerLevel),
           defenderProgression: buildProgressionSnapshot("commander", defenderLevel),
+          kardashev: { attacker: attackerKardashev, defender: defenderKardashev },
           activeEffects: COMBAT_EFFECT_LIBRARY.slice(2, 6),
           plunder: { metal: 0, crystal: 0, deuterium: 0 },
           newAttackerUnits,

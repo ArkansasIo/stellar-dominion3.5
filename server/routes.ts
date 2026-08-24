@@ -26,6 +26,7 @@ import {
   resolveCommanderRaidCareer,
   type RaidRole,
 } from "./services/raidOperationsService";
+import { ARC_BOSSES, BOSS_TAXONOMY, RAID_EVENTS } from "@shared/config/bossTaxonomyConfig";
 
 // Augment express-session types
 declare module "express-session" {
@@ -342,6 +343,14 @@ export function registerRoutes(app: any) {
   });
 
   // ==== RAID BOSSES ====
+
+  app.get("/api/boss-taxonomy", isAuthenticated, (_req: Request, res: any) => {
+    res.json({
+      classes: BOSS_TAXONOMY,
+      arcBosses: ARC_BOSSES,
+      raidEvents: RAID_EVENTS,
+    });
+  });
 
   app.get("/api/bosses", isAuthenticated, async (req: Request, res: any) => {
     try {

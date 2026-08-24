@@ -30,7 +30,7 @@ import Navigation from "./Navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS, PLANET_ASSETS, ALL_PLANET_TYPES } from "@shared/config";
+import { GENERATED_GAME_ART, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS, PLANET_ASSETS, ALL_PLANET_TYPES } from "@shared/config";
 import { assessPlanetHazards, type HazardSeverity, type PlanetHazardAssessment } from "@shared/config/hazardSystemConfig";
 import {
   applyManagementProfile,
@@ -321,7 +321,7 @@ export default function Colonies() {
       <div className="space-y-6 animate-in fade-in duration-500">
         <Navigation />
 
-        <section className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.78), rgba(15,23,42,0.92)), url(${BACKGROUND_ASSETS.GALAXY_MAP.path})` }}>
+        <section className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.78), rgba(15,23,42,0.92)), url(${GENERATED_GAME_ART.PLANETARY_OUTPOST.path})` }}>
           <div className="p-5 lg:p-6 space-y-4 text-white">
             <div className="flex items-center gap-2">
               <img src={SHIP_ASSETS.SPECIAL.COLONIZER.path} alt="Icon" className="w-8 h-8 rounded-lg border border-white/10 bg-white/10 p-1.5 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />

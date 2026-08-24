@@ -148,10 +148,10 @@ export default function AccountSetup() {
   const selectedRealmData = realmServers.find((realm) => realm.id === (selectedRealm || selectedRealmId)) || null;
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
       <Button
         variant="ghost"
-        className="absolute top-4 left-4 text-slate-700 hover:text-slate-900 z-20 transition-colors"
+        className="absolute top-4 left-4 text-blue-200 hover:text-white z-20 transition-colors"
         data-testid="button-back-from-setup"
         onClick={handleBack}
       >
@@ -159,9 +159,9 @@ export default function AccountSetup() {
         Back
       </Button>
 
-      <Card className="w-full max-w-2xl bg-white border border-slate-300 text-slate-900 relative z-10 shadow-lg hover:shadow-xl transition-shadow duration-300">
-        <CardHeader className="text-center pb-2 border-b border-slate-300">
-          <div className="w-16 h-16 bg-gradient-to-br from-slate-800 to-slate-900 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg overflow-hidden">
+      <Card className="w-full max-w-2xl bg-slate-950/95 border border-blue-400/40 text-blue-50 relative z-10 shadow-[0_0_60px_rgba(37,99,235,0.24)] hover:shadow-[0_0_80px_rgba(59,130,246,0.32)] transition-shadow duration-300">
+        <CardHeader className="text-center pb-2 border-b border-blue-800/70">
+          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-800 rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_28px_rgba(59,130,246,0.5)] overflow-hidden">
             <img
               src={MENU_ASSETS.NAVIGATION.EMPIRE.path}
               alt="empire setup"
@@ -172,16 +172,16 @@ export default function AccountSetup() {
               }}
             />
           </div>
-          <CardTitle className="text-3xl font-orbitron font-bold tracking-wider text-slate-900">EMPIRE SETUP</CardTitle>
-          <CardDescription className="text-slate-700 font-rajdhani text-lg font-medium mt-2">
+          <CardTitle className="text-3xl font-orbitron font-bold tracking-wider text-blue-100">EMPIRE SETUP</CardTitle>
+          <CardDescription className="text-blue-200 font-rajdhani text-lg font-medium mt-2">
             Choose your realm, race, and government to begin your conquest.
           </CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-6 pt-6">
           <div className="space-y-3">
-            <Label className="text-sm font-semibold text-slate-900 flex items-center gap-2">
-              <Globe2 className="w-4 h-4 text-slate-700" />
+            <Label className="text-sm font-semibold text-blue-100 flex items-center gap-2">
+              <Globe2 className="w-4 h-4 text-blue-300" />
               Select Empire Save Slot
             </Label>
             <div className="flex gap-2 mb-2">
@@ -197,8 +197,8 @@ export default function AccountSetup() {
                 </button>
               ))}
             </div>
-            <Label className="text-sm font-semibold text-slate-900 flex items-center gap-2">
-              <Rocket className="w-4 h-4 text-slate-700" />
+            <Label className="text-sm font-semibold text-blue-100 flex items-center gap-2">
+              <Rocket className="w-4 h-4 text-blue-300" />
               Empire Identity
             </Label>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -211,7 +211,7 @@ export default function AccountSetup() {
                     setHasUserInteracted(true);
                     setEmpireName(event.target.value);
                   }}
-                  className="w-full h-12 rounded-md border border-slate-300 px-3 text-slate-900"
+                  className="w-full h-12 rounded-md border border-blue-800/80 bg-blue-950/50 px-3 text-blue-50 placeholder:text-blue-400 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                   placeholder="Enter empire name"
                 />
               </div>
@@ -224,23 +224,23 @@ export default function AccountSetup() {
                     setHasUserInteracted(true);
                     setHomeWorldName(event.target.value);
                   }}
-                  className="w-full h-12 rounded-md border border-slate-300 px-3 text-slate-900"
+                  className="w-full h-12 rounded-md border border-blue-800/80 bg-blue-950/50 px-3 text-blue-50 placeholder:text-blue-400 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                   placeholder="Enter home world name"
                 />
               </div>
             </div>
-            <div className="bg-slate-50 border border-slate-300 rounded-lg p-3 text-xs text-slate-600">
+            <div className="bg-blue-950/45 border border-blue-800/70 rounded-lg p-3 text-xs text-blue-200">
               Your empire name becomes the banner identity for diplomacy and rankings, while your home world name becomes your starting capital planet.
             </div>
           </div>
 
           <div className="space-y-3">
-            <Label className="text-sm font-semibold text-slate-900 flex items-center gap-2">
-              <Globe2 className="w-4 h-4 text-slate-700" />
+            <Label className="text-sm font-semibold text-blue-100 flex items-center gap-2">
+              <Globe2 className="w-4 h-4 text-blue-300" />
               Select Your Realm
             </Label>
             <Select value={selectedRealm} onValueChange={handleRealmChange}>
-              <SelectTrigger className="w-full h-12 bg-white border-slate-300 text-slate-900 focus:border-slate-600 focus:ring-slate-600" data-testid="select-realm">
+              <SelectTrigger className="w-full h-12 bg-blue-950/60 border-blue-700/80 text-blue-50 focus:border-blue-400 focus:ring-blue-500/40" data-testid="select-realm">
                 <SelectValue placeholder="Choose a realm" />
               </SelectTrigger>
               <SelectContent>
@@ -252,46 +252,46 @@ export default function AccountSetup() {
               </SelectContent>
             </Select>
 
-            <div className="bg-slate-50 border border-slate-300 rounded-lg p-3 space-y-2">
+            <div className="bg-blue-950/45 border border-blue-800/70 rounded-lg p-3 space-y-2">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-sm text-slate-900 font-semibold">{selectedRealmData?.name || "Awaiting realm sync"}</p>
-                  <p className="text-xs text-slate-600">
+                  <p className="text-sm text-blue-100 font-semibold">{selectedRealmData?.name || "Awaiting realm sync"}</p>
+                  <p className="text-xs text-blue-300">
                     Region {selectedRealmData?.region || "--"} · {selectedRealmData?.universes?.length || 0} linked universes
                   </p>
                 </div>
-                <div className="rounded-full border border-cyan-200 bg-cyan-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-700">
+                <div className="rounded-full border border-blue-400/40 bg-blue-500/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-blue-200">
                   {selectedRealmData?.status || "offline"}
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-2 text-xs">
-                <div className="rounded border border-slate-200 bg-white p-2">
-                  <div className="text-slate-500">Players</div>
-                  <div className="font-semibold text-slate-900">{selectedRealmData ? selectedRealmData.playersOnline.toLocaleString() : 0}</div>
+                <div className="rounded border border-blue-800/70 bg-blue-950/60 p-2">
+                  <div className="text-blue-400">Players</div>
+                  <div className="font-semibold text-blue-100">{selectedRealmData ? selectedRealmData.playersOnline.toLocaleString() : 0}</div>
                 </div>
-                <div className="rounded border border-slate-200 bg-white p-2">
-                  <div className="text-slate-500">Capacity</div>
-                  <div className="font-semibold text-slate-900">{selectedRealmData ? selectedRealmData.maxPlayers.toLocaleString() : 0}</div>
+                <div className="rounded border border-blue-800/70 bg-blue-950/60 p-2">
+                  <div className="text-blue-400">Capacity</div>
+                  <div className="font-semibold text-blue-100">{selectedRealmData ? selectedRealmData.maxPlayers.toLocaleString() : 0}</div>
                 </div>
-                <div className="rounded border border-slate-200 bg-white p-2">
-                  <div className="text-slate-500">Tick</div>
-                  <div className="font-semibold text-slate-900">{selectedRealmData?.tickRateMs || 0}ms</div>
+                <div className="rounded border border-blue-800/70 bg-blue-950/60 p-2">
+                  <div className="text-blue-400">Tick</div>
+                  <div className="font-semibold text-blue-100">{selectedRealmData?.tickRateMs || 0}ms</div>
                 </div>
               </div>
-              <div className="flex items-center gap-2 text-xs text-slate-600">
-                <Activity className="w-3.5 h-3.5 text-slate-500" />
+              <div className="flex items-center gap-2 text-xs text-blue-300">
+                <Activity className="w-3.5 h-3.5 text-blue-400" />
                 Realm choice becomes your active command realm and can be switched later in-game.
               </div>
             </div>
           </div>
 
           <div className="space-y-3">
-            <Label className="text-sm font-semibold text-slate-900 flex items-center gap-2">
-              <Users className="w-4 h-4 text-slate-700" />
+            <Label className="text-sm font-semibold text-blue-100 flex items-center gap-2">
+              <Users className="w-4 h-4 text-blue-300" />
               Select Your Race
             </Label>
             <Select value={selectedRace} onValueChange={handleRaceChange}>
-              <SelectTrigger className="w-full h-12 bg-white border-slate-300 text-slate-900 focus:border-slate-600 focus:ring-slate-600" data-testid="select-race">
+              <SelectTrigger className="w-full h-12 bg-blue-950/60 border-blue-700/80 text-blue-50 focus:border-blue-400 focus:ring-blue-500/40" data-testid="select-race">
                 <SelectValue placeholder="Choose a race" />
               </SelectTrigger>
               <SelectContent>
@@ -304,8 +304,8 @@ export default function AccountSetup() {
             </Select>
 
             {selectedRaceData && (
-              <div className="bg-slate-50 border border-slate-300 rounded-lg p-3">
-                <p className="text-sm text-slate-700 mb-2">{selectedRaceData.description}</p>
+              <div className="bg-blue-950/45 border border-blue-800/70 rounded-lg p-3">
+                <p className="text-sm text-blue-200 mb-2">{selectedRaceData.description}</p>
                 <div className="space-y-1">
                   {selectedRaceData.bonuses.map((bonus, i) => (
                     <div key={i} className="text-xs text-emerald-700 flex items-center gap-1">
@@ -319,12 +319,12 @@ export default function AccountSetup() {
           </div>
 
           <div className="space-y-3">
-            <Label className="text-sm font-semibold text-slate-900 flex items-center gap-2">
-              <Landmark className="w-4 h-4 text-slate-700" />
+            <Label className="text-sm font-semibold text-blue-100 flex items-center gap-2">
+              <Landmark className="w-4 h-4 text-blue-300" />
               Select Your Government
             </Label>
             <Select value={selectedGovernment} onValueChange={handleGovernmentChange}>
-              <SelectTrigger className="w-full h-12 bg-white border-slate-300 text-slate-900 focus:border-slate-600 focus:ring-slate-600" data-testid="select-government">
+              <SelectTrigger className="w-full h-12 bg-blue-950/60 border-blue-700/80 text-blue-50 focus:border-blue-400 focus:ring-blue-500/40" data-testid="select-government">
                 <SelectValue placeholder="Choose a government" />
               </SelectTrigger>
               <SelectContent>
@@ -336,10 +336,10 @@ export default function AccountSetup() {
               </SelectContent>
             </Select>
 
-            <div className="bg-slate-50 border border-slate-300 rounded-lg p-3">
-              <p className="text-sm text-slate-700 mb-2">{selectedGovernmentData.description}</p>
-              <div className="text-xs text-slate-600 mb-2">
-                Ruler Title: <span className="text-slate-800 font-semibold">{selectedGovernmentData.rulerTitle}</span>
+            <div className="bg-blue-950/45 border border-blue-800/70 rounded-lg p-3">
+              <p className="text-sm text-blue-200 mb-2">{selectedGovernmentData.description}</p>
+              <div className="text-xs text-blue-300 mb-2">
+                Ruler Title: <span className="text-blue-100 font-semibold">{selectedGovernmentData.rulerTitle}</span>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
@@ -365,42 +365,42 @@ export default function AccountSetup() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div className="rounded-lg border border-slate-300 bg-slate-50 p-3">
-              <p className="text-xs uppercase text-slate-500">Selected Race</p>
-              <p className="text-lg font-semibold text-slate-900">{selectedRaceData.name}</p>
-              <p className="text-xs text-slate-600 mt-1">Primary Doctrine: {selectedRaceData.bonuses[0]}</p>
+            <div className="rounded-lg border border-blue-800/70 bg-blue-950/45 p-3">
+              <p className="text-xs uppercase text-blue-400">Selected Race</p>
+              <p className="text-lg font-semibold text-blue-100">{selectedRaceData.name}</p>
+              <p className="text-xs text-blue-300 mt-1">Primary Doctrine: {selectedRaceData.bonuses[0]}</p>
             </div>
-            <div className="rounded-lg border border-slate-300 bg-slate-50 p-3">
-              <p className="text-xs uppercase text-slate-500">Selected Government</p>
-              <p className="text-lg font-semibold text-slate-900">{selectedGovernmentData.name}</p>
-              <p className="text-xs text-slate-600 mt-1">Ruler Title: {selectedGovernmentData.rulerTitle}</p>
+            <div className="rounded-lg border border-blue-800/70 bg-blue-950/45 p-3">
+              <p className="text-xs uppercase text-blue-400">Selected Government</p>
+              <p className="text-lg font-semibold text-blue-100">{selectedGovernmentData.name}</p>
+              <p className="text-xs text-blue-300 mt-1">Ruler Title: {selectedGovernmentData.rulerTitle}</p>
             </div>
-            <div className="rounded-lg border border-slate-300 bg-slate-50 p-3 md:col-span-2">
-              <p className="text-xs uppercase text-slate-500">Selected Realm</p>
-              <p className="text-lg font-semibold text-slate-900">{selectedRealmData?.name || "No realm selected"}</p>
-              <p className="text-xs text-slate-600 mt-1">
+            <div className="rounded-lg border border-blue-800/70 bg-blue-950/45 p-3 md:col-span-2">
+              <p className="text-xs uppercase text-blue-400">Selected Realm</p>
+              <p className="text-lg font-semibold text-blue-100">{selectedRealmData?.name || "No realm selected"}</p>
+              <p className="text-xs text-blue-300 mt-1">
                 Command Region: {selectedRealmData?.region || "--"} · Status: {(selectedRealmData?.status || "--").toUpperCase()}
               </p>
             </div>
           </div>
 
-          <div className="rounded-lg border border-slate-300 bg-white p-3 text-sm text-slate-600">
-            <p className="font-semibold text-slate-900 mb-1">Starter Doctrine</p>
+          <div className="rounded-lg border border-blue-800/70 bg-blue-950/45 p-3 text-sm text-blue-200">
+            <p className="font-semibold text-blue-100 mb-1">Starter Doctrine</p>
             <p>
-              Deploy first into <span className="font-semibold text-slate-900">{selectedRealmData?.name || "your command realm"}</span>, launch with balanced economy and defense in the first cycle,
+              Deploy first into <span className="font-semibold text-blue-100">{selectedRealmData?.name || "your command realm"}</span>, launch with balanced economy and defense in the first cycle,
               then pivot into your race-government synergy strengths for faster empire scaling.
             </p>
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-lg text-sm" data-testid="error-message">
+            <div className="bg-red-950/60 border border-red-400/50 text-red-200 px-4 py-3 rounded-lg text-sm" data-testid="error-message">
               {error}
             </div>
           )}
 
           <Button
             onClick={handleComplete}
-            className="w-full bg-slate-900 hover:bg-slate-800 text-white font-orbitron tracking-widest h-14 text-lg shadow-lg transition-all hover:shadow-xl"
+            className="w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-500 hover:via-indigo-500 hover:to-blue-600 text-white font-orbitron tracking-widest h-14 text-lg shadow-[0_0_28px_rgba(37,99,235,0.35)] transition-all hover:shadow-[0_0_40px_rgba(59,130,246,0.5)]"
             disabled={isLoading || isSubmitting}
             data-testid="button-begin-conquest"
           >

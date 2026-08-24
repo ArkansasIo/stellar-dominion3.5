@@ -11,7 +11,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BookOpen, CheckCircle2, Compass, Zap } from "lucide-react";
 import { Link } from "wouter";
 import { createHabitatConditionProfile } from "@/lib/environmentSystems";
-import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
+import { SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS, getStoryActVisual, getStoryMissionVisual } from "@shared/config";
 
 const TEMP_THEME_IMAGE = "/theme-temp.png";
 
@@ -125,6 +125,8 @@ export default function StoryMode() {
   const selectedActCompletionRate = selectedActTotal > 0 ? Math.round((selectedActCompleted / selectedActTotal) * 100) : 0;
   const totalMainCompleted = allMissions.filter((mission) => mission.missionType === "main" && mission.isCompleted).length;
   const totalSideCompleted = allMissions.filter((mission) => mission.missionType === "side" && mission.isCompleted).length;
+  const activeStoryVisual = getStoryActVisual(selectedAct);
+
   const storyThreatProfiles = [
     createHabitatConditionProfile({
       kind: "planet",
@@ -163,13 +165,41 @@ export default function StoryMode() {
   return (
     <GameLayout>
       <div className="space-y-6">
-        <section className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.78), rgba(15,23,42,0.92)), url(${BACKGROUND_ASSETS.STAR_FIELD.path})` }}>
+        <section className="overflow-hidden rounded-2xl border border-red-900/40 shadow-sm bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.76), rgba(15,23,42,0.96)), url(${activeStoryVisual.imagePath})` }}>
           <div className="p-5 lg:p-6 space-y-4 text-white">
             <div className="flex items-center gap-2">
               <img src={MENU_ASSETS.NAVIGATION.EMPIRE.path} alt="Icon" className="w-8 h-8 rounded-lg border border-white/10 bg-white/10 p-1.5 object-contain" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }} />
-              <h1 className="text-2xl font-bold">Story Mode</h1>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-2xl font-bold">Story Mode</h1>
+                  <Badge className="border border-red-400/50 bg-red-500/15 text-red-200">{activeStoryVisual.alertLevel} ALERT</Badge>
+                </div>
+                <div className="mt-1 text-xs uppercase tracking-[0.18em] text-cyan-200">{activeStoryVisual.missionFrame}</div>
+              </div>
             </div>
             <p className="text-sm leading-6 text-slate-300">Play through 12 acts, 5 chapters per act, and 50 missions per act including side directives.</p>
+            <div className="max-w-3xl rounded-xl border border-red-400/20 bg-slate-950/35 p-3 text-sm text-slate-200">
+              <span className="font-semibold text-red-200">{activeStoryVisual.chapterLabel}</span>
+              <span className="mx-2 text-slate-500">//</span>
+              {activeStoryVisual.briefing}
+            </div>
+            <div className="max-w-3xl overflow-hidden rounded-xl border border-cyan-300/20 bg-black/30">
+              <video
+                className="h-36 w-full object-cover opacity-90"
+                src="/assets/story/video/story-briefing-intro.mp4"
+                poster={activeStoryVisual.imagePath}
+                autoPlay
+                muted
+                loop
+                playsInline
+                controls
+                aria-label="Animated story campaign briefing"
+              />
+              <div className="flex items-center justify-between px-3 py-2 text-[10px] uppercase tracking-[0.18em] text-cyan-200">
+                <span>Animated briefing // original 2D command art</span>
+                <span>Audio off by default</span>
+              </div>
+            </div>
             <div className="flex flex-wrap gap-3">
               {[{ label: "Battlecruiser", image: SHIP_ASSETS.CAPITALS.BATTLECRUISER.path }, { label: "Research Lab", image: MENU_ASSETS.BUILDINGS.RESEARCH_LAB.path }, { label: "Ships", image: OGAMEX_FEATURED_ASSETS.SHIPS.path }].map((item) => (
                 <div key={item.label} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
@@ -250,7 +280,12 @@ export default function StoryMode() {
               }`}
               data-testid={`act-card-${actDef.act}`}
             >
+              <div className="h-28 bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.25), rgba(15,23,42,0.9)), url(${getStoryActVisual(actDef.act).imagePath})` }} />
               <CardHeader>
+                <div className="mb-2 flex items-center justify-between gap-2">
+                  <Badge className="border border-red-200 bg-red-50 text-red-700">{getStoryActVisual(actDef.act).alertLevel} ALERT</Badge>
+                  <span className="text-[10px] uppercase tracking-widest text-slate-400">{getStoryActVisual(actDef.act).chapterLabel}</span>
+                </div>
                 <CardTitle className="text-slate-900">Act {actDef.act}: {actDef.title}</CardTitle>
                 <CardDescription>{actDef.synopsis}</CardDescription>
               </CardHeader>
@@ -327,8 +362,16 @@ export default function StoryMode() {
             </div>
 
             <div className="grid gap-4">
-              {missions.map((mission: any) => (
-                <Card key={mission.id} className="bg-white border-slate-200">
+              {missions.map((mission: any) => {
+                const missionVisual = getStoryMissionVisual(mission.act, mission.chapter, mission.missionType);
+                return (
+                <Card key={mission.id} className="overflow-hidden bg-white border-slate-200">
+                  <div className="h-24 bg-cover bg-center" style={{ backgroundImage: `linear-gradient(90deg, rgba(15,23,42,0.85), rgba(15,23,42,0.25)), url(${missionVisual.imagePath})` }}>
+                    <div className="flex h-full items-end justify-between p-3 text-xs uppercase tracking-wider text-white">
+                      <span>{missionVisual.frame}</span>
+                      <span className="rounded border border-red-300/40 bg-red-500/20 px-2 py-1 text-red-100">{missionVisual.alertLabel}</span>
+                    </div>
+                  </div>
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <div>
@@ -361,7 +404,8 @@ export default function StoryMode() {
                     </Button>
                   </CardContent>
                 </Card>
-              ))}
+                );
+              })}
             </div>
           </div>
 
