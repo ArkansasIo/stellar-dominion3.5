@@ -41,6 +41,7 @@ const VendorTypeColors: Record<string, string> = {
 export default function Merchants() {
   const [selectedVendor, setSelectedVendor] = useState<Vendor | null>(VENDORS[0]);
   const [reputation] = useState(72);
+  const [acceptedQuests, setAcceptedQuests] = useState<Record<string, boolean>>({});
 
   const totalOfferings = selectedVendor?.offerings.reduce((sum, offering) => sum + offering.items.length, 0) || 0;
 
@@ -206,8 +207,13 @@ export default function Merchants() {
                             <p className="font-semibold text-slate-900 text-sm">{quest}</p>
                             <p className="text-xs text-slate-600 mt-1">Quest from {selectedVendor.name}</p>
                           </div>
-                          <Button size="sm" variant="outline">
-                            Accept
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            disabled={acceptedQuests[`${selectedVendor.id}-${idx}`]}
+                            onClick={() => setAcceptedQuests((current) => ({ ...current, [`${selectedVendor.id}-${idx}`]: true }))}
+                          >
+                            {acceptedQuests[`${selectedVendor.id}-${idx}`] ? "Accepted" : "Accept"}
                           </Button>
                         </div>
                       ))}

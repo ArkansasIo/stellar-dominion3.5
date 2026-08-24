@@ -264,7 +264,19 @@ export default function Diplomacy() {
                           </div>
                         </CardHeader>
                         <CardContent>
-                          <Button className="w-full" variant="outline" size="sm">
+                          <Button
+                            className="w-full"
+                            variant="outline"
+                            size="sm"
+                            disabled={proposeActionMutation.isPending}
+                            onClick={() => {
+                              if (!selectedRelation) {
+                                toast({ title: "Select a diplomatic target", description: "Choose an empire from the Relations tab before proposing a treaty.", variant: "destructive" });
+                                return;
+                              }
+                              proposeActionMutation.mutate({ empireId: selectedRelation.empireId, action: "propose-treaty" });
+                            }}
+                          >
                             Propose Treaty
                           </Button>
                         </CardContent>
@@ -314,7 +326,11 @@ export default function Diplomacy() {
                           {level.level === 1 ? (
                             <Badge className="bg-blue-600">Current</Badge>
                           ) : (
-                            <Button variant="outline" size="sm" disabled>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => { window.location.href = "/facilities?tab=planet"; }}
+                            >
                               Upgrade
                             </Button>
                           )}

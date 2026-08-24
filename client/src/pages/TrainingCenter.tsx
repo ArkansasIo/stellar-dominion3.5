@@ -155,9 +155,11 @@ export default function TrainingCenter() {
   const { data: militaryForce } = useMilitaryForce();
   const trainUnitMutation = useTrainUnit();
   const [selectedTrackId, setSelectedTrackId] = useState(TRAINING_TRACKS[0].id);
-  const [activeTab, setActiveTab] = useState("tracks");
+  const initialTab = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("tab") : null;
+  const allowedTabs = new Set(["tracks", "pipeline", "specializations", "graduates", "analytics"]);
+  const [activeTab, setActiveTab] = useState(allowedTabs.has(initialTab || "") ? initialTab || "tracks" : "tracks");
   const [specializationFilter, setSpecializationFilter] = useState<string | null>(null);
-  const [activeTrainings] = useState<ActiveTraining[]>(MOCK_ACTIVE_TRAINING);
+  const [activeTrainings, setActiveTrainings] = useState<ActiveTraining[]>(MOCK_ACTIVE_TRAINING);
   const [graduates] = useState<Graduate[]>(MOCK_GRADUATES);
 
   const selectedTrack = TRAINING_TRACKS.find((track) => track.id === selectedTrackId) || TRAINING_TRACKS[0];
@@ -167,9 +169,22 @@ export default function TrainingCenter() {
   const trainingCapacity = (buildings.shipyard * 12) + (buildings.roboticsFactory * 10) + (buildings.researchLab * 8);
   const availableCapacity = Math.max(0, trainingCapacity - totalPersonnel);
 
-  const inProgressTrainings = activeTrainings.filter((t) => t.status === "in_progress");
+  const inProgressTrainings = activeTrainings.filter((t) => t.status === "in_progress" || t.status === "paused");
   const completedTrainings = activeTrainings.filter((t) => t.status === "completed");
   const activePipelineCount = inProgressTrainings.reduce((sum, t) => sum + t.quantity, 0);
+
+  const updateTraining = (trainingId: string, action: "pause" | "resume" | "cancel" | "expedite") => {
+    setActiveTrainings((current) => current.map((training) => {
+      if (training.id !== trainingId) return training;
+      if (action === "pause") return { ...training, status: "paused" };
+      if (action === "resume") return { ...training, status: "in_progress" };
+      if (action === "cancel") return { ...training, status: "cancelled" };
+      const progress = Math.min(100, training.progress + 25);
+      return { ...training, progress, status: progress >= 100 ? "completed" : training.status };
+    }));
+    const labels = { pause: "Training paused", resume: "Training resumed", cancel: "Training cancelled", expedite: "Training expedited" };
+    toast({ title: labels[action], description: "The training pipeline was updated." });
+  };
   const averagePerformance = graduates.length > 0 ? Math.round(graduates.reduce((sum, g) => sum + g.performance, 0) / graduates.length) : 0;
 
   const trackStates = useMemo(() => {
@@ -405,9 +420,13 @@ export default function TrainingCenter() {
                       </div>
                       <TrainingProgressBar training={training} />
                       <div className="flex gap-2">
-                        <Button size="sm" variant="outline" disabled={training.status !== "in_progress"}>Pause</Button>
-                        <Button size="sm" variant="outline" disabled={training.status !== "in_progress"}>Cancel</Button>
-                        <Button size="sm" disabled={training.status !== "in_progress"}>Expedite</Button>
+                        {training.status === "paused" ? (
+                          <Button size="sm" variant="outline" onClick={() => updateTraining(training.id, "resume")}>Resume</Button>
+                        ) : (
+                          <Button size="sm" variant="outline" onClick={() => updateTraining(training.id, "pause")}>Pause</Button>
+                        )}
+                        <Button size="sm" variant="outline" onClick={() => updateTraining(training.id, "cancel")}>Cancel</Button>
+                        <Button size="sm" onClick={() => updateTraining(training.id, "expedite")}>Expedite</Button>
                       </div>
                     </div>
                   ))

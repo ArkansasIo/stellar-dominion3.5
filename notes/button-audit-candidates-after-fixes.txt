@@ -1,0 +1,67 @@
+/home/ubuntu/stellar-dominion3.5/client/src/components/game/HabitatSystemsPanel.tsx:212: Open Story Mode
+/home/ubuntu/stellar-dominion3.5/client/src/components/game/HabitatSystemsPanel.tsx:216: Open Management
+/home/ubuntu/stellar-dominion3.5/client/src/components/layout/GameLayout.tsx:1280: Open navigation
+/home/ubuntu/stellar-dominion3.5/client/src/components/layout/GameLayout.tsx:1339: News
+/home/ubuntu/stellar-dominion3.5/client/src/components/ui/calendar.tsx:189: span]:text-xs [&>span]:opacity-70", defaultClassNames.day, className
+/home/ubuntu/stellar-dominion3.5/client/src/components/ui/input-group.tsx:107: ) } function InputGroupText({ className, ...props }: React.ComponentProps ) { return ( <span className={cn( "text-muted-foreground flex items-center gap-2 text-sm [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-even
+/home/ubuntu/stellar-dominion3.5/client/src/components/ui/pagination.tsx:39: } & Pick & React.ComponentProps const PaginationLink = ({ className, isActive, size = "icon", ...props }: PaginationLinkProps) => ( <a aria-current={isActive ? "page" : undefined} className={cn( buttonVariants({ variant:
+/home/ubuntu/stellar-dominion3.5/client/src/pages/About.tsx:25: Back to Home
+/home/ubuntu/stellar-dominion3.5/client/src/pages/About.tsx:164: Start Playing
+/home/ubuntu/stellar-dominion3.5/client/src/pages/Auth.tsx:508: About Universe Civilization: Empire at War
+/home/ubuntu/stellar-dominion3.5/client/src/pages/BiomeCodex.tsx:236: Open Featured Biome
+/home/ubuntu/stellar-dominion3.5/client/src/pages/BiomeCodex.tsx:315: View Details
+/home/ubuntu/stellar-dominion3.5/client/src/pages/CelestialBrowser.tsx:296: {planet.colonized ? "Visit Colony" : "View Planet"}
+/home/ubuntu/stellar-dominion3.5/client/src/pages/Colonies.tsx:572: Manage Colony
+/home/ubuntu/stellar-dominion3.5/client/src/pages/EmpireView.tsx:430: Manage Facilities
+/home/ubuntu/stellar-dominion3.5/client/src/pages/EmpireView.tsx:464: Shipyard
+/home/ubuntu/stellar-dominion3.5/client/src/pages/EmpireView.tsx:469: Fleet Command
+/home/ubuntu/stellar-dominion3.5/client/src/pages/EmpireView.tsx:521: Fleet Command
+/home/ubuntu/stellar-dominion3.5/client/src/pages/EmpireView.tsx:586: View Progression
+/home/ubuntu/stellar-dominion3.5/client/src/pages/EmpireView.tsx:621: Manage Alliance
+/home/ubuntu/stellar-dominion3.5/client/src/pages/EmpireView.tsx:630: Find or Create Alliance →
+/home/ubuntu/stellar-dominion3.5/client/src/pages/EmpireView.tsx:649: View messages →
+/home/ubuntu/stellar-dominion3.5/client/src/pages/EmpireView.tsx:686: Research Lab
+/home/ubuntu/stellar-dominion3.5/client/src/pages/Forums.tsx:125: Back to Home
+/home/ubuntu/stellar-dominion3.5/client/src/pages/Forums.tsx:148: Login with Main Account
+/home/ubuntu/stellar-dominion3.5/client/src/pages/Forums.tsx:209: Open Messages
+/home/ubuntu/stellar-dominion3.5/client/src/pages/Forums.tsx:223: Open Alliance
+/home/ubuntu/stellar-dominion3.5/client/src/pages/FriendsList.tsx:432: Message
+/home/ubuntu/stellar-dominion3.5/client/src/pages/GroundCombat.tsx:246: Occupation Ops
+/home/ubuntu/stellar-dominion3.5/client/src/pages/KnowledgeLibrary.tsx:515: Open Research Hub
+/home/ubuntu/stellar-dominion3.5/client/src/pages/KnowledgeLibrary.tsx:521: Research Management
+/home/ubuntu/stellar-dominion3.5/client/src/pages/KnowledgeLibrary.tsx:543: Open Technology Tree
+/home/ubuntu/stellar-dominion3.5/client/src/pages/KnowledgeLibrary.tsx:700: Research Hub
+/home/ubuntu/stellar-dominion3.5/client/src/pages/KnowledgeLibrary.tsx:706: Technology Tree
+/home/ubuntu/stellar-dominion3.5/client/src/pages/KnowledgeLibrary.tsx:712: Research Analytics
+/home/ubuntu/stellar-dominion3.5/client/src/pages/Market.tsx:473: Create Auction
+/home/ubuntu/stellar-dominion3.5/client/src/pages/Messages.tsx:268: New Trade Offer
+/home/ubuntu/stellar-dominion3.5/client/src/pages/Navigation.tsx:62: 
+/home/ubuntu/stellar-dominion3.5/client/src/pages/Overview.tsx:378: Manage Resources
+/home/ubuntu/stellar-dominion3.5/client/src/pages/Overview.tsx:383: Build Ships
+/home/ubuntu/stellar-dominion3.5/client/src/pages/Overview.tsx:388: Research Tech
+/home/ubuntu/stellar-dominion3.5/client/src/pages/Overview.tsx:393: Dispatch Fleet
+/home/ubuntu/stellar-dominion3.5/client/src/pages/Overview.tsx:398: Messages {unreadMessages > 0 && ( {unreadMessages} )}
+/home/ubuntu/stellar-dominion3.5/client/src/pages/Overview.tsx:406: Story Mode
+/home/ubuntu/stellar-dominion3.5/client/src/pages/Overview.tsx:411: Season Pass
+/home/ubuntu/stellar-dominion3.5/client/src/pages/Overview.tsx:416: Battle Pass
+/home/ubuntu/stellar-dominion3.5/client/src/pages/Overview.tsx:421: Civilization Systems
+/home/ubuntu/stellar-dominion3.5/client/src/pages/Overview.tsx:426: Storefront
+/home/ubuntu/stellar-dominion3.5/client/src/pages/Overview.tsx:637: {recommendation.label} →
+/home/ubuntu/stellar-dominion3.5/client/src/pages/Overview.tsx:712: Open Civilization Systems
+/home/ubuntu/stellar-dominion3.5/client/src/pages/Overview.tsx:757: Open Season
+/home/ubuntu/stellar-dominion3.5/client/src/pages/Overview.tsx:760: Open Battle
+/home/ubuntu/stellar-dominion3.5/client/src/pages/Overview.tsx:817: Season Rewards →
+/home/ubuntu/stellar-dominion3.5/client/src/pages/Overview.tsx:820: Battle Rewards →
+/home/ubuntu/stellar-dominion3.5/client/src/pages/Overview.tsx:893: Build ships →
+/home/ubuntu/stellar-dominion3.5/client/src/pages/Overview.tsx:906: View all units →
+/home/ubuntu/stellar-dominion3.5/client/src/pages/Overview.tsx:977: View Alliance
+/home/ubuntu/stellar-dominion3.5/client/src/pages/PlanetDetail.tsx:318: Browse Celestial Objects
+/home/ubuntu/stellar-dominion3.5/client/src/pages/PlanetDetail.tsx:384: Back
+/home/ubuntu/stellar-dominion3.5/client/src/pages/Privacy.tsx:131: Back to Home
+/home/ubuntu/stellar-dominion3.5/client/src/pages/Raids.tsx:547: Open Raid Finder
+/home/ubuntu/stellar-dominion3.5/client/src/pages/Raids.tsx:550: Review Battle Logs
+/home/ubuntu/stellar-dominion3.5/client/src/pages/StoryMode.tsx:215: Open Season Pass
+/home/ubuntu/stellar-dominion3.5/client/src/pages/StoryMode.tsx:218: Open Storefront
+/home/ubuntu/stellar-dominion3.5/client/src/pages/Terms.tsx:122: Back to Home
+/home/ubuntu/stellar-dominion3.5/client/src/pages/not-found.tsx:22: Go to Dashboard
+/home/ubuntu/stellar-dominion3.5/client/src/pages/not-found.tsx:25: Open Universe Map

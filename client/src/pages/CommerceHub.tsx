@@ -321,8 +321,15 @@ export default function CommerceHub() {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button className="w-full" disabled>
-                    Purchase (Coming Soon)
+                  <Button
+                    className="w-full"
+                    variant="outline"
+                    onClick={() => toast({
+                      title: "Purchase lane unavailable",
+                      description: "Live commerce purchases are being staged. Use Market for active resource trading.",
+                    })}
+                  >
+                    Purchase — Coming Soon
                   </Button>
                 </CardFooter>
               </Card>

@@ -116,6 +116,8 @@ export default function Factions() {
   const [questSearch, setQuestSearch] = useState("");
   const [selectedFaction, setSelectedFaction] = useState<string | null>(null);
   const [rewardFilter, setRewardFilter] = useState<"all" | "available" | "claimed">("all");
+  const [joinRequests, setJoinRequests] = useState<Record<string, boolean>>({});
+  const [acceptedQuests, setAcceptedQuests] = useState<Record<string, boolean>>({});
 
   const factionsQuery = useQuery<FactionsResponse>({
     queryKey: ["/api/factions"],
@@ -221,7 +223,14 @@ export default function Factions() {
                     <Globe className="w-5 h-5" style={{ color: f.color }} />
                     <span className="font-semibold text-sm">{f.name}</span>
                   </div>
-                  <Button size="sm" variant="outline">Join</Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={joinRequests[f.id]}
+                    onClick={() => setJoinRequests((current) => ({ ...current, [f.id]: true }))}
+                  >
+                    {joinRequests[f.id] ? "Requested" : "Join"}
+                  </Button>
                 </div>
               ))}
             </CardContent>
@@ -354,8 +363,13 @@ export default function Factions() {
                           </div>
                         </CardContent>
                         <CardFooter className="pt-0">
-                          <Button size="sm" className="w-full" disabled={quest.status === "completed" || quest.status === "failed"}>
-                            {quest.status === "completed" ? "Completed" : quest.status === "failed" ? "Failed" : quest.status === "active" ? "In Progress" : "Accept Quest"}
+                          <Button
+                            size="sm"
+                            className="w-full"
+                            disabled={quest.status === "completed" || quest.status === "failed" || acceptedQuests[quest.id]}
+                            onClick={() => setAcceptedQuests((current) => ({ ...current, [quest.id]: true }))}
+                          >
+                            {quest.status === "completed" ? "Completed" : quest.status === "failed" ? "Failed" : quest.status === "active" || acceptedQuests[quest.id] ? "In Progress" : "Accept Quest"}
                           </Button>
                         </CardFooter>
                       </Card>

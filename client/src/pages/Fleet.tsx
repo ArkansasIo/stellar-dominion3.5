@@ -96,6 +96,8 @@ export default function Fleet() {
    const [missionType, setMissionType] = useState<any>(allowedMissions.has(initialMission || "") ? (initialMission ?? "attack") : "attack");
    const [targetType, setTargetType] = useState(allowedTargetTypes.has(initialTargetType || "") ? (initialTargetType ?? "planet") : "planet");
    const [activeTab, setActiveTab] = useState<FleetTab>(allowedTabs.has(initialTab || "") ? (initialTab as FleetTab) : "dispatch");
+   const [simulationEnemyPower, setSimulationEnemyPower] = useState("");
+   const [simulationResult, setSimulationResult] = useState<string | null>(null);
 
    const sendFleetMutation = useMutation({
       mutationFn: async (payload: { destination: string; missionType: string; ships: { [key: string]: number } }) => {
@@ -278,12 +280,17 @@ export default function Fleet() {
   };
 
   useEffect(() => {
-    setCrewAssignments((current) => ({
-      pilot: Math.min(current.pilot, personnelPools.pilot),
-      gunner: Math.min(current.gunner, personnelPools.gunner),
-      officer: Math.min(current.officer, personnelPools.officer),
-    }));
-  }, [personnelPools]);
+    setCrewAssignments((current) => {
+      const next = {
+        pilot: Math.min(current.pilot, personnelPools.pilot),
+        gunner: Math.min(current.gunner, personnelPools.gunner),
+        officer: Math.min(current.officer, personnelPools.officer),
+      };
+      return current.pilot === next.pilot && current.gunner === next.gunner && current.officer === next.officer
+        ? current
+        : next;
+    });
+  }, [personnelPools.pilot, personnelPools.gunner, personnelPools.officer]);
 
   const assignedCrew = {
     pilot: Math.min(crewAssignments.pilot, personnelPools.pilot),
@@ -825,13 +832,36 @@ export default function Fleet() {
                           </div>
                           <div className="bg-red-50 p-4 rounded border border-red-200">
                              <div className="text-xs text-red-600 uppercase font-bold mb-2">Enemy (Est.)</div>
-                             <Input placeholder="Enter power..." className="bg-white border-red-200 font-mono" />
+                             <Input
+                                placeholder="Enter power..."
+                                value={simulationEnemyPower}
+                                onChange={(event) => { setSimulationEnemyPower(event.target.value.replace(/[^0-9]/g, "")); setSimulationResult(null); }}
+                                inputMode="numeric"
+                                className="bg-white border-red-200 font-mono"
+                              />
                           </div>
                        </div>
                        
-                       <Button className="w-full" variant="outline">
+                       <Button
+                          className="w-full"
+                          variant="outline"
+                          onClick={() => {
+                             const enemyPower = Number(simulationEnemyPower);
+                             if (!Number.isFinite(enemyPower) || enemyPower <= 0) {
+                                toast({ title: "Enemy power required", description: "Enter a positive enemy fleet power before running the simulation.", variant: "destructive" });
+                                return;
+                             }
+                             const friendlyPower = Math.max(0, totalFleetPower);
+                             const odds = friendlyPower + enemyPower > 0 ? friendlyPower / (friendlyPower + enemyPower) : 0;
+                             const outcome = friendlyPower >= enemyPower ? "Favorable engagement" : "High-risk engagement";
+                             const result = `${outcome} · estimated victory chance ${Math.round(odds * 100)}%`;
+                             setSimulationResult(result);
+                             toast({ title: "Simulation complete", description: result });
+                          }}
+                       >
                           <Target className="w-4 h-4 mr-2" /> Run Simulation
                        </Button>
+                       {simulationResult && <div className="rounded border border-blue-200 bg-blue-50 px-3 py-2 text-sm font-medium text-blue-900" role="status">{simulationResult}</div>}
                        
                        <div className="bg-slate-50 p-4 rounded border border-slate-200 text-center">
                           <Info className="w-8 h-8 mx-auto mb-2 text-slate-300" />
