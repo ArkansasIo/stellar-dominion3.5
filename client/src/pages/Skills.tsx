@@ -159,6 +159,18 @@ export default function Skills() {
     }
   };
 
+  const allocateAttribute = async (attribute: keyof Attributes) => {
+    setActionError(null);
+    try {
+      const response = await apiCall("/api/skills/attributes", "POST", { attribute, amount: 1 });
+      setAttributes(response.attributes || attributes);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Unable to allocate attribute point";
+      setActionError(message);
+      console.error("Failed to allocate attribute:", error);
+    }
+  };
+
   const trainSkill = async (skillId: string) => {
     setActionError(null);
     setTrainingSkillId(skillId);
@@ -201,6 +213,7 @@ export default function Skills() {
   const skillsInQueue = skillQueue.length;
   const trainedCount = skills.length;
   const availableToTrainCount = availableSkills.filter((skill) => !skill.locked && !skill.maxed && !skill.queued).length;
+  const attributePointsRemaining = Math.max(0, 25 - (Object.values(attributes).reduce((sum, value) => sum + value, 0) - 25));
 
   const skillTree = useMemo(() => {
     const nodes: SkillNode[] = availableSkills.map((avail) => {
@@ -287,6 +300,15 @@ export default function Skills() {
                     {ATTRIBUTE_NAMES[attr as keyof typeof ATTRIBUTE_NAMES]}
                   </div>
                   <div className="text-2xl font-bold text-slate-900">{value}</div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="mt-2 h-7 text-xs"
+                    disabled={attributePointsRemaining <= 0}
+                    onClick={() => allocateAttribute(attr as keyof Attributes)}
+                  >
+                    +1 Train ({attributePointsRemaining} pts)
+                  </Button>
                   <div className="mt-1 h-1.5 bg-slate-200 rounded-full overflow-hidden">
                     <div className="h-full bg-primary rounded-full" style={{ width: `${(value / 20) * 100}%` }} />
                   </div>
