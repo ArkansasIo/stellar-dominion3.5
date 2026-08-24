@@ -22,6 +22,7 @@
     "test:resource-management-buttons": "tsx script/test-resource-management-buttons.ts",
     "test:admin-console": "tsx script/test-admin-console.ts",
     "test:admin-console-stress": "tsx script/test-admin-console-stress.ts",
+    "test:world-operations": "tsx script/test-world-operations.ts",
     "db:push": "drizzle-kit push",
     "db:generate": "drizzle-kit generate",
     "db:seed:ogame": "tsx script/seed-ogame-catalog.ts",

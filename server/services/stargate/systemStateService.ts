@@ -25,16 +25,29 @@ export interface MothershipState {
   weapons: number;
   shields: number;
   hangars: number;
+  hull: number;
+  fuel: number;
+  maxFuel: number;
   explorationReadyAt: number | null;
+  missionType: "exploration" | "survey" | "salvage" | "rescue" | null;
   discoveries: number;
+  missionsCompleted: number;
+  missionsFailed: number;
+  lastMissionAt: number;
 }
 
 export interface StrategicWorld {
   id: string;
   name: string;
   ownerId: string;
+  worldType: "homeworld" | "frontier" | "mining" | "agri" | "military";
   condition: number;
   defenses: number;
+  developmentLevel: number;
+  population: number;
+  maxPopulation: number;
+  stability: number;
+  lastYieldAt: number;
   bonuses: { attack: number; defense: number; covert: number; unitProduction: number; income: number };
   discoveredAt: number;
 }
@@ -82,8 +95,8 @@ export interface StargateSystemsState {
 
 const defaultSystemsState = (userId: string): StargateSystemsState => ({
   market: { offers: [], completedTrades: 0 },
-  mothership: { owned: false, name: "Uncommissioned Mothership", capacity: 0, usedCapacity: 0, weapons: 0, shields: 0, hangars: 0, explorationReadyAt: null, discoveries: 0 },
-  worlds: [{ id: `home-${userId}`, name: "Homeworld", ownerId: userId, condition: 100, defenses: 0, bonuses: { attack: 0, defense: 0, covert: 0, unitProduction: 0, income: 0 }, discoveredAt: Date.now() }],
+  mothership: { owned: false, name: "Uncommissioned Mothership", capacity: 0, usedCapacity: 0, weapons: 0, shields: 0, hangars: 0, hull: 0, fuel: 0, maxFuel: 0, explorationReadyAt: null, missionType: null, discoveries: 0, missionsCompleted: 0, missionsFailed: 0, lastMissionAt: 0 },
+  worlds: [{ id: `home-${userId}`, name: "Homeworld", ownerId: userId, worldType: "homeworld", condition: 100, defenses: 0, developmentLevel: 1, population: 5_800, maxPopulation: 10_000, stability: 80, lastYieldAt: Date.now(), bonuses: { attack: 0, defense: 0, covert: 0, unitProduction: 0, income: 0 }, discoveredAt: Date.now() }],
   commander: { name: "Realm Commander", incomeShare: 0.1, officers: [] },
   alliance: { id: null, name: null, tag: null, role: null, applications: [], notice: "" },
   protection: { vacationMode: false, pptUntil: 0, lastRaidAt: 0, covertAttempts: [] },
@@ -94,12 +107,19 @@ const defaultSystemsState = (userId: string): StargateSystemsState => ({
 function normalizeWorld(value: unknown, userId: string, index: number): StrategicWorld {
   const raw = asRecord(value);
   const bonuses = asRecord(raw.bonuses);
+  const type = stringValue(raw.worldType, index === 0 ? "homeworld" : "frontier");
   return {
     id: stringValue(raw.id, `world-${userId}-${index}`),
     name: stringValue(raw.name, `Strategic World ${index + 1}`),
     ownerId: stringValue(raw.ownerId, userId),
+    worldType: ["homeworld", "frontier", "mining", "agri", "military"].includes(type) ? type as StrategicWorld["worldType"] : "frontier",
     condition: Math.min(100, numberValue(raw.condition, 100)),
     defenses: numberValue(raw.defenses),
+    developmentLevel: Math.min(20, Math.max(1, numberValue(raw.developmentLevel, index === 0 ? 1 : 1))),
+    population: numberValue(raw.population, index === 0 ? 5_800 : 1_000),
+    maxPopulation: Math.max(1_000, numberValue(raw.maxPopulation, index === 0 ? 10_000 : 5_000)),
+    stability: Math.min(100, Math.max(0, numberValue(raw.stability, 75))),
+    lastYieldAt: numberValue(raw.lastYieldAt, Date.now()),
     bonuses: { attack: numberValue(bonuses.attack), defense: numberValue(bonuses.defense), covert: numberValue(bonuses.covert), unitProduction: numberValue(bonuses.unitProduction), income: numberValue(bonuses.income) },
     discoveredAt: numberValue(raw.discoveredAt, Date.now()),
   };
@@ -123,7 +143,7 @@ export function normalizeSystemsState(value: unknown, userId: string): StargateS
 
   return {
     market: { offers: rawOffers.map((offer) => { const item = asRecord(offer); return { id: stringValue(item.id), sellerId: stringValue(item.sellerId), item: ["untrained", "attackTroop", "defenseTroop"].includes(stringValue(item.item)) ? stringValue(item.item) as MarketOffer["item"] : "untrained", quantity: numberValue(item.quantity), pricePerUnit: numberValue(item.pricePerUnit), createdAt: numberValue(item.createdAt), expiresAt: numberValue(item.expiresAt) }; }).filter((offer) => offer.id && offer.quantity > 0), completedTrades: numberValue(market.completedTrades) },
-    mothership: { owned: Boolean(mothership.owned), name: stringValue(mothership.name, base.mothership.name), capacity: numberValue(mothership.capacity), usedCapacity: numberValue(mothership.usedCapacity), weapons: numberValue(mothership.weapons), shields: numberValue(mothership.shields), hangars: numberValue(mothership.hangars), explorationReadyAt: mothership.explorationReadyAt === null ? null : numberValue(mothership.explorationReadyAt) || null, discoveries: numberValue(mothership.discoveries) },
+    mothership: { owned: Boolean(mothership.owned), name: stringValue(mothership.name, base.mothership.name), capacity: numberValue(mothership.capacity), usedCapacity: numberValue(mothership.usedCapacity), weapons: numberValue(mothership.weapons), shields: numberValue(mothership.shields), hangars: numberValue(mothership.hangars), hull: Math.min(100, numberValue(mothership.hull, mothership.owned ? 100 : 0)), fuel: Math.min(numberValue(mothership.maxFuel, mothership.owned ? 100 : 0), numberValue(mothership.fuel, mothership.owned ? 100 : 0)), maxFuel: numberValue(mothership.maxFuel, mothership.owned ? 100 : 0), explorationReadyAt: mothership.explorationReadyAt === null ? null : numberValue(mothership.explorationReadyAt) || null, missionType: ["exploration", "survey", "salvage", "rescue"].includes(stringValue(mothership.missionType)) ? stringValue(mothership.missionType) as MothershipState["missionType"] : null, discoveries: numberValue(mothership.discoveries), missionsCompleted: numberValue(mothership.missionsCompleted), missionsFailed: numberValue(mothership.missionsFailed), lastMissionAt: numberValue(mothership.lastMissionAt) },
     worlds: rawWorlds.map((world, index) => normalizeWorld(world, userId, index)).slice(0, 10),
     commander: { name: stringValue(commander.name, base.commander.name), incomeShare: Math.min(0.3, Math.max(0.1, Number(commander.incomeShare) || 0.1)), officers: rawOfficers.map((officer) => { const item = asRecord(officer); const role = stringValue(item.role); return { id: stringValue(item.id), role: ["income", "offense", "defense", "covert"].includes(role) ? role as CommanderState["officers"][number]["role"] : "income", level: Math.max(1, numberValue(item.level, 1)) }; }).filter((officer) => officer.id).slice(0, 25) },
     alliance: { id: alliance.id === null ? null : stringValue(alliance.id) || null, name: alliance.name === null ? null : stringValue(alliance.name) || null, tag: alliance.tag === null ? null : stringValue(alliance.tag) || null, role: alliance.role === "leader" || alliance.role === "member" ? alliance.role : null, applications: rawApplications.map((application) => { const item = asRecord(application); return { userId: stringValue(item.userId), createdAt: numberValue(item.createdAt) }; }).filter((application) => application.userId), notice: stringValue(alliance.notice) },

@@ -36,7 +36,7 @@ export async function executeAscension(userId: string) {
   setStrategicNumber(context, "reputation", 0);
   setStrategicNumber(context, "attackTurns", 20);
   context.systems.worlds = context.systems.worlds.slice(0, 1);
-  context.systems.mothership = { owned: false, name: "Uncommissioned Mothership", capacity: 0, usedCapacity: 0, weapons: 0, shields: 0, hangars: 0, explorationReadyAt: null, discoveries: 0 };
+  context.systems.mothership = { owned: false, name: "Uncommissioned Mothership", capacity: 0, usedCapacity: 0, weapons: 0, shields: 0, hangars: 0, hull: 0, fuel: 0, maxFuel: 0, explorationReadyAt: null, missionType: null, discoveries: 0, missionsCompleted: 0, missionsFailed: 0, lastMissionAt: 0 };
   context.systems.ascensionHistory = [{ level: nextLevel, ascendedAt: Date.now(), race }, ...context.systems.ascensionHistory].slice(0, 10);
   context.systems = appendSystemEvent(context.systems, "ascension.executed", `Ascended to level ${nextLevel}.`, { race, nextLevel });
   await saveSystemContext(context);

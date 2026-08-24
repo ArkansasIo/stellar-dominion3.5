@@ -45,8 +45,9 @@ async function main() {
   const exploring = await startExploration(ALPHA);
   assert.ok(exploring.mothership.explorationReadyAt, "exploration should schedule completion");
   const claimed = await claimExploration(ALPHA, Number(exploring.mothership.explorationReadyAt) + 1);
-  assert.ok(claimed.discoveredWorld, "exploration should claim a strategic world after readiness");
-  const worldId = claimed.discoveredWorld.id;
+  const discoveredWorld = claimed.discoveredWorld;
+  assert.ok(discoveredWorld, "exploration should claim a strategic world after readiness");
+  const worldId = discoveredWorld.id;
   await upgradeWorldBonus(ALPHA, worldId, "income");
   const fortified = await fortifyWorld(ALPHA, worldId, 4);
   assert.ok(fortified.worlds.find((world) => world.id === worldId)?.defenses === 4, "fortification should persist world defenses");
@@ -78,7 +79,7 @@ async function main() {
 
   console.log(JSON.stringify({
     market: { untrainedAfterExchange: exchanged.units.untrained, mercenaries: mercenaries.units.attackTroops, offerPurchased: alphaOffer?.id },
-    worlds: { mothership: mothership.mothership.name, discoveredWorld: claimed.discoveredWorld.name, defenses: fortified.worlds.find((world) => world.id === worldId)?.defenses },
+    worlds: { mothership: mothership.mothership.name, discoveredWorld: discoveredWorld.name, defenses: fortified.worlds.find((world) => world.id === worldId)?.defenses },
     social: { commander: commander.commander.name, alliance: memberAlliance.alliance.tag, officers: officer.commander.officers.length },
     progression: { rankingEntries: rankings.standings.length, ascensionLevel: ascended.history[0]?.level },
     operations: { vacationMode: protection.protection.vacationMode, events: events.count },
