@@ -58,10 +58,10 @@ export const playerStates = pgTable("player_states", {
   travelLog: jsonb("travel_log").notNull().default([]),
   
   // Resources (stored as JSON for flexibility)
-  resources: jsonb("resources").notNull().default({ metal: 1000, crystal: 500, deuterium: 0, energy: 0 }),
+  resources: jsonb("resources").notNull().default({ metal: 1000, crystal: 500, deuterium: 0, energy: 0, naquadah: 25000, food: 500, water: 500 }),
   
   // Buildings (JSON object with building levels)
-  buildings: jsonb("buildings").notNull().default({ roboticsFactory: 0, shipyard: 0, researchLab: 0 }),
+  buildings: jsonb("buildings").notNull().default({ roboticsFactory: 0, shipyard: 0, researchLab: 0, naquadahExtractor: 0, foodHydroponics: 0, waterRecycler: 0, metalStorage: 0, crystalStorage: 0, deuteriumStorage: 0, energyStorage: 0, naquadahVault: 0, foodStorageFacility: 0, waterStorageFacility: 0 }),
   orbitalBuildings: jsonb("orbital_buildings").notNull().default({}),
   
   // Research (JSON object with tech levels)

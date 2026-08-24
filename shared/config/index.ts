@@ -1125,3 +1125,7 @@ export {
   getCelestialVisualLabel,
 } from './celestialVisuals';
 export type { CelestialVisualObjectType } from './celestialVisuals';
+
+export * from './resourceManagement';
+
+// Resource management rules cover strategic Naquadah, life-support resources, and storage capacity.

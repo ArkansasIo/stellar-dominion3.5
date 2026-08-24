@@ -18,6 +18,7 @@
     "test:boss-sim": "tsx script/test-boss-combat-simulations.ts",
     "test:kardashev": "tsx script/test-kardashev-operational.ts",
     "test:tier18-stress": "tsx script/test-tier18-battle-stress.ts",
+    "test:resource-management": "tsx script/test-resource-management.ts",
     "db:push": "drizzle-kit push",
     "db:generate": "drizzle-kit generate",
     "db:seed:ogame": "tsx script/seed-ogame-catalog.ts",

@@ -8,6 +8,11 @@ import { CelestialService } from './services/celestialService';
 import { db } from './db';
 import { playerStates } from '../shared/schema';
 import { eq } from 'drizzle-orm';
+import {
+  calculateManagedStorageCapacities,
+  calculateResourceEconomy,
+  RESOURCE_SYSTEM_COSTS,
+} from '../shared/config/resourceManagement';
 
 type ResourceCost = { metal: number; crystal: number; deuterium: number };
 type ResourceState = {
@@ -16,8 +21,10 @@ type ResourceState = {
   deuterium: number;
   energy: number;
   credits: number;
+  naquadah: number;
   food: number;
   water: number;
+  [key: string]: number;
 };
 type ConstructionQueueItem = {
   id: string;
@@ -36,6 +43,7 @@ export const BUILDING_COSTS: Record<string, ResourceCost> = {
   solarPlant: { metal: 75, crystal: 30, deuterium: 0 },
   roboticsFactory: { metal: 400, crystal: 120, deuterium: 200 },
   shipyard: { metal: 400, crystal: 200, deuterium: 100 },
+  ...RESOURCE_SYSTEM_COSTS,
 };
 
 export const SHIP_COSTS: Record<string, ResourceCost> = {
@@ -48,16 +56,20 @@ export const SHIP_COSTS: Record<string, ResourceCost> = {
 };
 
 export function calculateProduction(buildings: Record<string, number> = {}, research: Record<string, number> = {}) {
-  const metalMineLevel = buildings.metalMine || 0;
-  const crystalMineLevel = buildings.crystalMine || 0;
-  const deuteriumLevel = buildings.deuteriumSynthesizer || 0;
-  const energyTech = research.energyTech || 0;
+  const economy = calculateResourceEconomy(buildings, research);
 
   return {
-    metal: Math.floor(30 * metalMineLevel * (1 + metalMineLevel / 10)),
-    crystal: Math.floor(20 * crystalMineLevel * (1 + crystalMineLevel / 10)),
-    deuterium: Math.floor(10 * deuteriumLevel * (1 + deuteriumLevel / 12)),
-    energy: Math.floor(20 + energyTech * 5),
+    metal: economy.metal,
+    crystal: economy.crystal,
+    deuterium: economy.deuterium,
+    energy: economy.energy,
+    naquadah: economy.naquadah,
+    food: economy.food,
+    foodProduction: economy.foodProduction,
+    foodConsumption: economy.foodConsumption,
+    water: economy.water,
+    waterProduction: economy.waterProduction,
+    waterConsumption: economy.waterConsumption,
   };
 }
 
@@ -88,6 +100,7 @@ function normalizeResources(raw: any): ResourceState {
     deuterium: Math.max(0, Number(raw?.deuterium || 0)),
     energy: Number(raw?.energy || 0),
     credits: Math.max(0, Number(raw?.credits || 0)),
+    naquadah: Math.max(0, Number(raw?.naquadah || 0)),
     food: Math.max(0, Number(raw?.food || 0)),
     water: Math.max(0, Number(raw?.water || 0)),
   };
@@ -124,6 +137,7 @@ async function getPlayerStateForUser(userId: string) {
         deuterium: 0,
         energy: 0,
         credits: 1000,
+        naquadah: 25_000,
         food: 500,
         water: 500,
       },
@@ -170,14 +184,23 @@ export async function processResourceTick(userId: string) {
     metal: Math.floor(productionPerHour.metal * elapsedHours),
     crystal: Math.floor(productionPerHour.crystal * elapsedHours),
     deuterium: Math.floor(productionPerHour.deuterium * elapsedHours),
+    naquadah: Math.floor(productionPerHour.naquadah * elapsedHours),
+    food: Math.floor(productionPerHour.food * elapsedHours),
+    water: Math.floor(productionPerHour.water * elapsedHours),
     energy: productionPerHour.energy,
   };
+  const storageCapacity = calculateManagedStorageCapacities(buildings);
+  const clampStored = (resourceId: keyof typeof storageCapacity, amount: number) =>
+    Math.max(0, Math.min(storageCapacity[resourceId], amount));
 
   const nextResources: ResourceState = {
     ...resources,
-    metal: resources.metal + produced.metal,
-    crystal: resources.crystal + produced.crystal,
-    deuterium: resources.deuterium + produced.deuterium,
+    metal: clampStored('metal', resources.metal + produced.metal),
+    crystal: clampStored('crystal', resources.crystal + produced.crystal),
+    deuterium: clampStored('deuterium', resources.deuterium + produced.deuterium),
+    naquadah: clampStored('naquadah', resources.naquadah + produced.naquadah),
+    food: clampStored('food', resources.food + produced.food),
+    water: clampStored('water', resources.water + produced.water),
     energy: produced.energy,
   };
 

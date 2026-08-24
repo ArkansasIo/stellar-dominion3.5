@@ -57,6 +57,11 @@ export interface Resources {
   crystal: number;
   deuterium: number;
   energy: number;
+  naquadah: number;
+  food: number;
+  water: number;
+  credits?: number;
+  darkmatter?: number;
 }
 
 export interface Buildings {

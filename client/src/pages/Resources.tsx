@@ -4,11 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Box, Gem, Database, Zap, ArrowUpCircle, Hammer, Clock, TrendingUp, Warehouse, Factory, BarChart3 } from "lucide-react";
+import { Box, Gem, Database, Zap, ArrowUpCircle, Hammer, Clock, TrendingUp, Warehouse, Factory, BarChart3, Hexagon, Wheat, Droplets, RefreshCw, Settings2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { GENERATED_GAME_ART, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
-import { calculateResourceProduction, calculateStorageCapacity } from "@/lib/resourceMath";
+import { calculateResourceProduction, calculateManagedCapacities } from "@/lib/resourceMath";
+import {
+  calculateUpgradeCost,
+  isResourceCostAffordable,
+  type ManagedResourceId,
+} from "@shared/config/resourceManagement";
 import { getRefineryStage, getRefineryUpgradeSnapshot, type RefinerySystemDefinition } from "@/lib/refinerySystemsCatalog";
 
 const TEMP_THEME_IMAGE = "/theme-temp.png";
@@ -34,11 +39,12 @@ const BuildingCard = ({
   iconColor
 }: any) => {
   const imagePath = RESOURCE_IMAGE_MAP[id];
-  const metalCost = Math.floor(100 * Math.pow(1.5, level));
-  const crystalCost = Math.floor(50 * Math.pow(1.5, level));
+  const upgradeCost = calculateUpgradeCost(id, level);
+  const metalCost = upgradeCost.metal;
+  const crystalCost = upgradeCost.crystal;
   const buildTime = (level + 1) * 10;
 
-  const canAfford = resources.metal >= metalCost && resources.crystal >= crystalCost;
+  const canAfford = isResourceCostAffordable(resources, upgradeCost);
 
   return (
     <Card className="bg-white border-slate-200 hover:border-primary/50 transition-all group overflow-hidden shadow-sm" data-testid={`card-building-${id}`}>
@@ -125,6 +131,12 @@ const BuildingCard = ({
                <span className="flex items-center gap-2 text-blue-600"><Gem className="w-3 h-3" /> Crystal</span>
                <span className={cn("font-mono", resources.crystal < crystalCost ? "text-red-600 font-bold" : "text-slate-900")}>{crystalCost.toLocaleString()}</span>
             </div>
+            {upgradeCost.deuterium > 0 && (
+              <div className="flex items-center justify-between text-sm">
+                <span className="flex items-center gap-2 text-green-600"><Database className="w-3 h-3" /> Deuterium</span>
+                <span className={cn("font-mono", resources.deuterium < upgradeCost.deuterium ? "text-red-600 font-bold" : "text-slate-900")}>{upgradeCost.deuterium.toLocaleString()}</span>
+              </div>
+            )}
             <div className="flex items-center justify-between text-sm">
                <span className="flex items-center gap-2 text-slate-500"><Clock className="w-3 h-3" /> Build Time</span>
                <span className="text-slate-900 font-mono">{buildTime}s</span>
@@ -152,6 +164,107 @@ const BuildingCard = ({
   );
 };
 
+type ManagedResourceCardProps = {
+  id: ManagedResourceId;
+  name: string;
+  value: number;
+  production: number;
+  consumption?: number;
+  capacity: number;
+  icon: any;
+  shell: string;
+  label: string;
+};
+
+function ManagedResourceCard({
+  id,
+  name,
+  value,
+  production,
+  consumption = 0,
+  capacity,
+  icon: Icon,
+  shell,
+  label,
+}: ManagedResourceCardProps) {
+  const net = production - consumption;
+  return (
+    <Card className={cn("border shadow-sm", shell)} data-testid={`card-stats-${id}`}>
+      <CardContent className="p-4">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-10 h-10 rounded-full bg-white/70 flex items-center justify-center">
+            <Icon className={cn("w-5 h-5", label)} />
+          </div>
+          <div>
+            <div className={cn("text-xs uppercase", label)}>{name}</div>
+            <div className="text-xl font-orbitron font-bold text-slate-900">{Math.floor(value).toLocaleString()}</div>
+          </div>
+        </div>
+        <div className="space-y-2 text-xs">
+          <div className="flex justify-between">
+            <span className="text-slate-500">Production</span>
+            <span className="font-mono text-green-600">+{production.toLocaleString()}/h</span>
+          </div>
+          {consumption > 0 && (
+            <div className="flex justify-between">
+              <span className="text-slate-500">Consumption</span>
+              <span className="font-mono text-red-600">-{consumption.toLocaleString()}/h</span>
+            </div>
+          )}
+          <div className="flex justify-between">
+            <span className="text-slate-500">Net flow</span>
+            <span className={cn("font-mono font-semibold", net >= 0 ? "text-green-600" : "text-red-600")}>
+              {net >= 0 ? "+" : ""}{net.toLocaleString()}/h
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-slate-500">Storage</span>
+            <span className="font-mono text-slate-700">{Math.floor(capacity).toLocaleString()}</span>
+          </div>
+          <Progress value={toPercent(value, capacity)} className="h-1 bg-white/70" />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+const RESOURCE_SYSTEM_OPTIONS = [
+  {
+    id: "naquadahExtractor",
+    resourceId: "naquadah" as ManagedResourceId,
+    name: "Naquadah Extractor",
+    description: "Recover strategic crystal from deep planetary veins for Stargate operations and advanced systems.",
+    icon: Hexagon,
+    accent: "text-cyan-700",
+  },
+  {
+    id: "foodHydroponics",
+    resourceId: "food" as ManagedResourceId,
+    name: "Hydroponics Complex",
+    description: "Grow resilient food cultures for population stability and long-range colony autonomy.",
+    icon: Wheat,
+    accent: "text-amber-700",
+  },
+  {
+    id: "waterRecycler",
+    resourceId: "water" as ManagedResourceId,
+    name: "Water Recycling Grid",
+    description: "Reclaim industrial and domestic water to stabilize life-support reserves across the planet.",
+    icon: Droplets,
+    accent: "text-cyan-700",
+  },
+] as const;
+
+const STORAGE_OPTIONS = [
+  { id: "metalStorage", resourceId: "metal" as ManagedResourceId, name: "Metal Silos", icon: Box, accent: "text-slate-700" },
+  { id: "crystalStorage", resourceId: "crystal" as ManagedResourceId, name: "Crystal Vaults", icon: Gem, accent: "text-blue-700" },
+  { id: "deuteriumStorage", resourceId: "deuterium" as ManagedResourceId, name: "Deuterium Tanks", icon: Database, accent: "text-green-700" },
+  { id: "energyStorage", resourceId: "energy" as ManagedResourceId, name: "Energy Banks", icon: Zap, accent: "text-yellow-700" },
+  { id: "naquadahVault", resourceId: "naquadah" as ManagedResourceId, name: "Naquadah Vault", icon: Hexagon, accent: "text-cyan-700" },
+  { id: "foodStorageFacility", resourceId: "food" as ManagedResourceId, name: "Cold Food Stores", icon: Wheat, accent: "text-amber-700" },
+  { id: "waterStorageFacility", resourceId: "water" as ManagedResourceId, name: "Water Reservoirs", icon: Droplets, accent: "text-cyan-700" },
+] as const;
+
 function toPercent(value: number, total: number): number {
   if (!Number.isFinite(value) || !Number.isFinite(total) || total <= 0) {
     return 0;
@@ -161,7 +274,16 @@ function toPercent(value: number, total: number): number {
 }
 
 export default function Resources() {
-  const { buildings, resources, updateBuilding, queue, refinerySystems, upgradeRefinerySystem } = useGame();
+  const {
+    buildings,
+    resources,
+    updateBuilding,
+    queue,
+    refinerySystems,
+    upgradeRefinerySystem,
+    collectResources,
+    processQueue,
+  } = useGame();
 
   const buildQueue = queue.filter(q => q.type === "building");
 
@@ -169,14 +291,15 @@ export default function Resources() {
   const metalProduction = production.metal;
   const crystalProduction = production.crystal;
   const deuteriumProduction = production.deuterium;
+  const naquadahProduction = production.naquadah;
+  const foodProduction = production.foodProduction;
+  const foodConsumption = production.foodConsumption;
+  const waterProduction = production.waterProduction;
+  const waterConsumption = production.waterConsumption;
   const energyProduction = Math.max(0, production.energy);
   const energyConsumption = Math.max(0, -production.energy);
 
-  const storageCapacity = {
-    metal: calculateStorageCapacity(10000, buildings.metalMine),
-    crystal: calculateStorageCapacity(10000, buildings.crystalMine),
-    deuterium: calculateStorageCapacity(10000, buildings.deuteriumSynthesizer)
-  };
+  const storageCapacity = calculateManagedCapacities(buildings);
 
   const refineryCatalog: RefinerySystemDefinition[] = [
     {
@@ -273,6 +396,16 @@ export default function Resources() {
     stabilizedOutput: refinerySystemsState.reduce((total, system) => total + system.snapshot.stabilization, 0),
   };
 
+  const resourceProductionById: Record<ManagedResourceId, number> = {
+    metal: metalProduction,
+    crystal: crystalProduction,
+    deuterium: deuteriumProduction,
+    energy: energyProduction,
+    naquadah: naquadahProduction,
+    food: foodProduction,
+    water: waterProduction,
+  };
+
   return (
     <GameLayout>
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -284,12 +417,37 @@ export default function Resources() {
             </div>
             <p className="text-sm leading-6 text-slate-300">Manage your resource production infrastructure and storage facilities.</p>
             <div className="flex flex-wrap gap-3">
-              {[{ label: "Metal", image: MENU_ASSETS.RESOURCES.METAL.path }, { label: "Crystal", image: MENU_ASSETS.RESOURCES.CRYSTAL.path }, { label: "Power Plant", image: MENU_ASSETS.BUILDINGS.POWER_PLANT.path }].map((item) => (
+              {[
+                { label: "Metal", image: MENU_ASSETS.RESOURCES.METAL.path },
+                { label: "Crystal", image: MENU_ASSETS.RESOURCES.CRYSTAL.path },
+                { label: "Naquadah", image: MENU_ASSETS.RESOURCES.METAL.path },
+                { label: "Food", image: MENU_ASSETS.RESOURCES.METAL.path },
+                { label: "Water", image: MENU_ASSETS.RESOURCES.DEUTERIUM.path },
+                { label: "Power Plant", image: MENU_ASSETS.BUILDINGS.POWER_PLANT.path },
+              ].map((item) => (
                 <div key={item.label} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
                   <img src={item.image} alt={item.label} className="w-10 h-10 rounded-lg border border-white/10 bg-black/10 p-1.5 object-contain" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = TEMP_THEME_IMAGE; }} />
                   <div className="text-sm font-semibold">{item.label}</div>
                 </div>
               ))}
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Button
+                variant="outline"
+                className="border-cyan-300/40 bg-cyan-400/10 text-cyan-100 hover:bg-cyan-400/20 hover:text-white"
+                onClick={collectResources}
+                data-testid="button-sync-resources"
+              >
+                <RefreshCw className="mr-2 h-4 w-4" /> SYNC PRODUCTION
+              </Button>
+              <Button
+                variant="outline"
+                className="border-white/20 bg-white/10 text-white hover:bg-white/20"
+                onClick={() => processQueue()}
+                data-testid="button-process-resource-queue"
+              >
+                <Hammer className="mr-2 h-4 w-4" /> PROCESS QUEUE
+              </Button>
             </div>
           </div>
         </section>
@@ -401,6 +559,41 @@ export default function Resources() {
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4" data-testid="grid-life-support-resources">
+          <ManagedResourceCard
+            id="naquadah"
+            name="Naquadah"
+            value={resources.naquadah}
+            production={naquadahProduction}
+            capacity={storageCapacity.naquadah}
+            icon={Hexagon}
+            shell="bg-gradient-to-br from-cyan-50 to-sky-100 border-cyan-200"
+            label="text-cyan-700"
+          />
+          <ManagedResourceCard
+            id="food"
+            name="Food"
+            value={resources.food}
+            production={foodProduction}
+            consumption={foodConsumption}
+            capacity={storageCapacity.food}
+            icon={Wheat}
+            shell="bg-gradient-to-br from-amber-50 to-yellow-100 border-amber-200"
+            label="text-amber-700"
+          />
+          <ManagedResourceCard
+            id="water"
+            name="Water"
+            value={resources.water}
+            production={waterProduction}
+            consumption={waterConsumption}
+            capacity={storageCapacity.water}
+            icon={Droplets}
+            shell="bg-gradient-to-br from-sky-50 to-blue-100 border-sky-200"
+            label="text-sky-700"
+          />
         </div>
 
         <Card className="bg-white border-slate-200 shadow-sm" data-testid="card-projections">
@@ -524,6 +717,132 @@ export default function Resources() {
               nextLevelBonus={Math.floor(20 * (buildings.solarPlant + 1)) - energyProduction}
            />
         </div>
+
+        <Card className="bg-white border-slate-200 shadow-sm" data-testid="card-resource-systems">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+              <Settings2 className="w-4 h-4 text-primary" /> Strategic & Life-Support Systems
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Expand Naquadah recovery and life-support throughput. Each order is server-authoritative and enters the construction queue.
+            </p>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              {RESOURCE_SYSTEM_OPTIONS.map((system) => {
+                const level = buildings[system.id] || 0;
+                const cost = calculateUpgradeCost(system.id, level);
+                const canAfford = isResourceCostAffordable(resources, cost);
+                const nextEconomy = calculateResourceProduction({ ...buildings, [system.id]: level + 1 });
+                const currentOutput = system.resourceId === "food" ? foodProduction : system.resourceId === "water" ? waterProduction : naquadahProduction;
+                const nextOutput = system.resourceId === "food"
+                  ? nextEconomy.foodProduction
+                  : system.resourceId === "water"
+                    ? nextEconomy.waterProduction
+                    : nextEconomy.naquadah;
+                return (
+                  <Card key={system.id} className="border-slate-200 bg-slate-50/70" data-testid={`card-system-${system.id}`}>
+                    <CardHeader className="pb-2">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center">
+                            <system.icon className={cn("w-5 h-5", system.accent)} />
+                          </div>
+                          <div>
+                            <CardTitle className="text-base font-orbitron text-slate-900">{system.name}</CardTitle>
+                            <div className="text-xs text-muted-foreground">Level {level} • {system.resourceId.toUpperCase()} output</div>
+                          </div>
+                        </div>
+                        <Badge variant="outline" className="bg-white">L{level}</Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <p className="text-sm text-muted-foreground">{system.description}</p>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div className="rounded border border-slate-200 bg-white p-2">
+                          <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Current</div>
+                          <div className="font-mono font-semibold text-slate-900">+{currentOutput.toFixed(1)}/h</div>
+                        </div>
+                        <div className="rounded border border-green-200 bg-green-50 p-2">
+                          <div className="text-[10px] uppercase tracking-widest text-green-700">Next level</div>
+                          <div className="font-mono font-semibold text-green-800">+{nextOutput.toFixed(1)}/h</div>
+                        </div>
+                      </div>
+                      <div className="rounded border border-slate-200 bg-white p-3 text-xs space-y-1">
+                        <div className="uppercase tracking-widest text-muted-foreground mb-2">Upgrade cost</div>
+                        <div className="flex justify-between"><span>Metal</span><span className={resources.metal < cost.metal ? "font-bold text-red-600" : "font-mono"}>{cost.metal.toLocaleString()}</span></div>
+                        <div className="flex justify-between"><span>Crystal</span><span className={resources.crystal < cost.crystal ? "font-bold text-red-600" : "font-mono"}>{cost.crystal.toLocaleString()}</span></div>
+                        <div className="flex justify-between"><span>Deuterium</span><span className={resources.deuterium < cost.deuterium ? "font-bold text-red-600" : "font-mono"}>{cost.deuterium.toLocaleString()}</span></div>
+                      </div>
+                      <Button
+                        className="w-full font-orbitron tracking-wider"
+                        disabled={!canAfford}
+                        onClick={() => updateBuilding(system.id, system.name, 15000)}
+                        data-testid={`button-upgrade-${system.id}`}
+                      >
+                        {canAfford ? `UPGRADE TO LEVEL ${level + 1}` : "INSUFFICIENT RESOURCES"}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white border-slate-200 shadow-sm" data-testid="card-storage-upgrades">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+              <Warehouse className="w-4 h-4 text-primary" /> Storage & Reserve Capacity
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Raise the hard cap for every stockpile. Storage levels protect production from overflow and give Food, Water, and Naquadah room to scale.
+            </p>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+              {STORAGE_OPTIONS.map((storage) => {
+                const level = buildings[storage.id] || 0;
+                const cost = calculateUpgradeCost(storage.id, level);
+                const canAfford = isResourceCostAffordable(resources, cost);
+                const nextCapacity = calculateManagedCapacities({ ...buildings, [storage.id]: level + 1 })[storage.resourceId];
+                const currentCapacity = storageCapacity[storage.resourceId];
+                return (
+                  <Card key={storage.id} className="border-slate-200 bg-slate-50/70" data-testid={`card-storage-${storage.id}`}>
+                    <CardHeader className="pb-2">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <storage.icon className={cn("w-5 h-5", storage.accent)} />
+                          <CardTitle className="text-sm font-orbitron text-slate-900">{storage.name}</CardTitle>
+                        </div>
+                        <Badge variant="outline">L{level}</Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="text-xs text-muted-foreground">{storage.resourceId.toUpperCase()} capacity</div>
+                      <div className="flex items-end justify-between">
+                        <span className="text-xl font-mono font-bold text-slate-900">{currentCapacity.toLocaleString()}</span>
+                        <span className="text-xs text-green-700">→ {nextCapacity.toLocaleString()}</span>
+                      </div>
+                      <Progress value={toPercent(resources[storage.resourceId], currentCapacity)} className="h-1" />
+                      <div className="text-xs text-muted-foreground">Upgrade: {cost.metal.toLocaleString()} M / {cost.crystal.toLocaleString()} C / {cost.deuterium.toLocaleString()} D</div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="w-full bg-white"
+                        disabled={!canAfford}
+                        onClick={() => updateBuilding(storage.id, storage.name, 12000)}
+                        data-testid={`button-upgrade-${storage.id}`}
+                      >
+                        {canAfford ? `EXPAND STORAGE TO LEVEL ${level + 1}` : "INSUFFICIENT RESOURCES"}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
 
         <Card className="bg-white border-slate-200 shadow-sm" data-testid="card-refinery-systems">
           <CardHeader className="pb-3">

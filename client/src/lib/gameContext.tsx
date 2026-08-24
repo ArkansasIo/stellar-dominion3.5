@@ -24,6 +24,7 @@ import { Megastructure, createMegastructure } from '@shared/config/megastructure
 import { blink } from './blink';
 import { calculateResourceProduction } from './resourceMath';
 import { ORBITAL_BUILDINGS } from './stationData';
+import { calculateManagedStorageCapacities } from '@shared/config/resourceManagement';
 
 async function apiRequest(method: string, url: string, data?: any) {
   const headers: Record<string, string> = data ? { 'Content-Type': 'application/json' } : {};
@@ -55,6 +56,7 @@ interface Resources {
   deuterium: number;
   energy: number;
   credits: number;
+  naquadah: number;
   food: number;
   water: number;
   darkmatter: number; // Paid resource
@@ -66,6 +68,7 @@ const DEFAULT_RESOURCES: Resources = {
   deuterium: 20000,
   energy: 5000,
   credits: 10000,
+  naquadah: 25000,
   food: 5000,
   water: 5000,
   darkmatter: 0,
@@ -104,6 +107,7 @@ function normalizeResources(raw: any, fallback: Resources = DEFAULT_RESOURCES): 
     deuterium: normalizeResourceValue(raw?.deuterium, fallback.deuterium),
     energy: normalizeResourceValue(raw?.energy, fallback.energy, true),
     credits: normalizeResourceValue(raw?.credits, fallback.credits),
+    naquadah: normalizeResourceValue(raw?.naquadah, fallback.naquadah),
     food: normalizeResourceValue(raw?.food, fallback.food),
     water: normalizeResourceValue(raw?.water, fallback.water),
     darkmatter: normalizeResourceValue(raw?.darkmatter, fallback.darkmatter),
@@ -140,6 +144,16 @@ interface Buildings {
   roboticsFactory: number;
   shipyard: number;
   researchLab: number;
+  naquadahExtractor: number;
+  foodHydroponics: number;
+  waterRecycler: number;
+  metalStorage: number;
+  crystalStorage: number;
+  deuteriumStorage: number;
+  energyStorage: number;
+  naquadahVault: number;
+  foodStorageFacility: number;
+  waterStorageFacility: number;
 }
 
 interface OrbitalBuildings {
@@ -346,6 +360,7 @@ interface GameState {
   processMissions: () => void;
   completeResearch: () => void;
   processQueue: () => void;
+  collectResources: () => Promise<void>;
 }
 
 const GameContext = createContext<GameState | undefined>(undefined);
@@ -363,6 +378,16 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     roboticsFactory: 2,
     shipyard: 2,
     researchLab: 1,
+    naquadahExtractor: 0,
+    foodHydroponics: 0,
+    waterRecycler: 0,
+    metalStorage: 0,
+    crystalStorage: 0,
+    deuteriumStorage: 0,
+    energyStorage: 0,
+    naquadahVault: 0,
+    foodStorageFacility: 0,
+    waterStorageFacility: 0,
   });
 
   const [orbitalBuildings, setOrbitalBuildings] = useState<OrbitalBuildings>({
@@ -890,6 +915,16 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       roboticsFactory: (state as any).buildings?.roboticsFactory || 0,
       shipyard: (state as any).buildings?.shipyard || 0,
       researchLab: (state as any).buildings?.researchLab || 0,
+      naquadahExtractor: (state as any).buildings?.naquadahExtractor || 0,
+      foodHydroponics: (state as any).buildings?.foodHydroponics || 0,
+      waterRecycler: (state as any).buildings?.waterRecycler || 0,
+      metalStorage: (state as any).buildings?.metalStorage || 0,
+      crystalStorage: (state as any).buildings?.crystalStorage || 0,
+      deuteriumStorage: (state as any).buildings?.deuteriumStorage || 0,
+      energyStorage: (state as any).buildings?.energyStorage || 0,
+      naquadahVault: (state as any).buildings?.naquadahVault || 0,
+      foodStorageFacility: (state as any).buildings?.foodStorageFacility || 0,
+      waterStorageFacility: (state as any).buildings?.waterStorageFacility || 0,
     };
     const normalizedOrbitalBuildings = (state as any).orbitalBuildings || {};
     const normalizedRefinerySystems = (state as any).refinerySystems || {};
@@ -1124,7 +1159,10 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       metal: production.metal / 3600,
       crystal: production.crystal / 3600,
       deuterium: production.deuterium / 3600,
-      energy: production.energy
+      naquadah: production.naquadah / 3600,
+      food: production.food / 3600,
+      water: production.water / 3600,
+      energy: production.energy,
     };
   };
 
@@ -1138,12 +1176,16 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       tickCount++;
 
       // 1. Resource Production (Visual interpolation only)
+      const storageCapacities = calculateManagedStorageCapacities(buildings);
       setResources(prev => ({
         ...prev,
-        metal: prev.metal + (production.metal * speedMult),
-        crystal: prev.crystal + (production.crystal * speedMult),
-        deuterium: prev.deuterium + (production.deuterium * speedMult),
-        energy: production.energy
+        metal: Math.min(storageCapacities.metal, prev.metal + (production.metal * speedMult)),
+        crystal: Math.min(storageCapacities.crystal, prev.crystal + (production.crystal * speedMult)),
+        deuterium: Math.min(storageCapacities.deuterium, prev.deuterium + (production.deuterium * speedMult)),
+        naquadah: Math.min(storageCapacities.naquadah, prev.naquadah + (production.naquadah * speedMult)),
+        food: Math.max(0, Math.min(storageCapacities.food, prev.food + (production.food * speedMult))),
+        water: Math.max(0, Math.min(storageCapacities.water, prev.water + (production.water * speedMult))),
+        energy: production.energy,
       }));
 
       // 2. Refresh state every 30 seconds as fallback
@@ -1245,26 +1287,22 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       const surfaceBuilding = building as keyof Buildings;
       // Call backend API to build
       const response = await apiRequest("POST", "/api/game/build", {
-        building: surfaceBuilding,
-        level: (buildings[surfaceBuilding] || 0) + 1
+        buildingType: surfaceBuilding,
       });
       
-      if (response.success) {
-        // Update local state based on response
+      if (response.started) {
         setResources(normalizeResources(response.resources, resources));
-        setBuildings(response.buildings || buildings);
-        
-        const adjustedTime = (time * Math.pow(1.15, buildings[surfaceBuilding] || 0)) / (config?.gameSpeed || 1);
+        const queueItem = response.queueItem || {};
+        const adjustedTime = (Number(response.buildTimeSeconds || time / 1000) * 1000) / (config?.gameSpeed || 1);
         const now = Date.now();
         setQueue(prev => [...prev, {
-          id: building,
+          id: queueItem.id || `${building}-${now}`,
           name: name,
-          startTime: now,
-          endTime: now + adjustedTime,
+          startTime: Number(queueItem.startedAt || now),
+          endTime: Number(queueItem.completeAt || (now + adjustedTime)),
           type: "building",
-          itemId: building
+          itemId: building,
         }]);
-        
         addEvent("Build Started", `Construction of ${name} started`, "success");
       } else {
         setCurrentTurns(prev => prev + turnCost);
@@ -1979,7 +2017,15 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
        switchRealm,
        processMissions,
        completeResearch: completeResearchMutation.mutate,
-       processQueue: processQueueMutation.mutate
+       processQueue: processQueueMutation.mutate,
+       collectResources: async () => {
+         try {
+           await collectResourcesMutation.mutateAsync();
+           toast({ title: "Resources synchronized", description: "Production and storage totals are up to date." });
+         } catch (error: any) {
+           toast({ title: "Resource sync failed", description: error?.message || "Unable to collect resources right now.", variant: "destructive" });
+         }
+       }
     }}>
       {children}
     </GameContext.Provider>

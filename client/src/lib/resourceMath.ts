@@ -1,3 +1,10 @@
+import {
+  calculateManagedStorageCapacities,
+  calculateResourceEconomy,
+  calculateManagedStorageCapacity,
+  type ManagedResourceId,
+} from "@shared/config/resourceManagement";
+
 type BuildingLevels = {
   metalMine?: number;
   crystalMine?: number;
@@ -32,30 +39,19 @@ export function calculateResourceEnergyUse(level: unknown, baseCost: number): nu
   return Math.floor(baseCost * normalizeLevel(level));
 }
 
-export function calculateResourceProduction(buildings: BuildingLevels, bonusMultiplier: number = 1) {
-  const metalMineLevel = normalizeLevel(buildings.metalMine);
-  const crystalMineLevel = normalizeLevel(buildings.crystalMine);
-  const deuteriumLevel = normalizeLevel(buildings.deuteriumSynthesizer);
-  const solarPlantLevel = normalizeLevel(buildings.solarPlant);
-
-  const metal = calculateMineProductionPerHour(metalMineLevel, 30, 10, bonusMultiplier);
-  const crystal = calculateMineProductionPerHour(crystalMineLevel, 20, 10, bonusMultiplier);
-  const deuterium = calculateMineProductionPerHour(deuteriumLevel, 10, 12, bonusMultiplier);
-  const energyProduction = calculateSolarEnergyPerHour(solarPlantLevel);
-  const energyConsumption =
-    calculateResourceEnergyUse(metalMineLevel, 10) +
-    calculateResourceEnergyUse(crystalMineLevel, 10) +
-    calculateResourceEnergyUse(deuteriumLevel, 20);
-
-  return {
-    metal,
-    crystal,
-    deuterium,
-    energy: energyProduction - energyConsumption,
-  };
+export function calculateResourceProduction(buildings: BuildingLevels | object, bonusMultiplier: number = 1) {
+  return calculateResourceEconomy(buildings as Record<string, unknown>, {}, bonusMultiplier);
 }
 
 export function calculateStorageCapacity(baseCapacity: number, level: unknown): number {
   const safeLevel = Math.min(normalizeLevel(level), 50);
   return Math.floor(baseCapacity * Math.pow(1.5, safeLevel));
+}
+
+export function calculateManagedCapacities(buildings: BuildingLevels | object): Record<ManagedResourceId, number> {
+  return calculateManagedStorageCapacities(buildings as Record<string, unknown>);
+}
+
+export function calculateManagedCapacity(resourceId: ManagedResourceId, buildings: BuildingLevels | object): number {
+  return calculateManagedStorageCapacity(resourceId, buildings as Record<string, unknown>);
 }
