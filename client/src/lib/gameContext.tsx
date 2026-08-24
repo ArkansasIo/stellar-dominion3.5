@@ -1716,21 +1716,27 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   };
 
   const spendTurns = async (amount: number): Promise<boolean> => {
-    if (currentTurns < amount) {
-      addEvent("Insufficient Turns", `Need ${amount} turn(s), have ${currentTurns}`, "warning");
-      return false;
-    }
-
     try {
+      // The server is authoritative. The local counter is visual and can be stale
+      // while the initial game-state and turn queries resolve or after another tab
+      // has spent a turn.
       const response = await apiRequest("POST", "/api/turns/spend", { amount });
       if (response.success) {
-        setCurrentTurns(response.currentTurns);
+        setCurrentTurns(Number(response.currentTurns ?? response.turnsAvailable ?? 0));
+        if (response.totalTurns !== undefined) setTotalTurns(Number(response.totalTurns));
         addEvent("Turns Spent", `Used ${amount} turn(s) for action`, "info");
         return true;
       }
+
+      const message = response.error || `Unable to spend ${amount} turn(s).`;
+      addEvent("Action Blocked", message, "warning");
+      toast({ title: "Action blocked", description: message, variant: "destructive" });
       return false;
-    } catch (error) {
+    } catch (error: any) {
+      const message = error?.message || "Unable to contact the turn service.";
       console.error("Failed to spend turns:", error);
+      addEvent("Action Failed", message, "danger");
+      toast({ title: "Action failed", description: message, variant: "destructive" });
       return false;
     }
   };

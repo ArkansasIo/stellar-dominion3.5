@@ -32,5 +32,8 @@ assert.match(page, /onClick=\{\(\) => updateBuilding\(storage\.id, storage\.name
 assert.match(context, /collectResources: async \(\) =>/, "GameProvider must expose collectResources");
 assert.match(context, /apiRequest\('POST', '\/api\/game\/collect-resources'\)/, "collectResources must use the authoritative collect endpoint");
 assert.match(context, /buildingType: surfaceBuilding/, "Construction must send the server’s buildingType payload");
+assert.match(context, /apiRequest\("POST", "\/api\/turns\/spend", \{ amount \}\)/, "Actions must request turn spending from the server");
+assert.doesNotMatch(context, /if \(currentTurns < amount\)/, "Actions must not be blocked by a stale local turn counter");
+assert.match(context, /response\.currentTurns \?\? response\.turnsAvailable/, "Turn balance must be updated from the server response");
 
-console.log("Resource Management button contract: PASS (12 control families checked)");
+console.log("Resource Management button contract: PASS (15 control families checked)");
