@@ -32,7 +32,19 @@ export function serveStatic(app: Express) {
 
   app.use(express.static(distPath));
 
-  // fall through to index.html if the file doesn't exist
+  // Never return the SPA HTML document for a missing static asset. Doing so gives
+  // browsers an HTML MIME type for a JavaScript module and surfaces as
+  // "Importing a module script failed" instead of an actionable 404.
+  app.use("*", (req, res, next) => {
+    const pathname = req.originalUrl.split("?", 1)[0];
+    if (/\.[^/]+$/.test(pathname)) {
+      res.status(404).type("text/plain").send("Static asset not found");
+      return;
+    }
+    next();
+  });
+
+  // Fall through to index.html for client-side application routes only.
   app.use("*", (_req, res) => {
     res.sendFile(path.resolve(distPath!, "index.html"));
   });
