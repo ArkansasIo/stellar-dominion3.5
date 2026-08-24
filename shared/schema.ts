@@ -543,6 +543,7 @@ export const battles = pgTable("battles", {
   
   loot: jsonb("loot"), // { metal, crystal, deuterium }
   debris: jsonb("debris"), // { metal, crystal }
+  combatTelemetry: jsonb("combat_telemetry"), // strategic defense, interception, and shield telemetry
   
   rounds: integer("rounds").default(0),
   

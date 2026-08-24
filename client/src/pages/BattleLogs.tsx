@@ -34,6 +34,14 @@ interface FleetComposition {
   totalPower: number;
 }
 
+interface StrategicDefenseTelemetry {
+  interception?: { triggered: boolean; chance: number; incomingPower: number; interceptedPower: number; attackerLosses: Record<string, number> };
+  orbitalNetwork?: { activeMoons: number; level: number; defensePower: number; antiShipPower: number; interceptChance: number; networkFireUnits: number; fireLosses?: Record<string, number> };
+  planetaryShield?: { activeMoons: number; level: number; strength: number; absorbedDamage: number; currentBefore: number; currentAfter: number; capacity: number; coverage: number; status: string };
+  defenderShieldMultiplier?: number;
+  attackerPowerAfterDefense?: number;
+}
+
 interface BattleLogEntry {
   id: string;
   timestamp: string;
@@ -52,6 +60,7 @@ interface BattleLogEntry {
   lootPercent?: number;
   combatScore?: number;
   xpGained?: number;
+  strategicDefense?: StrategicDefenseTelemetry | null;
 }
 
 interface CombatStats {
@@ -423,6 +432,10 @@ function BattleCard({ battle, isExpanded, onToggle }: { battle: BattleLogEntry; 
   const attackerPower = battle.attackerFleet?.totalPower || 0;
   const defenderPower = battle.defenderFleet?.totalPower || 0;
   const powerRatio = defenderPower > 0 ? (attackerPower / defenderPower).toFixed(2) : "N/A";
+  const defense = battle.strategicDefense;
+  const shield = defense?.planetaryShield;
+  const network = defense?.orbitalNetwork;
+  const interception = defense?.interception;
 
   return (
     <Card className={cn("border cursor-pointer transition-all hover:shadow-md", getWinnerColor(battle.result))}>
@@ -547,6 +560,44 @@ function BattleCard({ battle, isExpanded, onToggle }: { battle: BattleLogEntry; 
                       </div>
                     );
                   })}
+                </div>
+              </div>
+            )}
+
+            {defense && (shield || network || interception) && (
+              <div className="rounded-lg border border-cyan-200 bg-cyan-50/70 p-4">
+                <h4 className="text-sm font-bold text-cyan-900 mb-3 flex items-center gap-2">
+                  <Shield className="w-4 h-4" /> Strategic Defense Engagement
+                </h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                  {interception && (
+                    <div className="rounded border border-cyan-200 bg-white/70 p-2">
+                      <div className="text-cyan-700 font-semibold">Interception</div>
+                      <div className="font-mono text-slate-900">{interception.triggered ? "Triggered" : "Not triggered"}</div>
+                      <div className="text-slate-500">{Math.round(interception.chance * 100)}% chance · {interception.interceptedPower.toLocaleString()} power</div>
+                    </div>
+                  )}
+                  {network && (
+                    <div className="rounded border border-indigo-200 bg-white/70 p-2">
+                      <div className="text-indigo-700 font-semibold">Orbital Network</div>
+                      <div className="font-mono text-slate-900">Level {network.level} · {network.defensePower.toLocaleString()} defense</div>
+                      <div className="text-slate-500">{network.networkFireUnits} fire units · {Object.values(network.fireLosses || {}).reduce((sum, value) => sum + value, 0)} fleet losses</div>
+                    </div>
+                  )}
+                  {shield && (
+                    <div className="rounded border border-blue-200 bg-white/70 p-2">
+                      <div className="text-blue-700 font-semibold">Planetary Shield</div>
+                      <div className="font-mono text-slate-900">Level {shield.level} · {shield.status}</div>
+                      <div className="text-slate-500">Absorbed {shield.absorbedDamage.toLocaleString()} · {shield.currentAfter.toLocaleString()}/{shield.capacity.toLocaleString()}</div>
+                    </div>
+                  )}
+                  {defense.defenderShieldMultiplier !== undefined && (
+                    <div className="rounded border border-sky-200 bg-white/70 p-2">
+                      <div className="text-sky-700 font-semibold">Defense multiplier</div>
+                      <div className="font-mono text-slate-900">{defense.defenderShieldMultiplier.toFixed(3)}×</div>
+                      <div className="text-slate-500">Post-defense attack power: {(defense.attackerPowerAfterDefense || 0).toLocaleString()}</div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}

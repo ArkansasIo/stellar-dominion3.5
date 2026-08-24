@@ -3,6 +3,8 @@ import { playerStates, missions, battles } from "../../shared/schema";
 import { eq, and, sql } from "drizzle-orm";
 import { simulateBattle } from "../combat";
 import { OGameShipDatabase } from "../combat/BattleEngine";
+import { loadSystemContext, saveSystemContext, appendSystemEvent } from "./stargate/systemStateService";
+import { applyNetworkFireCasualties, resolveStrategicDefense } from "./stargate/strategicDefenseService";
 import {
   parseCoordinates, calculateDistance, calculateTravelTime,
   calculateFuelConsumption, getFleetSpeed,
@@ -16,6 +18,26 @@ interface DeployResult {
   targetCoordinates?: string;
   arrivalTime?: string;
   fuelCost?: number;
+}
+
+function mergeLosses(...lossMaps: Array<Record<string, number>>): Record<string, number> {
+  return lossMaps.reduce<Record<string, number>>((merged, losses) => {
+    for (const [unitType, count] of Object.entries(losses || {})) merged[unitType] = (merged[unitType] || 0) + Math.max(0, Math.floor(Number(count) || 0));
+    return merged;
+  }, {});
+}
+
+function normalizeCombatLosses(losses: Record<string, number>): Record<string, number> {
+  return Object.entries(losses || {}).reduce<Record<string, number>>((normalized, [key, count]) => {
+    const matchingUnit = Object.entries(OGameShipDatabase).find(([unitId, stats]) => unitId === key || stats.machineName === key);
+    const unitId = matchingUnit?.[0] || key;
+    normalized[unitId] = (normalized[unitId] || 0) + Math.max(0, Math.floor(Number(count) || 0));
+    return normalized;
+  }, {});
+}
+
+function countUnits(units: Record<string, number>) {
+  return Object.values(units || {}).reduce((total, count) => total + Math.max(0, Math.floor(Number(count) || 0)), 0);
 }
 
 interface BattleResultSummary {
@@ -191,24 +213,40 @@ class FleetMissionService {
     const now = new Date();
     const attackerId = mission.userId;
 
+    const missionCargo = (mission.cargo as Record<string, unknown>) || {};
+    const defenderId = typeof missionCargo.defenderId === "string" && missionCargo.defenderId.length > 0 ? missionCargo.defenderId : null;
     const [defenderState] = await db
       .select()
       .from(playerStates)
-      .where(sql`${playerStates.userId} != ${attackerId}`)
+      .where(defenderId ? eq(playerStates.userId, defenderId) : sql`${playerStates.userId} != ${attackerId}`)
       .limit(1);
 
     if (!defenderState) {
       await db
         .update(missions)
-        .set({ status: "completed", processed: true, returnTime: now })
+        .set({ status: "return", processed: false, returnTime: mission.returnTime || now })
         .where(eq(missions.id, mission.id));
       return;
     }
 
     const defenderUnits = (defenderState.units as Record<string, number>) || {};
     const defenderResources = (defenderState.resources as { metal?: number; crystal?: number; deuterium?: number }) || {};
+    const defenderContext = await loadSystemContext(defenderState.userId);
+    const defendedWorld = defenderContext.systems.worlds[0];
+    if (!defendedWorld) throw new Error("Defender has no strategic world");
+    const unitAttackPower = Object.fromEntries(Object.entries(attackerUnits).map(([unitType]) => [unitType, OGameShipDatabase[unitType]?.attack || 0]));
+    const defenseResolution = resolveStrategicDefense({ world: defendedWorld, attackerUnits, unitAttackPower });
+    const defenseTriggered = defenseResolution.report.interception.triggered || defenseResolution.report.planetaryShield.absorbedDamage > 0 || defenseResolution.networkFireUnits > 0;
+    if (defenseTriggered) {
+      defenderContext.systems = {
+        ...defenderContext.systems,
+        worlds: defenderContext.systems.worlds.map((world) => world.id === defendedWorld.id ? defendedWorld : world),
+      };
+      defenderContext.systems = appendSystemEvent(defenderContext.systems, "strategic_defense_engagement", `Strategic defenses engaged ${mission.target || "the incoming fleet"}.`, defenseResolution.report as unknown as Record<string, unknown>);
+      await saveSystemContext(defenderContext);
+    }
 
-    const attackerFleetUnits = Object.entries(attackerUnits)
+    const attackerFleetUnits = Object.entries(defenseResolution.attackerUnits)
       .filter(([_, count]) => count > 0)
       .map(([id, count]) => {
         const stats = OGameShipDatabase[id];
@@ -274,19 +312,33 @@ class FleetMissionService {
         crystal: defenderResources.crystal || 0,
         deuterium: defenderResources.deuterium || 0,
       },
+      strategicShieldMultiplier: defenseResolution.defenderAttackMultiplier,
     });
+
+    const engineAttackerLosses = normalizeCombatLosses(result.attackerUnitsLost);
+    const engineDefenderLosses = normalizeCombatLosses(result.defenderUnitsLost);
+    const postBattleAttackerUnits = { ...defenseResolution.attackerUnits };
+    for (const [unitType, loss] of Object.entries(engineAttackerLosses)) postBattleAttackerUnits[unitType] = Math.max(0, (postBattleAttackerUnits[unitType] || 0) - loss);
+    const networkFire = applyNetworkFireCasualties(postBattleAttackerUnits, unitAttackPower, defenseResolution.networkFirePower);
+    const attackerLosses = mergeLosses(defenseResolution.attackerLosses, engineAttackerLosses, networkFire.losses);
+    const effectiveWinner = countUnits(networkFire.units) > 0 ? result.winner : "defender";
+    const combatTelemetry = {
+      ...defenseResolution.report,
+      orbitalNetwork: { ...defenseResolution.report.orbitalNetwork, fireLosses: networkFire.losses },
+      battle: { engineAttackerLosses, engineDefenderLosses, effectiveWinner },
+    };
 
     // Apply losses to defender
     const updatedDefenderUnits = { ...defenderUnits };
-    for (const [unitType, loss] of Object.entries(result.defenderUnitsLost)) {
+    for (const [unitType, loss] of Object.entries(engineDefenderLosses)) {
       updatedDefenderUnits[unitType] = Math.max(0, (updatedDefenderUnits[unitType] || 0) - loss);
     }
     // Add repaired defenses back
-    for (const [unitType, repaired] of Object.entries(result.repairedDefenses)) {
+    for (const [unitType, repaired] of Object.entries(normalizeCombatLosses(result.repairedDefenses))) {
       updatedDefenderUnits[unitType] = (updatedDefenderUnits[unitType] || 0) + repaired;
     }
     const newResources = { ...defenderResources };
-    if (result.winner === "attacker") {
+    if (effectiveWinner === "attacker") {
       newResources.metal = Math.max(0, (newResources.metal || 0) - result.loot.metal);
       newResources.crystal = Math.max(0, (newResources.crystal || 0) - result.loot.crystal);
       newResources.deuterium = Math.max(0, (newResources.deuterium || 0) - result.loot.deuterium);
@@ -305,12 +357,13 @@ class FleetMissionService {
       status: "completed",
       attackerCoordinates: mission.origin || "1:1:1",
       defenderCoordinates: mission.target || "1:1:1",
-      winner: result.winner,
+      winner: effectiveWinner,
       attackerFleet: attackerUnits,
       defenderFleet: defenderUnits,
-      attackerLosses: result.attackerUnitsLost,
-      defenderLosses: result.defenderUnitsLost,
+      attackerLosses,
+      defenderLosses: engineDefenderLosses,
       loot: result.loot,
+      combatTelemetry,
       debris: result.debris,
       rounds: result.rounds.length,
       completedAt: now,
@@ -319,7 +372,7 @@ class FleetMissionService {
     // Mark mission as completed - fleet will return via processReturnedMissions
     await db
       .update(missions)
-      .set({ status: "completed", processed: true, returnTime: now })
+      .set({ status: "return", processed: false, cargo: { ...((mission.cargo as Record<string, unknown>) || {}), losses: attackerLosses, combatTelemetry } as any })
       .where(eq(missions.id, mission.id));
   }
 
@@ -369,8 +422,10 @@ class FleetMissionService {
           }
 
           let losses: Record<string, number> = {};
-          if ((mission as any).losses) {
-            losses = (mission as any).losses as Record<string, number>;
+          const missionCargo = (mission.cargo as Record<string, unknown>) || {};
+          const recordedLosses = (missionCargo.losses || (mission as any).losses) as Record<string, number> | undefined;
+          if (recordedLosses) {
+            losses = recordedLosses;
             for (const [unitType, count] of Object.entries(losses)) {
               currentUnits[unitType] = Math.max(0, (currentUnits[unitType] || 0) - count);
             }

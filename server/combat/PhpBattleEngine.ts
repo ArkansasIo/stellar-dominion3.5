@@ -17,6 +17,7 @@ export interface BattleInput {
   maxMoonChance?: number;
   defenseRepairRate?: number;
   maxRounds?: number;
+  strategicShieldMultiplier?: number;
 }
 
 export function simulateBattle(input: BattleInput): BattleResultData {
@@ -28,10 +29,12 @@ export function simulateBattle(input: BattleInput): BattleResultData {
     maxMoonChance = 20,
     defenseRepairRate = 70,
     maxRounds = 6,
+    strategicShieldMultiplier = 1,
   } = input;
+  const effectiveDefenders = strategicShieldMultiplier === 1 ? defenders : defenders.map((defender) => ({ ...defender, units: defender.units.map((unit) => ({ ...unit, config: { ...unit.config, shieldPoints: unit.config.shieldPoints * strategicShieldMultiplier } })) }));
 
   const primaryAttacker = attackers[0];
-  const primaryDefender = defenders[0];
+  const primaryDefender = effectiveDefenders[0];
 
   const attackerWeaponLevel = primaryAttacker.weaponTech;
   const attackerShieldLevel = primaryAttacker.shieldTech;
@@ -47,7 +50,7 @@ export function simulateBattle(input: BattleInput): BattleResultData {
       attackerUnitsStartMap[u.config.machineName] = (attackerUnitsStartMap[u.config.machineName] || 0) + u.count;
     }
   }
-  for (const d of defenders) {
+  for (const d of effectiveDefenders) {
     for (const u of d.units) {
       defenderUnitsStartMap[u.config.machineName] = (defenderUnitsStartMap[u.config.machineName] || 0) + u.count;
     }
@@ -60,7 +63,7 @@ export function simulateBattle(input: BattleInput): BattleResultData {
   }
 
   let defenderUnits: BattleUnit[] = [];
-  for (const d of defenders) {
+  for (const d of effectiveDefenders) {
     const bu = fleetUnitsToBattleUnits(d.units, d.fleetMissionId, d.ownerId, d.weaponTech, d.shieldTech, d.armorTech);
     defenderUnits.push(...bu);
   }
@@ -75,7 +78,7 @@ export function simulateBattle(input: BattleInput): BattleResultData {
     completelyDestroyed: false,
   }));
 
-  const defenderFleetResults: DefenderFleetResult[] = defenders.map(d => ({
+  const defenderFleetResults: DefenderFleetResult[] = effectiveDefenders.map(d => ({
     fleetMissionId: d.fleetMissionId,
     ownerId: d.ownerId,
     unitsStart: collectUnitsMap(fleetUnitsToBattleUnits(d.units, d.fleetMissionId, d.ownerId, d.weaponTech, d.shieldTech, d.armorTech)),

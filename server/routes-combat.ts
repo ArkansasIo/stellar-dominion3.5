@@ -13,6 +13,9 @@ import {
   type BattleMode,
 } from "@shared/config";
 import { getKardashevOperationalBonusesForPlayer } from "@shared/config/kardashevOperationalBonuses";
+import { loadSystemContext, saveSystemContext, appendSystemEvent } from "./services/stargate/systemStateService";
+import { applyNetworkFireCasualties, resolveStrategicDefense } from "./services/stargate/strategicDefenseService";
+import { COMBAT_CONFIG } from "./combatEngine";
 
 function toUnitCountMap(units: Record<string, any>): Record<string, number> {
   return Object.entries(units || {}).reduce((acc, [unitType, value]) => {
@@ -29,6 +32,10 @@ function toUnitCountMap(units: Record<string, any>): Record<string, number> {
     acc[unitType] = 0;
     return acc;
   }, {} as Record<string, number>);
+}
+
+function countUnits(units: Record<string, number>): number {
+  return Object.values(units || {}).reduce((total, value) => total + Math.max(0, Math.floor(Number(value) || 0)), 0);
 }
 
 function calculateUnitLosses(startUnits: Record<string, number>, remainingUnits: Record<string, number>): Record<string, number> {
@@ -270,12 +277,22 @@ export function registerCombatRoutes(app: Router) {
         }
       }
 
-      // Simulate battle
       const defenderUnitsAtStart = toUnitCountMap(defender.units as Record<string, any>);
+      const defenderContext = await loadSystemContext(targetId);
+      const defendedWorld = defenderContext.systems.worlds[0];
+      if (!defendedWorld) return res.status(409).json({ error: "Defender has no strategic world" });
+      const unitAttackPower = Object.fromEntries(Object.entries(attackUnits).map(([unitType]) => [unitType, COMBAT_CONFIG.UNIT_STATS[unitType]?.attack || 0]));
+      const defenseResolution = resolveStrategicDefense({ world: defendedWorld, attackerUnits: attackUnits as Record<string, number>, unitAttackPower });
+      if (defenseResolution.report.interception.triggered || defenseResolution.report.planetaryShield.absorbedDamage > 0 || defenseResolution.networkFireUnits > 0) {
+        defenderContext.systems = { ...defenderContext.systems, worlds: defenderContext.systems.worlds.map((world) => world.id === defendedWorld.id ? defendedWorld : world) };
+        defenderContext.systems = appendSystemEvent(defenderContext.systems, "strategic_defense_engagement", `Strategic defenses engaged an immediate attack on ${defender.coordinates}.`, defenseResolution.report as unknown as Record<string, unknown>);
+        await saveSystemContext(defenderContext);
+      }
+
       const battleResult = simulateBattle(
         {
-          units: Object.entries(attackUnits || {}).reduce((acc, [type, count]) => {
-            acc[type] = { type, count: count as number };
+          units: Object.entries(defenseResolution.attackerUnits).reduce((acc, [type, count]) => {
+            acc[type] = { type, count };
             return acc;
           }, {} as any),
           research: attacker.research as any,
@@ -291,21 +308,30 @@ export function registerCombatRoutes(app: Router) {
           research: defender.research as any,
           bonusMultiplier:
             defenderKardashev.defensePowerMultiplier *
-            (1 + ((defender.research as any)?.defenseTech || 0) * 0.02),
+            (1 + ((defender.research as any)?.defenseTech || 0) * 0.02) *
+            defenseResolution.defenderAttackMultiplier,
         }
       );
 
-      const attackerUnitsAfterBattle = toUnitCountMap(battleResult.attackerUnits as Record<string, any>);
+      const engineAttackerUnitsAfterBattle = toUnitCountMap(battleResult.attackerUnits as Record<string, any>);
+      const networkFire = applyNetworkFireCasualties(engineAttackerUnitsAfterBattle, unitAttackPower, defenseResolution.networkFirePower);
+      const attackerUnitsAfterBattle = networkFire.units;
       const defenderUnitsAfterBattle = toUnitCountMap(battleResult.defenderUnits as Record<string, any>);
       const attackerLosses = calculateUnitLosses(attackUnits as Record<string, number>, attackerUnitsAfterBattle);
       const defenderLosses = calculateUnitLosses(defenderUnitsAtStart, defenderUnitsAfterBattle);
-      const winnerTag = battleResult.winner === "attacker" ? "attacker" : "defender";
+      const effectiveWinner = countUnits(attackerUnitsAfterBattle) > 0 ? battleResult.winner : "defender";
+      const combatTelemetry = {
+        ...defenseResolution.report,
+        orbitalNetwork: { ...defenseResolution.report.orbitalNetwork, fireLosses: networkFire.losses },
+        battle: { engineAttackerUnitsAfterBattle, effectiveWinner },
+      };
+      const winnerTag = effectiveWinner === "attacker" ? "attacker" : "defender";
       const attackerLevel = toPlayerCombatLevel(attacker.research as Record<string, any>, Number((attacker.buildings as any)?.shipyard || 0));
       const defenderLevel = toPlayerCombatLevel(defender.research as Record<string, any>, Number((defender.buildings as any)?.shipyard || 0));
       const pvpProfile = getBattleProfile("pvp");
 
       // Process results
-      if (battleResult.winner === "attacker") {
+      if (effectiveWinner === "attacker") {
         // Calculate plunder
         const defenderResources = defender.resources as any || {};
         const plunder = calculateVictoryResources(defenderResources, "attacker");
@@ -374,6 +400,7 @@ export function registerCombatRoutes(app: Router) {
             attackerLosses,
             defenderLosses,
             loot: plunder,
+            combatTelemetry,
             debris: {
               metal: Math.floor(((plunder.metal || 0) + (plunder.crystal || 0)) * 0.1),
               crystal: Math.floor((plunder.deuterium || 0) * 0.05),
@@ -388,6 +415,7 @@ export function registerCombatRoutes(app: Router) {
           winner: "attacker",
           battleId: battleRecord[0]?.id,
           battleResult,
+          strategicDefense: combatTelemetry,
           battleProfile: pvpProfile,
           attackerProgression: buildProgressionSnapshot("commander", attackerLevel),
           defenderProgression: buildProgressionSnapshot("commander", defenderLevel),
@@ -435,6 +463,7 @@ export function registerCombatRoutes(app: Router) {
             attackerLosses,
             defenderLosses,
             loot: { metal: 0, crystal: 0, deuterium: 0 },
+            combatTelemetry,
             debris: {
               metal: Math.floor((Object.values(attackerLosses).reduce((sum, value) => sum + value, 0)) * 10),
               crystal: Math.floor((Object.values(defenderLosses).reduce((sum, value) => sum + value, 0)) * 5),
@@ -449,6 +478,7 @@ export function registerCombatRoutes(app: Router) {
           winner: "defender",
           battleId: battleRecord[0]?.id,
           battleResult,
+          strategicDefense: combatTelemetry,
           battleProfile: pvpProfile,
           attackerProgression: buildProgressionSnapshot("commander", attackerLevel),
           defenderProgression: buildProgressionSnapshot("commander", defenderLevel),
@@ -681,6 +711,7 @@ export function registerCombatRoutes(app: Router) {
           coordinates: isAttacker ? battle.defenderCoordinates : battle.attackerCoordinates,
           battleType: battle.type,
           role: isAttacker ? "attacker" : "defender",
+          strategicDefense: battle.combatTelemetry || null,
         };
       });
 
