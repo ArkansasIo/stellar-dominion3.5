@@ -1117,3 +1117,11 @@ export {
   isStoryVisualAlertCritical,
 } from './storyCampaignVisuals';
 export type { StoryAlertLevel, StoryActVisual } from './storyCampaignVisuals';
+
+// Unified 2D planet and moon visual system
+export {
+  CELESTIAL_VISUALS,
+  getCelestialVisual,
+  getCelestialVisualLabel,
+} from './celestialVisuals';
+export type { CelestialVisualObjectType } from './celestialVisuals';

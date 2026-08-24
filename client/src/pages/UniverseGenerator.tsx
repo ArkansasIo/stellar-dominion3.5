@@ -24,7 +24,7 @@ import {
   Gauge
 } from "lucide-react";
 import { useState } from "react";
-import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS, PLANET_ASSETS } from "@shared/config";
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS, PLANET_ASSETS, getCelestialVisual, getCelestialVisualLabel } from "@shared/config";
 import { 
   generateSystem, 
   generateGalaxy, 
@@ -295,9 +295,9 @@ export default function UniverseGeneratorPage() {
                         <div className="flex items-center gap-3 mb-3">
                           <div className={`w-10 h-10 rounded-full ${getPlanetTypeColor(planet.type)} flex items-center justify-center overflow-hidden`}>
                             <img
-                              src={PLANET_ASSETS.TERRESTRIAL.EARTH_LIKE.path}
-                              alt={planet.name}
-                              className="w-6 h-6 object-contain"
+                              src={getCelestialVisual("planet", (planet as any).planetClass)}
+                              alt={getCelestialVisualLabel("planet", (planet as any).planetClass)}
+                              className="w-8 h-8 rounded-full object-cover"
                               onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }}
                             />
                           </div>
@@ -362,9 +362,9 @@ export default function UniverseGeneratorPage() {
                           <div className="flex items-center gap-2 mb-2">
                             <div className="w-6 h-6 rounded-full bg-slate-400 flex items-center justify-center overflow-hidden">
                               <img
-                                src={PLANET_ASSETS.TERRESTRIAL.ICE.path}
-                                alt="moon"
-                                className="w-4 h-4 object-contain"
+                                src={getCelestialVisual("moon", undefined, true)}
+                                alt="Lunar orbital view"
+                                className="w-5 h-5 rounded-full object-cover"
                                 onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }}
                               />
                             </div>
@@ -394,9 +394,9 @@ export default function UniverseGeneratorPage() {
                       <div className="flex items-center gap-2 mb-2">
                         <div className="w-8 h-8 rounded-full bg-purple-400 flex items-center justify-center overflow-hidden">
                           <img
-                            src={PLANET_ASSETS.GAS_GIANTS.NEPTUNE_CLASS.path}
-                            alt="dwarf"
-                            className="w-5 h-5 object-contain"
+                            src={getCelestialVisual("planet", "D")}
+                            alt="Dwarf planet view"
+                            className="w-6 h-6 rounded-full object-cover"
                             onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = TEMP_THEME_IMAGE; }}
                           />
                         </div>

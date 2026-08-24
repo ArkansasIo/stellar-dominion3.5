@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 import { useEffect, useState, useMemo } from "react";
-import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
+import { BACKGROUND_ASSETS, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS, getCelestialVisual } from "@shared/config";
 import { ALL_PLANET_TYPES } from "@shared/config";
 import { assessPlanetHazards, HAZARD_TYPES, type HazardSeverity, type PlanetHazardAssessment } from "@shared/config/hazardSystemConfig";
 
@@ -359,7 +359,7 @@ export default function PlanetDetail() {
             <div className="flex items-center gap-6">
               <div className="flex gap-2 items-center">
                 <img src={SHIP_ASSETS.SPECIAL.COLONIZER.path} alt="Colonizer" className="w-12 h-12 object-contain" />
-                <img src={OGAMEX_FEATURED_ASSETS.MOON.path} alt="Moon" className="w-12 h-12 object-contain" />
+                <img src={getCelestialVisual("moon", undefined, true)} alt="Lunar orbital view" className="w-12 h-12 object-contain" />
                 <img src={MENU_ASSETS.NAVIGATION.EMPIRE.path} alt="Empire" className="w-12 h-12 object-contain" />
               </div>
               <div>

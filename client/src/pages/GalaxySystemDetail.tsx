@@ -19,7 +19,7 @@ import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import { Link, useLocation, useRoute } from "wouter";
-import { BACKGROUND_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
+import { BACKGROUND_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS, getCelestialVisual, getCelestialVisualLabel } from "@shared/config";
 
 const TEMP_THEME_IMAGE = "/theme-temp.png";
 
@@ -248,19 +248,15 @@ export default function GalaxySystemDetail() {
 
                       <TableCell>
                         {data.type === "planet" && (
-                          <div className={cn("w-10 h-10 rounded-full bg-gradient-to-br shadow-sm border border-slate-200", getPlanetGradient(data.class))} />
+                          <img src={getCelestialVisual("planet", data.class)} alt={getCelestialVisualLabel("planet", data.class)} className="w-10 h-10 rounded-full object-cover shadow-sm border border-slate-200" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = TEMP_THEME_IMAGE; }} />
                         )}
                         {data.type === "asteroid" && (
-                          <div className="w-10 h-10 flex items-center justify-center">
-                            <div className="w-8 h-8 rounded bg-slate-300 rotate-45 border border-slate-400" />
-                          </div>
+                          <img src={getCelestialVisual("asteroid")} alt="Asteroid field" className="w-10 h-10 rounded-lg object-cover border border-slate-300" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = TEMP_THEME_IMAGE; }} />
                         )}
                         {data.type === "blackhole" && (
-                          <div className="w-10 h-10 rounded-full bg-black shadow-[0_0_10px_rgba(0,0,0,0.5)] border border-slate-800 flex items-center justify-center">
-                            <div className="w-9 h-9 rounded-full border border-white/20" />
-                          </div>
+                          <img src={getCelestialVisual("blackhole")} alt="Singularity" className="w-10 h-10 rounded-full object-cover border border-slate-800" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = TEMP_THEME_IMAGE; }} />
                         )}
-                        {data.type === "nebula" && <div className="w-10 h-10 rounded-full bg-purple-100 blur-sm opacity-80" />}
+                        {data.type === "nebula" && <img src={getCelestialVisual("nebula")} alt="Nebula" className="w-10 h-10 rounded-full object-cover blur-[1px] opacity-80" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = TEMP_THEME_IMAGE; }} />}
                         {data.type === "station" && (
                           <div className="w-10 h-10 flex items-center justify-center">
                             <Hexagon className="w-8 h-8 text-slate-600 fill-slate-200" />
@@ -300,7 +296,7 @@ export default function GalaxySystemDetail() {
 
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          {data.moon && <div className="w-4 h-4 rounded-full bg-slate-300 border border-slate-400" title="Moon" />}
+                          {data.moon && <img src={getCelestialVisual("moon", data.class, true)} alt="Moon" className="w-4 h-4 rounded-full object-cover border border-slate-400" title="Moon" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = TEMP_THEME_IMAGE; }} />}
                           {data.debris && (
                             <div className="flex items-center text-xs text-yellow-600 font-mono" title={`Metal: ${data.debris.metal.toLocaleString()}, Crystal: ${data.debris.crystal.toLocaleString()}`}>
                               <Triangle className="w-3 h-3 mr-1 fill-yellow-600 rotate-180" />
