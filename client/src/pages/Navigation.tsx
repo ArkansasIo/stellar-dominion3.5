@@ -12,7 +12,6 @@ const navItems = [
   { href: "/resources", icon: Pickaxe, label: "Resources" },
   { href: "/facilities", icon: Factory, label: "Facilities" },
   { href: "/research", icon: FlaskConical, label: "Research" },
-  { href: "/colonies", icon: Hexagon, label: "Colonies" },
   { href: "/blueprints", icon: Factory, label: "Blueprints" },
   { href: "/shipyard", icon: Rocket, label: "Shipyard" },
   { href: "/fleet", icon: Send, label: "Fleet" },
@@ -35,7 +34,7 @@ export default function Navigation() {
   const groupedLinks = [
     {
       title: "Empire Core",
-      items: navItems.filter((item) => ["/", "/resources", "/facilities", "/research", "/colonies", "/blueprints"].includes(item.href)),
+      items: navItems.filter((item) => ["/", "/resources", "/facilities", "/research", "/blueprints"].includes(item.href)),
     },
     {
       title: "Military",
