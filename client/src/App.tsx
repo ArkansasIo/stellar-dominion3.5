@@ -9,6 +9,7 @@ import { Rocket } from "lucide-react";
 import { BUILD_INFO } from "@shared/config/buildConfig";
 
 import { useGame } from "@/lib/gameContext";
+import RouteErrorBoundary from "@/components/RouteErrorBoundary";
 
 const NotFound = lazy(() => import("@/pages/not-found"));
 const Overview = lazy(() => import("@/pages/Overview"));
@@ -361,9 +362,11 @@ function RouterContent() {
 function Router() {
   return (
     <GameProvider>
-      <Suspense fallback={<LoadingSplash />}>
-        <RouterContent />
-      </Suspense>
+      <RouteErrorBoundary>
+        <Suspense fallback={<LoadingSplash />}>
+          <RouterContent />
+        </Suspense>
+      </RouteErrorBoundary>
     </GameProvider>
   );
 }

@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { UnifiedCommandBridge } from "@/components/stargate/UnifiedCommandBridge";
+import CommandAudioDock from "@/components/CommandAudioDock";
 
 const TEMP_THEME_IMAGE = "/theme-temp.png";
 
@@ -263,6 +264,7 @@ export default function Overview() {
 
   return (
     <GameLayout>
+      <CommandAudioDock screen="overview" />
       <div className="space-y-8 animate-in fade-in duration-500">
         
         <section className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.78), rgba(15,23,42,0.92)), url(${GENERATED_GAME_ART.GALAXY_COMMAND_HERO.path})` }}>
@@ -373,12 +375,12 @@ export default function Overview() {
             </CardHeader>
             <CardContent className="space-y-2">
               <Link href="/resources">
-                <Button variant="outline" className="w-full justify-start h-10 text-slate-700 hover:bg-slate-50" data-testid="button-goto-resources">
+                <Button variant="outline" className="w-full justify-start h-10 text-slate-700 hover:bg-slate-50" data-testid="button-goto-resources" data-command-sfx="confirm">
                   <Pickaxe className="w-4 h-4 mr-2 text-slate-500" /> Manage Resources
                 </Button>
               </Link>
               <Link href="/shipyard">
-                <Button variant="outline" className="w-full justify-start h-10 text-slate-700 hover:bg-slate-50" data-testid="button-goto-shipyard">
+                <Button variant="outline" className="w-full justify-start h-10 text-slate-700 hover:bg-slate-50" data-testid="button-goto-shipyard" data-command-sfx="deploy">
                   <Rocket className="w-4 h-4 mr-2 text-blue-500" /> Build Ships
                 </Button>
               </Link>
@@ -388,7 +390,7 @@ export default function Overview() {
                 </Button>
               </Link>
               <Link href="/fleet">
-                <Button variant="outline" className="w-full justify-start h-10 text-slate-700 hover:bg-slate-50" data-testid="button-goto-fleet">
+                <Button variant="outline" className="w-full justify-start h-10 text-slate-700 hover:bg-slate-50" data-testid="button-goto-fleet" data-command-sfx="deploy">
                   <Send className="w-4 h-4 mr-2 text-red-500" /> Dispatch Fleet
                 </Button>
               </Link>
@@ -401,7 +403,7 @@ export default function Overview() {
                 </Button>
               </Link>
               <Link href="/story-mode">
-                <Button variant="outline" className="w-full justify-start h-10 text-slate-700 hover:bg-slate-50" data-testid="button-goto-story-mode">
+                <Button variant="outline" className="w-full justify-start h-10 text-slate-700 hover:bg-slate-50" data-testid="button-goto-story-mode" data-command-sfx="alert">
                   <Target className="w-4 h-4 mr-2 text-indigo-500" /> Story Mode
                 </Button>
               </Link>

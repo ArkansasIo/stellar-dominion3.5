@@ -142,6 +142,31 @@ interface GateTokenBalance {
   quantity: number;
 }
 
+function normalizeTokenBalances(payload: unknown): GateTokenBalance[] {
+  const wrappedBalances = payload && typeof payload === "object" && "balances" in payload
+    ? (payload as { balances?: unknown }).balances
+    : payload;
+
+  if (Array.isArray(wrappedBalances)) {
+    return wrappedBalances.filter((balance): balance is GateTokenBalance => {
+      if (!balance || typeof balance !== "object") return false;
+      const candidate = balance as Record<string, unknown>;
+      return typeof candidate.tokenType === "string" && Number.isFinite(Number(candidate.quantity));
+    }).map((balance) => ({
+      tokenType: balance.tokenType,
+      quantity: Number(balance.quantity) || 0,
+    }));
+  }
+
+  if (wrappedBalances && typeof wrappedBalances === "object") {
+    return Object.entries(wrappedBalances as Record<string, unknown>)
+      .filter(([, quantity]) => Number.isFinite(Number(quantity)))
+      .map(([tokenType, quantity]) => ({ tokenType, quantity: Number(quantity) || 0 }));
+  }
+
+  return [];
+}
+
 interface GateTokenHistory {
   id: string;
   tokenType: string;
@@ -244,7 +269,7 @@ export default function DimensionalHub() {
     },
   });
 
-  const tokenBalancesQuery = useQuery<{ balances: GateTokenBalance[] }>({
+  const tokenBalancesQuery = useQuery<unknown>({
     queryKey: ["gate-tokens-balance"],
     queryFn: async () => {
       const res = await fetch("/api/gate-tokens/balance", { credentials: "include" });
@@ -406,7 +431,7 @@ export default function DimensionalHub() {
   const contractStatuses = contractStatusQuery.data?.contracts || [];
   const contractStatusMap = new Map(contractStatuses.map((s: ContractStatus) => [s.contractTier, s]));
 
-  const tokenBalances = tokenBalancesQuery.data?.balances || [];
+  const tokenBalances = normalizeTokenBalances(tokenBalancesQuery.data);
   const tokenHistory = tokenHistoryQuery.data?.history || [];
 
   const getRarityBadge = (rarity: string) => {

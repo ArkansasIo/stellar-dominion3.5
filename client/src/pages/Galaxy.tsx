@@ -475,7 +475,7 @@ export default function Galaxy() {
              </Button>
            </div>
            
-           <Button className="ml-auto bg-primary/10 text-primary hover:bg-primary/20 border border-primary/30 h-8 text-xs uppercase tracking-wider">
+           <Button className="ml-auto bg-primary/10 text-primary hover:bg-primary/20 border border-primary/30 h-8 text-xs uppercase tracking-wider" onClick={() => setLocation("/expeditions")}>
               <Orbit className="w-3 h-3 mr-2" /> Expedition
            </Button>
         </div>

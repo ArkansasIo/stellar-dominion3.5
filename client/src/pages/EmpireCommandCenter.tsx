@@ -16,6 +16,7 @@ import { calculateResourceProduction } from "@/lib/resourceMath";
 import { sumLegacyUnits } from "@/lib/unitState";
 import { BACKGROUND_ASSETS, GENERATED_GAME_ART, SHIP_ASSETS, MENU_ASSETS, OGAMEX_FEATURED_ASSETS } from "@shared/config";
 import { UnifiedCommandBridge } from "@/components/stargate/UnifiedCommandBridge";
+import CommandAudioDock from "@/components/CommandAudioDock";
 
 type PlanetSummary = {
   id: string;
@@ -108,6 +109,7 @@ export default function EmpireCommandCenter() {
 
   return (
     <GameLayout>
+      <CommandAudioDock screen="command-center" />
       <div className="relative overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-cover bg-center mb-6" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.78), rgba(15,23,42,0.92)), url(${BACKGROUND_ASSETS.GALAXY_MAP.path})` }}>
         <div className="p-6 sm:p-8">
           <div className="flex items-center gap-4">
@@ -191,7 +193,7 @@ export default function EmpireCommandCenter() {
         </div>
 
         <section className="grid grid-cols-1 gap-4 lg:grid-cols-2" data-testid="empire-operational-art">
-          <Link href="/shipyard" className="group overflow-hidden rounded-2xl border border-blue-900/60 bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950 shadow-lg shadow-blue-950/20 transition hover:-translate-y-0.5 hover:border-cyan-400/60">
+          <Link href="/shipyard" data-command-sfx="deploy" className="group overflow-hidden rounded-2xl border border-blue-900/60 bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950 shadow-lg shadow-blue-950/20 transition hover:-translate-y-0.5 hover:border-cyan-400/60">
             <div className="relative h-44 overflow-hidden">
               <img src={GENERATED_GAME_ART.SHIPYARD_CARRIER.path} alt="Capital carrier under construction in an orbital shipyard" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
               <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-blue-950/55 to-transparent" />
@@ -202,7 +204,7 @@ export default function EmpireCommandCenter() {
               </div>
             </div>
           </Link>
-          <Link href="/resources" className="group overflow-hidden rounded-2xl border border-blue-900/60 bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950 shadow-lg shadow-blue-950/20 transition hover:-translate-y-0.5 hover:border-cyan-400/60">
+          <Link href="/resources" data-command-sfx="confirm" className="group overflow-hidden rounded-2xl border border-blue-900/60 bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950 shadow-lg shadow-blue-950/20 transition hover:-translate-y-0.5 hover:border-cyan-400/60">
             <div className="relative h-44 overflow-hidden">
               <img src={GENERATED_GAME_ART.ASTEROID_MINING_FRONTIER.path} alt="Automated mining platforms in an asteroid frontier" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
               <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-blue-950/55 to-transparent" />
