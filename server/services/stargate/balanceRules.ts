@@ -32,6 +32,10 @@ export const STARGATE_BALANCE_RULES = {
     baseProductionPerHour: { naquadah: 100, food: 250, water: 250 },
     baseCapacity: { naquadah: 25_000, food: 5_000, water: 5_000 },
     capacityPerDevelopment: { naquadah: 5_000, food: 1_000, water: 1_000 },
+    moonDefense: {
+      network: { minimumMoonDevelopment: 5, maxLevel: 10, baseCost: 25_000, costStep: 18_000, energyUpkeepPerHour: 18, defensePerLevel: 2_500, antiShipPerLevel: 1_200, interceptChancePerLevel: 0.03 },
+      shield: { minimumMoonDevelopment: 8, maxLevel: 8, baseCost: 50_000, costStep: 35_000, energyUpkeepPerHour: 45, capacityPerLevel: 12_500, rechargePerHourPerLevel: 1_500, coveragePerLevel: 8 },
+    },
   },
   missions: {
     explorationCooldownHours: 1,

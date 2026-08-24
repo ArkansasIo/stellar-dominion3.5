@@ -1,5 +1,5 @@
 import { STARGATE_BALANCE_RULES } from "./balanceRules";
-import type { MothershipState, StrategicWorld } from "./systemStateService";
+import type { MothershipState, StrategicMoon, StrategicWorld } from "./systemStateService";
 
 export type MissionType = "exploration" | "survey" | "salvage" | "rescue";
 
@@ -52,13 +52,31 @@ export function getMissionProfile(type: MissionType) {
   return MISSION_PROFILES[type];
 }
 
+export function getMoonDefenseTelemetry(moon: StrategicMoon) {
+  const networkRules = STARGATE_BALANCE_RULES.worlds.moonDefense.network;
+  const shieldRules = STARGATE_BALANCE_RULES.worlds.moonDefense.shield;
+  const networkLevel = moon.defenseNetwork.level;
+  const shieldLevel = moon.planetaryShield.level;
+  return {
+    developmentSlots: moon.developmentSlots,
+    usedDevelopmentSlots: moon.usedDevelopmentSlots,
+    availableDevelopmentSlots: Math.max(0, moon.developmentSlots - moon.usedDevelopmentSlots),
+    network: { ...moon.defenseNetwork, nextCost: networkLevel >= networkRules.maxLevel ? 0 : networkRules.baseCost + networkLevel * networkRules.costStep, nextLevel: Math.min(networkRules.maxLevel, networkLevel + 1), unlockLevel: networkRules.minimumMoonDevelopment },
+    shield: { ...moon.planetaryShield, nextCost: shieldLevel >= shieldRules.maxLevel ? 0 : shieldRules.baseCost + shieldLevel * shieldRules.costStep, nextLevel: Math.min(shieldRules.maxLevel, shieldLevel + 1), unlockLevel: shieldRules.minimumMoonDevelopment },
+    totalEnergyUpkeepPerHour: moon.defenseNetwork.energyUpkeepPerHour + moon.planetaryShield.energyUpkeepPerHour,
+    totalDefensePower: moon.defenseRating + moon.defenseNetwork.defensePower,
+  };
+}
+
 export function getWorldTelemetry(world: StrategicWorld) {
   const multiplier = WORLD_TYPE_MULTIPLIERS[world.worldType];
   const stabilityFactor = world.stability / 100;
   const developmentFactor = 1 + Math.max(0, world.developmentLevel - 1) * 0.12;
   const conditionFactor = world.condition / 100;
   const attack = Math.floor(world.bonuses.attack * STARGATE_BALANCE_RULES.worlds.attackBonusPerLevel * conditionFactor);
-  const defense = Math.floor((world.defenses + world.bonuses.defense * STARGATE_BALANCE_RULES.worlds.defenseBonusPerLevel) * conditionFactor);
+  const moonDefensePower = world.moons.reduce((total, moon) => total + moon.defenseNetwork.defensePower, 0);
+  const moonShieldCapacity = world.moons.reduce((total, moon) => total + moon.planetaryShield.capacity, 0);
+  const defense = Math.floor((world.defenses + world.bonuses.defense * STARGATE_BALANCE_RULES.worlds.defenseBonusPerLevel + moonDefensePower) * conditionFactor);
   const covert = Math.floor(world.bonuses.covert * STARGATE_BALANCE_RULES.worlds.covertBonusPerLevel * stabilityFactor);
   const unitProductionPerDay = Math.floor(STARGATE_BALANCE_RULES.worlds.baseUnitProductionPerDay * developmentFactor * (1 + world.bonuses.unitProduction * 0.2) * stabilityFactor);
   const incomePerTurn = Math.floor(STARGATE_BALANCE_RULES.worlds.baseIncomePerTurn * (1 + world.bonuses.income * 0.15) * developmentFactor * stabilityFactor);
@@ -85,6 +103,8 @@ export function getWorldTelemetry(world: StrategicWorld) {
     developmentFactor: Number(developmentFactor.toFixed(2)),
     researchSpeed: classModifiers.researchSpeed,
     shipyardSpeed: classModifiers.shipyardSpeed,
+    moonDefensePower,
+    moonShieldCapacity,
     defenseStrength: classModifiers.defenseStrength,
     covertStrength: classModifiers.covertStrength,
     populationGrowth: classModifiers.populationGrowth,

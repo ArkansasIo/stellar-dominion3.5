@@ -1,6 +1,6 @@
 import { STARGATE_BALANCE_RULES } from "./balanceRules";
 import { appendSystemEvent, buildSystemSnapshot, loadSystemContext, saveSystemContext, type StrategicWorld } from "./systemStateService";
-import { getDefenseCost, getRepairCost, getWorldDevelopmentCost, getWorldTelemetry } from "./worldOperationsService";
+import { getDefenseCost, getMoonDefenseTelemetry, getRepairCost, getWorldDevelopmentCost, getWorldTelemetry } from "./worldOperationsService";
 import { getWorldCatalog } from "../../../shared/config/worldMoonTaxonomy";
 
 export type WorldBonus = "attack" | "defense" | "covert" | "unitProduction" | "income";
@@ -88,6 +88,66 @@ export async function upgradeWorldMoon(userId: string, worldId: string, moonId: 
   return makeWorldResponse(context);
 }
 
+function getOwnedMoon(context: Awaited<ReturnType<typeof loadSystemContext>>, worldId: string, moonId: string) {
+  const world = getOwnedWorld(context, worldId);
+  const moon = world.moons.find((entry) => entry.id === moonId);
+  if (!moon) throw new Error("Moon not found or not attached to this world");
+  return { world, moon };
+}
+
+export type MoonDefenseSystem = "network" | "shield";
+
+export async function upgradeMoonDefense(userId: string, worldId: string, moonId: string, system: MoonDefenseSystem) {
+  if (system !== "network" && system !== "shield") throw new Error("Unsupported moon defense system");
+  const context = await loadSystemContext(userId);
+  const { moon } = getOwnedMoon(context, worldId, moonId);
+  const currentLevel = system === "network" ? moon.defenseNetwork.level : moon.planetaryShield.level;
+  const rules = system === "network" ? STARGATE_BALANCE_RULES.worlds.moonDefense.network : STARGATE_BALANCE_RULES.worlds.moonDefense.shield;
+  if (moon.developmentLevel < rules.minimumMoonDevelopment) throw new Error(`${system === "network" ? "Orbital defense network" : "Planetary shield generator"} requires moon development level ${rules.minimumMoonDevelopment}`);
+  if (currentLevel >= rules.maxLevel) throw new Error(`This moon's ${system} system has reached maximum level`);
+  if (currentLevel === 0 && moon.usedDevelopmentSlots >= moon.developmentSlots) throw new Error("This moon has no available high-level development slots");
+  const cost = rules.baseCost + currentLevel * rules.costStep;
+  if (context.resources.naquadah < cost) throw new Error(`Insufficient Naquadah for the moon ${system} upgrade`);
+  context.resources.naquadah -= cost;
+  const nextLevel = currentLevel + 1;
+  if (currentLevel === 0) moon.usedDevelopmentSlots += 1;
+  if (system === "network") {
+    const networkRules = STARGATE_BALANCE_RULES.worlds.moonDefense.network;
+    moon.defenseNetwork = { level: nextLevel, maxLevel: networkRules.maxLevel, defensePower: nextLevel * networkRules.defensePerLevel, antiShipPower: nextLevel * networkRules.antiShipPerLevel, interceptChance: Number((nextLevel * networkRules.interceptChancePerLevel).toFixed(2)), energyUpkeepPerHour: nextLevel * networkRules.energyUpkeepPerHour, operational: moon.condition > 0 };
+  } else {
+    const shieldRules = STARGATE_BALANCE_RULES.worlds.moonDefense.shield;
+    const capacity = nextLevel * shieldRules.capacityPerLevel;
+    moon.planetaryShield = { level: nextLevel, maxLevel: shieldRules.maxLevel, capacity, current: capacity, coverage: Math.min(100, nextLevel * shieldRules.coveragePerLevel), rechargePerHour: nextLevel * shieldRules.rechargePerHourPerLevel, energyUpkeepPerHour: nextLevel * shieldRules.energyUpkeepPerHour, status: moon.condition > 0 ? "online" : "offline" };
+  }
+  context.systems = appendSystemEvent(context.systems, `moon.${system}.upgraded`, `${moon.name} ${system} advanced to level ${nextLevel}.`, { worldId, moonId, system, previousLevel: currentLevel, nextLevel, cost, usedDevelopmentSlots: moon.usedDevelopmentSlots, developmentSlots: moon.developmentSlots });
+  await saveSystemContext(context);
+  return makeWorldResponse(context);
+}
+
+function settleMoonDefenseUpkeep(context: Awaited<ReturnType<typeof loadSystemContext>>, now: number) {
+  let energyUpkeep = 0;
+  let energySpent = 0;
+  context.systems.worlds.forEach((world) => {
+    const hours = Math.min(24, Math.max(0, (now - world.lastYieldAt) / 3_600_000));
+    world.moons.forEach((moon) => {
+      const telemetry = getMoonDefenseTelemetry(moon);
+      const requested = telemetry.totalEnergyUpkeepPerHour * hours;
+      energyUpkeep += requested;
+      if (requested <= 0) return;
+      const paid = Math.min(Number(context.resources.energy || 0), Math.floor(requested));
+      context.resources.energy = Math.max(0, Number(context.resources.energy || 0) - paid);
+      energySpent += paid;
+      const operational = paid >= Math.floor(requested);
+      moon.defenseNetwork.operational = moon.defenseNetwork.level > 0 && operational;
+      if (moon.planetaryShield.level > 0) {
+        moon.planetaryShield.status = operational ? (moon.planetaryShield.current < moon.planetaryShield.capacity ? "charging" : "online") : "offline";
+        if (operational) moon.planetaryShield.current = Math.min(moon.planetaryShield.capacity, moon.planetaryShield.current + Math.floor(moon.planetaryShield.rechargePerHour * hours));
+      }
+    });
+  });
+  return { energyUpkeep: Math.floor(energyUpkeep), energySpent };
+}
+
 export async function specializeWorld(userId: string, worldId: string, specialization: WorldSpecialization) {
   if (!WORLD_SPECIALIZATIONS.includes(specialization)) throw new Error("Unsupported world specialization");
   const context = await loadSystemContext(userId);
@@ -106,6 +166,7 @@ export async function specializeWorld(userId: string, worldId: string, specializ
 
 export async function collectWorldYields(userId: string, now = Date.now()) {
   const context = await loadSystemContext(userId);
+  const defenseUpkeep = settleMoonDefenseUpkeep(context, now);
   const response = makeWorldResponse(context);
   const elapsedByWorld = context.systems.worlds.map((world) => Math.min(24, Math.max(0, (now - world.lastYieldAt) / 3_600_000)));
   const produced = context.systems.worlds.reduce((totals, world, index) => {
@@ -120,7 +181,7 @@ export async function collectWorldYields(userId: string, now = Date.now()) {
   context.systems.worlds.forEach((world) => { world.lastYieldAt = now; });
   context.systems = appendSystemEvent(context.systems, "world.yields.collected", "Collected production from all controlled strategic worlds.", { produced, capacity: caps });
   await saveSystemContext(context);
-  return { ...makeWorldResponse(context), collected: produced, collectedAt: now };
+  return { ...makeWorldResponse(context), collected: produced, defenseUpkeep, collectedAt: now };
 }
 
 export async function fortifyWorld(userId: string, worldId: string, quantity: number) {

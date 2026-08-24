@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import { db, pool } from "../server/db";
 import { playerStates, users } from "../shared/schema";
 import { buyMothership, claimExploration, getMothershipState, startStrategicMission, upgradeMothership } from "../server/services/stargate/mothershipService";
-import { collectWorldYields, fortifyWorld, getWorldState, specializeWorld, upgradeWorldDevelopment, upgradeWorldMoon } from "../server/services/stargate/planetService";
+import { collectWorldYields, fortifyWorld, getWorldState, specializeWorld, upgradeMoonDefense, upgradeWorldDevelopment, upgradeWorldMoon } from "../server/services/stargate/planetService";
 
 const USER_ID = "test-world-operations-alpha";
 
@@ -46,9 +46,21 @@ async function main() {
   const developed = await upgradeWorldDevelopment(USER_ID, homeworld.id);
   assert.equal(developed.worlds[0].developmentLevel, 2);
   const moonBefore = developed.worlds[0].moons[0].developmentLevel;
-  const developedMoon = await upgradeWorldMoon(USER_ID, homeworld.id, developed.worlds[0].moons[0].id);
-  assert.equal(developedMoon.worlds[0].moons[0].developmentLevel, moonBefore + 1);
-  assert.ok(developedMoon.worlds[0].moons[0].defenseRating > developed.worlds[0].moons[0].defenseRating);
+  let moonState = await upgradeWorldMoon(USER_ID, homeworld.id, developed.worlds[0].moons[0].id);
+  assert.equal(moonState.worlds[0].moons[0].developmentLevel, moonBefore + 1);
+  assert.ok(moonState.worlds[0].moons[0].defenseRating > developed.worlds[0].moons[0].defenseRating);
+  await assert.rejects(() => upgradeMoonDefense(USER_ID, homeworld.id, moonState.worlds[0].moons[0].id, "network"), /requires moon development level 5/);
+  for (let level = moonState.worlds[0].moons[0].developmentLevel + 1; level <= 8; level += 1) {
+    moonState = await upgradeWorldMoon(USER_ID, homeworld.id, moonState.worlds[0].moons[0].id);
+  }
+  const networkState = await upgradeMoonDefense(USER_ID, homeworld.id, moonState.worlds[0].moons[0].id, "network");
+  assert.equal(networkState.worlds[0].moons[0].defenseNetwork.level, 1);
+  assert.equal(networkState.worlds[0].moons[0].usedDevelopmentSlots, 1);
+  assert.ok(networkState.worlds[0].telemetry.moonDefensePower > 0);
+  const shieldState = await upgradeMoonDefense(USER_ID, homeworld.id, moonState.worlds[0].moons[0].id, "shield");
+  assert.equal(shieldState.worlds[0].moons[0].planetaryShield.level, 1);
+  assert.equal(shieldState.worlds[0].moons[0].usedDevelopmentSlots, 2);
+  assert.ok(shieldState.worlds[0].telemetry.moonShieldCapacity > 0);
   await assert.rejects(() => specializeWorld(USER_ID, homeworld.id, "mining"), /Homeworld specialization/);
 
   const fortified = await fortifyWorld(USER_ID, homeworld.id, 7);
@@ -57,6 +69,7 @@ async function main() {
 
   const collected = await collectWorldYields(USER_ID, Date.now() + 3_600_000);
   assert.ok(collected.collected.food > 0);
+  assert.ok(collected.defenseUpkeep.energySpent > 0);
   assert.ok(collected.collected.water > 0);
 
   const survey = await startStrategicMission(USER_ID, "survey");

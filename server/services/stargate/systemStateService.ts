@@ -37,7 +37,10 @@ export interface MothershipState {
   lastMissionAt: number;
 }
 
-export type StrategicMoon = { -readonly [Key in keyof GeneratedMoonProfile]: GeneratedMoonProfile[Key] };
+export type StrategicMoon = Omit<{ -readonly [Key in keyof GeneratedMoonProfile]: GeneratedMoonProfile[Key] }, "defenseNetwork" | "planetaryShield"> & {
+  defenseNetwork: { level: number; maxLevel: number; defensePower: number; antiShipPower: number; interceptChance: number; energyUpkeepPerHour: number; operational: boolean };
+  planetaryShield: { level: number; maxLevel: number; capacity: number; current: number; coverage: number; rechargePerHour: number; energyUpkeepPerHour: number; status: "offline" | "charging" | "online" | "breached" };
+};
 
 export interface StrategicWorld {
   id: string;

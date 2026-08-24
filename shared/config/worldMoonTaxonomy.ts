@@ -107,6 +107,10 @@ export interface GeneratedMoonProfile {
   readonly defenseRating: number;
   readonly researchRating: number;
   readonly productionMultiplier: number;
+  readonly developmentSlots: number;
+  readonly usedDevelopmentSlots: number;
+  readonly defenseNetwork: { readonly level: number; readonly maxLevel: number; readonly defensePower: number; readonly antiShipPower: number; readonly interceptChance: number; readonly energyUpkeepPerHour: number; readonly operational: boolean };
+  readonly planetaryShield: { readonly level: number; readonly maxLevel: number; readonly capacity: number; readonly current: number; readonly coverage: number; readonly rechargePerHour: number; readonly energyUpkeepPerHour: number; readonly status: "offline" | "charging" | "online" | "breached" };
   readonly specialSystems: readonly string[];
   readonly createdAt: number;
 }
@@ -243,7 +247,8 @@ export function generateMoonProfile(parentWorldId: string, parent: WorldArchetyp
   const moon = MOON_ARCHETYPES.find((entry) => entry.id === archetypeId) || MOON_ARCHETYPES[0];
   const moonSize = Math.max(1, Math.min(9, Math.floor((size + orbitSlot) / 2))) as WorldSize;
   const sizeProfile = getWorldSizeProfile(moonSize);
-  return { id: stableMoonId(parentWorldId, orbitSlot), name: `${moon.name} ${orbitSlot}`, parentWorldId, archetypeId: moon.id, moonClass: moon.moonClass, subclass: moon.subclass, type: moon.type, subtype: moon.subtype, biome: moon.biome, subBiome: moon.subBiome, atmosphere: moon.atmosphere, size: moonSize, orbitSlot, condition: 100, developmentLevel: 1, habitability: Math.max(1, Math.min(100, parent.environment.habitability + (moon.id === "M01" || moon.id === "M05" ? 12 : -10))), gravity: Number((sizeProfile.gravityMultiplier * 0.35).toFixed(2)), resourceDensity: Number((sizeProfile.resourceMultiplier * 0.8 + moon.modifiers.naquadahProduction).toFixed(2)), defenseRating: Math.floor(50 * moon.modifiers.defenseStrength), researchRating: Math.floor(50 * moon.modifiers.researchSpeed), productionMultiplier: Number((1 + moon.modifiers.naquadahProduction * 0.2 + moon.modifiers.energyProduction * 0.15).toFixed(2)), specialSystems: moon.facilityHooks, createdAt };
+  const developmentSlots = Math.max(2, Math.min(12, Math.floor(sizeProfile.buildSlots / 2)));
+  return { id: stableMoonId(parentWorldId, orbitSlot), name: `${moon.name} ${orbitSlot}`, parentWorldId, archetypeId: moon.id, moonClass: moon.moonClass, subclass: moon.subclass, type: moon.type, subtype: moon.subtype, biome: moon.biome, subBiome: moon.subBiome, atmosphere: moon.atmosphere, size: moonSize, orbitSlot, condition: 100, developmentLevel: 1, habitability: Math.max(1, Math.min(100, parent.environment.habitability + (moon.id === "M01" || moon.id === "M05" ? 12 : -10))), gravity: Number((sizeProfile.gravityMultiplier * 0.35).toFixed(2)), resourceDensity: Number((sizeProfile.resourceMultiplier * 0.8 + moon.modifiers.naquadahProduction).toFixed(2)), defenseRating: Math.floor(50 * moon.modifiers.defenseStrength), researchRating: Math.floor(50 * moon.modifiers.researchSpeed), productionMultiplier: Number((1 + moon.modifiers.naquadahProduction * 0.2 + moon.modifiers.energyProduction * 0.15).toFixed(2)), developmentSlots, usedDevelopmentSlots: 0, defenseNetwork: { level: 0, maxLevel: 10, defensePower: 0, antiShipPower: 0, interceptChance: 0, energyUpkeepPerHour: 0, operational: false }, planetaryShield: { level: 0, maxLevel: 8, capacity: 0, current: 0, coverage: 0, rechargePerHour: 0, energyUpkeepPerHour: 0, status: "offline" }, specialSystems: moon.facilityHooks, createdAt };
 }
 
 export function generateMoonsForWorld(parentWorldId: string, classCode: string, size: WorldSize, createdAt = Date.now()) {
