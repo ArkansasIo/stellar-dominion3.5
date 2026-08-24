@@ -3,10 +3,12 @@ export interface Skill {
   name: string;
   description: string;
   category: string;
+  categoryName?: string;
   maxLevel: number;
   baseTrainingTime: number;
   attributes: string[];
-  effect: Record<string, number>;
+  effects: Record<string, number>;
+  prerequisites?: Record<string, number>;
 }
 
 export interface PlayerSkill {
@@ -17,6 +19,7 @@ export interface PlayerSkill {
   level: number;
   maxLevel: number;
   effect: Record<string, number>;
+  effects?: Record<string, number>;
 }
 
 export interface AvailableSkill {
@@ -24,10 +27,20 @@ export interface AvailableSkill {
   name: string;
   description: string;
   category: string;
+  categoryName?: string;
   currentLevel: number;
   maxLevel: number;
   trainingTime: number;
   attributes: string[];
+  attributeNames?: string[];
+  prerequisites?: Record<string, number>;
+  prerequisitesMet?: boolean;
+  locked?: boolean;
+  maxed?: boolean;
+  queued?: boolean;
+  queueItem?: SkillQueueItem | null;
+  effects?: Record<string, number>;
+  nextLevel?: number;
 }
 
 export interface SkillQueueItem {
@@ -48,17 +61,18 @@ export interface Attributes {
 export const SKILL_CATEGORIES = {
   combat: "Combat",
   navigation: "Navigation",
-  electronic: "Electronic",
-  mechanical: "Mechanical",
+  electronic: "Electronic Warfare",
+  mechanical: "Mechanical Engineering",
   industry: "Industry",
   science: "Science",
-  social: "Social"
-};
+  social: "Social & Diplomacy",
+  strategic: "Strategic Command",
+} as const;
 
 export const ATTRIBUTE_NAMES = {
   intelligence: "Intelligence",
   memory: "Memory",
   charisma: "Charisma",
   perception: "Perception",
-  willpower: "Willpower"
-};
+  willpower: "Willpower",
+} as const;

@@ -26,6 +26,7 @@
     "test:world-moon-taxonomy": "tsx script/test-world-moon-taxonomy.ts",
     "test:strategic-defense-combat": "tsx script/test-strategic-defense-combat.ts",
     "test:fleet-strategic-defense-integration": "tsx script/test-fleet-strategic-defense-integration.ts",
+    "test:empire-skills": "tsx script/test-empire-skills.ts",
     "db:push": "drizzle-kit push",
     "db:generate": "drizzle-kit generate",
     "db:seed:ogame": "tsx script/seed-ogame-catalog.ts",

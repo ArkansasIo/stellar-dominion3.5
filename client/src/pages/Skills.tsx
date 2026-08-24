@@ -76,10 +76,11 @@ interface SkillNode {
   level: number;
   maxLevel: number;
   category: string;
-  prerequisites: string[];
+  prerequisites: Record<string, number>;
   tier: number;
   trained: boolean;
   training: boolean;
+  locked: boolean;
 }
 
 async function apiCall(url: string, method: string = "GET", body?: unknown): Promise<any> {
@@ -108,11 +109,20 @@ export default function Skills() {
   const [loading, setLoading] = useState(true);
   const [selectedSkill, setSelectedSkill] = useState<AvailableSkill | null>(null);
   const [skillTreeView, setSkillTreeView] = useState(false);
+  const [trainingSkillId, setTrainingSkillId] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [, setClock] = useState(Date.now());
 
   useEffect(() => {
     loadSkills();
     loadAvailableSkills();
     loadSkillQueue();
+    const clock = window.setInterval(() => setClock(Date.now()), 1000);
+    const queueRefresh = window.setInterval(() => loadSkillQueue(), 10000);
+    return () => {
+      window.clearInterval(clock);
+      window.clearInterval(queueRefresh);
+    };
   }, []);
 
   const loadSkills = async () => {
@@ -150,12 +160,17 @@ export default function Skills() {
   };
 
   const trainSkill = async (skillId: string) => {
+    setActionError(null);
+    setTrainingSkillId(skillId);
     try {
       await apiCall("/api/skills/train", "POST", { skillId });
-      loadAvailableSkills();
-      loadSkillQueue();
+      await Promise.all([loadSkills(), loadAvailableSkills(), loadSkillQueue()]);
     } catch (error) {
+      const message = error instanceof Error ? error.message : "Unable to start training";
+      setActionError(message);
       console.error("Failed to train skill:", error);
+    } finally {
+      setTrainingSkillId(null);
     }
   };
 
@@ -185,6 +200,7 @@ export default function Skills() {
   const totalSkillLevels = skills.reduce((sum, s) => sum + s.level, 0);
   const skillsInQueue = skillQueue.length;
   const trainedCount = skills.length;
+  const availableToTrainCount = availableSkills.filter((skill) => !skill.locked && !skill.maxed && !skill.queued).length;
 
   const skillTree = useMemo(() => {
     const nodes: SkillNode[] = availableSkills.map((avail) => {
@@ -197,10 +213,11 @@ export default function Skills() {
         level: trained?.level || 0,
         maxLevel: avail.maxLevel,
         category: avail.category,
-        prerequisites: avail.attributes || [],
-        tier: avail.currentLevel || 1,
+        prerequisites: avail.prerequisites || {},
+        tier: Math.max(1, Math.ceil((avail.currentLevel + 1) / 2)),
         trained: !!trained,
         training: !!inQueue,
+        locked: Boolean(avail.locked),
       };
     });
     return nodes;
@@ -244,7 +261,8 @@ export default function Skills() {
                 {skillTreeView ? "List View" : "Tree View"}
               </Button>
             </div>
-            <p className="text-sm leading-6 text-slate-300">Research and train new skills to enhance your empire's capabilities across combat, navigation, and industry.</p>
+            <p className="text-sm leading-6 text-slate-300">Research and train 32 skills across combat, navigation, industry, science, diplomacy, and strategic command.</p>
+            {actionError && <div className="rounded-lg border border-red-300/40 bg-red-500/15 px-3 py-2 text-sm text-red-100" role="alert">{actionError}</div>}
             <div className="flex flex-wrap gap-3">
               {[{ label: "Research Lab", image: MENU_ASSETS.BUILDINGS.RESEARCH_LAB.path }, { label: "Skill Tree", image: SHIP_ASSETS.FIGHTERS.SCOUT.path }, { label: "Attributes", image: MENU_ASSETS.NAVIGATION.RESEARCH.path }].map((item) => (
                 <div key={item.label} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
@@ -338,7 +356,7 @@ export default function Skills() {
           <Tabs defaultValue="trained" className="space-y-4">
             <TabsList>
               <TabsTrigger value="trained">Trained Skills ({trainedCount})</TabsTrigger>
-              <TabsTrigger value="available">Available ({availableSkills.length})</TabsTrigger>
+              <TabsTrigger value="available">Skill Catalog ({availableSkills.length})</TabsTrigger>
               <TabsTrigger value="queue">Training Queue ({skillsInQueue})</TabsTrigger>
             </TabsList>
 
@@ -402,7 +420,7 @@ export default function Skills() {
                           <CardTitle className="flex items-center gap-2">
                             <Icon className="h-5 w-5" />
                             {name}
-                            <Badge className="ml-auto" variant="secondary">{categorySkills.length} available</Badge>
+                            <Badge className="ml-auto" variant="secondary">{categorySkills.length} skills</Badge>
                           </CardTitle>
                         </CardHeader>
                         <CardContent>
@@ -426,11 +444,13 @@ export default function Skills() {
                                       <div className="font-medium text-slate-800 mb-1">Skill Details</div>
                                       <div>Training Time: {formatTime(skill.trainingTime)}</div>
                                       <div>Next Level: {skill.currentLevel + 1}/{skill.maxLevel}</div>
-                                      <div>Category Bonus: +{(skill as any).bonusValue || 0}% per level</div>
+                                      {Object.keys(skill.prerequisites || {}).length > 0 && <div>Prerequisites: {Object.entries(skill.prerequisites || {}).map(([id, level]) => `${id} Lv.${level}`).join(", ")}</div>}
+                                      <div>Effects: {Object.entries(skill.effects || {}).map(([effect, value]) => `${effect} +${value}/level`).join(", ") || "No direct modifier"}</div>
                                     </div>
                                   )}
                                 </div>
                                 <div className="flex items-center gap-2 ml-4">
+                                  {skill.locked && <Badge variant="outline" className="text-[10px]">Prerequisites</Badge>}
                                   <div className="text-right text-sm">
                                     <div className="font-mono text-slate-700">Lvl {skill.currentLevel + 1}/{skill.maxLevel}</div>
                                     <div className="flex items-center gap-1 text-xs text-slate-400">
@@ -440,9 +460,10 @@ export default function Skills() {
                                   </div>
                                   <Button
                                     size="sm"
+                                    disabled={Boolean(skill.locked || skill.queued || skill.maxed || trainingSkillId)}
                                     onClick={(e) => { e.stopPropagation(); trainSkill(skill.skillId); }}
                                   >
-                                    Train
+                                    {trainingSkillId === skill.skillId ? "Starting…" : skill.queued ? "Queued" : skill.maxed ? "Maxed" : skill.locked ? "Locked" : "Train"}
                                   </Button>
                                 </div>
                               </div>
@@ -583,7 +604,7 @@ function SkillTreeView({
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
               {nodes.map((node) => {
                 const Icon = CATEGORY_ICONS[node.category] || BookOpen;
-                const isSelectable = !node.trained && !node.training;
+                const isSelectable = !node.trained && !node.training && !node.locked;
                 return (
                   <Card
                     key={node.skillId}
@@ -608,22 +629,23 @@ function SkillTreeView({
                         </div>
                         {node.trained && <CheckCircle2 className="w-4 h-4 text-green-500" />}
                         {node.training && <Clock className="w-4 h-4 text-blue-500" />}
+                        {node.locked && <Lock className="w-4 h-4 text-slate-400" />}
                       </div>
                       <div className="text-xs text-slate-500 mb-2">{node.description}</div>
                       <div className="flex items-center justify-between">
                         <Badge variant="outline" className="text-[10px]">
                           Lvl {node.level}/{node.maxLevel}
                         </Badge>
-                        {isSelectable && (
-                          <Button size="sm" className="h-7 text-xs" onClick={(e) => { e.stopPropagation(); onTrain(node.skillId); }}>
-                            Train
+                        {!node.trained && !node.training && (
+                          <Button size="sm" className="h-7 text-xs" disabled={node.locked} onClick={(e) => { e.stopPropagation(); onTrain(node.skillId); }}>
+                            {node.locked ? "Locked" : "Train"}
                           </Button>
                         )}
                       </div>
-                      {node.prerequisites.length > 0 && (
+                      {Object.keys(node.prerequisites).length > 0 && (
                         <div className="mt-2 flex flex-wrap gap-1 text-[10px] text-slate-400">
                           <ArrowRight className="w-3 h-3" />
-                          {node.prerequisites.join(", ")}
+                          Prereq: {Object.entries(node.prerequisites).map(([skillId, level]) => `${skillId} Lv.${level}`).join(", ")}
                         </div>
                       )}
                     </CardContent>
