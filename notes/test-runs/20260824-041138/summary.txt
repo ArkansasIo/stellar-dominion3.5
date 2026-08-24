@@ -1,0 +1,73 @@
+RUN typecheck
+typecheck exit=0
+  
+  > universe-civilization-empire-at-war@1.5.1 check
+  > tsc
+  
+RUN build
+build exit=0
+  ../dist/public/assets/PowerGrid-B8sEKfL5.js                     55.47 kB │ gzip:  15.65 kB
+  ../dist/public/assets/AdminControl-BNSirsNa.js                  56.75 kB │ gzip:  12.79 kB
+  ../dist/public/assets/Government-q2xdxyZs.js                    56.88 kB │ gzip:  13.06 kB
+  ../dist/public/assets/Settings-B3P_E4u8.js                      57.31 kB │ gzip:  12.53 kB
+  ../dist/public/assets/Blueprints-vxfPJli4.js                    57.65 kB │ gzip:  14.11 kB
+  ../dist/public/assets/UniverseGenerator-32tjEtpy.js             63.78 kB │ gzip:  15.62 kB
+  ../dist/public/assets/Commander-DtrIkp0O.js                     66.10 kB │ gzip:  14.57 kB
+  ../dist/public/assets/OrbitalDefense-C3ZpINxS.js                73.69 kB │ gzip:  19.69 kB
+  ../dist/public/assets/Facilities-ahchSk9e.js                    82.04 kB │ gzip:  18.48 kB
+  ../dist/public/assets/GameLayout-NI9u-QBP.js                   116.91 kB │ gzip:  31.78 kB
+  ../dist/public/assets/storyCampaignVisuals-DzDq3VY_.js         409.59 kB │ gzip: 106.80 kB
+  ../dist/public/assets/index-tjsCObfT.js                        444.16 kB │ gzip: 142.96 kB
+  ✓ built in 4.83s
+  building server...
+  
+    dist/index.cjs  3.5mb ⚠️
+  
+  ⚡ Done in 304ms
+RUN life-support
+life-support exit=0
+  
+  > universe-civilization-empire-at-war@1.5.1 smoke:life-support
+  > tsx script/smoke-life-support.ts
+  
+  [smoke:life-support] Base URL: http://localhost:5001
+  [smoke:life-support] Public config route OK
+  [smoke:life-support] Population snapshot route OK (200)
+RUN boss-sim
+boss-sim exit=0
+  
+  > universe-civilization-empire-at-war@1.5.1 test:boss-sim
+  > tsx script/test-boss-combat-simulations.ts
+  
+  Boss combat simulations passed: 54 typed encounters
+  Class coverage: 9/9 | Subclass coverage: 27/27
+  Outcomes: 12 victories, 42 repelled assaults
+  Mechanic traces: 108 ability triggers
+RUN kardashev
+kardashev exit=0
+  
+  > universe-civilization-empire-at-war@1.5.1 test:kardashev
+  > tsx script/test-kardashev-operational.ts
+  
+  Kardashev operational rules: PASS
+RUN tier18
+tier18 exit=0
+      },
+      {
+        "label": "Tier 18 attack versus baseline defense",
+        "attackerMultiplier": 31,
+        "defenderMultiplier": 1,
+        "attackerAttackPerUnit": 9300,
+        "defenderDefensePerUnit": 150,
+        "rounds": 2,
+        "winner": "attacker",
+        "attackerRemaining": 984744,
+        "defenderRemaining": 0,
+        "attackerCasualties": 15255,
+        "defenderCasualties": 999999,
+        "elapsedMs": 140
+      }
+    ],
+    "status": "PASS"
+  }
+button-audit exit=0 lines=67

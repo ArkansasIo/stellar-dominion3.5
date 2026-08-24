@@ -1,0 +1,51 @@
+check exit=0
+
+> universe-civilization-empire-at-war@1.5.1 check
+> tsc
+
+build exit=0
+../dist/public/assets/Facilities-BcPX_cRv.js                    82.04 kB │ gzip:  18.48 kB
+../dist/public/assets/GameLayout-aJhxptu6.js                   116.91 kB │ gzip:  31.79 kB
+../dist/public/assets/storyCampaignVisuals-DzDq3VY_.js         409.59 kB │ gzip: 106.80 kB
+../dist/public/assets/index-C9UsStaa.js                        444.31 kB │ gzip: 143.03 kB
+✓ built in 5.01s
+building server...
+
+  dist/index.cjs  3.5mb ⚠️
+
+⚡ Done in 360ms
+life-support exit=0
+
+> universe-civilization-empire-at-war@1.5.1 smoke:life-support
+> tsx script/smoke-life-support.ts
+
+[smoke:life-support] Base URL: http://localhost:5001
+[smoke:life-support] Public config route OK
+[smoke:life-support] Population snapshot route OK (200)
+boss-sim exit=0
+
+> universe-civilization-empire-at-war@1.5.1 test:boss-sim
+> tsx script/test-boss-combat-simulations.ts
+
+Boss combat simulations passed: 54 typed encounters
+Class coverage: 9/9 | Subclass coverage: 27/27
+Outcomes: 12 victories, 42 repelled assaults
+Mechanic traces: 108 ability triggers
+kardashev exit=0
+
+> universe-civilization-empire-at-war@1.5.1 test:kardashev
+> tsx script/test-kardashev-operational.ts
+
+Kardashev operational rules: PASS
+tier18 exit=0
+      "winner": "attacker",
+      "attackerRemaining": 984750,
+      "defenderRemaining": 0,
+      "attackerCasualties": 15249,
+      "defenderCasualties": 999999,
+      "elapsedMs": 142
+    }
+  ],
+  "status": "PASS"
+}
+button-audit exit=0 lines=67

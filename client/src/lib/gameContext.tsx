@@ -1284,7 +1284,17 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
      const adjustedTime = (time * Math.pow(1.2, currentLevel)) / (config?.gameSpeed || 1);
      const now = Date.now();
 
-     startResearchMutation.mutate(tech);
+     try {
+       await startResearchMutation.mutateAsync(tech);
+     } catch (error: any) {
+       setCurrentTurns(prev => prev + turnCost);
+       toast({
+         title: "Research unavailable",
+         description: error?.message || `Unable to start ${name}.`,
+         variant: "destructive",
+       });
+       return;
+     }
 
      setQueue(prev => [...prev, {
         id: tech,
