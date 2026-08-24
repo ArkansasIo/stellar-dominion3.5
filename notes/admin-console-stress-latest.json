@@ -1,0 +1,39 @@
+{
+  "generatedAt": "2026-08-24T05:03:17.990Z",
+  "baseUrl": "http://localhost:5001",
+  "authenticatedMode": false,
+  "totalRequests": 240,
+  "concurrency": 24,
+  "target": "edge-case-player-does-not-exist",
+  "statusCounts": {
+    "429": 240
+  },
+  "latencyMs": {
+    "min": 2.06,
+    "p50": 11.64,
+    "p95": 41.69,
+    "max": 43.11
+  },
+  "transportErrors": 0,
+  "serverErrors": 0,
+  "authBoundary": {
+    "expectedStatuses": [
+      401,
+      429
+    ],
+    "acceptedResponses": 240,
+    "unexpectedResponses": 0
+  },
+  "edgeValues": [
+    9007199254740991,
+    -9007199254740991,
+    1.5,
+    "1000000",
+    "-999999999999",
+    "1e309",
+    "NaN",
+    null,
+    ""
+  ],
+  "sampleFailures": []
+}

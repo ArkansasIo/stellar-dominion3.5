@@ -15,7 +15,7 @@ import {
   playerStates,
   users,
 } from "../shared/schema";
-import { ADMIN_RESOURCE_KEYS, type AdminResourceKey } from "../shared/config/adminConsole";
+import { normalizeAdminResourceDelta } from "../shared/config/adminConsole";
 
 type ModerationStatus = "active" | "muted" | "banned";
 
@@ -46,11 +46,6 @@ function numberRecord(value: unknown): Record<string, number> {
   );
 }
 
-function clampOperationAmount(value: unknown) {
-  const amount = Math.trunc(finiteNumber(value, NaN));
-  return Number.isFinite(amount) ? Math.max(-1_000_000_000, Math.min(1_000_000_000, amount)) : null;
-}
-
 async function loadModerationMap(): Promise<ModerationMap> {
   const setting = await storage.getSetting(MODERATION_KEY);
   if (!setting || !setting.value || typeof setting.value !== "object" || Array.isArray(setting.value)) {
@@ -71,17 +66,7 @@ async function resolveUser(identifier: string) {
 
 function safeResourceDelta(body: unknown) {
   if (!body || typeof body !== "object" || Array.isArray(body)) return null;
-  const candidate = (body as { resources?: unknown }).resources;
-  if (!candidate || typeof candidate !== "object" || Array.isArray(candidate)) return null;
-  const delta: Partial<Record<AdminResourceKey, number>> = {};
-  for (const key of ADMIN_RESOURCE_KEYS) {
-    const raw = (candidate as Record<string, unknown>)[key];
-    if (raw === undefined || raw === "") continue;
-    const amount = clampOperationAmount(raw);
-    if (amount === null) return null;
-    if (amount !== 0) delta[key] = amount;
-  }
-  return Object.keys(delta).length ? delta : null;
+  return normalizeAdminResourceDelta((body as { resources?: unknown }).resources);
 }
 
 function makeSummary(

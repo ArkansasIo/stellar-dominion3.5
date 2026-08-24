@@ -700,21 +700,28 @@ async function loadAuditLog(): Promise<AuditEntry[]> {
   return (setting.value as AuditEntry[]).slice(-200);
 }
 
-export async function appendAudit(entry: Omit<AuditEntry, "id" | "timestamp">): Promise<string> {
-  const audit = await loadAuditLog();
-  const nextEntry: AuditEntry = {
-    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-    timestamp: Date.now(),
-    ...entry,
-  };
+let auditWriteQueue: Promise<unknown> = Promise.resolve();
 
-  await storage.setSetting(
-    getAuditKey(),
-    [...audit, nextEntry].slice(-200),
-    "Admin panel audit trail",
-    "admin"
+// Storage settings are read-modify-written, so serialize writes in this process.
+// This prevents concurrent admin actions from losing audit entries to last-write-wins behavior.
+export function appendAudit(entry: Omit<AuditEntry, "id" | "timestamp">): Promise<string> {
+  const write = auditWriteQueue.then(async () => {
+    const audit = await loadAuditLog();
+    const nextEntry: AuditEntry = {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      timestamp: Date.now(),
+      ...entry,
+    };
+    await storage.setSetting(
+      getAuditKey(),
+      [...audit, nextEntry].slice(-200),
+      "Admin panel audit trail",
+      "admin",
     );
-  return nextEntry.id;
+    return nextEntry.id;
+  });
+  auditWriteQueue = write.then(() => undefined, () => undefined);
+  return write;
 }
 async function loadOperations(): Promise<AdminOperation[]> {
   const setting = await storage.getSetting(getOperationsKey());

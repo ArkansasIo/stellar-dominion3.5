@@ -219,6 +219,20 @@ export function hasAdminCapability(permissions: string[] | undefined, capability
   return permissions.includes("all_access") || permissions.includes(capability);
 }
 
+export function normalizeAdminResourceDelta(input: unknown): Partial<Record<AdminResourceKey, number>> | null {
+  if (!input || typeof input !== "object" || Array.isArray(input)) return null;
+  const delta: Partial<Record<AdminResourceKey, number>> = {};
+  for (const key of ADMIN_RESOURCE_KEYS) {
+    const raw = (input as Record<string, unknown>)[key];
+    if (raw === undefined || raw === "") continue;
+    const parsed = typeof raw === "number" ? raw : Number(raw);
+    if (!Number.isFinite(parsed)) return null;
+    const amount = Math.max(-1_000_000_000, Math.min(1_000_000_000, Math.trunc(parsed)));
+    if (amount !== 0) delta[key] = amount;
+  }
+  return Object.keys(delta).length ? delta : null;
+}
+
 export function formatAdminUptime(seconds: number) {
   const total = Math.max(0, Math.floor(seconds));
   const days = Math.floor(total / 86400);
