@@ -700,7 +700,7 @@ async function loadAuditLog(): Promise<AuditEntry[]> {
   return (setting.value as AuditEntry[]).slice(-200);
 }
 
-async function appendAudit(entry: Omit<AuditEntry, "id" | "timestamp">): Promise<void> {
+export async function appendAudit(entry: Omit<AuditEntry, "id" | "timestamp">): Promise<string> {
   const audit = await loadAuditLog();
   const nextEntry: AuditEntry = {
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
@@ -713,9 +713,9 @@ async function appendAudit(entry: Omit<AuditEntry, "id" | "timestamp">): Promise
     [...audit, nextEntry].slice(-200),
     "Admin panel audit trail",
     "admin"
-  );
+    );
+  return nextEntry.id;
 }
-
 async function loadOperations(): Promise<AdminOperation[]> {
   const setting = await storage.getSetting(getOperationsKey());
   if (!setting || !Array.isArray(setting.value)) {

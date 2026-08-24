@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import GameLayout from "@/components/layout/GameLayout";
+import { AdminConsoleShell } from "@/components/admin/AdminConsoleShell";
+import AdminPlayerOperations from "@/components/admin/AdminPlayerOperations";
+import type { AdminSubsystemId as ConsoleSubsystemId } from "@shared/config/adminConsole";
 import {
   ADMIN_FEATURES,
   ADMIN_SUBSYSTEMS,
@@ -273,6 +276,9 @@ export default function AdminControl() {
   const queryClient = useQueryClient();
   const [activeSubsystem, setActiveSubsystem] = useState<AdminSubsystemId>("command");
   const [activeControlSubMenu, setActiveControlSubMenu] = useState("overview");
+  const [activeConsoleSubsystem, setActiveConsoleSubsystem] = useState<ConsoleSubsystemId>("command");
+  const [activeConsoleSubMenu, setActiveConsoleSubMenu] = useState("overview");
+  const [activePrimaryTab, setActivePrimaryTab] = useState("overview");
   const [targetIdentifier, setTargetIdentifier] = useState("");
   const [serverForm, setServerForm] = useState<ServerSettings>(DEFAULT_SERVER_SETTINGS);
   const [rulesForm, setRulesForm] = useState<RulesContent>(DEFAULT_RULES);
@@ -427,6 +433,37 @@ export default function AdminControl() {
     }
   }, [activeControlSubMenu, activeSubsystemDefinition]);
 
+  const handleConsoleSelect = (subsystem: ConsoleSubsystemId, subMenu: string) => {
+    setActiveConsoleSubsystem(subsystem);
+    setActiveConsoleSubMenu(subMenu);
+    const tabBySubsystem: Record<ConsoleSubsystemId, string> = {
+      command: subMenu === "health" ? "overview" : "control-plane",
+      players: subMenu === "operations" ? "developer" : "users",
+      economy: subMenu === "market" ? "overview" : "server",
+      universe: subMenu === "world" ? "developer" : "control-plane",
+      moderation: "users",
+      security: "control-plane",
+      liveops: "control-plane",
+      content: "rules",
+      developer: "developer",
+      audit: subMenu === "operations" ? "logs" : "logs",
+    };
+    const subsystemByLegacyId: Record<ConsoleSubsystemId, AdminSubsystemId> = {
+      command: "command",
+      players: "moderation",
+      economy: "command",
+      universe: "developer",
+      moderation: "moderation",
+      security: "security",
+      liveops: "liveops",
+      content: "content",
+      developer: "developer",
+      audit: "audit",
+    };
+    setActiveSubsystem(subsystemByLegacyId[subsystem]);
+    setActiveControlSubMenu(subMenu === "health" ? "overview" : subMenu);
+    setActivePrimaryTab(tabBySubsystem[subsystem]);
+  };
   const invalidateAdmin = () => {
     queryClient.invalidateQueries({ queryKey: ["admin-me"] });
     queryClient.invalidateQueries({ queryKey: ["admin-overview"] });
@@ -641,6 +678,13 @@ export default function AdminControl() {
   return (
     <GameLayout>
       <div className="space-y-6">
+        <AdminConsoleShell
+          role={meData.role}
+          permissions={adminPermissions}
+          activeSubsystem={activeConsoleSubsystem}
+          activeSubMenu={activeConsoleSubMenu}
+          onSelect={handleConsoleSelect}
+        >
         <div>
           <div className="flex flex-wrap items-center gap-3 mb-2">
             <Badge variant="destructive" className="uppercase tracking-widest px-3 py-1 text-xs">Admin Control</Badge>
@@ -792,7 +836,7 @@ export default function AdminControl() {
           <Card><CardContent className="p-5 flex items-center justify-between"><div><div className="text-xs uppercase text-slate-500">Banned</div><div className="text-2xl font-bold">{overviewData?.bannedUsers ?? 0}</div></div><Ban className="w-6 h-6 text-red-500" /></CardContent></Card>
         </div>
 
-        <Tabs defaultValue="overview" className="w-full">
+        <Tabs value={activePrimaryTab} onValueChange={setActivePrimaryTab} className="w-full">
           <TabsList className="w-full justify-start h-auto flex-wrap">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="control-plane">Control Plane</TabsTrigger>
@@ -1317,8 +1361,10 @@ export default function AdminControl() {
                 </div>
               </CardContent>
             </Card>
+            <div className="mt-6">
+              <AdminPlayerOperations />
+            </div>
           </TabsContent>
-
           <TabsContent value="server" className="mt-6">
             <div className="space-y-4">
               <Card>
@@ -1621,6 +1667,7 @@ export default function AdminControl() {
             </Card>
           </TabsContent>
         </Tabs>
+        </AdminConsoleShell>
       </div>
     </GameLayout>
   );

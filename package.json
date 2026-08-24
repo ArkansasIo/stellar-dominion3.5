@@ -20,6 +20,7 @@
     "test:tier18-stress": "tsx script/test-tier18-battle-stress.ts",
     "test:resource-management": "tsx script/test-resource-management.ts",
     "test:resource-management-buttons": "tsx script/test-resource-management-buttons.ts",
+    "test:admin-console": "tsx script/test-admin-console.ts",
     "db:push": "drizzle-kit push",
     "db:generate": "drizzle-kit generate",
     "db:seed:ogame": "tsx script/seed-ogame-catalog.ts",
