@@ -62,10 +62,11 @@ export function getWorldTelemetry(world: StrategicWorld) {
   const covert = Math.floor(world.bonuses.covert * STARGATE_BALANCE_RULES.worlds.covertBonusPerLevel * stabilityFactor);
   const unitProductionPerDay = Math.floor(STARGATE_BALANCE_RULES.worlds.baseUnitProductionPerDay * developmentFactor * (1 + world.bonuses.unitProduction * 0.2) * stabilityFactor);
   const incomePerTurn = Math.floor(STARGATE_BALANCE_RULES.worlds.baseIncomePerTurn * (1 + world.bonuses.income * 0.15) * developmentFactor * stabilityFactor);
+  const classModifiers = world.modifiers;
   const perHour = {
-    naquadah: Math.floor(STARGATE_BALANCE_RULES.worlds.baseProductionPerHour.naquadah * multiplier.naquadah * developmentFactor * conditionFactor),
-    food: Math.floor(STARGATE_BALANCE_RULES.worlds.baseProductionPerHour.food * multiplier.food * developmentFactor * conditionFactor),
-    water: Math.floor(STARGATE_BALANCE_RULES.worlds.baseProductionPerHour.water * multiplier.water * developmentFactor * conditionFactor),
+    naquadah: Math.floor(STARGATE_BALANCE_RULES.worlds.baseProductionPerHour.naquadah * multiplier.naquadah * classModifiers.naquadahProduction * developmentFactor * conditionFactor),
+    food: Math.floor(STARGATE_BALANCE_RULES.worlds.baseProductionPerHour.food * multiplier.food * classModifiers.foodProduction * developmentFactor * conditionFactor),
+    water: Math.floor(STARGATE_BALANCE_RULES.worlds.baseProductionPerHour.water * multiplier.water * classModifiers.waterProduction * developmentFactor * conditionFactor),
   };
   return {
     attack,
@@ -75,13 +76,20 @@ export function getWorldTelemetry(world: StrategicWorld) {
     incomePerTurn,
     productionPerHour: perHour,
     capacity: {
-      naquadah: STARGATE_BALANCE_RULES.worlds.baseCapacity.naquadah + world.developmentLevel * STARGATE_BALANCE_RULES.worlds.capacityPerDevelopment.naquadah,
-      food: STARGATE_BALANCE_RULES.worlds.baseCapacity.food + world.developmentLevel * STARGATE_BALANCE_RULES.worlds.capacityPerDevelopment.food,
-      water: STARGATE_BALANCE_RULES.worlds.baseCapacity.water + world.developmentLevel * STARGATE_BALANCE_RULES.worlds.capacityPerDevelopment.water,
+      naquadah: Math.floor((STARGATE_BALANCE_RULES.worlds.baseCapacity.naquadah + world.developmentLevel * STARGATE_BALANCE_RULES.worlds.capacityPerDevelopment.naquadah) * classModifiers.storageMultiplier),
+      food: Math.floor((STARGATE_BALANCE_RULES.worlds.baseCapacity.food + world.developmentLevel * STARGATE_BALANCE_RULES.worlds.capacityPerDevelopment.food) * classModifiers.storageMultiplier),
+      water: Math.floor((STARGATE_BALANCE_RULES.worlds.baseCapacity.water + world.developmentLevel * STARGATE_BALANCE_RULES.worlds.capacityPerDevelopment.water) * classModifiers.storageMultiplier),
     },
     stabilityFactor: Number(stabilityFactor.toFixed(2)),
     conditionFactor: Number(conditionFactor.toFixed(2)),
     developmentFactor: Number(developmentFactor.toFixed(2)),
+    researchSpeed: classModifiers.researchSpeed,
+    shipyardSpeed: classModifiers.shipyardSpeed,
+    defenseStrength: classModifiers.defenseStrength,
+    covertStrength: classModifiers.covertStrength,
+    populationGrowth: classModifiers.populationGrowth,
+    explorationRisk: classModifiers.explorationRisk,
+    colonizationCost: classModifiers.colonizationCost,
     populationFreeCapacity: Math.max(0, world.maxPopulation - world.population),
   };
 }

@@ -1,6 +1,7 @@
 import { STARGATE_BALANCE_RULES } from "./balanceRules";
 import { appendSystemEvent, buildSystemSnapshot, loadSystemContext, saveSystemContext, type StrategicWorld } from "./systemStateService";
 import { getMissionProfile, getMothershipModuleCost, getMothershipModuleLevel, getMothershipTelemetry, isMissionType, MISSION_PROFILES, type MissionType } from "./worldOperationsService";
+import { generateMoonsForWorld, getWorldSizeProfile, resolveWorldArchetype, stableWorldId, type WorldSize } from "../../../shared/config/worldMoonTaxonomy";
 
 export type MothershipModule = "capacity" | "weapons" | "shields" | "hangars";
 export type ClaimExplorationResult = ReturnType<typeof buildSystemSnapshot> & {
@@ -16,12 +17,28 @@ function moduleAllowed(value: unknown): value is MothershipModule {
 
 function createDiscoveredWorld(userId: string, number: number, missionType: MissionType): StrategicWorld {
   const worldType: StrategicWorld["worldType"] = missionType === "survey" ? (["mining", "agri", "military"] as const)[(number - 1) % 3] : "frontier";
+  const classCode = missionType === "survey" ? (["I", "O", "V"] as const)[(number - 1) % 3] : (["D", "E", "J", "M", "Q", "X", "Z"] as const)[(number - 1) % 7];
+  const size = getWorldSizeProfile(Math.min(9, 3 + (number % 6)) as WorldSize);
+  const archetype = resolveWorldArchetype(classCode, size.size);
   const now = Date.now();
+  const id = stableWorldId(archetype.classCode, size.size, number);
   return {
-    id: `world-${userId}-${now}-${number}`,
-    name: `${worldType === "frontier" ? "Frontier" : worldType[0].toUpperCase() + worldType.slice(1)} World ${number}`,
+    id,
+    name: `${archetype.name} ${number}`,
     ownerId: userId,
     worldType,
+    classCode: archetype.classCode,
+    className: archetype.className,
+    subclass: archetype.subclass,
+    type: archetype.type,
+    subtype: archetype.subtype,
+    biome: archetype.biome,
+    subBiome: archetype.subBiome,
+    size: size.size,
+    sizeLabel: size.label,
+    environment: archetype.environment,
+    modifiers: archetype.modifiers,
+    moons: generateMoonsForWorld(id, archetype.classCode, size.size, now),
     condition: 100,
     defenses: 0,
     developmentLevel: 1,

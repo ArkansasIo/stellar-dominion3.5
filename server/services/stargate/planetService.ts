@@ -1,6 +1,7 @@
 import { STARGATE_BALANCE_RULES } from "./balanceRules";
 import { appendSystemEvent, buildSystemSnapshot, loadSystemContext, saveSystemContext, type StrategicWorld } from "./systemStateService";
 import { getDefenseCost, getRepairCost, getWorldDevelopmentCost, getWorldTelemetry } from "./worldOperationsService";
+import { getWorldCatalog } from "../../../shared/config/worldMoonTaxonomy";
 
 export type WorldBonus = "attack" | "defense" | "covert" | "unitProduction" | "income";
 export type WorldSpecialization = "frontier" | "mining" | "agri" | "military";
@@ -24,7 +25,7 @@ function makeWorldResponse(context: Awaited<ReturnType<typeof loadSystemContext>
     food: totals.food + world.telemetry.productionPerHour.food,
     water: totals.water + world.telemetry.productionPerHour.water,
   }), { naquadah: 0, food: 0, water: 0 });
-  return { ...buildSystemSnapshot(context), worlds, capacity, productionPerHour, rules: STARGATE_BALANCE_RULES.worlds };
+  return { ...buildSystemSnapshot(context), worlds, capacity, productionPerHour, catalog: getWorldCatalog(), rules: STARGATE_BALANCE_RULES.worlds };
 }
 
 export async function getWorldState(userId: string) {
@@ -63,6 +64,26 @@ export async function upgradeWorldDevelopment(userId: string, worldId: string) {
   world.maxPopulation += 1_000;
   world.stability = Math.min(100, world.stability + 2);
   context.systems = appendSystemEvent(context.systems, "world.developed", `${world.name} advanced to development level ${world.developmentLevel}.`, { worldId, previousLevel, nextLevel: world.developmentLevel, cost });
+  await saveSystemContext(context);
+  return makeWorldResponse(context);
+}
+
+export async function upgradeWorldMoon(userId: string, worldId: string, moonId: string) {
+  const context = await loadSystemContext(userId);
+  const world = getOwnedWorld(context, worldId);
+  const moon = world.moons.find((entry) => entry.id === moonId);
+  if (!moon) throw new Error("Moon not found or not attached to this world");
+  if (moon.developmentLevel >= 20) throw new Error("This moon has reached maximum development");
+  const previousLevel = moon.developmentLevel;
+  const cost = 4_500 + previousLevel * 2_500;
+  if (context.resources.naquadah < cost) throw new Error("Insufficient Naquadah for moon development");
+  context.resources.naquadah -= cost;
+  moon.developmentLevel += 1;
+  moon.condition = Math.min(100, moon.condition + 2);
+  moon.defenseRating += Math.floor(25 * moon.productionMultiplier);
+  moon.researchRating += Math.floor(15 * moon.productionMultiplier);
+  moon.productionMultiplier = Number((moon.productionMultiplier + 0.05).toFixed(2));
+  context.systems = appendSystemEvent(context.systems, "moon.developed", `${moon.name} advanced to development level ${moon.developmentLevel}.`, { worldId, moonId, previousLevel, nextLevel: moon.developmentLevel, cost });
   await saveSystemContext(context);
   return makeWorldResponse(context);
 }

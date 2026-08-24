@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import { db, pool } from "../server/db";
 import { playerStates, users } from "../shared/schema";
 import { buyMothership, claimExploration, getMothershipState, startStrategicMission, upgradeMothership } from "../server/services/stargate/mothershipService";
-import { collectWorldYields, fortifyWorld, getWorldState, specializeWorld, upgradeWorldDevelopment } from "../server/services/stargate/planetService";
+import { collectWorldYields, fortifyWorld, getWorldState, specializeWorld, upgradeWorldDevelopment, upgradeWorldMoon } from "../server/services/stargate/planetService";
 
 const USER_ID = "test-world-operations-alpha";
 
@@ -36,11 +36,19 @@ async function main() {
   const initialWorlds = await getWorldState(USER_ID);
   const homeworld = initialWorlds.worlds[0];
   assert.equal(homeworld.worldType, "homeworld");
+  assert.match(homeworld.classCode, /^[A-Z]{1,2}$/);
+  assert.ok(homeworld.biome.length > 0 && homeworld.subBiome.length > 0);
+  assert.ok(homeworld.moons.length > 0);
+  assert.match(homeworld.moons[0].id, /^MON-/);
   assert.ok(homeworld.telemetry.productionPerHour.food > 0);
   assert.ok(homeworld.telemetry.capacity.naquadah > 25_000);
 
   const developed = await upgradeWorldDevelopment(USER_ID, homeworld.id);
   assert.equal(developed.worlds[0].developmentLevel, 2);
+  const moonBefore = developed.worlds[0].moons[0].developmentLevel;
+  const developedMoon = await upgradeWorldMoon(USER_ID, homeworld.id, developed.worlds[0].moons[0].id);
+  assert.equal(developedMoon.worlds[0].moons[0].developmentLevel, moonBefore + 1);
+  assert.ok(developedMoon.worlds[0].moons[0].defenseRating > developed.worlds[0].moons[0].defenseRating);
   await assert.rejects(() => specializeWorld(USER_ID, homeworld.id, "mining"), /Homeworld specialization/);
 
   const fortified = await fortifyWorld(USER_ID, homeworld.id, 7);
@@ -75,7 +83,7 @@ async function main() {
   assert.ok(finalWorlds.worlds.length >= 1);
   console.log(JSON.stringify({
     mothership: { name: finalShip.mothership.name, hangars: finalShip.mothership.hangars, fuel: finalShip.mothership.fuel, missionsCompleted: finalShip.mothership.missionsCompleted, missionsFailed: finalShip.mothership.missionsFailed },
-    worlds: { count: finalWorlds.worlds.length, homeDevelopment: finalWorlds.worlds[0].developmentLevel, homeDefenses: finalWorlds.worlds[0].defenses, collected },
+    worlds: { count: finalWorlds.worlds.length, homeDevelopment: finalWorlds.worlds[0].developmentLevel, homeMoonDevelopment: finalWorlds.worlds[0].moons[0]?.developmentLevel, homeDefenses: finalWorlds.worlds[0].defenses, collected },
     missionStatuses: [surveyResult.missionResult.status, salvageResult.missionResult.status, rescueResult.missionResult.status],
   }, null, 2));
 }

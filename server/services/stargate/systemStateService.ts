@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { db } from "../../db";
 import { playerStates } from "../../../shared/schema";
+import { generateMoonsForWorld, getWorldSizeProfile, resolveWorldArchetype, stableWorldId, type GeneratedMoonProfile, type WorldSize } from "../../../shared/config/worldMoonTaxonomy";
 
 type RecordValue = Record<string, unknown>;
 const asRecord = (value: unknown): RecordValue => value && typeof value === "object" && !Array.isArray(value) ? { ...(value as RecordValue) } : {};
@@ -36,11 +37,25 @@ export interface MothershipState {
   lastMissionAt: number;
 }
 
+export type StrategicMoon = { -readonly [Key in keyof GeneratedMoonProfile]: GeneratedMoonProfile[Key] };
+
 export interface StrategicWorld {
   id: string;
   name: string;
   ownerId: string;
   worldType: "homeworld" | "frontier" | "mining" | "agri" | "military";
+  classCode: string;
+  className: string;
+  subclass: string;
+  type: string;
+  subtype: string;
+  biome: string;
+  subBiome: string;
+  size: WorldSize;
+  sizeLabel: string;
+  environment: ReturnType<typeof resolveWorldArchetype>["environment"];
+  modifiers: ReturnType<typeof resolveWorldArchetype>["modifiers"];
+  moons: StrategicMoon[];
   condition: number;
   defenses: number;
   developmentLevel: number;
@@ -96,7 +111,7 @@ export interface StargateSystemsState {
 const defaultSystemsState = (userId: string): StargateSystemsState => ({
   market: { offers: [], completedTrades: 0 },
   mothership: { owned: false, name: "Uncommissioned Mothership", capacity: 0, usedCapacity: 0, weapons: 0, shields: 0, hangars: 0, hull: 0, fuel: 0, maxFuel: 0, explorationReadyAt: null, missionType: null, discoveries: 0, missionsCompleted: 0, missionsFailed: 0, lastMissionAt: 0 },
-  worlds: [{ id: `home-${userId}`, name: "Homeworld", ownerId: userId, worldType: "homeworld", condition: 100, defenses: 0, developmentLevel: 1, population: 5_800, maxPopulation: 10_000, stability: 80, lastYieldAt: Date.now(), bonuses: { attack: 0, defense: 0, covert: 0, unitProduction: 0, income: 0 }, discoveredAt: Date.now() }],
+  worlds: [{ id: `home-${userId}`, name: "Homeworld", ownerId: userId, worldType: "homeworld", classCode: "A", className: "Aurelia", subclass: "Terrestrial", type: "Temperate", subtype: "Continental", biome: "temperate forest", subBiome: "river delta", size: 5, sizeLabel: "Large", environment: resolveWorldArchetype("A", 5).environment, modifiers: resolveWorldArchetype("A", 5).modifiers, moons: generateMoonsForWorld(`home-${userId}`, "A", 5), condition: 100, defenses: 0, developmentLevel: 1, population: 5_800, maxPopulation: 10_000, stability: 80, lastYieldAt: Date.now(), bonuses: { attack: 0, defense: 0, covert: 0, unitProduction: 0, income: 0 }, discoveredAt: Date.now() }],
   commander: { name: "Realm Commander", incomeShare: 0.1, officers: [] },
   alliance: { id: null, name: null, tag: null, role: null, applications: [], notice: "" },
   protection: { vacationMode: false, pptUntil: 0, lastRaidAt: 0, covertAttempts: [] },
@@ -108,11 +123,33 @@ function normalizeWorld(value: unknown, userId: string, index: number): Strategi
   const raw = asRecord(value);
   const bonuses = asRecord(raw.bonuses);
   const type = stringValue(raw.worldType, index === 0 ? "homeworld" : "frontier");
+  const legacyClassByType: Record<string, string> = { homeworld: "A", frontier: "D", mining: "I", agri: "O", military: "V" };
+  const classCode = stringValue(raw.classCode, legacyClassByType[type] || String.fromCharCode(65 + (index % 26))).toUpperCase();
+  const size = getWorldSizeProfile(Number(raw.size) || (index === 0 ? 5 : 4));
+  const archetype = resolveWorldArchetype(classCode, size.size);
+  const id = stringValue(raw.id, stableWorldId(archetype.classCode, size.size, index + 1));
+  const rawMoons = Array.isArray(raw.moons) ? raw.moons : generateMoonsForWorld(id, archetype.classCode, size.size);
+  const moons = rawMoons.map((moon, moonIndex) => {
+    const item = asRecord(moon);
+    return { ...generateMoonsForWorld(id, archetype.classCode, size.size, Date.now())[Math.min(moonIndex, Math.max(0, generateMoonsForWorld(id, archetype.classCode, size.size).length - 1))] || generateMoonsForWorld(id, archetype.classCode, size.size)[0], ...item, id: stringValue(item.id, `${id}-MOON-${String(moonIndex + 1).padStart(2, "0")}`), parentWorldId: id, orbitSlot: Math.max(1, numberValue(item.orbitSlot, moonIndex + 1)), size: getWorldSizeProfile(Number(item.size) || 3).size, condition: Math.min(100, numberValue(item.condition, 100)), developmentLevel: Math.min(20, Math.max(1, numberValue(item.developmentLevel, 1))), habitability: Math.min(100, numberValue(item.habitability, 25)), defenseRating: numberValue(item.defenseRating), researchRating: numberValue(item.researchRating), productionMultiplier: Math.max(0.1, Number(item.productionMultiplier) || 1) } as GeneratedMoonProfile;
+  }).slice(0, size.maximumMoons) as StrategicMoon[];
   return {
-    id: stringValue(raw.id, `world-${userId}-${index}`),
-    name: stringValue(raw.name, `Strategic World ${index + 1}`),
+    id,
+    name: stringValue(raw.name, archetype.name),
     ownerId: stringValue(raw.ownerId, userId),
     worldType: ["homeworld", "frontier", "mining", "agri", "military"].includes(type) ? type as StrategicWorld["worldType"] : "frontier",
+    classCode: archetype.classCode,
+    className: archetype.className,
+    subclass: archetype.subclass,
+    type: archetype.type,
+    subtype: archetype.subtype,
+    biome: archetype.biome,
+    subBiome: archetype.subBiome,
+    size: size.size,
+    sizeLabel: size.label,
+    environment: archetype.environment,
+    modifiers: archetype.modifiers,
+    moons,
     condition: Math.min(100, numberValue(raw.condition, 100)),
     defenses: numberValue(raw.defenses),
     developmentLevel: Math.min(20, Math.max(1, numberValue(raw.developmentLevel, index === 0 ? 1 : 1))),

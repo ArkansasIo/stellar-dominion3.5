@@ -1,6 +1,6 @@
 import type { Express, Request, Response } from "express";
 import { buyMothership, claimExploration, getMothershipState, startExploration, startStrategicMission, upgradeMothership, type MothershipModule } from "./services/stargate/mothershipService";
-import { collectWorldYields, fortifyWorld, getWorldState, renameWorld, repairWorld, specializeWorld, upgradeWorldBonus, upgradeWorldDevelopment, type WorldBonus, type WorldSpecialization } from "./services/stargate/planetService";
+import { collectWorldYields, fortifyWorld, getWorldState, renameWorld, repairWorld, specializeWorld, upgradeWorldBonus, upgradeWorldDevelopment, upgradeWorldMoon, type WorldBonus, type WorldSpecialization } from "./services/stargate/planetService";
 import { isMissionType, type MissionType } from "./services/stargate/worldOperationsService";
 
 function isAuthenticated(req: Request, res: Response, next: () => void) {
@@ -29,6 +29,7 @@ export function registerStargateWorldRoutes(app: Express) {
   app.post("/api/stargate/worlds/collect", isAuthenticated, async (req, res) => { try { res.json(await collectWorldYields(currentUserId(req))); } catch (error) { respondError(res, error); } });
   app.post("/api/stargate/worlds/bonus", isAuthenticated, async (req, res) => { try { if (!isBonus(req.body?.bonus)) return res.status(400).json({ error: "Choose a supported world bonus" }); res.json(await upgradeWorldBonus(currentUserId(req), String(req.body?.worldId || ""), req.body.bonus)); } catch (error) { respondError(res, error); } });
   app.post("/api/stargate/worlds/develop", isAuthenticated, async (req, res) => { try { res.json(await upgradeWorldDevelopment(currentUserId(req), String(req.body?.worldId || ""))); } catch (error) { respondError(res, error); } });
+  app.post("/api/stargate/worlds/moons/develop", isAuthenticated, async (req, res) => { try { res.json(await upgradeWorldMoon(currentUserId(req), String(req.body?.worldId || ""), String(req.body?.moonId || ""))); } catch (error) { respondError(res, error); } });
   app.post("/api/stargate/worlds/specialize", isAuthenticated, async (req, res) => { try { if (!isSpecialization(req.body?.specialization)) return res.status(400).json({ error: "Choose a supported world specialization" }); res.json(await specializeWorld(currentUserId(req), String(req.body?.worldId || ""), req.body.specialization)); } catch (error) { respondError(res, error); } });
   app.post("/api/stargate/worlds/fortify", isAuthenticated, async (req, res) => { try { res.json(await fortifyWorld(currentUserId(req), String(req.body?.worldId || ""), Number(req.body?.quantity))); } catch (error) { respondError(res, error); } });
   app.post("/api/stargate/worlds/repair", isAuthenticated, async (req, res) => { try { res.json(await repairWorld(currentUserId(req), String(req.body?.worldId || ""))); } catch (error) { respondError(res, error); } });
