@@ -3,7 +3,8 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from "@shared/schema";
 
 const envUrl = process.env.DATABASE_URL || "";
-const databaseUrl = envUrl || "postgresql://runner@localhost:15432/stellar_dominion";
+const localUrl = process.env.LOCAL_DATABASE_URL || "";
+const databaseUrl = envUrl || localUrl || "postgresql://runner@localhost:15432/stellar_dominion";
 
 console.log('🔌 Connecting to database...');
 
