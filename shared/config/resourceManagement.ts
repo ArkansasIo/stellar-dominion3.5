@@ -19,6 +19,9 @@ export interface ResourceEconomySnapshot {
   deuterium: number;
   energy: number;
   naquadah: number;
+  naquadahProduction: number;
+  naquadahConsumption: number;
+  naquadahDemand: Record<string, number>;
   foodProduction: number;
   foodConsumption: number;
   food: number;
@@ -101,6 +104,14 @@ export function calculateManagedStorageCapacities(buildings: object = {}): Recor
   ) as Record<ManagedResourceId, number>;
 }
 
+export function calculateNaquadahDemand(buildings: Record<string, unknown> = {}): Record<string, number> {
+  return {
+    "Shipyard fabrication": levelOf(buildings, "shipyard") * 1.5,
+    "Research lattice": levelOf(buildings, "researchLab") * 1,
+    "Stargate operations": levelOf(buildings, "stargateNetwork") * 12,
+  };
+}
+
 export function calculateLifeSupportEconomy(buildings: Record<string, unknown> = {}, bonusMultiplier = 1) {
   const population = populationByClass(buildings);
   const workerCount = population.workers + population.engineers;
@@ -136,7 +147,9 @@ export function calculateResourceEconomy(
   const metal = Math.floor(30 * metalMineLevel * (1 + metalMineLevel / 10) * bonusMultiplier);
   const crystal = Math.floor(20 * crystalMineLevel * (1 + crystalMineLevel / 10) * bonusMultiplier);
   const deuterium = Math.floor(10 * deuteriumLevel * (1 + deuteriumLevel / 12) * bonusMultiplier);
-  const naquadah = Math.floor(25 * naquadahExtractorLevel * (1 + naquadahExtractorLevel / 10) * bonusMultiplier);
+  const naquadahProduction = Math.floor(25 * naquadahExtractorLevel * (1 + naquadahExtractorLevel / 10) * bonusMultiplier);
+  const naquadahDemand = calculateNaquadahDemand(buildings);
+  const naquadahConsumption = Object.values(naquadahDemand).reduce((sum, value) => sum + value, 0);
   const energyProduction = Math.floor((20 * solarPlantLevel * (1 + solarPlantLevel / 10)) + energyTech * 5);
   const energyConsumption =
     metalMineLevel * 10 +
@@ -151,8 +164,52 @@ export function calculateResourceEconomy(
     crystal,
     deuterium,
     energy: energyProduction - energyConsumption,
-    naquadah,
+    naquadah: naquadahProduction - naquadahConsumption,
+    naquadahProduction,
+    naquadahConsumption,
+    naquadahDemand,
     ...lifeSupport,
+  };
+}
+
+export function applyManagedResourceTick(
+  resources: object = {},
+  buildings: object = {},
+  research: object = {},
+  elapsedHours: number,
+  bonusMultiplier = 1,
+) {
+  const current = resources as Record<string, unknown>;
+  const economy = calculateResourceEconomy(buildings as Record<string, unknown>, research as Record<string, unknown>, bonusMultiplier);
+  const capacities = calculateManagedStorageCapacities(buildings);
+  const elapsed = Math.max(0, Number.isFinite(elapsedHours) ? elapsedHours : 0);
+  const produced = {
+    metal: Math.floor(economy.metal * elapsed),
+    crystal: Math.floor(economy.crystal * elapsed),
+    deuterium: Math.floor(economy.deuterium * elapsed),
+    naquadah: Math.floor(economy.naquadah * elapsed),
+    food: Math.floor(economy.food * elapsed),
+    water: Math.floor(economy.water * elapsed),
+    energy: economy.energy,
+  };
+  const clamp = (resourceId: ManagedResourceId, amount: number) =>
+    Math.max(0, Math.min(capacities[resourceId], amount));
+
+  return {
+    economy,
+    capacities,
+    produced,
+    resources: {
+      ...current,
+      credits: Number(current.credits) || 0,
+      metal: clamp("metal", (Number(current.metal) || 0) + produced.metal),
+      crystal: clamp("crystal", (Number(current.crystal) || 0) + produced.crystal),
+      deuterium: clamp("deuterium", (Number(current.deuterium) || 0) + produced.deuterium),
+      naquadah: clamp("naquadah", (Number(current.naquadah) || 0) + produced.naquadah),
+      food: clamp("food", (Number(current.food) || 0) + produced.food),
+      water: clamp("water", (Number(current.water) || 0) + produced.water),
+      energy: produced.energy,
+    },
   };
 }
 

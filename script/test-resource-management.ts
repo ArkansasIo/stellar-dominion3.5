@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import {
+  applyManagedResourceTick,
   calculateLifeSupportEconomy,
   calculateManagedStorageCapacity,
   calculateResourceEconomy,
@@ -57,8 +58,41 @@ function testLifeSupportNetFlow() {
   assert.ok(Number.isFinite(economy.water), "Water net flow should be finite");
 }
 
+function testTickUpdatesAndCaps() {
+  const result = applyManagedResourceTick(
+    { metal: 100, crystal: 100, deuterium: 100, naquadah: 100, food: 2_000, water: 2_000 },
+    {
+      metalMine: 4,
+      crystalMine: 4,
+      deuteriumSynthesizer: 2,
+      solarPlant: 5,
+      naquadahExtractor: 2,
+      foodHydroponics: 3,
+      waterRecycler: 3,
+      workerCount: 10,
+      engineerCount: 2,
+      civilianCount: 4,
+      shipyard: 1,
+      researchLab: 1,
+      foodStorageFacility: 1,
+      waterStorageFacility: 1,
+      naquadahVault: 1,
+    },
+    {},
+    1,
+  );
+
+  assert.ok(result.resources.naquadah > 100, "Naquadah should update from extractor minus demand");
+  assert.ok(result.resources.food !== 2_000, "Food should update from production and consumption");
+  assert.ok(result.resources.water !== 2_000, "Water should update from production and consumption");
+  assert.ok(result.resources.naquadah <= result.capacities.naquadah, "Naquadah must respect vault capacity");
+  assert.ok(result.resources.food <= result.capacities.food, "Food must respect storage capacity");
+  assert.ok(result.resources.water <= result.capacities.water, "Water must respect reservoir capacity");
+}
+
 testStrategicAndLifeSupportProduction();
 testStorageGrowth();
 testUpgradeCostsAndAffordability();
 testLifeSupportNetFlow();
+testTickUpdatesAndCaps();
 console.log("Resource management rules: PASS");

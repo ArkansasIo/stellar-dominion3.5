@@ -291,7 +291,8 @@ export default function Resources() {
   const metalProduction = production.metal;
   const crystalProduction = production.crystal;
   const deuteriumProduction = production.deuterium;
-  const naquadahProduction = production.naquadah;
+  const naquadahProduction = production.naquadahProduction;
+  const naquadahConsumption = production.naquadahConsumption;
   const foodProduction = production.foodProduction;
   const foodConsumption = production.foodConsumption;
   const waterProduction = production.waterProduction;
@@ -401,10 +402,14 @@ export default function Resources() {
     crystal: crystalProduction,
     deuterium: deuteriumProduction,
     energy: energyProduction,
-    naquadah: naquadahProduction,
-    food: foodProduction,
-    water: waterProduction,
+    naquadah: naquadahProduction - naquadahConsumption,
+    food: foodProduction - foodConsumption,
+    water: waterProduction - waterConsumption,
   };
+  const naquadahNetFlow = resourceProductionById.naquadah;
+  const naquadahHoursRemaining = naquadahConsumption > 0
+    ? resources.naquadah / naquadahConsumption
+    : Number.POSITIVE_INFINITY;
 
   return (
     <GameLayout>
@@ -567,6 +572,7 @@ export default function Resources() {
             name="Naquadah"
             value={resources.naquadah}
             production={naquadahProduction}
+            consumption={naquadahConsumption}
             capacity={storageCapacity.naquadah}
             icon={Hexagon}
             shell="bg-gradient-to-br from-cyan-50 to-sky-100 border-cyan-200"
@@ -595,6 +601,67 @@ export default function Resources() {
             label="text-sky-700"
           />
         </div>
+
+        <Card className={cn("border shadow-sm", naquadahNetFlow >= 0 ? "border-cyan-200 bg-gradient-to-br from-cyan-50 to-white" : "border-red-200 bg-gradient-to-br from-red-50 to-white")} data-testid="card-naquadah-management">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-bold uppercase tracking-widest text-cyan-800 flex items-center gap-2">
+              <Hexagon className="w-4 h-4" /> Naquadah Reserve Control
+            </CardTitle>
+            <p className="text-sm text-slate-600">
+              Monitor strategic crystal reserves consumed by shipyard fabrication, research lattices, and Stargate operations.
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+              <div className="rounded-lg border border-cyan-200 bg-white/80 p-3">
+                <div className="text-[10px] uppercase tracking-widest text-cyan-700">Reserve</div>
+                <div className="text-xl font-mono font-bold text-slate-900">{Math.floor(resources.naquadah).toLocaleString()}</div>
+                <div className="text-xs text-slate-500">of {storageCapacity.naquadah.toLocaleString()} capacity</div>
+              </div>
+              <div className="rounded-lg border border-cyan-200 bg-white/80 p-3">
+                <div className="text-[10px] uppercase tracking-widest text-cyan-700">Extraction</div>
+                <div className="text-xl font-mono font-bold text-green-700">+{naquadahProduction.toLocaleString()}/h</div>
+                <div className="text-xs text-slate-500">Naquadah extractor output</div>
+              </div>
+              <div className="rounded-lg border border-red-200 bg-white/80 p-3">
+                <div className="text-[10px] uppercase tracking-widest text-red-700">Consumption</div>
+                <div className="text-xl font-mono font-bold text-red-700">-{naquadahConsumption.toLocaleString()}/h</div>
+                <div className="text-xs text-slate-500">Operational demand</div>
+              </div>
+              <div className="rounded-lg border border-slate-200 bg-white/80 p-3">
+                <div className="text-[10px] uppercase tracking-widest text-slate-600">Reserve horizon</div>
+                <div className={cn("text-xl font-mono font-bold", naquadahNetFlow >= 0 ? "text-green-700" : "text-red-700")}>
+                  {Number.isFinite(naquadahHoursRemaining) ? `${naquadahHoursRemaining.toFixed(1)}h` : "∞"}
+                </div>
+                <div className="text-xs text-slate-500">at current demand</div>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-4">
+              <div className="rounded-lg border border-cyan-200 bg-white/70 p-3">
+                <div className="flex justify-between text-xs mb-2">
+                  <span className="font-semibold text-slate-700">Vault utilization</span>
+                  <span className="font-mono text-cyan-800">{toPercent(resources.naquadah, storageCapacity.naquadah).toFixed(1)}%</span>
+                </div>
+                <Progress value={toPercent(resources.naquadah, storageCapacity.naquadah)} className="h-2 bg-cyan-100" />
+                <div className="mt-2 flex justify-between text-xs text-slate-500">
+                  <span>Next vault level: {calculateManagedCapacities({ ...buildings, naquadahVault: (buildings.naquadahVault || 0) + 1 }).naquadah.toLocaleString()}</span>
+                  <span>Net {naquadahNetFlow >= 0 ? "+" : ""}{naquadahNetFlow.toLocaleString()}/h</span>
+                </div>
+              </div>
+              <div className="rounded-lg border border-slate-200 bg-white/70 p-3">
+                <div className="text-xs uppercase tracking-widest text-slate-600 mb-2">Consumption channels</div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  {Object.entries(production.naquadahDemand).map(([channel, rate]) => (
+                    <div key={channel} className="rounded border border-slate-200 bg-slate-50 p-2">
+                      <div className="text-xs text-slate-500">{channel}</div>
+                      <div className="font-mono font-semibold text-red-700">-{rate.toLocaleString()}/h</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         <Card className="bg-white border-slate-200 shadow-sm" data-testid="card-projections">
           <CardHeader className="pb-2">

@@ -9,7 +9,7 @@ import { db } from './db';
 import { playerStates } from '../shared/schema';
 import { eq } from 'drizzle-orm';
 import {
-  calculateManagedStorageCapacities,
+  applyManagedResourceTick,
   calculateResourceEconomy,
   RESOURCE_SYSTEM_COSTS,
 } from '../shared/config/resourceManagement';
@@ -179,30 +179,9 @@ export async function processResourceTick(userId: string) {
   const elapsedMs = Math.max(0, now - lastUpdate);
   const elapsedHours = elapsedMs / 3600000;
 
-  const productionPerHour = calculateProduction(buildings, research);
-  const produced = {
-    metal: Math.floor(productionPerHour.metal * elapsedHours),
-    crystal: Math.floor(productionPerHour.crystal * elapsedHours),
-    deuterium: Math.floor(productionPerHour.deuterium * elapsedHours),
-    naquadah: Math.floor(productionPerHour.naquadah * elapsedHours),
-    food: Math.floor(productionPerHour.food * elapsedHours),
-    water: Math.floor(productionPerHour.water * elapsedHours),
-    energy: productionPerHour.energy,
-  };
-  const storageCapacity = calculateManagedStorageCapacities(buildings);
-  const clampStored = (resourceId: keyof typeof storageCapacity, amount: number) =>
-    Math.max(0, Math.min(storageCapacity[resourceId], amount));
-
-  const nextResources: ResourceState = {
-    ...resources,
-    metal: clampStored('metal', resources.metal + produced.metal),
-    crystal: clampStored('crystal', resources.crystal + produced.crystal),
-    deuterium: clampStored('deuterium', resources.deuterium + produced.deuterium),
-    naquadah: clampStored('naquadah', resources.naquadah + produced.naquadah),
-    food: clampStored('food', resources.food + produced.food),
-    water: clampStored('water', resources.water + produced.water),
-    energy: produced.energy,
-  };
+  const tick = applyManagedResourceTick(resources, buildings, research, elapsedHours);
+  const produced = tick.produced;
+  const nextResources: ResourceState = tick.resources;
 
   await db
     .update(playerStates)
