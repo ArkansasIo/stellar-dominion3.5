@@ -1,4 +1,5 @@
 import { createRoot } from "react-dom/client";
+import { Router as WouterRouter } from "wouter";
 import App from "./App";
 import "./index.css";
 
@@ -27,4 +28,13 @@ if (!rootElement) {
   throw new Error("Stellar Dominion root element is missing");
 }
 
-createRoot(rootElement).render(<App />);
+// Wouter needs to ignore the repository prefix when the app is hosted at
+// https://arkansasio.github.io/stellar-dominion3.5/.
+// Vite supplies the same prefix through BASE_URL during the Pages build.
+const routerBase = import.meta.env.BASE_URL.replace(/\/$/, "");
+
+createRoot(rootElement).render(
+  <WouterRouter base={routerBase}>
+    <App />
+  </WouterRouter>,
+);
