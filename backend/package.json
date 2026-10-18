@@ -1,0 +1,7 @@
+{
+  "name":"stellar-dominion-mysql-api",
+  "private":true,
+  "type":"module",
+  "scripts":{"start":"node server.js","dev":"node --watch server.js"},
+  "dependencies":{"cors":"^2.8.5","dotenv":"^17.3.1","express":"^4.21.2","mysql2":"^3.14.4"}
+}
