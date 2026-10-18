@@ -1,45 +1,7 @@
-import { api } from "./api-client";
-
 export type IntelCategory = "military" | "economy" | "research" | "fleet";
-
-export interface EspionageStats {
-  espionageTech: number;
-  counterIntelligence: number;
-  activeSpyMissions: number;
-  successRate: number;
-}
-
-export interface SpyMissionRequest {
-  targetUserId: string;
-  numSpies: number;
-  categories: IntelCategory[];
-}
-
-export interface SpyMissionResult {
-  missionId: string;
-  success: boolean;
-  detected: boolean;
-  costDeducted: Record<string, number>;
-  intelGathered: unknown;
-}
-
-export const espionageSystems = {
-  async getStats(): Promise<EspionageStats> {
-    const response = await api.raw.get<EspionageStats>("/espionage/stats");
-    return response.data as EspionageStats;
-  },
-  async sendSpy(request: SpyMissionRequest): Promise<SpyMissionResult> {
-    const response = await api.raw.post<SpyMissionResult>("/espionage/send-spy", request);
-    return response.data as SpyMissionResult;
-  },
-  async getMissions(): Promise<unknown[]> {
-    const response = await api.raw.get<{ missions: unknown[] }>("/espionage/missions");
-    return response.data?.missions ?? [];
-  },
-  async getReport(missionId: string): Promise<unknown> {
-    const response = await api.raw.get(`/espionage/report/${encodeURIComponent(missionId)}`);
-    return response.data;
-  },
-};
-
+export interface EspionageStats { espionageTech: number; counterIntelligence: number; activeSpyMissions: number; successRate: number; }
+export interface SpyMissionRequest { targetUserId: string; numSpies: number; categories: IntelCategory[]; }
+export interface SpyMissionResult { missionId: string; success: boolean; detected: boolean; costDeducted: Record<string, number>; intelGathered: unknown; }
+async function request<T>(path: string, options: RequestInit = {}): Promise<T> { const response = await fetch(`/api${path}`, { credentials: "include", headers: { "Content-Type": "application/json", ...(options.headers ?? {}) }, ...options }); const payload = await response.json().catch(() => ({})); if (!response.ok) throw new Error(payload.error ?? payload.message ?? `Request failed (${response.status})`); return payload as T; }
+export const espionageSystems = { getStats: () => request<EspionageStats>("/espionage/stats"), sendSpy: (body: SpyMissionRequest) => request<SpyMissionResult>("/espionage/send-spy", { method: "POST", body: JSON.stringify(body) }), getMissions: async () => (await request<{ missions: unknown[] }>("/espionage/missions")).missions ?? [], getReport: (missionId: string) => request(`/espionage/report/${encodeURIComponent(missionId)}`) };
 export default espionageSystems;
