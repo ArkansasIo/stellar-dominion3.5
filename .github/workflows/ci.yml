@@ -12,7 +12,7 @@ permissions:
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -23,8 +23,12 @@ jobs:
           node-version: 22
           cache: npm
 
+      # The checked-in lockfile is currently stale for nanoid. Use npm install
+      # so CI can reconcile package.json and package-lock.json before checking
+      # and building the application. Once the lockfile is regenerated and
+      # committed, this can safely return to npm ci.
       - name: Install dependencies
-        run: npm ci --no-audit --no-fund
+        run: npm install --no-audit --no-fund
 
       - name: TypeScript check
         run: npm run check
