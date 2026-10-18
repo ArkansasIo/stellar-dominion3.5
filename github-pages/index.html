@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Stellar Dominion</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <span class="eyebrow">STELLAR DOMINION</span>
+      <h1>Command Portal</h1>
+      <p>GitHub Pages frontend connected to the MySQL API through AJAX.</p>
+    </header>
+
+    <section class="panel">
+      <div class="toolbar">
+        <button id="health">Check API</button>
+        <button id="load">Load Players</button>
+      </div>
+      <pre id="status">API status: not checked</pre>
+    </section>
+
+    <section class="panel">
+      <h2>Create Player</h2>
+      <form id="player-form">
+        <input id="username" name="username" maxlength="64" placeholder="Username" required>
+        <input id="empire" name="empire" maxlength="128" placeholder="Empire name" required>
+        <button type="submit">Create</button>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h2>Players</h2>
+      <div id="players" class="players">No data loaded.</div>
+    </section>
+  </main>
+  <script src="./app.js" defer></script>
+</body>
+</html>
