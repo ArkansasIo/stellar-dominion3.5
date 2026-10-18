@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stellar Dominion — Command Console</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <p class="eyebrow">STELLAR DOMINION 3.5</p>
+        <h1>Command Console</h1>
+        <p class="muted">GitHub Pages frontend → AJAX/Fetch API → Node.js → MySQL</p>
+      </div>
+      <span id="status" class="status">API: checking…</span>
+    </header>
+
+    <section class="grid">
+      <article class="panel">
+        <h2>API Configuration</h2>
+        <label>Backend URL
+          <input id="apiUrl" placeholder="https://your-api.example.com" />
+        </label>
+        <button id="saveApi">Save API URL</button>
+        <p class="hint">The browser never connects directly to MySQL. All database access goes through the backend API.</p>
+      </article>
+
+      <article class="panel">
+        <h2>Database Status</h2>
+        <div id="dbStatus" class="metric">Waiting…</div>
+        <button id="refresh">Refresh</button>
+      </article>
+    </section>
+
+    <section class="panel">
+      <div class="section-head"><h2>Colonies</h2><button id="loadColonies">Load colonies</button></div>
+      <div id="colonies" class="table-wrap">No data loaded.</div>
+    </section>
+  </main>
+  <script src="./app.js" defer></script>
+</body>
+</html>
