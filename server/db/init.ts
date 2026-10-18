@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { db, pool } from '.';
 import { users, adminUsers, playerStates } from '@shared/schema';
 import { eq } from 'drizzle-orm';
@@ -125,10 +126,8 @@ async function ensureTestAccounts() {
   }
 }
 
-// Simple password hashing (use crypto for production)
 function hashPassword(password: string): string {
-  const crypto = require('crypto');
-  return crypto.createHash('sha256').update(password).digest('hex');
+  return createHash('sha256').update(password).digest('hex');
 }
 
 export async function closeDatabase() {
