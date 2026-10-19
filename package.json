@@ -137,6 +137,6 @@
     "vite": "^7.1.9"
   },
   "optionalDependencies": {
-    "bufferutil": "^4.0.0"
+    "bufferutil": "^4.0.8"
   }
 }
