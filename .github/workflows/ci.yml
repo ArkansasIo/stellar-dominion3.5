@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, fix/login-auth]
   pull_request:
     branches: [main]
 
@@ -23,10 +23,6 @@ jobs:
           node-version: 22
           cache: npm
 
-      # The checked-in lockfile is currently stale for nanoid. Use npm install
-      # so CI can reconcile package.json and package-lock.json before checking
-      # and building the application. Once the lockfile is regenerated and
-      # committed, this can safely return to npm ci.
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
