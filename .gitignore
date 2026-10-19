@@ -1,49 +1,60 @@
-# Dependencies
-node_modules
+# Dependency and runtime artifacts
+node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
-yarn.lock
-pnpm-lock.yaml
+coverage/
+.nyc_output/
+.cache/
+*.lcov
 
 # Build outputs
-dist
-dist-ssr
-build
-.next
-out
-*.local
-.turbo
+dist/
+dist-ssr/
+build/
+.next/
+out/
 output/
+.turbo/
 
-# Environment variables (IMPORTANT: Never commit these!)
+# Environment variables and secrets
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env.*.local
-
-# Sensitive credentials
+.env.*
+!.env.example
+!.env.*.example
 .admin-credentials.json
 .admin-config.json
+*.pem
+*.key
+*.crt
+ssl/
 
-# IDE and Editor files
+# Local databases and state
+*.db
+*.sqlite
+*.sqlite3
+.postgres_data/
+.pgdata/
+.local/
+memory/
+server/public/
+
+# IDE and editor files
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
-.idea
+.idea/
 *.swp
 *.swo
 *~
 .project
 .classpath
-.settings
+.settings/
 .factorypath
 
-# OS files
+# Operating system files
 .DS_Store
 .DS_Store?
 ._*
@@ -53,79 +64,29 @@ ehthumbs.db
 Thumbs.db
 desktop.ini
 
-# Logs
-logs/
-logs
-*.log
-debug
-*.log.*
-lerna-debug.log*
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Testing
-coverage
-.nyc_output
-.cache
-*.lcov
-
-# Temporary files
+# Temporary and archive files
 *.tmp
 *.temp
-.tmp
-.temp
-
-# Replit specific
-.replit
-.breakpoints
-replit.nix
-.upm
-.config/configstore
-
-# Local state
-.local
-server/public
-vite.config.ts.*
-dev-server.*
-
-# Archives
+.tmp/
+.temp/
 *.tar.gz
 *.zip
 *.rar
 
-# Database
-*.db
-*.sqlite
-*.sqlite3
-.postgres_data/
-.pgdata/
-
-# SSL certificates
-ssl/
-*.pem
-*.key
-*.crt
-
-# Docker
-.dockerignore
-
-# Python
+# Tool-specific local files
+.replit
+.breakpoints
+replit.nix
+.upm
+.config/configstore/
+.vercel/
+.netlify/
+.railway/
+script/__pycache__/
 __pycache__/
 *.pyc
+vite.config.ts.*
+dev-server.*
+*.log.*
 
-# Misc
-.vercel
-.netlify
-.railway
-
-# Environment files
-*.env
-*.env.*
-script/__pycache__/
-ogamex-source/.git-vendored-backup/
-.github/workflows/
-game-source/
-universe-empire-dominion3/
-.postgres_data/
-output/
+# Do not blanket-ignore CI workflows; GitHub Actions files must be versioned.
