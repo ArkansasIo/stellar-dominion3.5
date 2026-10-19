@@ -21,7 +21,7 @@ async function seedTestUsers() {
     ];
 
     for (const account of testAccounts) {
-      // Check if user exists
+      const passwordHash = hashPassword(account.password);
       const existing = await db
         .select()
         .from(users)
@@ -30,25 +30,34 @@ async function seedTestUsers() {
       if (existing.length === 0) {
         await db.insert(users).values({
           username: account.username,
-          passwordHash: hashPassword(account.password),
+          passwordHash,
           email: account.email,
           createdAt: new Date(),
         });
-        console.log(`✅ Created user: ${account.username}`);
+        console.log(`✅ Created demo user: ${account.username}`);
       } else {
-        console.log(`⏭️  User already exists: ${account.username}`);
+        // Repair an existing demo account so the documented demo password works.
+        await db
+          .update(users)
+          .set({
+            passwordHash,
+            email: account.email,
+          })
+          .where(eq(users.id, existing[0].id));
+        console.log(`🔧 Reset demo password: ${account.username}`);
       }
     }
 
-    console.log("\n✅ Test users seeded successfully!");
-    console.log("\nYou can now log in with:");
+    console.log("\n✅ Demo users are ready!");
+    console.log("\nLogin with any of:");
     console.log("  Username: player1, player2, or player3");
     console.log("  Password: password123\n");
 
     await pool.end();
     process.exit(0);
   } catch (error) {
-    console.error("❌ Error seeding test users:", error);
+    console.error("❌ Error seeding demo users:", error);
+    await pool.end().catch(() => undefined);
     process.exit(1);
   }
 }
